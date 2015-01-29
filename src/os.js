@@ -2,7 +2,7 @@
 function Task($win){
 	var $task = this.$task = $("<button class='task'/>").appendTo($tasks);
 	$task.addClass("jspaint-button"); // @TODO: remove jspaintisms
-	var $icon = $("<img src='images/exe.gif' class='task-icon'/>");
+	var $icon = $("<img src='images/exe.png' class='task-icon'/>");
 	var $title = $("<span class='task-title'/>").text($win.title());
 	$task.append($icon, $title);
 	$task.on("click", function(){
@@ -31,7 +31,7 @@ function Task($win){
 function $DesktopIcon(title, icon, exe, is_shortcut){
 	var $container = $("<div class='desktop-icon' draggable='true'/>").appendTo($desktop);
 	var $icon_wrapper = $("<div class='icon-wrapper'/>").appendTo($container);
-	var $icon = $("<img draggable='false'/>").attr("src", icon || "images/exe.gif");
+	var $icon = $("<img draggable='false'/>").attr("src", icon || "images/exe.png");
 	var $title = $("<div class='title'/>").text(title);
 	$container.append($icon_wrapper, $title);
 	$icon_wrapper.append($icon);
