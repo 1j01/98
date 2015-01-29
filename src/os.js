@@ -208,6 +208,8 @@ new $DesktopIcon("Minesweeper", "images/minesweeper.png", Minesweeper, "shortcut
 new $DesktopIcon("Recycle Bin", "images/recycling.png", function(){window.open("http://www.dmaresponsibility.org/recycle/")});
 new $DesktopIcon("My Computer", "images/my-computer.png", function(){window.open("http://lmgtfy.com/?q=My+Computer")});
 new $DesktopIcon("Network Neighborhood", "images/network.png", function(){window.open("http://lmgtfy.com/?q=Network+Neighborhood")});
+new $DesktopIcon("Internet Explorer", "images/iexplore.png", function(){window.open("http://modern.ie/")});
+new $DesktopIcon("My Pictures", "images/folder32.png", function(){window.open("http://images.google.com/")});
 
 
 
