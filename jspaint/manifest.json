@@ -1,0 +1,32 @@
+{
+	"name": "Paint",
+	"version": "0.1.2",
+	"description": "An MS Paint remake.",
+	"icons": {
+		"16": "images/icons/16.png",
+		"48": "images/icons/48.png",
+		"128": "images/icons/128.png"
+	},
+	"file_handlers": {
+		"edit": {
+			"types": ["image/*"],
+			"title": "Paint"
+		}
+	},
+	"permissions": [
+		"fullscreen",
+		"clipboardRead",
+		"clipboardWrite",
+		{"fileSystem": ["write"]}
+	],
+	"optional_permissions": [
+		"unlimited_storage"
+	],
+	"app": {
+		"background": {
+			"scripts": ["chrome-app.js"]
+		}
+	},
+	"offline_enabled": true,
+	"manifest_version": 2
+}

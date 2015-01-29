@@ -1,0 +1,213 @@
+
+html, body, .jspaint {
+	width: 100%;
+	height: 100%;
+	margin: 0;
+	padding: 0;
+	border: 0;
+	overflow: hidden;
+}
+.jspaint-choose-shape-style {
+	flex-flow: column;
+}
+.jspaint-choose-eraser,
+.jspaint-choose-magnification,
+.jspaint-choose-stroke-size,
+.jspaint-choose-transparency {
+	flex-flow: column;
+	align-items: center;
+	justify-content: space-around;
+}
+.jspaint-choose-brush,
+.jspaint-choose-airbrush-size {
+	flex-flow: row wrap;
+	justify-content: space-around;
+	align-content: space-around;
+}
+.jspaint-choose-brush canvas {
+	width: 10px;
+	height: 10px;
+}
+.jspaint :not(table):not(tbody):not(tr):not(td) {
+	display: flex;
+}
+.jspaint-component-window .jspaint-window-content,
+.jspaint-component-window .jspaint-window-content :not(table):not(tbody):not(tr):not(td) {
+	display: flex;
+}
+.jspaint {
+	display: flex;
+	flex-flow: column;
+	flex: 1;
+}
+.jspaint-horizontal {
+	flex-flow: row;
+	flex: 1;
+}
+.jspaint-vertical {
+	flex-flow: column;
+	flex: 1;
+}
+.jspaint-selection > img,
+.jspaint-selection > canvas {
+	width: 100%;
+	height: 100%;
+}
+.jspaint-resize-ghost,
+.jspaint-selection:not(.instantiated),
+.jspaint-component-ghost {
+	pointer-events: none;
+}
+.jspaint-textbox-editor {
+	width: 100%;
+	height: 100%;
+	padding: 0;
+	margin: 0;
+	border: 0;
+	resize: none;
+}
+
+.jspaint-menu-container {
+	position: relative;
+}
+.jspaint-menu-popup {
+	position: absolute;
+	top: 20px;
+	left: 0;
+	z-index: 4;
+	box-sizing: border-box;
+}
+.jspaint-menu-popup-table {
+	border-collapse: collapse;
+}
+.jspaint-menu-item {
+	white-space: nowrap;
+}
+.jspaint-menu-hotkey {
+	display: inline !important;
+}
+.jspaint-menu-item-checkbox-area,
+.jspaint-menu-item-submenu-area {
+	min-width: 16px;
+}
+
+.jspaint-status-area {
+	overflow: hidden;
+	white-space: nowrap;
+	cursor: default;
+	height: 1.25em;
+}
+.jspaint-status-text {
+	flex: 1;
+	overflow: hidden;
+}
+.jspaint-status-coordinates {
+	flex-basis: 114px;
+	flex-grow: 0;
+	min-width: 0px;
+	padding-left: 3px;
+	border-left: 1px solid #7b7b7b;
+}
+
+.jspaint-Tools-component {
+	height: 273px;
+	align-items: center;
+	padding-left: 4px;
+	padding-right: 2px;
+	flex-flow: column;
+}
+.jspaint-tool-options {
+	margin-top: 3px;
+	width: 41px;
+	height: 66px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+.jspaint-tool-options > div {
+	flex: 1;
+}
+.jspaint-tools {
+	display: flex;
+	flex-flow: row wrap;
+	height: 200px;
+	width: 50px;
+}
+
+
+.jspaint-Colors-component {
+	height: 47px;
+	align-items: center;
+}
+.jspaint-palette {
+	display: flex;
+	flex-flow: row wrap;
+	width: 225px;
+}
+.jspaint-color-box,
+.jspaint-palette {
+	height: 32px;
+}
+.jspaint-current-colors {
+	width: 30px;
+	height: 31px;
+}
+.jspaint-color-button,
+.jspaint-color-selection {
+	margin-left: 1px;
+	padding: 0;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	width: 15px;
+	height: 15px;
+	border: 0;
+}
+.jspaint-color-button input {
+	margin: 0;
+	padding: 0;
+	width: 100%;
+	height: 100%;
+}
+
+
+.jspaint-canvas-area {
+	flex: 1;
+	display: block !important;
+	position: relative;
+	overflow: auto;
+	padding: 3px;
+}
+.jspaint-handle {
+	position: absolute;
+	width: 3px;
+	height: 3px;
+}
+
+
+.jspaint-window-title {
+	display: inline-block !important;
+	margin: 0;
+	padding: 0;
+	cursor: default;
+}
+.jspaint-window-close-button {
+	display: inline-block !important;
+	float: right;
+	width: 13px;
+	height: 11px;
+}
+.jspaint-window-close-button:before {
+	content: '×';
+	position: relative;
+}
+
+.jspaint-window-content .jspaint-button-group {
+	width: 85px;
+}
+.jspaint-window-content .jspaint-button-group > button {
+	width: 95%;
+	padding: 3px 5px;
+}
+
+::before, ::after {
+	pointer-events: none;
+}

@@ -1,0 +1,419 @@
+
+
+.jspaint {
+	background: #c0c0c0;
+}
+.jspaint-canvas-area {
+	background: #7b7b7b;
+	border: 1px inset;
+}
+.jspaint-selection,
+.jspaint-textbox {
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+}
+.jspaint-selection:after,
+.jspaint-textbox:after {
+	content: '';
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	border: 1px dashed black;
+}
+.jspaint-handle {
+	background: #000080;
+}
+.jspaint-useless-handle {
+	background: #fff;
+	box-shadow: 1px 1px 0 #000080 inset;
+}
+.jspaint-resize-ghost {
+	outline: 1px dotted black;
+	/*outline: 1px dotted invert;*/
+	/* I want this to be inverty, but in chrome this makes it invisible */
+}
+.jspaint-cursor-bully * {
+	cursor: inherit !important;
+}
+
+.jspaint-menus *,
+.jspaint-menu-popup * {
+	font-family: 'Segoe UI', sans-serif;
+	font-size: 12px;
+	cursor: default;
+}
+.jspaint-menu-container {
+	margin-bottom: 1px;
+}
+.jspaint-menu-button {
+	padding: 2px 5px;
+	position: relative;
+}
+.jspaint-menu-button:hover {
+	box-shadow: 1px 1px 0 white inset, -1px -1px 0 #707070 inset;
+}
+.jspaint-menu-button:active,
+.jspaint-menu-button.active {
+	box-shadow: 1px 1px 0 #707070 inset, -1px -1px 0 white inset;
+	top: 1px;
+	left: 1px;
+}
+.jspaint-menu-popup:not(.something-else) { /* CSS specifity hack */
+	display: block;
+	padding: 2px;
+	background: #c0c0c0;
+	border-top: 1px solid #c0c0c0;
+	border-left: 1px solid #c0c0c0;
+	border-right: 1px solid #000;
+	border-bottom: 1px solid #000;
+	box-shadow: 1px 1px 0 white inset, -1px -1px 0 #707070 inset;
+}
+.jspaint-menu-item {
+	padding: 1px 3px;
+	margin: 2px;
+}
+.jspaint-menu-item[disabled] {
+	text-shadow: 0.8px 0.8px 0px #fff;
+}
+.jspaint-menu-item:hover, 
+.jspaint-menu-item.active {
+	background: #007;
+	color: #fff;
+	text-shadow: none;
+}
+.jspaint-menu-item[disabled] {
+	color: #808080;
+}
+.jspaint-menu-hr {
+	display: block !important;
+	height: 0;
+	width: auto;
+	border: 0;
+	border-top: 1px solid #808080;
+	border-bottom: 1px solid #ffffff;
+	margin: 0px 2px;
+}
+.jspaint-menu-hotkey {
+	text-decoration: underline;
+}
+.jspaint-menu-item-checkbox-area,
+.jspaint-menu-item-submenu-area {
+	text-align: center;
+}
+
+.jspaint-status-area {
+	font-family: 'Segoe UI', sans-serif;
+	font-size: 12px;
+	padding: 3px 2px;
+	padding-top: 4px;
+	border-top: 1px solid #7b7b7b;
+	outline: 1px solid #7b7b7b;
+	outline-offset: 1px;
+}
+
+::-webkit-scrollbar {
+	width: 13px;
+	height: 13px;
+}
+::-webkit-scrollbar-thumb,
+::-webkit-scrollbar-button {
+	width: 13px;
+	height: 13px;
+	background: #c0c0c0;
+	border-top: 1px solid #c0c0c0;
+	border-left: 1px solid #c0c0c0;
+	border-right: 1px solid #000;
+	border-bottom: 1px solid #000;
+	box-shadow: 1px 1px 0 white inset, -1px -1px 0 #707070 inset;
+}
+::-webkit-scrollbar-button:hover:active {
+	border: 1px solid #7b7b7b;
+	box-shadow: none;
+}
+::-webkit-scrollbar-corner {
+	background: #c0c0c0;
+}
+::-webkit-scrollbar-button {
+	background-position: center;
+	background-repeat: no-repeat;
+}
+::-webkit-scrollbar-button:horizontal:decrement {
+	background-image: url(images/scroll-left.png);
+}
+::-webkit-scrollbar-button:horizontal:increment {
+	background-image: url(images/scroll-right.png);
+}
+::-webkit-scrollbar-button:vertical:decrement {
+	background-image: url(images/scroll-up.png);
+}
+::-webkit-scrollbar-button:vertical:increment {
+	background-image: url(images/scroll-down.png);
+}
+::-webkit-scrollbar {
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAABlBMVEW9vb3///8EwsWUAAAADElEQVQI12NoYHAAAAHEAMFJRSpJAAAAAElFTkSuQmCC) repeat;
+}
+
+.jspaint-window-content .jspaint-dialogue-button {
+	margin: 3px;
+	padding: 3px;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	border: 0;
+	border-right: 1px solid black;
+	border-bottom: 1px solid black;
+	position: relative;
+	background: transparent;
+	outline: 0;
+}
+.jspaint-window-content .jspaint-dialogue-button:before {
+	content: " ";
+	position: absolute;
+	z-index: 1;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	border-top: 1px solid white;
+	border-left: 1px solid white;
+	border-right: 1px solid #7b7b7b;
+	border-bottom: 1px solid #7b7b7b;
+}
+.jspaint-window-content .jspaint-dialogue-button:hover:active,
+.jspaint-tool:hover:active,
+.jspaint-tool.selected {
+	padding-bottom: 2px;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	border-top: 1px solid black;
+	border-left: 1px solid black;
+	border-right: 1px solid white;
+	border-bottom: 1px solid white;
+}
+.jspaint-window-content .jspaint-dialogue-button:hover:active:before,
+.jspaint-tool:hover:active:before,
+.jspaint-tool.selected:before {
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	border-top: 1px solid #7b7b7b;
+	border-left: 1px solid #7b7b7b;
+	border-right: 1px solid #bdbdbd;
+	border-bottom: 1px solid #bdbdbd;
+}
+
+.jspaint-tool-options {
+	border: 1px solid white;
+	border-top-color: #7b7b7b;
+	border-left-color: #7b7b7b;
+}
+.jspaint-tool {
+	display: block !important;
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	width: 25px;
+	height: 25px;
+	border: 0;
+	border-right: 1px solid black;
+	border-bottom: 1px solid black;
+	position: relative;
+	background: transparent;
+	outline: 0;
+}
+.jspaint-tool:before {
+	content: " ";
+	position: absolute;
+	z-index: 1;
+	top: 0px;
+	left: 0px;
+	right: 0px;
+	bottom: 0px;
+	border-top: 1px solid white;
+	border-left: 1px solid white;
+	border-right: 1px solid #7b7b7b;
+	border-bottom: 1px solid #7b7b7b;
+}
+.jspaint-tool:hover:active {
+	padding: 1px;
+	background: transparent !important;
+}
+
+.jspaint-tool.selected,
+.jspaint-button.selected,
+.jspaint-current-colors {
+	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAABlBMVEW9vb3///8EwsWUAAAADElEQVQI12NoYHAAAAHEAMFJRSpJAAAAAElFTkSuQmCC) repeat;
+}
+
+
+
+.jspaint-current-colors {
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	border: 2px inset;
+}
+.jspaint-color-selection {
+	box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	border-top: 1px solid #fff;
+	border-left: 1px solid #fff;
+	border-right: 1px solid #7B7B7B;
+	border-bottom: 1px solid #7B7B7B;
+}
+.jspaint-color-selection:after {
+	content: '';
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	right: 0px;
+	bottom: 0px;
+	border: 1px solid #bbb;
+}
+.jspaint-current-colors,
+.jspaint-color-button {
+	border-top: 1px solid #7B7B7B;
+	border-left: 1px solid #7B7B7B;
+	border-right: 1px solid #BBBBBB;
+	border-bottom: 1px solid #BBBBBB;
+	position: relative;
+	box-shadow: 1px 1px 0px black inset;
+}
+.jspaint-current-colors:after,
+.jspaint-color-button:after {
+	content: '';
+	position: absolute;
+	left: -1px;
+	top: -1px;
+	right: -2px;
+	bottom: -2px;
+	border-right: 1px solid white;
+	border-bottom: 1px solid white;
+}
+
+
+.jspaint-component-ghost {
+	z-index: 500;
+}
+.jspaint-component-ghost.dock {
+	outline: 1px solid black;
+	/*outline: 1px solid invert;*/
+}
+.jspaint-component-ghost:not(.dock) {
+	outline: 1px dotted black;
+	/*outline: 1px dotted invert;*/
+}
+.jspaint-component-ghost:not(.dock):after,
+.jspaint-component-ghost:not(.dock):before {
+	content: '';
+	position: absolute; left: 0; right: 0; top: 0; bottom: 0;
+	outline: 1px dotted black;
+	/*outline: 1px dotted invert;*/
+}
+.jspaint-component-ghost:not(.dock):after {
+	outline-offset: 1px;
+}
+.jspaint-component-ghost:not(.dock):before {
+	outline-offset: 2px;
+}
+
+
+.jspaint-window {
+	background: #c0c0c0;
+	border-top: 1px solid #dfdfdf;
+	border-left: 1px solid #dfdfdf;
+	border-right: 1px solid #000;
+	border-bottom: 1px solid #000;
+	padding: 2px;
+}
+.jspaint-window:after {
+	content: '';
+	pointer-events: none;
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	border-top: 1px solid #fff;
+	border-left: 1px solid #fff;
+	border-right: 1px solid #7b7b7b;
+	border-bottom: 1px solid #7b7b7b;
+}
+.jspaint-window > * {
+	margin: 1px;
+}
+.jspaint-window-titlebar {
+	background: #000080; /* fallback to standard color */
+	background: -moz-linear-gradient(left, #000080 0%, #1084d0 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, right top, color-stop(0%, #000080), color-stop(100%, #1084d0)); /* Chrome, Safari4+ */
+	background: -webkit-linear-gradient(left, #000080 0%, #1084d0 100%); /* Chrome10+, Safari5.1+ */
+	background: -o-linear-gradient(left, #000080 0%, #1084d0 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(left, #000080 0%, #1084d0 100%); /* IE10+ */
+	background: linear-gradient(to right, #000080 0%, #1084d0 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000080', endColorstr='#1084d0', GradientType=1 ); /* IE6-9 */
+	
+	color: white;
+	font-family: 'Segoe UI', sans-serif;
+	font-size: 12px;
+}
+.jspaint-window-title {
+	padding-left: 2px;
+}
+.jspaint-window-button {
+	margin: 2px;
+}
+.jspaint-window-content {
+	font-family: Arial, sans-serif;
+	font-size: 16px;
+}
+.jspaint-button {
+	padding: 0;
+	vertical-align: middle;
+	font-family: Arial, sans-serif;
+	font-size: 12px;
+	background: #c0c0c0;
+	border-top: 1px solid #fff;
+	border-left: 1px solid #fff;
+	border-right: 1px solid #000;
+	border-bottom: 1px solid #000;
+	position: relative;
+}
+.jspaint-button:after {
+	content: '';
+	pointer-events: none;
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	border-top: 1px solid #dfdfdf;
+	border-left: 1px solid #dfdfdf;
+	border-right: 1px solid #808080;
+	border-bottom: 1px solid #808080;
+}
+.jspaint-button:hover:active,
+.jspaint-button.selected {
+	border-top: 1px solid #000;
+	border-left: 1px solid #000;
+	border-right: 1px solid #fff;
+	border-bottom: 1px solid #fff;
+}
+.jspaint-button:hover:active:after,
+.jspaint-button.selected:after {
+	border-top: 1px solid #808080;
+	border-left: 1px solid #808080;
+	border-right: 1px solid #dfdfdf;
+	border-bottom: 1px solid #dfdfdf;
+}
+.jspaint-button:before {
+	right: 0px;
+	top: -3px;
+}
+.jspaint-button:hover:active:before {
+	right: -1px;
+	top: -2px;
+}
