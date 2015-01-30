@@ -5,13 +5,13 @@ var DESKTOP_ICON_SIZE = 32;
 var TASKBAR_ICON_SIZE = 16;
 
 function ICONRES(name, size){
-	return "images/" + name + "-" + size + "x" + size + ".png";
+	return "images/icons/" + name + "-" + size + "x" + size + ".png";
 }
 
 function Task($win){
 	var $task = this.$task = $("<button class='task'/>").appendTo($tasks);
 	$task.addClass("jspaint-button"); // @TODO: remove jspaintisms
-	var $icon = $("<img class='task-icon'/>").attr("src", ICONRES("program", TASKBAR_ICON_SIZE));
+	var $icon = $("<img class='task-icon'/>").attr("src", ICONRES("task", TASKBAR_ICON_SIZE));
 	var $title = $("<span class='task-title'/>").text($win.title());
 	$task.append($icon, $title);
 	$task.on("click", function(){
@@ -40,7 +40,7 @@ function Task($win){
 function $DesktopIcon(title, icon, exe, is_shortcut){
 	var $container = $("<div class='desktop-icon' draggable='true'/>").appendTo($desktop);
 	var $icon_wrapper = $("<div class='icon-wrapper'/>").appendTo($container).width(DESKTOP_ICON_SIZE).height(DESKTOP_ICON_SIZE);
-	var $icon = $("<img draggable='false'/>").attr("src", ICONRES(icon || "program", DESKTOP_ICON_SIZE));
+	var $icon = $("<img draggable='false'/>").attr("src", ICONRES(icon || "task", DESKTOP_ICON_SIZE));
 	var $title = $("<div class='title'/>").text(title);
 	$container.append($icon_wrapper, $title);
 	$icon_wrapper.append($icon);
@@ -58,10 +58,15 @@ function $DesktopIcon(title, icon, exe, is_shortcut){
 	return $container;
 }
 
-function $SeamlessIframe(){
+function $SeamlessIframe(title){
+	var $win = new $Window();
+	$win.title(title);
+	$win.$content.html("<iframe allowfullscreen>");
 	
 	var $iframe = $win.$content.find("iframe");
 	var iframe = $iframe[0];
+	
+	throw Paint in here;
 }
 
 function Paint(){

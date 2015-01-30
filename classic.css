@@ -41,7 +41,7 @@
 	position: relative;
 }
 .desktop-icon.shortcut .icon-wrapper:after {
-	content: url("images/shortcut-32x32.png");
+	content: url("images/icons/shortcut-32x32.png");
 	position: absolute;
 	left: 0;
 	vertical-align: bottom;
@@ -166,6 +166,7 @@
 	outline-offset: 1px;
 }
 
+/*
 ::-webkit-scrollbar {
 	width: 13px;
 	height: 13px;
@@ -207,6 +208,7 @@
 ::-webkit-scrollbar {
 	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAABlBMVEW9vb3///8EwsWUAAAADElEQVQI12NoYHAAAAHEAMFJRSpJAAAAAElFTkSuQmCC) repeat;
 }
+*/
 
 .jspaint-window-content .jspaint-dialogue-button {
 	margin: 3px;

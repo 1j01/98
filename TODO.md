@@ -1,5 +1,5 @@
 
-# ![](images/shutdown.png) Todo
+# ![](images/icons/shutdown-32x32.png) Todo
 
 * Start Menu
 
