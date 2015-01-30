@@ -3,4 +3,9 @@
 
 * Start Menu
 
-* Stuff
+* Integrate Minesweeper
+
+* Integrate Pipes screensaver
+
+* Integrate Blue Screen of Death
+

@@ -140,7 +140,8 @@ var $start_bar = $("<div class='start-bar'/>").appendTo("body");
 var $start_button = $("<button class='start-button'/>").appendTo($start_bar);
 //$start_button.html("<img src='"+ICONRES("start", TASKBAR_ICON_SIZE)+"'/><b>Start</b>");
 $start_button.html("<img src='images/start.png'/><b>Start</b>");
-$start_button.addClass("jspaint-button"); // @TODO: remove jspaintisms
+$start_button.attr("title", "Click here to begin.");
+
 var $tasks = $("<div class='tasks'/>").appendTo($start_bar);
 
 $desktop.on("mousedown", function(){

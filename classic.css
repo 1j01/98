@@ -5,7 +5,7 @@
 .start-bar {
 	background: #c0c0c0;
 }
-.start-button {
+.start-menu {
 	
 }
 .task.selected {
@@ -423,7 +423,8 @@
 	font-family: Arial, sans-serif;
 	font-size: 16px;
 }
-.jspaint-button {
+button,
+.start-menu {
 	padding: 0;
 	vertical-align: middle;
 	font-family: Arial, sans-serif;
@@ -435,7 +436,8 @@
 	border-bottom: 1px solid #000;
 	position: relative;
 }
-.jspaint-button:after {
+button:after,
+.start-menu:after {
 	content: '';
 	pointer-events: none;
 	position: absolute;
@@ -448,25 +450,26 @@
 	border-right: 1px solid #808080;
 	border-bottom: 1px solid #808080;
 }
-.jspaint-button:hover:active,
-.jspaint-button.selected {
+button:hover:active,
+button.selected {
 	border-top: 1px solid #000;
 	border-left: 1px solid #000;
 	border-right: 1px solid #fff;
 	border-bottom: 1px solid #fff;
 }
-.jspaint-button:hover:active:after,
-.jspaint-button.selected:after {
+button:hover:active:after,
+button.selected:after {
 	border-top: 1px solid #808080;
 	border-left: 1px solid #808080;
 	border-right: 1px solid #dfdfdf;
 	border-bottom: 1px solid #dfdfdf;
 }
-.jspaint-button:before {
+button:before,
+.start-menu:before {
 	right: 0px;
 	top: -3px;
 }
-.jspaint-button:hover:active:before {
+button:hover:active:before {
 	right: -1px;
 	top: -2px;
 }
