@@ -29,11 +29,6 @@
 	border: 1px dotted invert;
 	outline: 1px dotted invert;
 }
-.desktop-icon .icon-wrapper,
-.desktop-icon img {
-	width: 32px;
-	height: 32px;
-}
 .desktop-icon.selected img {
 	filter: sepia() brightness(50%) saturate(2) hue-rotate(0.5turn);
 	-o-filter: sepia() brightness(50%) saturate(2) hue-rotate(0.5turn);
@@ -46,12 +41,9 @@
 	position: relative;
 }
 .desktop-icon.shortcut .icon-wrapper:after {
-	content: url("images/lnk.png");
+	content: url("images/shortcut-32x32.png");
 	position: absolute;
 	left: 0;
-	bottom: 0;
-	width: 11px;
-	height: 11px;
 	vertical-align: bottom;
 }
 .desktop > .selection {

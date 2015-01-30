@@ -1,8 +1,17 @@
 
+var ICON_SIZES = [16, 32, 48];
+
+var DESKTOP_ICON_SIZE = 32;
+var TASKBAR_ICON_SIZE = 16;
+
+function ICONRES(name, size){
+	return "images/" + name + "-" + size + "x" + size + ".png";
+}
+
 function Task($win){
 	var $task = this.$task = $("<button class='task'/>").appendTo($tasks);
 	$task.addClass("jspaint-button"); // @TODO: remove jspaintisms
-	var $icon = $("<img src='images/exe.png' class='task-icon'/>");
+	var $icon = $("<img class='task-icon'/>").attr("src", ICONRES("program", TASKBAR_ICON_SIZE));
 	var $title = $("<span class='task-title'/>").text($win.title());
 	$task.append($icon, $title);
 	$task.on("click", function(){
@@ -30,8 +39,8 @@ function Task($win){
 
 function $DesktopIcon(title, icon, exe, is_shortcut){
 	var $container = $("<div class='desktop-icon' draggable='true'/>").appendTo($desktop);
-	var $icon_wrapper = $("<div class='icon-wrapper'/>").appendTo($container);
-	var $icon = $("<img draggable='false'/>").attr("src", icon || "images/exe.png");
+	var $icon_wrapper = $("<div class='icon-wrapper'/>").appendTo($container).width(DESKTOP_ICON_SIZE).height(DESKTOP_ICON_SIZE);
+	var $icon = $("<img draggable='false'/>").attr("src", ICONRES(icon || "program", DESKTOP_ICON_SIZE));
 	var $title = $("<div class='title'/>").text(title);
 	$container.append($icon_wrapper, $title);
 	$icon_wrapper.append($icon);
@@ -129,6 +138,7 @@ username = username || "User" || "Admin" || "Win98";
 var $desktop = $("<div class='desktop'/>").appendTo("body");
 var $start_bar = $("<div class='start-bar'/>").appendTo("body");
 var $start_button = $("<button class='start-button'/>").appendTo($start_bar);
+//$start_button.html("<img src='"+ICONRES("start", TASKBAR_ICON_SIZE)+"'/><b>Start</b>");
 $start_button.html("<img src='images/start.png'/><b>Start</b>");
 $start_button.addClass("jspaint-button"); // @TODO: remove jspaintisms
 var $tasks = $("<div class='tasks'/>").appendTo($start_bar);
@@ -202,14 +212,14 @@ $(window).on("mouseup dragend blur", function(e){
 });
 
 
-new $DesktopIcon("Paint", "images/paint.png", Paint, "shortcut");
-new $DesktopIcon("My Documents", "images/documents.png", function(){});
-new $DesktopIcon("Minesweeper", "images/minesweeper.png", Minesweeper, "shortcut");
-new $DesktopIcon("Recycle Bin", "images/recycling.png", function(){window.open("http://www.dmaresponsibility.org/recycle/")});
-new $DesktopIcon("My Computer", "images/my-computer.png", function(){window.open("http://lmgtfy.com/?q=My+Computer")});
-new $DesktopIcon("Network Neighborhood", "images/network.png", function(){window.open("http://lmgtfy.com/?q=Network+Neighborhood")});
-new $DesktopIcon("Internet Explorer", "images/iexplore.png", function(){window.open("http://modern.ie/")});
-new $DesktopIcon("My Pictures", "images/folder32.png", function(){window.open("http://images.google.com/")});
+new $DesktopIcon("Paint", ("paint"), Paint, "shortcut");
+new $DesktopIcon("My Documents", ("my-documents-folder"), function(){});
+new $DesktopIcon("Minesweeper", ("minesweeper"), Minesweeper, "shortcut");
+new $DesktopIcon("Recycle Bin", ("recycle-bin"), function(){window.open("http://www.dmaresponsibility.org/recycle/")});
+new $DesktopIcon("My Computer", ("my-computer"), function(){window.open("http://lmgtfy.com/?q=My+Computer")});
+new $DesktopIcon("Network Neighborhood", ("network"), function(){window.open("http://lmgtfy.com/?q=Network+Neighborhood")});
+new $DesktopIcon("Internet Explorer", ("internet-explorer"), function(){window.open("http://modern.ie/")});
+new $DesktopIcon("My Pictures", ("folder"), function(){window.open("http://images.google.com/")});
 
 
 
