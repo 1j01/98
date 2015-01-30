@@ -59,9 +59,11 @@ function $Window($component){
 		mx = e.clientX - $w[0].getBoundingClientRect().left;
 		my = e.clientY - $w[0].getBoundingClientRect().top;
 		$G.on("mousemove", drag);
+		$("body").addClass("drag");
 	});
 	$G.on("mouseup", function(e){
 		$G.off("mousemove", drag);
+		$("body").removeClass("drag");
 	});
 	$w.$titlebar.on("dblclick", function(e){
 		if($component){

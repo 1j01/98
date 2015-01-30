@@ -58,21 +58,10 @@ function $DesktopIcon(title, icon, exe, is_shortcut){
 	return $container;
 }
 
-function $SeamlessIframe(title){
+function $IframeWindow(url){
 	var $win = new $Window();
-	$win.title(title);
 	$win.$content.html("<iframe allowfullscreen>");
 	
-	var $iframe = $win.$content.find("iframe");
-	var iframe = $iframe[0];
-	
-	throw Paint in here;
-}
-
-function Paint(){
-	var $win = new $Window();
-	$win.title("untitled - Paint");
-	$win.$content.html("<iframe allowfullscreen>");
 	var $iframe = $win.$content.find("iframe");
 	var iframe = $iframe[0];
 	
@@ -88,8 +77,8 @@ function Paint(){
 	$win.on("focus", focus_window_contents);
 	var delegate_mouseup = function(){
 		if(!iframe.contentWindow){return}
-		if(!iframe.contentWindow.$){return}
-		iframe.contentWindow.$("body").trigger("mouseup");
+		if(!iframe.contentWindow.jQuery){return}
+		iframe.contentWindow.jQuery("body").trigger("mouseup");
 	};
 	$G.on("mouseup blur", delegate_mouseup);
 	$win.on("close", function(){
@@ -100,7 +89,6 @@ function Paint(){
 	$iframe
 		.on("load", function(){
 			iframe.contentWindow.focus();
-			//$win.triggerHandler("focus");
 			var $body = $(iframe.contentDocument).find("body");
 			$body.on("mousedown click", function(e){
 				focus_window_contents();
@@ -109,26 +97,28 @@ function Paint(){
 				$win.close();
 			};
 		})
-		.attr({
-			src: "jspaint/index.html"
-		})
+		.attr({src: url})
 		.width(640)
 		.height(380)
 		.css({
 			border: 0,
-			//width: "100%",
-			//height: "100%",
 			verticalAlign: "bottom", // hack to avoid space on the bottom
 		});
 	
 	$win.center();
 	
+	return $win;
+}
+
+function Paint(){
+	var $win = new $IframeWindow("jspaint/index.html");
+	$win.title("untitled - Paint");
 	return new Task($win);
-	
 }
 
 function Minesweeper(){
-	
+	var $win = new $IframeWindow("embed-minesweeper.html");
+	$win.title("Minesweeper");
 	return new Task($win);
 }
 
@@ -208,12 +198,19 @@ $desktop.on("mousedown", function(){
 })();
 
 // Fix dragging things (like windows) over iframes
+// (when combined with a bit of css, .drag iframe { pointer-events: none; })
+// (and a similar thing in $Window.js)
 $(window).on("mousedown", function(e){
 	//console.log(e.type);
 	$("body").addClass("drag");
 });
 $(window).on("mouseup dragend blur", function(e){
 	//console.log(e.type);
+	if(e.type === "blur"){
+		if(document.activeElement.tagName.match(/iframe/i)){
+			return;
+		}
+	}
 	$("body").removeClass("drag");
 });
 
