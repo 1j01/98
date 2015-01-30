@@ -20,14 +20,16 @@ function $Window($component){
 		e.stopPropagation();
 	});
 	
-	$w.css({
-		position: "absolute",
-		zIndex: $Window.Z_INDEX++
-	});
-	$w.on("mousedown", function(){
+	$w.bringToFront = function(){
 		$w.css({
 			zIndex: $Window.Z_INDEX++
 		});
+	};
+	
+	$w.css({position: "absolute"});
+	$w.bringToFront();
+	$w.on("mousedown", function(){
+		$w.bringToFront();
 	});
 	
 	$w.applyBounds = function(){

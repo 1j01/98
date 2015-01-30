@@ -72,6 +72,8 @@ function $IframeWindow(url){
 		setTimeout(function(){
 			iframe.contentWindow.focus();
 		});
+		
+		$win.bringToFront();
 	};
 	
 	$win.on("focus", focus_window_contents);
