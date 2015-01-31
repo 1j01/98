@@ -1,9 +1,10 @@
 
 $Window.Z_INDEX = 5;
 
-function $Window($component){
+function $Window(icon_name, $component){
 	var $w = $(E("div")).addClass("jspaint-window").appendTo("body");
 	$w.$titlebar = $(E("div")).addClass("jspaint-window-titlebar").appendTo($w);
+	$w.$icon = $Icon([$w.icon_name = icon_name, "task"], TITLEBAR_ICON_SIZE).appendTo($w.$titlebar);
 	$w.$title = $(E("span")).addClass("jspaint-window-title").appendTo($w.$titlebar);
 	$w.$x = $(E("button")).addClass("jspaint-window-close-button jspaint-window-button jspaint-button").appendTo($w.$titlebar);
 	$w.$content = $(E("div")).addClass("jspaint-window-content").appendTo($w);

@@ -3,16 +3,55 @@ var ICON_SIZES = [16, 32, 48];
 
 var DESKTOP_ICON_SIZE = 32;
 var TASKBAR_ICON_SIZE = 16;
+var TITLEBAR_ICON_SIZE = 16;
 
-function ICONRES(name, size){
+function ICON_RESOURCE(name, size){
 	return "images/icons/" + name + "-" + size + "x" + size + ".png";
+}
+
+function $Icon(names_to_try, size){
+	var $img = $("<img class='icon'/>");
+	$img.attr({draggable: false});
+	var attemptInSerial = function(starting_option, options, callback_option, callback_total_failure){
+		//console.log(starting_option, options);
+		var attempted_options = [];
+		var attempt = function(option){
+			//console.log("attempt " + option);
+			attempted_options.push(option);
+			callback_option(option, function(){
+				//console.log(option + " didn't pan out");
+				var we_tried_all_the_options = "as far as I can tell";
+				for(var i=0; i<options.length; i++){
+					if(attempted_options.indexOf(options[i]) < 0){
+						we_tried_all_the_options = false;
+						attempt(options[i]);
+					}
+				}
+				if(we_tried_all_the_options){
+					callback_total_failure && callback_total_failure();
+				}
+			});
+		};
+		attempt(starting_option);
+	};
+	
+	attemptInSerial(names_to_try[0], names_to_try, function(name, that_name_didnt_pan_out){
+		attemptInSerial(size, ICON_SIZES, function(size, that_size_didnt_pan_out){
+			$img.one("error", function(e){
+				that_size_didnt_pan_out();
+			});
+			$img.attr({src: ICON_RESOURCE(name, size)});
+		}, that_name_didnt_pan_out);
+	});
+	
+	return $img;
 }
 
 function Task($win){
 	var $task = this.$task = $("<button class='task'/>").appendTo($tasks);
 	$task.addClass("jspaint-button"); // @TODO: remove jspaintisms
-	var $icon = $("<img class='task-icon'/>").attr("src", ICONRES("task", TASKBAR_ICON_SIZE));
-	var $title = $("<span class='task-title'/>").text($win.title());
+	var $icon = $Icon([$win.icon_name, "task"], TASKBAR_ICON_SIZE);
+	var $title = $("<span class='title'/>").text($win.title());
 	$task.append($icon, $title);
 	$task.on("click", function(){
 		$task.toggleClass("selected");
@@ -37,10 +76,10 @@ function Task($win){
 	});
 }
 
-function $DesktopIcon(title, icon, exe, is_shortcut){
+function $DesktopIcon(title, icon_name, exe, is_shortcut){
 	var $container = $("<div class='desktop-icon' draggable='true'/>").appendTo($desktop);
 	var $icon_wrapper = $("<div class='icon-wrapper'/>").appendTo($container).width(DESKTOP_ICON_SIZE).height(DESKTOP_ICON_SIZE);
-	var $icon = $("<img draggable='false'/>").attr("src", ICONRES(icon || "task", DESKTOP_ICON_SIZE));
+	var $icon = $Icon([icon_name, "task"], DESKTOP_ICON_SIZE).width(DESKTOP_ICON_SIZE).height(DESKTOP_ICON_SIZE);
 	var $title = $("<div class='title'/>").text(title);
 	$container.append($icon_wrapper, $title);
 	$icon_wrapper.append($icon);
@@ -58,8 +97,8 @@ function $DesktopIcon(title, icon, exe, is_shortcut){
 	return $container;
 }
 
-function $IframeWindow(url){
-	var $win = new $Window();
+function $IframeWindow(url, icon_name){
+	var $win = new $Window(icon_name);
 	$win.$content.html("<iframe allowfullscreen>");
 	
 	var $iframe = $win.$content.find("iframe");
@@ -95,6 +134,19 @@ function $IframeWindow(url){
 			$body.on("mousedown click", function(e){
 				focus_window_contents();
 			});
+			// We want to disable pointer events for other iframes, but not this one
+			$body.on("mousedown", function(e){
+				$iframe.css("pointer-events", "all");
+				$("body").addClass("drag");
+			});
+			$body.on("mouseup", function(e){
+				$("body").removeClass("drag");
+				$iframe.css("pointer-events", "");
+			});
+			// $("iframe").css("pointer-events", ""); is called elsewhere.
+			// Otherwise iframes would get stuck in this interaction mode
+			// I guess I could do $(iframe.contentWindow).mouseup here...
+			
 			iframe.contentWindow.close = function(){
 				$win.close();
 			};
@@ -104,7 +156,7 @@ function $IframeWindow(url){
 		.height(380)
 		.css({
 			border: 0,
-			verticalAlign: "bottom", // hack to avoid space on the bottom
+			verticalAlign: "bottom", // avoid unaccounted-for space on the bottom
 		});
 	
 	$win.center();
@@ -113,13 +165,13 @@ function $IframeWindow(url){
 }
 
 function Paint(){
-	var $win = new $IframeWindow("jspaint/index.html");
+	var $win = new $IframeWindow("jspaint/index.html", "paint");
 	$win.title("untitled - Paint");
 	return new Task($win);
 }
 
 function Minesweeper(){
-	var $win = new $IframeWindow("embed-minesweeper.html");
+	var $win = new $IframeWindow("embed-minesweeper.html", "minesweeper");
 	$win.title("Minesweeper");
 	return new Task($win);
 }
@@ -214,6 +266,7 @@ $(window).on("mouseup dragend blur", function(e){
 		}
 	}
 	$("body").removeClass("drag");
+	$("iframe").css("pointer-events", "");
 });
 
 
