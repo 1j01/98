@@ -425,8 +425,9 @@
 	font-family: Arial, sans-serif;
 	font-size: 16px;
 }
-button,
-.start-menu {
+.start-menu,
+.ui-slider-handle,
+button {
 	padding: 0;
 	vertical-align: middle;
 	font-family: Arial, sans-serif;
@@ -438,8 +439,9 @@ button,
 	border-bottom: 1px solid #000;
 	position: relative;
 }
-button:after,
-.start-menu:after {
+.start-menu:after,
+.ui-slider-handle:after,
+button:after {
 	content: '';
 	pointer-events: none;
 	position: absolute;
