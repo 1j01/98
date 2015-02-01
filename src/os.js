@@ -101,8 +101,8 @@ function $IframeWindow(url, icon_name){
 	var $win = new $Window(icon_name);
 	$win.$content.html("<iframe allowfullscreen>");
 	
-	var $iframe = $win.$content.find("iframe");
-	var iframe = $iframe[0];
+	var $iframe = $win.$iframe = $win.$content.find("iframe");
+	var iframe = $win.iframe = $iframe[0];
 	
 	var focus_window_contents = function(){
 		if(!iframe.contentWindow){return}
@@ -130,26 +130,26 @@ function $IframeWindow(url, icon_name){
 	$iframe
 		.on("load", function(){
 			iframe.contentWindow.focus();
-			var $body = $(iframe.contentDocument).find("body");
-			$body.on("mousedown click", function(e){
+			var $contentWindow = $(iframe.contentWindow);
+			$contentWindow.on("mousedown click", function(e){
 				focus_window_contents();
 			});
 			// We want to disable pointer events for other iframes, but not this one
-			$body.on("mousedown", function(e){
+			$contentWindow.on("mousedown", function(e){
 				$iframe.css("pointer-events", "all");
 				$("body").addClass("drag");
 			});
-			$body.on("mouseup", function(e){
+			$contentWindow.on("mouseup", function(e){
 				$("body").removeClass("drag");
 				$iframe.css("pointer-events", "");
 			});
 			// $("iframe").css("pointer-events", ""); is called elsewhere.
 			// Otherwise iframes would get stuck in this interaction mode
-			// I guess I could do $(iframe.contentWindow).mouseup here...
 			
 			iframe.contentWindow.close = function(){
 				$win.close();
 			};
+			
 		})
 		.attr({src: url})
 		.width(640)
@@ -173,6 +173,16 @@ function Paint(){
 function Minesweeper(){
 	var $win = new $IframeWindow("embed-minesweeper.html", "minesweeper");
 	$win.title("Minesweeper");
+	$win.$iframe.width(280).height(320);
+	$win.center();
+	return new Task($win);
+}
+
+function SoundRecorder(){
+	var $win = new $IframeWindow("sound-recorder/index.html", "speaker");
+	$win.title("Sound - Sound Recorder");
+	$win.$iframe.width(252+10).height(21+102);
+	$win.center();
 	return new Task($win);
 }
 
@@ -270,14 +280,15 @@ $(window).on("mouseup dragend blur", function(e){
 });
 
 
-new $DesktopIcon("Paint", ("paint"), Paint, "shortcut");
-new $DesktopIcon("My Documents", ("my-documents-folder"), function(){});
-new $DesktopIcon("Minesweeper", ("minesweeper"), Minesweeper, "shortcut");
-new $DesktopIcon("Recycle Bin", ("recycle-bin"), function(){window.open("http://www.dmaresponsibility.org/recycle/")});
 new $DesktopIcon("My Computer", ("my-computer"), function(){window.open("http://lmgtfy.com/?q=My+Computer")});
+new $DesktopIcon("My Documents", ("my-documents-folder"), function(){});
 new $DesktopIcon("Network Neighborhood", ("network"), function(){window.open("http://lmgtfy.com/?q=Network+Neighborhood")});
-new $DesktopIcon("Internet Explorer", ("internet-explorer"), function(){window.open("http://modern.ie/")});
+new $DesktopIcon("Recycle Bin", ("recycle-bin"), function(){window.open("http://www.dmaresponsibility.org/recycle/")});
 new $DesktopIcon("My Pictures", ("folder"), function(){window.open("http://images.google.com/")});
+new $DesktopIcon("Internet Explorer", ("internet-explorer"), function(){window.open("http://modern.ie/")});
+new $DesktopIcon("Paint", ("paint"), Paint, "shortcut");
+new $DesktopIcon("Minesweeper", ("minesweeper"), Minesweeper, "shortcut");
+new $DesktopIcon("Sound Recorder", ("speaker"), SoundRecorder, "shortcut");
 
 
 

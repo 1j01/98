@@ -165,10 +165,10 @@ $(function(){
 	});
 });
 
-var canvas = new Canvas(112, 35);
-canvas.ctx.fillStyle = "lime";
-canvas.ctx.fillRect(0, 17, canvas.width, 1);
-$wave.append(canvas);
+var wave_canvas = new Canvas(112, 35);
+wave_canvas.ctx.fillStyle = "lime";
+wave_canvas.ctx.fillRect(0, 17, wave_canvas.width, 1);
+$wave.append(wave_canvas);
 
 
 var $status_text = $();
