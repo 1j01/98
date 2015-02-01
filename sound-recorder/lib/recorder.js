@@ -7,9 +7,16 @@
     var bufferLen = config.bufferLen || 4096;
     var numChannels = config.numChannels || 2;
     this.context = source.context;
-    this.node = (this.context.createScriptProcessor ||
-                 this.context.createJavaScriptNode).call(this.context,
-                 bufferLen, numChannels, numChannels);
+    var createScriptNode = (
+      this.context.createScriptProcessor ||
+      this.context.createJavaScriptNode
+    );
+    this.node = createScriptNode.call(
+      this.context,
+      bufferLen,
+      numChannels,
+      numChannels
+    );
     var worker = new Worker(config.workerPath || WORKER_PATH);
     worker.postMessage({
       command: 'init',
@@ -18,8 +25,8 @@
         numChannels: numChannels
       }
     });
-    var recording = false,
-      currCallback;
+    var recording = false;
+    var currCallback;
 
     this.node.onaudioprocess = function(e){
       if (!recording) return;

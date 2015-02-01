@@ -50,7 +50,10 @@ var $Button = function(title, n){
 		
 	});
 	
-	$(enabled_canvas).add(disabled_canvas).css({margin: "auto"});
+	$(enabled_canvas).add(disabled_canvas).css({
+		margin: "auto",
+		pointerEvents: "none",
+	});
 	
 	$button.disable = function(){
 		$button.attr("disabled", true);
@@ -62,7 +65,7 @@ var $Button = function(title, n){
 		$button.empty().append(enabled_canvas);
 		return $button;
 	};
-	$button.enable();
+	$button.disable();
 	
 	return $button;
 };
@@ -76,17 +79,6 @@ var $controls = $("<div class='controls'/>").append($seek_to_start, $seek_to_end
 
 var $main = $("<div class='main'/>").appendTo($V).append($display, $slider_container, $controls);
 
-$position.display(0);
-$length.display(0);
-
-$slider.slider({
-	step: 0.01,
-	slide: function(event, ui){
-		$position.display(ui.value);
-	}
-});
-//$slider.slider("max", 500);
-
 var $log = $("<pre class='outside-app-widget'/>").appendTo($body);
 var __log = function(message, data){
 	$log.append(
@@ -94,27 +86,90 @@ var __log = function(message, data){
 	);
 }
 
+$position.display(0);
+$length.display(0);
+
+$slider.slider({
+	step: 0.01,
+	slide: function(event, ui){
+		update(true);
+	}
+});
+
 var audio_context;
 var recorder;
 
-function startUserMedia(stream){
-	var input = audio_context.createMediaStreamSource(stream);
-	__log("Media stream created.");
+var previous_time;
+var tid = -1;
+var recording = false;
 
-	recorder = new Recorder(input);
-	__log("Recorder initialised.");
-}
+var file = {
+	length: 0,
+	position: 0,
+	name: "Sound"
+};
+
+var update = function(is_update_from_slider){
+	document.title = file.name + " - Sound Recorder";
+	if(is_update_from_slider){
+		file.position = $slider.slider("value");
+	}else{
+		if(recording){
+			var delta_time = new Date().getTime() - previous_time;
+			previous_time = new Date().getTime();
+			file.position += delta_time/1000;
+		}
+		$slider.slider("option", "max", file.length);
+		$slider.slider("value", file.position);
+	}
+	
+	$length.display(file.length);
+	$position.display(file.position);
+	if(file.length && $slider.slider("value") > 0){
+		$seek_to_start.enable();
+	}else{
+		$seek_to_start.disable();
+	}
+	if(file.length && $slider.slider("value")+0.01 < file.length){
+		$seek_to_end.enable();
+	}else{
+		$seek_to_end.disable();
+	}
+};
+update();
+
 
 $record.click(function(){
+	clearInterval(tid);
 	if(!recorder){ return; }
+	
 	recorder.record();
 	__log("Recording...");
+	
 	$record.disable();
 	$stop.enable();
+	
+	// I think it increases the length of the file to at least ~24 seconds
+	// more than the size of the file that has been recorded in
+	/*if(file.length){
+		//file.length += 1;
+	}else{
+		file.length = 23.77;
+	}*/
+	file.length = Math.max(file.length, file.position + 23.77);
+	// also, 23.77 is probably some even number in buffer bytes
+	
+	previous_time = new Date().getTime();
+	tid = setInterval(update, 50);
+	recording = true;
 });
 
 $stop.click(function(){
+	clearInterval(tid);
+	recording = false;
+	
 	if(!recorder){ return; }
+	
 	recorder.stop();
 	__log("Stopped recording.");
 	$stop.disable();
@@ -124,6 +179,15 @@ $stop.click(function(){
 	createDownloadLink();
 	
 	recorder.clear();
+});
+
+$seek_to_start.click(function(){
+	file.position = 0;
+	update();
+});
+$seek_to_end.click(function(){
+	file.position = file.length;
+	update();
 });
 
 function createDownloadLink(){
@@ -159,10 +223,20 @@ $(function(){
 	} catch (e) {
 		alert('No web audio support in this browser!');
 	}
+	
+	var gotStream = function(stream){
+		var input = audio_context.createMediaStreamSource(stream);
+		__log("Media stream created.");
 
-	navigator.getUserMedia({audio: true}, startUserMedia, function(err) {
+		recorder = new Recorder(input);
+		__log("Recorder initialised.");
+		
+		$record.enable();
+	};
+	var gotError = function(err) {
 		__log('No live audio input: ' + err);
-	});
+	};
+	navigator.getUserMedia({audio: true}, gotStream, gotError);
 });
 
 var wave_canvas = new Canvas(112, 35);
