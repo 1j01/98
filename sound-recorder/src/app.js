@@ -10,14 +10,37 @@ var $wave = $("<div class='inset wave'/>");
 var $display = $("<div class='display'/>").append($position, $wave, $length);
 
 var $slider = $("<div class='inset slider'/>");
-var $backward = $("<button/>");
-var $forward = $("<button/>");
-var $play = $("<button/>");
-var $stop = $("<button/>");
-var $record = $("<button/>");
-var $controls = $("<div class='controls'/>").append($backward, $forward, $play, $stop, $record);
+var $slider_container = $("<div class='slider-container'/>").append($slider);
 
-var $main = $("<div class='main'/>").appendTo($V).append($display, $slider, $controls);
+var $Button = function(title, x){
+	var $button = $("<button/>").attr("title", title);
+	
+	var n_buttons = 5;
+	var sheet_width = 125;
+	var sheet_height = 17;
+	var sprite_width = sheet_width / n_buttons;
+	var sprite_height = sheet_height;
+	
+	$("<span/>").appendTo($button).css({
+		width: sprite_width,
+		height: sprite_height,
+		backgroundImage: "url(img/buttons.png)",
+		backgroundPositionX: -sprite_width*x + "px",
+		backgroundPositionY: "0px",
+		margin: "auto"
+	});
+	
+	return $button;
+};
+
+var $seek_to_start = $Button("Seek To Start", 0);
+var $seek_to_end = $Button("Seek To End", 1);
+var $play = $Button("Play", 2);
+var $stop = $Button("Stop", 3);
+var $record = $Button("Record", 4);
+var $controls = $("<div class='controls'/>").append($seek_to_start, $seek_to_end, $play, $stop, $record);
+
+var $main = $("<div class='main'/>").appendTo($V).append($display, $slider_container, $controls);
 
 $position.display(0);
 $length.display(0);
