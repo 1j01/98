@@ -92,7 +92,9 @@ $length.display(0);
 $slider.slider({
 	step: 0.01,
 	slide: function(event, ui){
-		update(true);
+		//console.log(ui.value, $slider.slider("value"));
+		// these are different; the $slider.slider("value") is not updated
+		update(ui.value);
 	}
 });
 
@@ -109,10 +111,10 @@ var file = {
 	name: "Sound"
 };
 
-var update = function(is_update_from_slider){
+var update = function(position_from_slider){
 	document.title = file.name + " - Sound Recorder";
-	if(is_update_from_slider){
-		file.position = $slider.slider("value");
+	if(position_from_slider != null){
+		file.position = position_from_slider;
 	}else{
 		if(recording){
 			var delta_time = new Date().getTime() - previous_time;
@@ -125,12 +127,13 @@ var update = function(is_update_from_slider){
 	
 	$length.display(file.length);
 	$position.display(file.position);
-	if(file.length && $slider.slider("value") > 0){
+	
+	if(file.length && file.position > 0){
 		$seek_to_start.enable();
 	}else{
 		$seek_to_start.disable();
 	}
-	if(file.length && $slider.slider("value")+0.01 < file.length){
+	if(file.length && file.position+0.01 < file.length){ // +0.01 because the slider doesn't go all the way to max
 		$seek_to_end.enable();
 	}else{
 		$seek_to_end.disable();
