@@ -181,7 +181,7 @@ $stop.click(function(){
 	// create WAV download link using audio data blob
 	createDownloadLink();
 	
-	recorder.clear();
+	//recorder.clear();
 });
 
 $seek_to_start.click(function(){
@@ -251,10 +251,42 @@ $wave.append(wave_canvas);
 var $status_text = $();
 $status_text.default = function(){};
 
-var file_new = function(){};
-var file_open = function(){};
-var file_save = function(){};
-var file_save_as = function(){};
+var are_you_sure = function(fn){
+	fn(); // probably, right?
+};
+var file_new = function(){
+	are_you_sure(function(){
+		if(recorder){
+			recorder.stop();
+			recorder.clear();
+		}
+		recording = false;
+		file = {
+			position: 0,
+			length: 0,
+			name: "Sound",
+		};
+		update();
+	});
+};
+var file_open = function(){
+	are_you_sure(function(){
+		
+	});
+};
+var file_save = function(){
+	file.length > 0 && recorder && recorder.exportWAV(function(blob) {
+		//var url = URL.createObjectURL(blob);
+		var name = new Date().toISOString() + ".wav";
+		Recorder.forceDownload(blob, name);
+		/*console.log(url, name);
+		console.log($("<a/>", {
+			download: name,
+			href: url,
+		}).appendTo("body").click());*/
+	});
+};
+var file_save_as = file_save; // function(){};
 
 
 /* ------------------------------------- */
