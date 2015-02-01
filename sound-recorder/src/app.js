@@ -24,19 +24,22 @@ var $Button = function(title, n){
 	var sprite_width = sheet_width / n_buttons;
 	var sprite_height = sheet_height;
 	
+	var enabled_canvas = new Canvas(sprite_width, sprite_height);
 	var disabled_canvas = new Canvas(sprite_width, sprite_height);
 	
 	$(sprite_sheet).load(function(){
 		
+		enabled_canvas.ctx.drawImage(
+			// source
+			sprite_sheet, sprite_width*n, 0, sprite_width, sprite_height,
+			// dest
+			0, 0, sprite_width, sprite_height
+		);
+		
 		disabled_canvas.ctx.drawShadowOfImage = function(x, y, color){
 			var temp_canvas = new Canvas(sprite_width, sprite_height);
 			var tmx = temp_canvas.ctx;
-			tmx.drawImage(
-				// source
-				sprite_sheet, sprite_width*n, 0, sprite_width, sprite_height,
-				// dest
-				0, 0, sprite_width, sprite_height
-			);
+			tmx.drawImage(enabled_canvas, 0, 0);
 			tmx.globalCompositeOperation = "source-in";
 			tmx.fillStyle = color;
 			tmx.fillRect(0, 0, sprite_width, sprite_height);
@@ -46,8 +49,20 @@ var $Button = function(title, n){
 		disabled_canvas.ctx.drawShadowOfImage(0, 0, "#7F7F7F");
 		
 	});
-	$(disabled_canvas).appendTo($button).css({margin: "auto"});
-	$button.attr("disabled", true);
+	
+	$(enabled_canvas).add(disabled_canvas).css({margin: "auto"});
+	
+	$button.disable = function(){
+		$button.attr("disabled", true);
+		$button.empty().append(disabled_canvas);
+		return $button;
+	};
+	$button.enable = function(){
+		$button.attr("disabled", false);
+		$button.empty().append(enabled_canvas);
+		return $button;
+	};
+	$button.enable();
 	
 	return $button;
 };
@@ -71,6 +86,84 @@ $slider.slider({
 	}
 });
 //$slider.slider("max", 500);
+
+var $log = $("<pre class='outside-app-widget'/>").appendTo($body);
+var __log = function(message, data){
+	$log.append(
+		$("<div style='font-family:monospace'/>").text(message + " " + (data || ""))
+	);
+}
+
+var audio_context;
+var recorder;
+
+function startUserMedia(stream){
+	var input = audio_context.createMediaStreamSource(stream);
+	__log("Media stream created.");
+
+	recorder = new Recorder(input);
+	__log("Recorder initialised.");
+}
+
+$record.click(function(){
+	if(!recorder){ return; }
+	recorder.record();
+	__log("Recording...");
+	$record.disable();
+	$stop.enable();
+});
+
+$stop.click(function(){
+	if(!recorder){ return; }
+	recorder.stop();
+	__log("Stopped recording.");
+	$stop.disable();
+	$record.enable();
+	
+	// create WAV download link using audio data blob
+	createDownloadLink();
+	
+	recorder.clear();
+});
+
+function createDownloadLink(){
+	recorder && recorder.exportWAV(function(blob) {
+		var url = URL.createObjectURL(blob);
+		var name = new Date().toISOString() + ".wav";
+		$("body").append(
+			$("<div class='outside-app-widget'/>").append(
+				$("<audio controls/>").attr({
+					src: url,
+				}),
+				$("<br/>"),
+				$("<a/>", {
+					download: name,
+					text: name,
+					href: url,
+				})
+			)
+		);
+	});
+}
+
+$(function(){
+	try {
+		// webkit shim
+		window.AudioContext = window.AudioContext || window.webkitAudioContext;
+		navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+		window.URL = window.URL || window.webkitURL;
+
+		audio_context = new AudioContext;
+		__log('Audio context set up.');
+		__log('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));
+	} catch (e) {
+		alert('No web audio support in this browser!');
+	}
+
+	navigator.getUserMedia({audio: true}, startUserMedia, function(err) {
+		__log('No live audio input: ' + err);
+	});
+});
 
 var canvas = new Canvas(112, 35);
 canvas.ctx.fillStyle = "lime";
