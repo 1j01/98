@@ -12,7 +12,10 @@ var $display = $("<div class='display'/>").append($position, $wave, $length);
 var $slider = $("<div class='inset slider'/>");
 var $slider_container = $("<div class='slider-container'/>").append($slider);
 
-var $Button = function(title, x){
+var sprite_sheet = document.createElement("img");
+sprite_sheet.src = "img/buttons.png";
+
+var $Button = function(title, n){
 	var $button = $("<button/>").attr("title", title);
 	
 	var n_buttons = 5;
@@ -21,14 +24,30 @@ var $Button = function(title, x){
 	var sprite_width = sheet_width / n_buttons;
 	var sprite_height = sheet_height;
 	
-	$("<span/>").appendTo($button).css({
-		width: sprite_width,
-		height: sprite_height,
-		backgroundImage: "url(img/buttons.png)",
-		backgroundPositionX: -sprite_width*x + "px",
-		backgroundPositionY: "0px",
-		margin: "auto"
+	var disabled_canvas = new Canvas(sprite_width, sprite_height);
+	
+	$(sprite_sheet).load(function(){
+		
+		disabled_canvas.ctx.drawShadowOfImage = function(x, y, color){
+			var temp_canvas = new Canvas(sprite_width, sprite_height);
+			var tmx = temp_canvas.ctx;
+			tmx.drawImage(
+				// source
+				sprite_sheet, sprite_width*n, 0, sprite_width, sprite_height,
+				// dest
+				0, 0, sprite_width, sprite_height
+			);
+			tmx.globalCompositeOperation = "source-in";
+			tmx.fillStyle = color;
+			tmx.fillRect(0, 0, sprite_width, sprite_height);
+			disabled_canvas.ctx.drawImage(temp_canvas, x, y);
+		};
+		disabled_canvas.ctx.drawShadowOfImage(1, 1, "#FFFFFF");
+		disabled_canvas.ctx.drawShadowOfImage(0, 0, "#7F7F7F");
+		
 	});
+	$(disabled_canvas).appendTo($button).css({margin: "auto"});
+	$button.attr("disabled", true);
 	
 	return $button;
 };
