@@ -25,6 +25,8 @@
 			.main {
 				display: block !important;
 				padding: 5px;
+				text-align: center;
+				width: 252px;
 			}
 			.display {
 				height: 35px;
@@ -50,6 +52,7 @@
 				margin-left: 3px;
 			}
 			
+			/* From jQuery UI */
 			.ui-slider {
 				display: block;
 				position: relative;
@@ -59,8 +62,13 @@
 				position: absolute;
 				z-index: 2;
 			}
-			.ui-slider {
-				margin: 15px 10px;
+			/* (NOT from jQuery UI) */
+			/* @TODO: pixel-perfect slider */
+			.slider-container {
+				padding: 10px;
+			}
+			.slider {
+				margin: 5px 0;
 				width: 100%;
 				height: 1px;
 				background: black;
