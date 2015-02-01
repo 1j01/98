@@ -1,7 +1,7 @@
-var recLength = 0,
-  recBuffers = [],
-  sampleRate,
-  numChannels;
+var recLength = 0;
+var recBuffers = [];
+var sampleRate;
+var numChannels;
 
 this.onmessage = function(e){
   switch(e.data.command){
@@ -42,9 +42,9 @@ function exportWAV(type){
     buffers.push(mergeBuffers(recBuffers[channel], recLength));
   }
   if (numChannels === 2){
-      var interleaved = interleave(buffers[0], buffers[1]);
+    var interleaved = interleave(buffers[0], buffers[1]);
   } else {
-      var interleaved = buffers[0];
+    var interleaved = buffers[0];
   }
   var dataview = encodeWAV(interleaved);
   var audioBlob = new Blob([dataview], { type: type });
@@ -86,8 +86,8 @@ function interleave(inputL, inputR){
   var length = inputL.length + inputR.length;
   var result = new Float32Array(length);
 
-  var index = 0,
-    inputIndex = 0;
+  var index = 0;
+  var inputIndex = 0;
 
   while (index < length){
     result[index++] = inputL[inputIndex];

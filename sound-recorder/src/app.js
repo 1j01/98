@@ -104,11 +104,13 @@ var recorder;
 var previous_time;
 var tid = -1;
 var recording = false;
+var playing = false;
 
 var file = {
-	length: 0,
+	name: "Sound",
 	position: 0,
-	name: "Sound"
+	length: 0,
+	availLength: 0,
 };
 
 var update = function(position_from_slider){
@@ -116,16 +118,28 @@ var update = function(position_from_slider){
 	if(position_from_slider != null){
 		file.position = position_from_slider;
 	}else{
-		if(recording){
+		if(recording || playing){
 			var delta_time = new Date().getTime() - previous_time;
 			previous_time = new Date().getTime();
 			file.position += delta_time/1000;
+			if(file.position >= file.availLength){
+				$stop.click();
+				file.position = file.availLength;
+			}
 		}
-		$slider.slider("option", "max", file.length);
+		if(recording){
+			file.length = Math.max(file.length, file.position);
+			$play.disable();
+		}else if(file.length && !playing){
+			$play.enable();
+		}else{
+			$play.disable();
+		}
+		$slider.slider("option", "max", file.availLength);
 		$slider.slider("value", file.position);
 	}
 	
-	$length.display(file.length);
+	$length.display(file.availLength);
 	$position.display(file.position);
 	
 	if(file.length && file.position > 0){
@@ -152,15 +166,7 @@ $record.click(function(){
 	$record.disable();
 	$stop.enable();
 	
-	// I think it increases the length of the file to at least ~24 seconds
-	// more than the size of the file that has been recorded in
-	/*if(file.length){
-		//file.length += 1;
-	}else{
-		file.length = 23.77;
-	}*/
-	file.length = Math.max(file.length, file.position + 23.77);
-	// also, 23.77 is probably some even number in buffer bytes
+	file.availLength = Math.max(file.length, file.position + 23.77);
 	
 	previous_time = new Date().getTime();
 	tid = setInterval(update, 50);
@@ -170,6 +176,7 @@ $record.click(function(){
 $stop.click(function(){
 	clearInterval(tid);
 	recording = false;
+	playing = false;
 	
 	if(!recorder){ return; }
 	
@@ -177,6 +184,9 @@ $stop.click(function(){
 	__log("Stopped recording.");
 	$stop.disable();
 	$record.enable();
+	
+	file.availLength = file.length;
+	update();
 	
 	// create WAV download link using audio data blob
 	createDownloadLink();
@@ -190,6 +200,17 @@ $seek_to_start.click(function(){
 });
 $seek_to_end.click(function(){
 	file.position = file.length;
+	update();
+});
+
+$play.click(function(){
+	clearInterval(tid);
+	if(file.position >= file.length){
+		file.position = 0;
+	}
+	playing = true;
+	previous_time = new Date().getTime();
+	tid = setInterval(update, 50);
 	update();
 });
 
@@ -262,9 +283,10 @@ var file_new = function(){
 		}
 		recording = false;
 		file = {
+			name: "Sound",
 			position: 0,
 			length: 0,
-			name: "Sound",
+			availLength: 0,
 		};
 		update();
 	});
@@ -276,14 +298,8 @@ var file_open = function(){
 };
 var file_save = function(){
 	file.length > 0 && recorder && recorder.exportWAV(function(blob) {
-		//var url = URL.createObjectURL(blob);
 		var name = new Date().toISOString() + ".wav";
 		Recorder.forceDownload(blob, name);
-		/*console.log(url, name);
-		console.log($("<a/>", {
-			download: name,
-			href: url,
-		}).appendTo("body").click());*/
 	});
 };
 var file_save_as = file_save; // function(){};
