@@ -89,8 +89,10 @@ var __log = function(message, data){
 $position.display(0);
 $length.display(0);
 
+var SLIDER_DUMBNESS = 0.00001; // we don't really want a step
+
 $slider.slider({
-	step: 0.01,
+	step: 0.00001,
 	slide: function(event, ui){
 		//console.log(ui.value, $slider.slider("value"));
 		// these are different; the $slider.slider("value") is not updated
@@ -147,7 +149,7 @@ var update = function(position_from_slider){
 	}else{
 		$seek_to_start.disable();
 	}
-	if(file.length && file.position+0.01 < file.length){ // +0.01 because the slider doesn't go all the way to max
+	if(file.length && file.position + SLIDER_DUMBNESS < file.length){ // why doesn't the slider slide all the way to the max?
 		$seek_to_end.enable();
 	}else{
 		$seek_to_end.disable();
