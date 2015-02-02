@@ -252,7 +252,7 @@ $(function(){
 		var input = audio_context.createMediaStreamSource(stream);
 		__log("Media stream created.");
 
-		recorder = new Recorder(input);
+		recorder = new Recorder(input, {workerPath: "lib/recorderWorker.js"});
 		__log("Recorder initialised.");
 		
 		$record.enable();
