@@ -78,6 +78,7 @@ var stop = function(){
 		//recorder.clear();
 		__log("Stopped recording.");
 	}
+	//file.stop();
 	
 	recording = false;
 	playing = false;
@@ -103,6 +104,7 @@ var play = function(){
 	if(file.position >= file.length){
 		file.position = 0;
 	}
+	//file.play(file.position);
 	
 	$play.disable();
 	$stop.enable();
