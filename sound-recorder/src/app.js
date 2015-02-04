@@ -75,23 +75,23 @@ var record = function(){
 
 var stop = function(){
 	clearInterval(tid);
+	if(!recorder){ return; }
+	
+	if(recording){
+		create_download();
+		recorder.stop();
+		//recorder.clear();
+		__log("Stopped recording.");
+	}
+	
 	recording = false;
 	playing = false;
 	
-	if(!recorder){ return; }
-	
-	recorder.stop();
-	__log("Stopped recording.");
 	$stop.disable();
 	$record.enable();
 	
 	file.availLength = file.length;
 	update();
-	
-	// create WAV download link using audio data blob
-	createDownloadLink();
-	
-	//recorder.clear();
 };
 
 var seek_to_start = function(){
@@ -118,7 +118,7 @@ var play = function(){
 	update();
 };
 
-function createDownloadLink(){
+function create_download(){
 	recorder && recorder.exportWAV(function(blob) {
 		var url = URL.createObjectURL(blob);
 		var name = new Date().toISOString() + ".wav";
