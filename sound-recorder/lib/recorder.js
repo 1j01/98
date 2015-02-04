@@ -7,11 +7,11 @@
     var bufferLen = config.bufferLen || 4096;
     var numChannels = config.numChannels || 2;
     this.context = source.context;
-    var createScriptNode = (
+    var createScriptProcessor = (
       this.context.createScriptProcessor ||
       this.context.createJavaScriptNode
     );
-    this.node = createScriptNode.call(
+    this.node = createScriptProcessor.call(
       this.context,
       bufferLen,
       numChannels,

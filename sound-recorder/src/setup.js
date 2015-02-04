@@ -12,12 +12,12 @@ var __log = function(message, data){
 	$log.appendTo("body");
 }
 
-try {
-	// webkit shim
-	window.AudioContext = window.AudioContext || window.webkitAudioContext;
-	navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
-	window.URL = window.URL || window.webkitURL;
+// webkit shim
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
+window.URL = window.URL || window.webkitURL;
 
+try {
 	audio_context = new AudioContext;
 	__log('Audio context set up.');
 	__log('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));

@@ -1,5 +1,4 @@
 
-
 var $position = $("<div class='inset position'>Position:<br/><span/> sec.</div>");
 $position.display = function(t){ $position.find("span").text(t.toFixed(2)); };
 var $length = $("<div class='inset length'>Length:<br/><span/> sec.</div>");

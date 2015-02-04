@@ -7,12 +7,7 @@ var tid = -1;
 var recording = false;
 var playing = false;
 
-var file = {
-	name: "Sound",
-	position: 0,
-	length: 0,
-	availLength: 0,
-};
+var file = new AudioFile;
 
 var update = function(position_from_slider){
 	document.title = file.name + " - Sound Recorder";
@@ -148,12 +143,8 @@ var file_new = function(){
 			recorder.clear();
 		}
 		recording = false;
-		file = {
-			name: "Sound",
-			position: 0,
-			length: 0,
-			availLength: 0,
-		};
+		playing = false;
+		file = new AudioFile;
 		update();
 	});
 };
