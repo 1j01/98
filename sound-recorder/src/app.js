@@ -108,6 +108,10 @@ var play = function(){
 	if(file.position >= file.length){
 		file.position = 0;
 	}
+	
+	$play.disable();
+	$stop.enable();
+	
 	playing = true;
 	previous_time = new Date().getTime();
 	tid = setInterval(update, 50);
@@ -173,9 +177,12 @@ $(function(){
 	var gotStream = function(stream){
 		var input = audio_context.createMediaStreamSource(stream);
 		__log("Media stream created.");
-
+		
 		recorder = new Recorder(input, {workerPath: "lib/recorderWorker.js"});
 		__log("Recorder initialised.");
+		
+		var analyser = $wave_display.analyser;
+		input.connect(analyser);
 		
 		$record.enable();
 	};
