@@ -8,8 +8,11 @@ Try it at [98desktop.ml](http://98desktop.ml/) or [standalone](http://1j01.githu
 
 Show error messages visibly when in window where log isn't visible
 
-More effects!
+Echo effect!
 
 More menu items that work!
 
+Fix ghost playback
+
+Keyboard shortcuts
 

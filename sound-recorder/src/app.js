@@ -116,20 +116,11 @@ var seek_to_end = function(){
 };
 
 var effects_reverse = function(){
-	// Reverse the audio data
 	file.applyEffect(function(fileData, newData){
 		for(var i=0, len=newData.length; i<len; i++){
 			newData[i] = fileData[len-1-i];
 		}
-	});
-	
-	// Reverse the file position and update playback
-	file.position = file.length - file.position;
-	file.audio.stop();
-	if(playing){
-		file.audio.seek(file.position);
-		file.audio.play();
-	}
+	}, -1);
 };
 var effects_increase_volume = function(){
 	file.applyEffect(function(fileData, newData){
