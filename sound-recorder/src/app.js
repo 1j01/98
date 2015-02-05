@@ -116,17 +116,40 @@ var seek_to_end = function(){
 var are_you_sure = function(fn){
 	fn(); // probably, right?
 };
+var reset = function(){
+	recording = false;
+	playing = false;
+	file = new AudioFile;
+	update();
+};
 var file_new = function(){
-	are_you_sure(function(){
-		recording = false;
-		playing = false;
-		file = new AudioFile;
-		update();
-	});
+	are_you_sure(reset);
 };
 var file_open = function(){
-	are_you_sure(function(){
-		
+	$("<input type='file' accept='audio/*'>").click().change(function(e){
+		var file_to_open = this.files[0];
+		are_you_sure(function(){
+			reset();
+			file.name = file_to_open.name;
+			file.originalType = file_to_open.type;
+			
+			var fileReader = new FileReader;
+			fileReader.onload = function(){
+				var arrayBuffer = this.result;
+				audio_context.decodeAudioData(arrayBuffer, function(buffer){
+					
+					file.buffer = buffer;
+					file.audio.initNewBuffer(buffer);
+					file.length = file.availLength = buffer.length / buffer.sampleRate;
+					update();
+					
+				}, function(){
+					__log("Failed to read audio from file");
+				});
+			};
+			fileReader.readAsArrayBuffer(file_to_open);
+			
+		});
 	});
 };
 var file_save_as = function(){

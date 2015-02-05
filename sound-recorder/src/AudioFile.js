@@ -12,8 +12,8 @@ function AudioFile(){
 	
 	file.audio = new BuffAudio(audio_context);
 	file.updateBuffer = function(){
-		var frameCount = sampleRate * file.availLength;
-		file.buffer = audio_context.createBuffer(numChannels, frameCount||1, sampleRate);
+		var frameCount = (sampleRate * file.availLength) || 1; // (Buffers can't be of length 0)
+		file.buffer = audio_context.createBuffer(numChannels, frameCount, sampleRate);
 		file.audio.initNewBuffer(file.buffer);
 	};
 	file.updateBuffer();
