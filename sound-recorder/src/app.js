@@ -1,5 +1,4 @@
 
-var audio_context;
 var recorder;
 
 var previous_time;
@@ -13,14 +12,21 @@ var update = function(position_from_slider){
 	document.title = file.name + " - Sound Recorder";
 	if(position_from_slider != null){
 		file.position = position_from_slider;
+		file.audio.stop();
+		file.audio.seek(file.position);
+		if(playing){
+			file.audio.play();
+		}
 	}else{
+		if(playing){ //|| recording){
+			var delta_time = audio_context.currentTime - previous_time;
+			previous_time = audio_context.currentTime;
+			file.position += delta_time;///1000;
+		}
 		if(recording || playing){
-			var delta_time = new Date().getTime() - previous_time;
-			previous_time = new Date().getTime();
-			file.position += delta_time/1000;
 			if(file.position >= file.availLength){
-				$stop.click();
 				file.position = file.availLength;
+				stop();
 			}
 		}
 		if(recording){
@@ -62,8 +68,9 @@ var record = function(){
 	$stop.enable();
 	
 	file.availLength = Math.max(file.length, file.position + 23.77);
+	file.updateBuffer();
 	
-	previous_time = new Date().getTime();
+	previous_time = audio_context.currentTime;
 	tid = setInterval(update, 50);
 	recording = true;
 };
@@ -78,7 +85,8 @@ var stop = function(){
 		//recorder.clear();
 		__log("Stopped recording.");
 	}
-	//file.stop();
+	file.audio.pause();
+	//file.audio.initNewBuffer(file.buffer);
 	
 	recording = false;
 	playing = false;
@@ -92,10 +100,12 @@ var stop = function(){
 
 var seek_to_start = function(){
 	file.position = 0;
+	file.audio.seek(file.position);
 	update();
 };
 var seek_to_end = function(){
 	file.position = file.length;
+	file.audio.seek(file.position);
 	update();
 };
 
@@ -104,13 +114,14 @@ var play = function(){
 	if(file.position >= file.length){
 		file.position = 0;
 	}
-	//file.play(file.position);
+	file.audio.seek(file.position);
+	file.audio.play();
 	
 	$play.disable();
 	$stop.enable();
 	
 	playing = true;
-	previous_time = new Date().getTime();
+	previous_time = audio_context.currentTime;
 	tid = setInterval(update, 50);
 	update();
 };
@@ -173,9 +184,18 @@ $(function(){
 		
 		recorder = new Recorder(input, {workerPath: "lib/recorderWorker.js"});
 		__log("Recorder initialised.");
+		//recorder = {record:function(){},stop:function(){},clear:function(){},exportWAV:function(){}};
 		
-		var analyser = $wave_display.analyser;
-		input.connect(analyser);
+		input.connect($wave_display.analyser);
+		// input.connect(file.recorder);
+		
+		//input.connect(file.recorder);
+		//file.recorder.connect($wave_display.analyser); // lags
+		
+		var work_around_maybe = audio_context.createGain();
+		work_around_maybe.gain.value = 1;
+		input.connect(work_around_maybe);
+		work_around_maybe.connect(file.recorder);
 		
 		$record.enable();
 	};

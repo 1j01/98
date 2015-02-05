@@ -20,7 +20,15 @@ function $WaveDisplay(){
 		for(var x=0; x<wave_canvas.width; x++){
 			//var loudness = (Math.sin(x/15-t/33) + Math.sin(x/105+t/13) + Math.sin(-x/7+t/28) + Math.sin(x/3.3-t/73) + Math.sin(x/5.3+t/20))/5;
 			var loudness = data[~~(data.length * x/wave_canvas.width)] / 128.0 - 1;
+			
+			if(location.protocol === "file:"){
+				var h = ~~(loudness*20 * wave_canvas.height/2);
+				wave_canvas.ctx.fillStyle = "rgba(0, 255, 0, 0.3)";
+				wave_canvas.ctx.fillRect(x, 17-h, 1, h*2+1);
+			}
+			
 			var h = ~~(loudness * wave_canvas.height/2);
+			wave_canvas.ctx.fillStyle = "lime";
 			wave_canvas.ctx.fillRect(x, 17-h, 1, h*2+1);
 		}
 	});
