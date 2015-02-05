@@ -48,6 +48,8 @@ function AudioFile(){
 	};
 	
 	file.download = function(){
+		file.updateBuffer();
+		
 		var gotWAV = function(blob){
 			var a = document.createElement('a');
 			a.href = (window.URL || window.webkitURL).createObjectURL(blob);
