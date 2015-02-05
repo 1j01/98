@@ -13,7 +13,22 @@ function $WaveDisplay(){
 	//var t = 0;
 	$wave_display.on("update", function(){
 		
-		analyser.getByteTimeDomainData(data);
+		if(recording){
+			analyser.getByteTimeDomainData(data);
+		}else{
+			for(var i=0, len = data.length; i<len; i++){
+				data[i] = 128;
+			}
+			for(var channel = 0; channel < file.buffer.numberOfChannels; channel++){
+				var fileData = file.buffer.getChannelData(channel);
+				
+				for(var i=0, len = data.length; i<len; i++){
+					var index = (file.position*file.buffer.sampleRate + i)|0;
+					if(index >= fileData.length){ break; }
+					data[i] += fileData[index]*128 / file.buffer.numberOfChannels;
+				}
+			}
+		}
 		
 		wave_canvas.ctx.clearRect(0, 0, wave_canvas.width, wave_canvas.height);
 		//t += 10;
