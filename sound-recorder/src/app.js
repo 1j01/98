@@ -78,7 +78,7 @@ var stop = function(){
 	playing = false;
 	
 	$stop.disable();
-	$record.enable();
+	if(input){ $record.enable(); }
 	
 	file.availLength = file.length;
 	update();
@@ -111,6 +111,10 @@ var seek_to_end = function(){
 	file.position = file.length;
 	file.audio.seek(file.position);
 	update();
+};
+
+var reverse = function(){
+	file.reverse();
 };
 
 var are_you_sure = function(fn){
@@ -159,11 +163,12 @@ var file_save_as = function(){
 };
 var file_save = file_save_as;
 
+var input;
 
 $(function(){
 	
 	var gotStream = function(stream){
-		var input = audio_context.createMediaStreamSource(stream);
+		input = audio_context.createMediaStreamSource(stream);
 		__log("Media stream created.");
 		
 		input.connect($wave_display.analyser);

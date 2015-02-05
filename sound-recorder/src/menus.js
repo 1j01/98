@@ -163,7 +163,7 @@ var menus = {
 		},
 		{
 			item: "&Reverse",
-			action: function(){},
+			action: reverse,
 			description: "Reverses the sound.",
 		},
 	],

@@ -12,8 +12,19 @@ function AudioFile(){
 	
 	file.audio = new BuffAudio(audio_context);
 	file.updateBuffer = function(){
+		var old_buffer = file.buffer;
 		var frameCount = (sampleRate * file.availLength) || 1; // (Buffers can't be of length 0)
 		file.buffer = audio_context.createBuffer(numChannels, frameCount, sampleRate);
+		if(old_buffer){
+			console.log("Insert old", old_buffer, "into resized", file.buffer);
+			for(var channel = 0; channel < numChannels; channel++){
+				var oldData = old_buffer.getChannelData(Math.min(channel, old_buffer.numberOfChanels-1));
+				var fileData = file.buffer.getChannelData(channel);
+				for(var i=0, len = oldData.length; i<len; i++){
+					fileData[i] = oldData[i];
+				}
+			}
+		}
 		file.audio.initNewBuffer(file.buffer);
 	};
 	file.updateBuffer();
@@ -35,8 +46,7 @@ function AudioFile(){
 			var outputData = e.outputBuffer.getChannelData(channel);
 			var fileData = file.buffer.getChannelData(channel);
 			
-			var len = inputData.length;
-			for(var i=0; i<len; i++){
+			for(var i=0, len = inputData.length; i<len; i++){
 				outputData[i] = inputData[i];
 				if(channel === 0){
 					fileData[(file.position*sampleRate + i)|0] = inputData[i];
@@ -44,8 +54,51 @@ function AudioFile(){
 			}
 		}
 		
+		file.audio.initNewBuffer(file.buffer);
+		
 		file.position += len / sampleRate;
 	};
+	
+	file.applyEffect = function(fn){
+		var frameCount = (sampleRate * file.availLength) || 1; // (Buffers can't be of length 0)
+		var new_buffer = audio_context.createBuffer(numChannels, frameCount, sampleRate);
+		for(var channel = 0; channel < numChannels; channel++){
+			var fileData = file.buffer.getChannelData(channel);
+			var newData = new_buffer.getChannelData(channel);
+			fn(fileData, newData);
+		}
+		file.buffer = new_buffer;
+		file.audio.initNewBuffer(file.buffer);
+	};
+	
+	file.reverse = function(){
+		file.applyEffect(function(fileData, newData){
+			for(var i=0, len=newData.length; i<len; i++){
+				newData[i] = fileData[len-1-i];
+			}
+		});
+		
+		/*
+		for(var channel = 0; channel < numChannels; channel++){
+			var fileData = file.buffer.getChannelData(channel);
+			
+			for(var i=0, len = fileData.length; i<len; i++){
+				var tmp = fileData[i];
+				fileData[i] = fileData[len-1-i];
+				fileData[len-1-i] = tmp;
+			}
+		}
+		*/
+		
+		file.position = file.length - file.position;
+		
+		file.audio.stop();
+		if(playing){
+			file.audio.seek(file.position);
+			file.audio.play();
+		}
+	};
+	
 	
 	file.download = function(){
 		file.updateBuffer();
