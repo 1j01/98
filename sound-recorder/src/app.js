@@ -113,8 +113,35 @@ var seek_to_end = function(){
 	update();
 };
 
-var reverse = function(){
-	file.reverse();
+var effects_reverse = function(){
+	// Reverse the audio data
+	file.applyEffect(function(fileData, newData){
+		for(var i=0, len=newData.length; i<len; i++){
+			newData[i] = fileData[len-1-i];
+		}
+	});
+	
+	// Reverse the file position and update playback
+	file.position = file.length - file.position;
+	file.audio.stop();
+	if(playing){
+		file.audio.seek(file.position);
+		file.audio.play();
+	}
+};
+var effects_increase_volume = function(){
+	file.applyEffect(function(fileData, newData){
+		for(var i=0, len=newData.length; i<len; i++){
+			newData[i] = fileData[i] * 1.25;
+		}
+	});
+};
+var effects_decrease_volume = function(){
+	file.applyEffect(function(fileData, newData){
+		for(var i=0, len=newData.length; i<len; i++){
+			newData[i] = fileData[i] / 1.25;
+		}
+	});
 };
 
 var are_you_sure = function(fn){
@@ -176,8 +203,8 @@ $(function(){
 		
 		$record.enable();
 	};
-	var gotError = function(err) {
-		__log('No live audio input: ' + err);
+	var gotError = function(err){
+		__log("No live audio input: " + err);
 	};
 	navigator.getUserMedia({audio: true}, gotStream, gotError);
 	

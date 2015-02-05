@@ -136,12 +136,12 @@ var menus = {
 	"Effect&s": [
 		{
 			item: "&Increase Volume (by 25%)",
-			action: function(){},
+			action: effects_increase_volume,
 			description: "Increases the volume of the sound by 25%.",
 		},
 		{
 			item: "&Decrease Volume",
-			action: function(){},
+			action: effects_decrease_volume,
 			description: "Decreases the volume of the sound (by 25%?)",
 		},
 		____________________________,
@@ -163,7 +163,7 @@ var menus = {
 		},
 		{
 			item: "&Reverse",
-			action: reverse,
+			action: effects_reverse,
 			description: "Reverses the sound.",
 		},
 	],

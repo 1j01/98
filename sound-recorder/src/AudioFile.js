@@ -61,44 +61,16 @@ function AudioFile(){
 	
 	file.applyEffect = function(fn){
 		var frameCount = (sampleRate * file.availLength) || 1; // (Buffers can't be of length 0)
+		var old_buffer = file.buffer;
 		var new_buffer = audio_context.createBuffer(numChannels, frameCount, sampleRate);
 		for(var channel = 0; channel < numChannels; channel++){
-			var fileData = file.buffer.getChannelData(channel);
+			var oldData = old_buffer.getChannelData(Math.min(channel, old_buffer.numberOfChanels-1));
 			var newData = new_buffer.getChannelData(channel);
-			fn(fileData, newData);
+			fn(oldData, newData);
 		}
 		file.buffer = new_buffer;
 		file.audio.initNewBuffer(file.buffer);
 	};
-	
-	file.reverse = function(){
-		file.applyEffect(function(fileData, newData){
-			for(var i=0, len=newData.length; i<len; i++){
-				newData[i] = fileData[len-1-i];
-			}
-		});
-		
-		/*
-		for(var channel = 0; channel < numChannels; channel++){
-			var fileData = file.buffer.getChannelData(channel);
-			
-			for(var i=0, len = fileData.length; i<len; i++){
-				var tmp = fileData[i];
-				fileData[i] = fileData[len-1-i];
-				fileData[len-1-i] = tmp;
-			}
-		}
-		*/
-		
-		file.position = file.length - file.position;
-		
-		file.audio.stop();
-		if(playing){
-			file.audio.seek(file.position);
-			file.audio.play();
-		}
-	};
-	
 	
 	file.download = function(){
 		file.updateBuffer();
