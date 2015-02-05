@@ -1,6 +1,4 @@
 
-var recorder;
-
 var previous_time;
 var tid = -1;
 var recording = false;
@@ -59,10 +57,6 @@ var update = function(position_from_slider){
 
 var record = function(){
 	clearInterval(tid);
-	if(!recorder){ return; }
-	
-	recorder.record();
-	__log("Recording...");
 	
 	$record.disable();
 	$stop.enable();
@@ -77,13 +71,7 @@ var record = function(){
 
 var stop = function(){
 	clearInterval(tid);
-	if(!recorder){ return; }
 	
-	if(recording){
-		create_download();
-		recorder.stop();
-		__log("Stopped recording.");
-	}
 	file.audio.pause();
 	
 	recording = false;
@@ -125,35 +113,11 @@ var seek_to_end = function(){
 	update();
 };
 
-function create_download(){
-	recorder && recorder.exportWAV(function(blob) {
-		var url = URL.createObjectURL(blob);
-		var name = new Date().toISOString() + ".wav";
-		$("body").append(
-			$("<div class='outside-app-widget'/>").append(
-				$("<audio controls/>").attr({
-					src: url,
-				}),
-				$("<br/>"),
-				$("<a/>", {
-					download: name,
-					text: name,
-					href: url,
-				})
-			)
-		);
-	});
-}
-
 var are_you_sure = function(fn){
 	fn(); // probably, right?
 };
 var file_new = function(){
 	are_you_sure(function(){
-		if(recorder){
-			recorder.stop();
-			recorder.clear();
-		}
 		recording = false;
 		playing = false;
 		file = new AudioFile;
@@ -166,10 +130,9 @@ var file_open = function(){
 	});
 };
 var file_save_as = function(){
-	file.length > 0 && recorder && recorder.exportWAV(function(blob) {
-		var name = new Date().toISOString() + ".wav";
-		Recorder.forceDownload(blob, name);
-	});
+	if(file.length > 0){
+		file.download();
+	}
 };
 var file_save = file_save_as;
 
@@ -179,9 +142,6 @@ $(function(){
 	var gotStream = function(stream){
 		var input = audio_context.createMediaStreamSource(stream);
 		__log("Media stream created.");
-		
-		recorder = new Recorder(input, {workerPath: "lib/recorderWorker.js"});
-		__log("Recorder initialised.");
 		
 		input.connect($wave_display.analyser);
 		input.connect(file.recorder);
