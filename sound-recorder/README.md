@@ -8,9 +8,9 @@ Try it at [98desktop.ml](http://98desktop.ml/) or [standalone](http://1j01.githu
 
 Show error messages visibly when in window where log isn't visible
 
-Echo effect!
-
 More menu items that work!
+
+Bettter echo effect?
 
 Fix ghost playback
 

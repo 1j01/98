@@ -158,7 +158,7 @@ var menus = {
 		____________________________,
 		{
 			item: "&Add echo",
-			action: function(){},
+			action: effects_echo,
 			description: "Adds an echo to the sound.",
 		},
 		{
