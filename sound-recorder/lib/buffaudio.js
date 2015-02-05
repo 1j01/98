@@ -37,7 +37,7 @@
 		this._startTimestamp = 0; // timestamp of last playback start, milliseconds
 		this._isPlaying = false;
 		this._bufferDuration = 0; // seconds
-
+		
 		// Whenever we get a new AudioBuffer, we create a new AudioBufferSourceNode and reset
 		// the playback time. Make sure any existing audio is stopped beforehand.
 		this.initNewBuffer = function(buffer) {
@@ -45,7 +45,7 @@
 			this._buffer = buffer;
 			this._playbackTime = 0;
 		}
-
+		
 		// Create a new AudioBufferSourceNode
 		this.initSource = function() {
 			this._source = this._audioContext.createBufferSource();
@@ -55,7 +55,7 @@
 			var endOfPlayback = this.endOfPlayback.bind(this);
 			this._source.onended = endOfPlayback;
 		}
-
+		
 		// Play the currently loaded buffer
 		this.play = function() {
 			console.log("Play");
@@ -66,7 +66,7 @@
 			this._startTimestamp = Date.now();
 			this._isPlaying = true;
 		}
-
+		
 		// Seek to a specific playbackTime (seconds) in the audio buffer. Do not change
 		// playback state.
 		this.seek = function(playbackTime) {
@@ -75,7 +75,7 @@
 				console.log("[ERROR] Seek time is greater than duration of audio buffer.");
 				return;
 			}
-
+			
 			if (this._isPlaying) {
 				this.stop(); // Stop any existing playback if there is any
 				this._playbackTime = playbackTime;
@@ -84,12 +84,12 @@
 				this._playbackTime = playbackTime;
 			}
 		}
-
+		
 		// Pause playback, keep track of where playback stopped
 		this.pause = function() {
 			this.stop(true);
 		}
-
+		
 		// Stops or pauses playback and sets playbackTime accordingly
 		this.stop = function(pause) {
 			console.log("Stop");
@@ -99,22 +99,22 @@
 			// If paused, calculate time where we stopped. Otherwise go back to beginning of playback (0).
 			this._playbackTime = pause ? (Date.now() - this._startTimestamp)/1000 + this._playbackTime : 0;
 		}
-
+		
 		// Callback for any time playback stops/pauses
 		this.endOfPlayback = function(endEvent) {
 			console.log("end of playback");
-
+			
 			// If playback stopped because end of buffer was reached
 			if (this._isPlaying) this._playbackTime = 0;
 			this._isPlaying = false;
 		}
-
-		this.init = (function() {
+		
+		this.init = function() {
 			this.initNewBuffer(this._buffer);
-		});
-
+		};
+		
 	};
-
+	
 	// Set BuffAudio on the global window object
 	window.BuffAudio = BuffAudio;
 

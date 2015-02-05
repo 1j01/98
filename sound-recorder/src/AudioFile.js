@@ -29,28 +29,22 @@ function AudioFile(){
 	);
 	file.recorder.onaudioprocess = function(e){
 		if (!recording) return;
-		//var buffer = [];
+		
 		for(var channel = 0; channel < numChannels; channel++){
-			//buffer.push(e.inputBuffer.getChannelData(channel));
 			var inputData = e.inputBuffer.getChannelData(channel);
 			var outputData = e.outputBuffer.getChannelData(channel);
 			var fileData = file.buffer.getChannelData(channel);
 			
 			var len = inputData.length;
-			//console.log(file.position*sampleRate, file.buffer.length)
 			for(var i=0; i<len; i++){
-				//outputData[i] = ((Math.random() * 2) - 1) * 0.2;
 				outputData[i] = inputData[i];
 				if(channel === 0){
-					fileData[(file.position*sampleRate + i)|0] = inputData[i];//((inputData[i]+1)/2);
+					fileData[(file.position*sampleRate + i)|0] = inputData[i];
 				}
 			}
-			//file.buffer.copyToChannel(inputData, channel);
 		}
+		
 		file.position += len / sampleRate;
-		/*for(var i=0;i<file.buffer.length;i++){
-			file.buffer[i] = Math.random()*255;
-		}*/
 	};
 	
 	// We have to connect the script processing node to the output

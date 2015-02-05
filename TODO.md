@@ -3,7 +3,7 @@
 
 * Start Menu
 
-* Integrate Minesweeper
+* Integrate Minesweeper better
 
 * Integrate Pipes screensaver
 

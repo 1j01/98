@@ -82,11 +82,9 @@ var stop = function(){
 	if(recording){
 		create_download();
 		recorder.stop();
-		//recorder.clear();
 		__log("Stopped recording.");
 	}
 	file.audio.pause();
-	//file.audio.initNewBuffer(file.buffer);
 	
 	recording = false;
 	playing = false;
@@ -95,17 +93,6 @@ var stop = function(){
 	$record.enable();
 	
 	file.availLength = file.length;
-	update();
-};
-
-var seek_to_start = function(){
-	file.position = 0;
-	file.audio.seek(file.position);
-	update();
-};
-var seek_to_end = function(){
-	file.position = file.length;
-	file.audio.seek(file.position);
 	update();
 };
 
@@ -123,6 +110,18 @@ var play = function(){
 	playing = true;
 	previous_time = audio_context.currentTime;
 	tid = setInterval(update, 50);
+	update();
+};
+
+var seek_to_start = function(){
+	file.position = 0;
+	file.audio.seek(file.position);
+	update();
+};
+
+var seek_to_end = function(){
+	file.position = file.length;
+	file.audio.seek(file.position);
 	update();
 };
 
@@ -166,14 +165,13 @@ var file_open = function(){
 		
 	});
 };
-var file_save = function(){
+var file_save_as = function(){
 	file.length > 0 && recorder && recorder.exportWAV(function(blob) {
 		var name = new Date().toISOString() + ".wav";
 		Recorder.forceDownload(blob, name);
 	});
 };
-var file_save_as = file_save; // function(){};
-
+var file_save = file_save_as;
 
 
 $(function(){
@@ -184,18 +182,9 @@ $(function(){
 		
 		recorder = new Recorder(input, {workerPath: "lib/recorderWorker.js"});
 		__log("Recorder initialised.");
-		//recorder = {record:function(){},stop:function(){},clear:function(){},exportWAV:function(){}};
 		
 		input.connect($wave_display.analyser);
-		// input.connect(file.recorder);
-		
-		//input.connect(file.recorder);
-		//file.recorder.connect($wave_display.analyser); // lags
-		
-		var work_around_maybe = audio_context.createGain();
-		work_around_maybe.gain.value = 1;
-		input.connect(work_around_maybe);
-		work_around_maybe.connect(file.recorder);
+		input.connect(file.recorder);
 		
 		$record.enable();
 	};
@@ -203,25 +192,7 @@ $(function(){
 		__log('No live audio input: ' + err);
 	};
 	navigator.getUserMedia({audio: true}, gotStream, gotError);
+	
 	update();
+	
 });
-
-/* ------------------------------------- */
-
-$("body").on("mousedown contextmenu", function(e){
-	if(
-		e.target instanceof HTMLSelectElement ||
-		e.target instanceof HTMLTextAreaElement ||
-		(e.target instanceof HTMLLabelElement && e.type !== "contextmenu") ||
-		(e.target instanceof HTMLInputElement && e.target.type !== "color")
-	){
-		return true;
-	}
-	e.preventDefault();
-});
-
-// We might not get a mouseup event if you Alt+Tab or whatever
-$G.on("blur", function(e){
-	$G.triggerHandler("mouseup");
-});
-

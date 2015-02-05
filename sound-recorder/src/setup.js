@@ -17,11 +17,14 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
 window.URL = window.URL || window.webkitURL;
 
-try {
-	var audio_context = new AudioContext;
-	__log('Audio context set up.');
-	__log('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));
-} catch (e) {
-	alert('No web audio support in this browser!');
-	console.error(e);
+if(window.AudioContext){
+	try {
+		var audio_context = new AudioContext;
+		__log('Audio context set up.');
+		__log('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));
+	} catch (e) {
+		__log(e);
+	}
+}else{
+	__log('No web audio support in this browser!');
 }
