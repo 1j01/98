@@ -104,12 +104,14 @@ var play = function(){
 var seek_to_start = function(){
 	file.position = 0;
 	file.audio.seek(file.position);
+	if(playing){ file.audio.play(); }
 	update();
 };
 
 var seek_to_end = function(){
 	file.position = file.length;
 	file.audio.seek(file.position);
+	if(playing){ file.audio.play(); }
 	update();
 };
 
@@ -142,6 +144,20 @@ var effects_decrease_volume = function(){
 			newData[i] = fileData[i] / 1.25;
 		}
 	});
+};
+var effects_increase_speed = function(){
+	file.applyEffect(function(fileData, newData){
+		for(var i=0, len=newData.length; i<len; i++){
+			newData[i] = fileData[i*2];
+		}
+	}, 1/2);
+};
+var effects_decrease_speed = function(){
+	file.applyEffect(function(fileData, newData){
+		for(var i=0, len=newData.length; i<len; i++){
+			newData[i] = fileData[~~(i/2)];
+		}
+	}, 2);
 };
 
 var are_you_sure = function(fn){

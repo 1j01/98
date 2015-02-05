@@ -147,12 +147,12 @@ var menus = {
 		____________________________,
 		{
 			item: "I&ncrease Speed (by 100%)",
-			action: function(){},
+			action: effects_increase_speed,
 			description: "Makes the sound all squeaky and fast.",
 		},
 		{
 			item: "D&ecrease Speed",
-			action: function(){},
+			action: effects_decrease_speed,
 			description: "Makes your voice sound really deep and slow.",
 		},
 		____________________________,
