@@ -104,20 +104,22 @@ var play = function(){
 	update();
 };
 
+var seek_to_start = function(){
+	seek(0);
+};
+
+var seek_to_end = function(){
+	seek(file.length);
+};
+
+
+
 var seek = function(t){
 	file.position = t;
 	file.audio.seek(file.position);
 	if(playing){ file.audio.play(); }
 	update();
 };
-var seek_to_start = function(){
-	seek(0);
-};
-var seek_to_end = function(){
-	seek(file.length);
-};
-
-
 var are_you_sure = function(fn){
 	fn(); // probably, right?
 	// @TODO: dialouge box
@@ -127,9 +129,6 @@ var reset = function(){
 	playing = false;
 	file = new AudioFile;
 	update();
-};
-var file_new = function(){
-	are_you_sure(reset);
 };
 var read_audio_data = function(file, callback){
 	var fileReader = new FileReader;
@@ -152,6 +151,12 @@ var open_file = function(original){
 		});
 	});
 };
+
+
+
+var file_new = function(){
+	are_you_sure(reset);
+};
 var file_open = function(){
 	$("<input type='file' accept='audio/*'>").click().change(function(e){
 		open_file(this.files[0]);
@@ -170,6 +175,8 @@ var file_save_as = function(){
 	}
 };
 var file_save = file_save_as;
+
+
 
 var input;
 
