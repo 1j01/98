@@ -6,15 +6,36 @@ Try it at [98desktop.ml](http://98desktop.ml/) or [standalone](http://1j01.githu
 
 ### TODO
 
-Show error messages visibly when in window where log isn't visible
+* Delete Before/After Current Position
 
-More menu items that work!
+* Insert File &
+  Mix with File
 
-Better echo effect?
-Interpolation for stretching effects?
+* Clipboard stuff
 
-Fix ghost playback
+* Keyboard shortcuts
+  (or at least one, Space)
 
-Keyboard shortcuts
-(or at least one, Space)
+* Fix ghost playback
+
+* Fix recording over a file
+  (multiple times?)
+
+* Show error messages visibly when in window where log isn't visible
+
+* Help
+
+* Audio Properties?
+  Ha, who cares about that...
+  Maybe have a dialogue that says
+    ---------------------------
+    Sound - Sound Recorder: SNDREC32.EXE - Ordinal Not Found
+    ---------------------------
+    The ordinal 379 could not be located in the dynamic link library C:\Windows\SYSTEM32\MMSYS.CPL. 
+    ---------------------------
+    OK   
+    ---------------------------
+
+* Better echo effect?
+  Interpolation for stretching effects?
 
