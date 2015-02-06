@@ -29,8 +29,8 @@ var menus = {
 		},
 		{
 			item: "&Revert...",
-			enabled: function(){},
-			action: function(){},
+			enabled: can_revert_file,
+			action: file_revert,
 			description: "Reverts changes to the file.",
 		},
 		{

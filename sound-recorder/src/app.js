@@ -21,11 +21,14 @@ var update = function(position_from_slider){
 			previous_time = audio_context.currentTime;
 			file.position += delta_time;
 		}
+		// (not sure the (file.position >= file.availLength) needs to be within if(recording || playing){})
 		if(recording || playing){
 			if(file.position >= file.availLength){
 				file.position = file.availLength;
 				stop();
 			}
+		}else{
+			$stop.disable();
 		}
 		if(recording){
 			file.length = Math.max(file.length, file.position);
@@ -128,32 +131,38 @@ var reset = function(){
 var file_new = function(){
 	are_you_sure(reset);
 };
-var file_open = function(){
-	$("<input type='file' accept='audio/*'>").click().change(function(e){
-		var file_to_open = this.files[0];
+var read_audio_data = function(file, callback){
+	var fileReader = new FileReader;
+	fileReader.onload = function(){
+		var arrayBuffer = this.result;
+		audio_context.decodeAudioData(arrayBuffer, callback, function(){
+			__log("Failed to read audio from file");
+		});
+	};
+	fileReader.readAsArrayBuffer(file);
+};
+var open_file = function(original){
+	read_audio_data(original, function(buffer){
 		are_you_sure(function(){
 			reset();
-			file.name = file_to_open.name;
-			file.originalType = file_to_open.type;
-			
-			var fileReader = new FileReader;
-			fileReader.onload = function(){
-				var arrayBuffer = this.result;
-				audio_context.decodeAudioData(arrayBuffer, function(buffer){
-					
-					file.buffer = buffer;
-					file.audio.initNewBuffer(buffer);
-					file.length = file.availLength = buffer.length / buffer.sampleRate;
-					update();
-					
-				}, function(){
-					__log("Failed to read audio from file");
-				});
-			};
-			fileReader.readAsArrayBuffer(file_to_open);
-			
+			file.original = original;
+			file.name = original.name;
+			file.setBuffer(buffer);
+			update();
 		});
 	});
+};
+var file_open = function(){
+	$("<input type='file' accept='audio/*'>").click().change(function(e){
+		open_file(this.files[0]);
+	});
+};
+var can_revert_file = function(){
+	return !!file.original;
+};
+var file_revert = function(){
+	if(!file.original){ throw new Error("No original file"); }
+	open_file(file.original);
 };
 var file_save_as = function(){
 	if(file.length > 0){

@@ -87,6 +87,12 @@ function AudioFile(){
 		}
 	};
 	
+	file.setBuffer = function(buffer){
+		file.buffer = buffer;
+		file.audio.initNewBuffer(buffer);
+		file.length = file.availLength = buffer.length / buffer.sampleRate;
+	};
+	
 	file.download = function(){
 		file.updateBuffer();
 		

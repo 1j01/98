@@ -16,4 +16,5 @@ Interpolation for stretching effects?
 Fix ghost playback
 
 Keyboard shortcuts
+(or at least one, Space)
 
