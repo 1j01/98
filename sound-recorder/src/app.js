@@ -16,10 +16,10 @@ var update = function(position_from_slider){
 			file.audio.play();
 		}
 	}else{
-		if(playing){ //|| recording){
+		if(playing){
 			var delta_time = audio_context.currentTime - previous_time;
 			previous_time = audio_context.currentTime;
-			file.position += delta_time;///1000;
+			file.position += delta_time;
 		}
 		if(recording || playing){
 			if(file.position >= file.availLength){
@@ -29,8 +29,8 @@ var update = function(position_from_slider){
 		}
 		if(recording){
 			file.length = Math.max(file.length, file.position);
-			$play.disable();
-		}else if(file.length && !playing){
+		}
+		if(file.length && !playing && !recording){
 			$play.enable();
 		}else{
 			$play.disable();
@@ -114,55 +114,10 @@ var seek_to_end = function(){
 	seek(file.length);
 };
 
-var effects_reverse = function(){
-	file.applyEffect(function(oldData, newData){
-		for(var i=0, len=newData.length; i<len; i++){
-			newData[i] = oldData[len-1-i];
-		}
-	}, -1);
-};
-var effects_increase_volume = function(){
-	file.applyEffect(function(oldData, newData){
-		for(var i=0, len=newData.length; i<len; i++){
-			newData[i] = oldData[i] * 1.25;
-		}
-	});
-};
-var effects_decrease_volume = function(){
-	file.applyEffect(function(oldData, newData){
-		for(var i=0, len=newData.length; i<len; i++){
-			newData[i] = oldData[i] / 1.25;
-		}
-	});
-};
-var effects_increase_speed = function(){
-	file.applyEffect(function(oldData, newData){
-		for(var i=0, len=newData.length; i<len; i++){
-			newData[i] = oldData[i*2];
-		}
-	}, 1/2);
-};
-var effects_decrease_speed = function(){
-	file.applyEffect(function(oldData, newData){
-		for(var i=0, len=newData.length; i<len; i++){
-			newData[i] = oldData[~~(i/2)];
-		}
-	}, 2);
-};
-var effects_echo = function(){
-	var offset = file.buffer.sampleRate * 0.1;
-	file.applyEffect(function(oldData, newData){
-		for(var i=0, len=newData.length; i<len; i++){
-			newData[i] = oldData[i];
-			if(i + offset < len){
-				newData[i] += oldData[i + offset]/2;
-			}
-		}
-	});
-};
 
 var are_you_sure = function(fn){
 	fn(); // probably, right?
+	// @TODO: dialouge box
 };
 var reset = function(){
 	recording = false;
