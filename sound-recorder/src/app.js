@@ -10,7 +10,7 @@ var update = function(position_from_slider){
 	document.title = file.name + " - Sound Recorder";
 	if(position_from_slider != null){
 		file.position = position_from_slider;
-		file.audio.stop();
+		
 		file.audio.seek(file.position);
 		if(playing){
 			file.audio.play();
@@ -41,7 +41,7 @@ var update = function(position_from_slider){
 	
 	$length.display(file.availLength);
 	$position.display(file.position);
-	$wave_display.triggerHandler("update");
+	$wave_display.display();
 	
 	if(file.length && file.position > 0){
 		$seek_to_start.enable();
@@ -101,18 +101,17 @@ var play = function(){
 	update();
 };
 
-var seek_to_start = function(){
-	file.position = 0;
+var seek = function(t){
+	file.position = t;
 	file.audio.seek(file.position);
 	if(playing){ file.audio.play(); }
 	update();
 };
-
+var seek_to_start = function(){
+	seek(0);
+};
 var seek_to_end = function(){
-	file.position = file.length;
-	file.audio.seek(file.position);
-	if(playing){ file.audio.play(); }
-	update();
+	seek(file.length);
 };
 
 var effects_reverse = function(){

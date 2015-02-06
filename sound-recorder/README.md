@@ -10,7 +10,8 @@ Show error messages visibly when in window where log isn't visible
 
 More menu items that work!
 
-Bettter echo effect?
+Better echo effect?
+Interpolation for stretching effects?
 
 Fix ghost playback
 

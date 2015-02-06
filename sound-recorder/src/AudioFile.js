@@ -60,18 +60,19 @@ function AudioFile(){
 	};
 	
 	file.applyEffect = function(fn, timeScale){
+		var old_buffer = file.buffer;
 		var pos = file.position / file.length;
 		
-		timeScale = timeScale || 1; // (only a couple effects use this)
-		file.length = file.availLength = file.availLength * Math.abs(timeScale);
+		file.length = file.availLength = file.availLength * Math.abs(timeScale || 1);
 		var frameCount = (sampleRate * file.availLength) || 1; // (Buffers can't be of length 0)
-		var old_buffer = file.buffer;
 		var new_buffer = audio_context.createBuffer(numChannels, frameCount, sampleRate);
+		
 		for(var channel = 0; channel < numChannels; channel++){
 			var oldData = old_buffer.getChannelData(Math.min(channel, old_buffer.numberOfChanels-1));
 			var newData = new_buffer.getChannelData(channel);
 			fn(oldData, newData);
 		}
+		
 		file.buffer = new_buffer;
 		file.audio.initNewBuffer(file.buffer);
 		
@@ -80,9 +81,8 @@ function AudioFile(){
 		if(timeScale < 0){
 			file.position = file.length - file.position;
 		}
-		file.audio.stop();
+		file.audio.seek(file.position);
 		if(playing){
-			file.audio.seek(file.position);
 			file.audio.play();
 		}
 	};
