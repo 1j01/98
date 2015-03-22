@@ -11,8 +11,7 @@ Try it at [98desktop.ml](http://98desktop.ml/) or [standalone](http://1j01.githu
 
 * Clipboard stuff
 
-* Keyboard shortcuts
-  (or at least one, Space)
+* Improve keyboard support
 
 * Fix ghost playback
 

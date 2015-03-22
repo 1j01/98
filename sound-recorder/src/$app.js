@@ -44,8 +44,42 @@ $("body").on("mousedown contextmenu", function(e){
 	e.preventDefault();
 });
 
-// We might not get a mouseup event if you Alt+Tab or whatever
-$G.on("blur", function(e){
-	$G.triggerHandler("mouseup");
+$("body").on("keydown", function(e){
+	
+	if(e.altKey){
+		//find key codes
+		window.console && console.log(e.keyCode);
+	}
+	if(e.keyCode === 32){ //Space
+		if(playing || recording){
+			stop();
+		}else{
+			play();
+		}
+	}else if(e.ctrlKey){
+		var key = String.fromCharCode(e.keyCode).toUpperCase();
+		switch(key){
+			// case "Z":
+			// 	e.shiftKey ? redo() : undo();
+			// break;
+			// case "Y":
+			// 	redo();
+			// break;
+			case "O":
+				file_open();
+			break;
+			case "N":
+				file_new();
+			break;
+			case "S":
+				e.shiftKey ? file_save_as() : file_save();
+			break;
+			default:
+				// This shortcut is not handled, do not try to prevent the default.
+				return true;
+		}
+		e.preventDefault();
+		return false;
+	}
 });
 
