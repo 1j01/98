@@ -6,8 +6,6 @@ Try it at [98desktop.ml](http://98desktop.ml/) or [standalone](http://1j01.githu
 
 ### TODO
 
-* Delete Before/After Current Position
-
 * Insert File &
   Mix with File
 

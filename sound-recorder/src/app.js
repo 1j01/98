@@ -184,10 +184,14 @@ var can_delete_after_current_position = function(){
 	return file.position < file.length;
 };
 var delete_before_current_position = function(){
-	alert("Not yet implemented!");
+	var cut_position = file.position;
+	file.crop(cut_position, file.length);
+	seek(0);
 };
 var delete_after_current_position = function(){
-	alert("Not yet implemented!");
+	var cut_position = file.position;
+	file.crop(0, cut_position);
+	seek(cut_position);
 };
 
 

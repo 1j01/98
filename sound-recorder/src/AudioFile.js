@@ -1,4 +1,5 @@
 
+
 function AudioFile(){
 	var file = this;
 	file.name = "Sound";
@@ -11,6 +12,17 @@ function AudioFile(){
 	var bufferLength = 4096;
 	var numChannels = 2;
 	var sampleRate = audio_context.sampleRate;
+	
+	var copy_buffer_data = function(old_buffer, new_buffer, offset){
+		var offsetIndex = ~~((offset || 0) * sampleRate);
+		for(var channel = 0; channel < numChannels; channel++){
+			var oldData = old_buffer.getChannelData(Math.min(channel, old_buffer.numberOfChanels-1));
+			var newData = new_buffer.getChannelData(channel);
+			for(var i=0, len = oldData.length; i<len; i++){
+				newData[i] = oldData[i + offsetIndex];
+			}
+		}
+	};
 	
 	file.newBuffer = function(){
 		var frameCount = (sampleRate * file.availLength) || 1; // (Buffers can't be of length 0)
@@ -32,16 +44,20 @@ function AudioFile(){
 		var old_buffer = file.buffer;
 		var new_buffer = file.newBuffer();
 		if(old_buffer){
-			for(var channel = 0; channel < numChannels; channel++){
-				var oldData = old_buffer.getChannelData(Math.min(channel, old_buffer.numberOfChanels-1));
-				var fileData = new_buffer.getChannelData(channel);
-				for(var i=0, len = oldData.length; i<len; i++){
-					fileData[i] = oldData[i];
-				}
-			}
+			copy_buffer_data(old_buffer, new_buffer);
 		}
 		file.setBuffer(new_buffer);
 		file.length = originalLength; // setBuffer sets file.length
+	};
+	
+	file.crop = function(start, end){
+		file.availLength = file.length = end - start;
+		var old_buffer = file.buffer;
+		var new_buffer = file.newBuffer();
+		if(old_buffer){
+			copy_buffer_data(old_buffer, new_buffer, start);
+		}
+		file.setBuffer(new_buffer);
 	};
 	
 	file.buffer = file.newBuffer();
