@@ -35,5 +35,3 @@ Try it at [98desktop.ml](http://98desktop.ml/) or [standalone](http://1j01.githu
 
 * Better echo effect?
   Interpolation for stretching effects?
-
-* Drag and drop files

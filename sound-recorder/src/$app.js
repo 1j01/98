@@ -83,3 +83,26 @@ $("body").on("keydown", function(e){
 	}
 });
 
+function open_from_FileList(files){
+	$.each(files, function(i, file){
+		if(file.type.match(/audio/)){
+			open_file(file);
+			return false;
+		}else{
+			alert("File not recognized as an audio file");
+		}
+	});
+}
+
+$body.on("dragover dragenter", function(e){
+	e.preventDefault();
+	e.stopPropagation();
+}).on("drop", function(e){
+	e.preventDefault();
+	e.stopPropagation();
+	var dt = e.originalEvent.dataTransfer;
+	if(dt && dt.files && dt.files.length){
+		open_from_FileList(dt.files);
+	}
+});
+
