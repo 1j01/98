@@ -116,14 +116,14 @@ var menus = {
 		____________________________,
 		{
 			item: "Delete &Before Current Position",
-			enabled: function(){},
-			action: function(){},
+			enabled: can_delete_before_current_position,
+			action: delete_before_current_position,
 			description: "Deletes all audio before the current position.",
 		},
 		{
 			item: "Delete &After Current Position",
-			enabled: function(){},
-			action: function(){},
+			enabled: can_delete_after_current_position,
+			action: delete_after_current_position,
 			description: "Deletes all audio after the current position.",
 		},
 		____________________________,

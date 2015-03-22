@@ -6,28 +6,45 @@ function AudioFile(){
 	file.length = 0;
 	file.availLength = 0;
 	
+	file.audio = new BuffAudio(audio_context);
+	
 	var bufferLength = 4096;
 	var numChannels = 2;
 	var sampleRate = audio_context.sampleRate;
 	
-	file.audio = new BuffAudio(audio_context);
-	file.updateBuffer = function(){
-		var old_buffer = file.buffer;
+	file.newBuffer = function(){
 		var frameCount = (sampleRate * file.availLength) || 1; // (Buffers can't be of length 0)
-		file.buffer = audio_context.createBuffer(numChannels, frameCount, sampleRate);
+		var new_buffer = audio_context.createBuffer(numChannels, frameCount, sampleRate);
+		file.audio.initNewBuffer(new_buffer);
+		return new_buffer;
+	};
+	
+	file.setBuffer = function(buffer){
+		file.buffer = buffer;
+		file.audio.initNewBuffer(buffer);
+		file.length = file.availLength = buffer.length / buffer.sampleRate;
+	};
+	
+	file.updateBufferSize = function(length){
+		length = length || file.availLength;
+		var originalLength = file.length;
+		file.availLength = length;
+		var old_buffer = file.buffer;
+		var new_buffer = file.newBuffer();
 		if(old_buffer){
-			console.log("Insert old", old_buffer, "into resized", file.buffer);
 			for(var channel = 0; channel < numChannels; channel++){
 				var oldData = old_buffer.getChannelData(Math.min(channel, old_buffer.numberOfChanels-1));
-				var fileData = file.buffer.getChannelData(channel);
+				var fileData = new_buffer.getChannelData(channel);
 				for(var i=0, len = oldData.length; i<len; i++){
 					fileData[i] = oldData[i];
 				}
 			}
 		}
-		file.audio.initNewBuffer(file.buffer);
+		file.setBuffer(new_buffer);
+		file.length = originalLength; // setBuffer sets file.length
 	};
-	file.updateBuffer();
+	
+	file.buffer = file.newBuffer();
 	
 	var createScriptProcessor = (
 		audio_context.createScriptProcessor ||
@@ -54,47 +71,91 @@ function AudioFile(){
 			}
 		}
 		
-		file.audio.initNewBuffer(file.buffer);
+		file.audio.initNewBuffer(file.buffer); // wow, is this really necessary?? can we get rid of this please?
 		
 		file.position += len / sampleRate;
 	};
 	
-	file.applyEffect = function(fn, timeScale){
-		var old_buffer = file.buffer;
-		var pos = file.position / file.length;
+	file.applyTimeScale = function(scale){
+		/*
+		var abs_scale = Math.abs(scale);
+		file.applyTimeFunction(function(position, length){
+			if(scale < 0){
+				return (length - position) * abs_scale;
+			}else{
+				return position * abs_scale;
+			}
+		});
+	};
+	file.applyTimeFunction = function(timeFunction){*/
+		// file.length = file.availLength???
 		
-		file.length = file.availLength = file.availLength * Math.abs(timeScale || 1);
-		var frameCount = (sampleRate * file.availLength) || 1; // (Buffers can't be of length 0)
-		var new_buffer = audio_context.createBuffer(numChannels, frameCount, sampleRate);
+		var old_buffer = file.buffer;
+		var old_position = file.position;
+		var old_length = file.length;//file.availLength???
+		
+		var abs_scale = Math.abs(scale);
+		var f = function(old_position){
+			//return timeFunction(old_position, old_length);
+			if(scale < 0){
+				return (old_length - old_position) * abs_scale;
+			}else{
+				return old_position * abs_scale;
+			}
+		};
+		
+		file.length = file.availLength = Math.abs(f(old_length) - f(0));
+		var new_buffer = file.newBuffer();
 		
 		for(var channel = 0; channel < numChannels; channel++){
 			var oldData = old_buffer.getChannelData(Math.min(channel, old_buffer.numberOfChanels-1));
 			var newData = new_buffer.getChannelData(channel);
-			fn(oldData, newData);
+			/*for(var i=0, len=newData.length; i<len; i++){
+				newData[i] = oldData[~~f(i)];
+			}*/
+			for(var i=0, len=oldData.length, inc=1/abs_scale; i<len; i+=inc){
+				newData[~~f(i)] = oldData[~~(i)];
+			}
 		}
 		
-		file.buffer = new_buffer;
-		file.audio.initNewBuffer(file.buffer);
+		file.setBuffer(new_buffer);
 		
 		// Update the file position and playback state
-		file.position = pos * file.length;
-		if(timeScale < 0){
-			file.position = file.length - file.position;
-		}
+		file.position = f(old_position);
+		console.log("old position:", old_position, "new position:", file.position);
+		console.log("old length:", old_length, "new length:", file.length);
 		file.audio.seek(file.position);
 		if(playing){
 			file.audio.play();
 		}
+		update();
 	};
 	
-	file.setBuffer = function(buffer){
-		file.buffer = buffer;
-		file.audio.initNewBuffer(buffer);
-		file.length = file.availLength = buffer.length / buffer.sampleRate;
+	file.applyEffect = function(effectFunction, timeScale){
+		var old_buffer = file.buffer;
+		var pos = file.position / file.length;
+		
+		file.length = file.availLength = file.availLength * Math.abs(timeScale || 1);
+		var new_buffer = file.newBuffer();
+		
+		for(var channel = 0; channel < numChannels; channel++){
+			var oldData = old_buffer.getChannelData(Math.min(channel, old_buffer.numberOfChanels-1));
+			var newData = new_buffer.getChannelData(channel);
+			effectFunction(oldData, newData);
+		}
+		
+		file.setBuffer(new_buffer);
+		
+		// Update the file position
+		var new_position = pos * file.length;
+		if(timeScale < 0){
+			new_position = file.length - new_position;
+		}
+		seek(new_position);
 	};
 	
 	file.download = function(){
-		file.updateBuffer();
+		file.updateBufferSize(file.length);
 		
 		var gotWAV = function(blob){
 			var a = document.createElement('a');

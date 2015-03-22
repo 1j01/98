@@ -1,5 +1,14 @@
 
+var applyVolumeScale = function(scale){
+	file.applyEffect(function(oldData, newData){
+		for(var i=0, len=newData.length; i<len; i++){
+			newData[i] = oldData[i] * scale;
+		}
+	});
+};
+
 var effects_reverse = function(){
+	// applyTimeScale(-1);
 	file.applyEffect(function(oldData, newData){
 		for(var i=0, len=newData.length; i<len; i++){
 			newData[i] = oldData[len-1-i];
@@ -8,22 +17,15 @@ var effects_reverse = function(){
 };
 
 var effects_increase_volume = function(){
-	file.applyEffect(function(oldData, newData){
-		for(var i=0, len=newData.length; i<len; i++){
-			newData[i] = oldData[i] * 1.25;
-		}
-	});
+	applyVolumeScale(125/100);
 };
 
 var effects_decrease_volume = function(){
-	file.applyEffect(function(oldData, newData){
-		for(var i=0, len=newData.length; i<len; i++){
-			newData[i] = oldData[i] / 1.25;
-		}
-	});
+	applyVolumeScale(100/125);
 };
 
 var effects_increase_speed = function(){
+	// applyTimeScale(1/2);
 	file.applyEffect(function(oldData, newData){
 		for(var i=0, len=newData.length; i<len; i++){
 			newData[i] = oldData[i*2];
@@ -32,6 +34,7 @@ var effects_increase_speed = function(){
 };
 
 var effects_decrease_speed = function(){
+	// applyTimeScale(2/1);
 	file.applyEffect(function(oldData, newData){
 		for(var i=0, len=newData.length; i<len; i++){
 			newData[i] = oldData[~~(i/2)];

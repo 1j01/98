@@ -65,7 +65,7 @@ var record = function(){
 	$stop.enable();
 	
 	file.availLength = Math.max(file.length, file.position + 23.77);
-	file.updateBuffer();
+	file.updateBufferSize(file.availLength);
 	
 	previous_time = audio_context.currentTime;
 	tid = setInterval(update, 50);
@@ -176,6 +176,19 @@ var file_save_as = function(){
 };
 var file_save = file_save_as;
 
+
+var can_delete_before_current_position = function(){
+	return file.position > 0;
+};
+var can_delete_after_current_position = function(){
+	return file.position < file.length;
+};
+var delete_before_current_position = function(){
+	alert("Not yet implemented!");
+};
+var delete_after_current_position = function(){
+	alert("Not yet implemented!");
+};
 
 
 var input;
