@@ -1,4 +1,34 @@
 
+function render_brush(ctx, shape, size){
+	if(shape === "circle"){
+		size /= 2;
+		size += 0.25;
+	}else if(shape.match(/diagonal/)){
+		size -= 0.4;
+	}
+	
+	var mid_x = ctx.canvas.width / 2;
+	var left = ~~(mid_x - size/2);
+	var right = ~~(mid_x + size/2);
+	var mid_y = ctx.canvas.height / 2;
+	var top = ~~(mid_y - size/2);
+	var bottom = ~~(mid_y + size/2);
+	
+	if(shape === "circle"){
+		draw_ellipse(ctx, left, top, size, size);
+	}else if(shape === "square"){
+		ctx.fillRect(left, top, ~~size, ~~size);
+	}else if(shape === "diagonal"){
+		draw_line(ctx, left, top, right, bottom);
+	}else if(shape === "reverse_diagonal"){
+		draw_line(ctx, left, bottom, right, top);
+	}else if(shape === "horizontal"){
+		draw_line(ctx, left, mid_y, size, mid_y);
+	}else if(shape === "vertical"){
+		draw_line(ctx, mid_x, top, mid_x, size);
+	}
+};
+
 function draw_ellipse(ctx, x, y, w, h, stroke, fill){
 	
 	var stroke_color = ctx.strokeStyle;
@@ -273,14 +303,95 @@ function apply_image_transformation(fn){
 		undoable(0, function(){
 			this_ones_a_frame_changer();
 			
-			canvas.width = new_canvas.width;
-			canvas.height = new_canvas.height;
-			
-			ctx.drawImage(new_canvas, 0, 0);
+			ctx.copy(new_canvas);
 			
 			$canvas.trigger("update"); // update handles
 		});
 	}
+}
+
+function flip_horizontal(){
+	apply_image_transformation(function(original_canvas, original_ctx, new_canvas, new_ctx){
+		new_ctx.translate(new_canvas.width, 0);
+		new_ctx.scale(-1, 1);
+		new_ctx.drawImage(original_canvas, 0, 0);
+	});
+}
+
+function flip_vertical(){
+	apply_image_transformation(function(original_canvas, original_ctx, new_canvas, new_ctx){
+		new_ctx.translate(0, new_canvas.height);
+		new_ctx.scale(1, -1);
+		new_ctx.drawImage(original_canvas, 0, 0);
+	});
+}
+
+function rotate(angle){
+	apply_image_transformation(function(original_canvas, original_ctx, new_canvas, new_ctx){
+		new_ctx.save();
+		switch(angle){
+			case TAU / 4:
+			case TAU * -3/4:
+				new_canvas.width = original_canvas.height;
+				new_canvas.height = original_canvas.width;
+				new_ctx.translate(new_canvas.width, 0);
+				new_ctx.rotate(TAU / 4);
+				break;
+			case TAU / 2:
+			case TAU / -2:
+				new_ctx.translate(new_canvas.width, new_canvas.height);
+				new_ctx.rotate(TAU / 2);
+				break;
+			case TAU * 3/4:
+			case TAU / -4:
+				new_canvas.width = original_canvas.height;
+				new_canvas.height = original_canvas.width;
+				new_ctx.translate(0, new_canvas.height);
+				new_ctx.rotate(TAU / -4);
+				break;
+			default:
+				var w = original_canvas.width;
+				var h = original_canvas.height;
+				
+				var bb_min_x = +Infinity;
+				var bb_max_x = -Infinity;
+				var bb_min_y = +Infinity;
+				var bb_max_y = -Infinity;
+				var corner = function(x01, y01){
+					var x = Math.sin(-angle)*h*x01 + Math.cos(+angle)*w*y01;
+					var y = Math.sin(+angle)*w*y01 + Math.cos(-angle)*h*x01;
+					bb_min_x = Math.min(bb_min_x, x);
+					bb_max_x = Math.max(bb_max_x, x);
+					bb_min_y = Math.min(bb_min_y, y);
+					bb_max_y = Math.max(bb_max_y, y);
+				};
+				
+				corner(0, 0);
+				corner(0, 1);
+				corner(1, 0);
+				corner(1, 1);
+				
+				var bb_x = bb_min_x;
+				var bb_y = bb_min_y;
+				var bb_w = bb_max_x - bb_min_x;
+				var bb_h = bb_max_y - bb_min_y;
+				
+				new_canvas.width = bb_w;
+				new_canvas.height = bb_h;
+				
+				if(!transparency){
+					new_ctx.fillStyle = colors.background;
+					new_ctx.fillRect(0, 0, new_canvas.width, new_canvas.height);
+				}
+				
+				new_ctx.translate(-bb_x,-bb_y);
+				new_ctx.rotate(angle);
+				new_ctx.drawImage(original_canvas, 0, 0, w, h);
+				break;
+		}
+		new_ctx.drawImage(original_canvas, 0, 0);
+		new_ctx.restore();
+	});
 }
 
 function stretch_and_skew(xscale, yscale, hsa, vsa){
@@ -315,7 +426,7 @@ function stretch_and_skew(xscale, yscale, hsa, vsa){
 		new_canvas.height = bb_h;
 		
 		if(!transparency){
-			new_ctx.fillStyle = colors[1];
+			new_ctx.fillStyle = colors.background;
 			new_ctx.fillRect(0, 0, new_canvas.width, new_canvas.height);
 		}
 		
@@ -325,8 +436,8 @@ function stretch_and_skew(xscale, yscale, hsa, vsa){
 			Math.tan(vsa), // vertical skew (skewY)
 			Math.tan(hsa), // horizontal skew (skewX)
 			1, // y scale
-			bb_x, // x translation
-			bb_y // y translation
+			-bb_x, // x translation
+			-bb_y // y translation
 		);
 		new_ctx.drawImage(original_canvas, 0, 0, w, h);
 		new_ctx.restore();

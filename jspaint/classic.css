@@ -50,6 +50,7 @@
 .jspaint-menu-button {
 	padding: 2px 5px;
 	position: relative;
+	outline: 0;
 }
 .jspaint-menu-button:hover {
 	box-shadow: 1px 1px 0 white inset, -1px -1px 0 #707070 inset;
@@ -77,11 +78,12 @@
 .jspaint-menu-item[disabled] {
 	text-shadow: 0.8px 0.8px 0px #fff;
 }
-.jspaint-menu-item:hover, 
+.jspaint-menu-item:focus, 
 .jspaint-menu-item.active {
 	background: #007;
 	color: #fff;
 	text-shadow: none;
+	outline: 0;
 }
 .jspaint-menu-item[disabled] {
 	color: #808080;
@@ -181,6 +183,7 @@
 	border-bottom: 1px solid #7b7b7b;
 }
 .jspaint-window-content .jspaint-dialogue-button:hover:active,
+.jspaint-window-content .jspaint-dialogue-button.pressed,
 .jspaint-tool:hover:active,
 .jspaint-tool.selected {
 	padding-bottom: 2px;
@@ -194,6 +197,7 @@
 	border-bottom: 1px solid white;
 }
 .jspaint-window-content .jspaint-dialogue-button:hover:active:before,
+.jspaint-window-content .jspaint-dialogue-button.pressed:before,
 .jspaint-tool:hover:active:before,
 .jspaint-tool.selected:before {
 	top: 0px;
@@ -396,6 +400,7 @@
 	border-bottom: 1px solid #808080;
 }
 .jspaint-button:hover:active,
+.jspaint-button.pressed,
 .jspaint-button.selected {
 	border-top: 1px solid #000;
 	border-left: 1px solid #000;
@@ -403,6 +408,7 @@
 	border-bottom: 1px solid #fff;
 }
 .jspaint-button:hover:active:after,
+.jspaint-button.pressed:after,
 .jspaint-button.selected:after {
 	border-top: 1px solid #808080;
 	border-left: 1px solid #808080;
@@ -413,7 +419,12 @@
 	right: 0px;
 	top: -3px;
 }
-.jspaint-button:hover:active:before {
+.jspaint-button:hover:active:before,
+.jspaint-button.pressed:before {
 	right: -1px;
 	top: -2px;
+}
+.jspaint-button:focus {
+	outline: 1px dotted black;
+	outline-offset: -4px;
 }

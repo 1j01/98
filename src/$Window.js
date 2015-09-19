@@ -1,10 +1,9 @@
 
 $Window.Z_INDEX = 5;
 
-function $Window(icon_name, $component){
+function $Window($component){
 	var $w = $(E("div")).addClass("jspaint-window").appendTo("body");
 	$w.$titlebar = $(E("div")).addClass("jspaint-window-titlebar").appendTo($w);
-	$w.$icon = $Icon([$w.icon_name = icon_name, "task"], TITLEBAR_ICON_SIZE).appendTo($w.$titlebar);
 	$w.$title = $(E("span")).addClass("jspaint-window-title").appendTo($w.$titlebar);
 	$w.$x = $(E("button")).addClass("jspaint-window-close-button jspaint-window-button jspaint-button").appendTo($w.$titlebar);
 	$w.$content = $(E("div")).addClass("jspaint-window-content").appendTo($w);
@@ -13,25 +12,88 @@ function $Window(icon_name, $component){
 		$w.addClass("jspaint-component-window");
 	}
 	
+	$w.attr("touch-action", "none");
+	
 	$w.$x.on("click", function(){
 		$w.close();
 	});
-	$w.$x.on("mousedown", function(e){
+	$w.$x.on("mousedown selectstart", function(e){
 		e.preventDefault();
-		e.stopPropagation();
 	});
 	
+	$w.css({
+		position: "absolute",
+		zIndex: $Window.Z_INDEX++
+	});
 	$w.bringToFront = function(){
 		$w.css({
 			zIndex: $Window.Z_INDEX++
 		});
 	};
-	
-	$w.css({position: "absolute"});
-	$w.bringToFront();
-	$w.on("mousedown", function(){
+	$w.on("pointerdown", function(){
 		$w.bringToFront();
 	});
+	
+	$w.on("keydown", function(e){
+		if(e.ctrlKey || e.altKey || e.shiftKey){
+			return;
+		}
+		var $buttons = $w.$content.find("button.jspaint-button");
+		var $focused = $(document.activeElement);
+		var focused_index = $buttons.index($focused);
+		// console.log(e.keyCode);
+		switch(e.keyCode){
+			case 40: // Down
+			case 39: // Right
+				if($focused.is("button")){
+					if(focused_index < $buttons.length - 1){
+						$buttons.get(focused_index + 1).focus();
+						e.preventDefault();
+					}
+				}
+				break;
+			case 38: // Up
+			case 37: // Left
+				if($focused.is("button")){
+					if(focused_index > 0){
+						$buttons.get(focused_index - 1).focus();
+						e.preventDefault();
+					}
+				}
+				break;
+			case 32: // Space
+			case 13: // Enter (doesn't actually work in chrome because the button gets clicked immediately)
+				if($focused.is("button")){
+					$focused.addClass("pressed");
+					var release = function(){
+						$focused.removeClass("pressed");
+						$focused.off("focusout", release);
+						$(window).off("keyup", keyup);
+					};
+					var keyup = function(e){
+						if(e.keyCode === 32 || e.keyCode === 13){
+							release();
+						}
+					};
+					$focused.on("focusout", release);
+					$(window).on("keyup", keyup);
+				}
+				break;
+			case 9: // Tab
+				// wrap around when tabbing through controls in a window
+				var $controls = $w.$content.find("input, textarea, select, button, a");
+				var focused_control_index = $controls.index($focused);
+				if(focused_control_index === $controls.length - 1){
+					e.preventDefault();
+					$controls[0].focus();
+				}
+				break;
+			case 27: // Esc
+				$w.close();
+				break;
+		}
+	});
+	// @TODO: restore last focused controls when clicking/mousing down on the window
 	
 	$w.applyBounds = function(){
 		$w.css({
@@ -51,22 +113,27 @@ function $Window(icon_name, $component){
 	
 	$G.on("resize", $w.applyBounds);
 	
-	var mx, my;
+	var drag_offset_x, drag_offset_y;
 	var drag = function(e){
 		$w.css({
-			left: e.clientX - mx,
-			top: e.clientY - my,
+			left: e.clientX - drag_offset_x,
+			top: e.clientY - drag_offset_y,
 		});
 	};
-	$w.$titlebar.on("mousedown", function(e){
-		mx = e.clientX - $w[0].getBoundingClientRect().left;
-		my = e.clientY - $w[0].getBoundingClientRect().top;
-		$G.on("mousemove", drag);
-		$("body").addClass("drag");
+	$w.$titlebar.attr("touch-action", "none");
+	$w.$titlebar.on("mousedown selectstart", function(e){
+		e.preventDefault();
 	});
-	$G.on("mouseup", function(e){
-		$G.off("mousemove", drag);
-		$("body").removeClass("drag");
+	$w.$titlebar.on("pointerdown", function(e){
+		if($(e.target).is("button")){
+			return;
+		}
+		drag_offset_x = e.clientX - $w[0].getBoundingClientRect().left;
+		drag_offset_y = e.clientY - $w[0].getBoundingClientRect().top;
+		$G.on("pointermove", drag);
+	});
+	$G.on("pointerup", function(e){
+		$G.off("pointermove", drag);
 	});
 	$w.$titlebar.on("dblclick", function(e){
 		if($component){
@@ -75,8 +142,8 @@ function $Window(icon_name, $component){
 	});
 	
 	$w.$Button = function(text, handler){
-		$w.$content.append(
-			$(E("button"))
+		var $b = $(E("button"))
+			.appendTo($w.$content)
 			.addClass("jspaint-dialogue-button")
 			.text(text)
 			.on("click", function(){
@@ -84,8 +151,8 @@ function $Window(icon_name, $component){
 					handler();
 				}
 				$w.close();
-			})
-		);
+			});
+		return $b;
 	};
 	$w.title = function(title){
 		if(title){
@@ -96,7 +163,11 @@ function $Window(icon_name, $component){
 		}
 	};
 	$w.close = function(){
-		$w.trigger("close");
+		var e = $.Event("close");
+		$w.trigger(e);
+		if(e.isDefaultPrevented()){
+			return;
+		}
 		if($component){
 			$component.detach();
 		}
@@ -116,13 +187,12 @@ function $FormWindow(title){
 	var $w = new $Window();
 	
 	$w.title(title);
-	$w.$form = $form = $(E("form")).appendTo($w.$content);
-	$w.$form_left = $(E("div")).appendTo($w.$form);
-	$w.$form_right = $(E("div")).appendTo($w.$form).addClass("jspaint-button-group");
-	$w.$form.addClass("jspaint-horizontal").css({display: "flex"});
+	$w.$form = $(E("form")).appendTo($w.$content);
+	$w.$main = $(E("div")).appendTo($w.$form);
+	$w.$buttons = $(E("div")).appendTo($w.$form).addClass("jspaint-button-group");
 	
 	$w.$Button = function(label, action){
-		var $b = $(E("button")).appendTo($w.$form_right).text(label);
+		var $b = $(E("button")).appendTo($w.$buttons).text(label);
 		$b.on("click", function(e){
 			// prevent the form from submitting
 			// @TODO: instead, prevent the form's submit event
@@ -133,6 +203,10 @@ function $FormWindow(title){
 		
 		// this should really not be needed @TODO
 		$b.addClass("jspaint-button jspaint-dialogue-button");
+		
+		$b.on("pointerdown", function(){
+			$b.focus();
+		});
 		
 		return $b;
 	};

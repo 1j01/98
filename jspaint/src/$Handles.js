@@ -25,6 +25,8 @@ function $Handles($container, element, options){
 		var $h = $(E("div")).addClass("jspaint-handle");
 		$h.appendTo($container);
 		
+		$h.attr("touch-action", "none");
+		
 		var x, y, width, height;
 		var dragged = false;
 		var resizes_height = y_axis !== "middle";
@@ -69,15 +71,15 @@ function $Handles($container, element, options){
 					height: magnification * height,
 				});
 			};
-			$h.on("mousedown", function(e){
+			$h.on("pointerdown", function(e){
 				dragged = false;
 				if(e.button === 0){
-					$G.on("mousemove", drag);
-					$body.css({cursor: cursor}).addClass("jspaint-cursor-bully");
+					$G.on("pointermove", drag);
+					$("body").css({cursor: cursor}).addClass("jspaint-cursor-bully");
 				}
-				$G.one("mouseup", function(e){
-					$G.off("mousemove", drag);
-					$body.css({cursor: ""}).removeClass("jspaint-cursor-bully");
+				$G.one("pointerup", function(e){
+					$G.off("pointermove", drag);
+					$("body").css({cursor: ""}).removeClass("jspaint-cursor-bully");
 					
 					$resize_ghost.remove();
 					if(dragged){
@@ -87,7 +89,6 @@ function $Handles($container, element, options){
 				});
 			});
 			$h.on("mousedown selectstart", function(e){
-				e.stopPropagation();
 				e.preventDefault();
 			});
 		}

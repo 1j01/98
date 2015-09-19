@@ -13,15 +13,12 @@ function TextBox(x, y, w, h){
 	
 	tb.$ghost = $(E("div")).addClass("jspaint-textbox").appendTo($canvas_area);
 	tb.$editor = $(E("textarea")).addClass("jspaint-textbox-editor");
-	tb.$editor.on("mousedown dragover dragenter drop contextmenu", function(e){
-		e.stopPropagation();
-	});
 	
 	var update = function(){
-		font.color = colors[0];
+		font.color = colors.foreground;
 		font.background = ({
 			transparent: "transparent",
-			opaque: colors[1],
+			opaque: colors.background,
 		}[transparent_opaque]);
 		
 		tb.$editor.css({
@@ -37,6 +34,9 @@ function TextBox(x, y, w, h){
 			kxmlWritingMode: font.vertical ? "vertical-lr" : "",
 			khtmlWritingMode: font.vertical ? "vertical-lr" : "",
 			webkitWritingMode: font.vertical ? "vertical-lr" : "",
+			linesupWritingMode: font.vertical ? "vertical-lr" : "",
+			nonsenseWritingMode: font.vertical ? "vertical-lr" : "",
+			totesfakeWritingMode: font.vertical ? "vertical-lr" : "",
 			lineHeight: font.size * font.line_scale * magnification + "px",
 			color: font.color,
 			background: font.background,
@@ -54,6 +54,8 @@ TextBox.prototype.instantiate = function(){
 	tb.$ghost.addClass("instantiated").css({
 		cursor: Cursor(["move", [8, 8], "move"])
 	});
+	tb.$ghost.attr("touch-action", "none");
+	
 	tb.position();
 	
 	instantiate();
@@ -100,7 +102,7 @@ TextBox.prototype.instantiate = function(){
 		});
 		
 		var mox, moy;
-		var mousemove = function(e){
+		var pointermove = function(e){
 			var m = e2c(e);
 			tb._x = Math.max(Math.min(m.x - mox, canvas.width), -tb._w);
 			tb._y = Math.max(Math.min(m.y - moy, canvas.height), -tb._h);
@@ -110,7 +112,13 @@ TextBox.prototype.instantiate = function(){
 				tb.draw();
 			}
 		};
-		tb.$ghost.on("mousedown", function(e){
+		tb.$ghost.on("pointerdown", function(e){
+			if(
+				e.target instanceof HTMLInputElement ||
+				e.target instanceof HTMLTextAreaElement
+			){
+				return;
+			}
 			e.preventDefault();
 			
 			var rect = tb.$ghost[0].getBoundingClientRect();
@@ -119,9 +127,9 @@ TextBox.prototype.instantiate = function(){
 			mox = ~~(cx);
 			moy = ~~(cy);
 			
-			$G.on("mousemove", mousemove);
-			$G.one("mouseup", function(){
-				$G.off("mousemove", mousemove);
+			$G.on("pointermove", pointermove);
+			$G.one("pointerup", function(){
+				$G.off("pointermove", pointermove);
 			});
 			
 		});

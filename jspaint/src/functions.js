@@ -10,7 +10,11 @@ function reset_magnification(){
 }
 
 function reset_colors(){
-	colors = ["#000000", "#ffffff", ""];
+	colors = {
+		foreground: "#000000",
+		background: "#ffffff",
+		ternary: "",
+	};
 	$G.trigger("option-changed");
 }
 
@@ -18,6 +22,7 @@ function reset_file(){
 	file_entry = null;
 	file_name = "untitled";
 	update_title();
+	saved = true;
 }
 
 function reset_canvas(){
@@ -27,7 +32,7 @@ function reset_canvas(){
 	canvas.width = my_canvas_width;
 	canvas.height = my_canvas_height;
 	
-	ctx.fillStyle = colors[1];
+	ctx.fillStyle = colors.background;
 	ctx.fillRect(0, 0, canvas.width, canvas.height);
 	
 	$canvas_area.trigger("resize");
@@ -48,60 +53,66 @@ function get_FileList(callback){
 		.click();
 }
 
-function open_from_Image(img, new_file_name){
+function open_from_Image(img, callback){
 	are_you_sure(function(){
 		this_ones_a_frame_changer();
 		
+		reset_file();
 		reset_colors();
 		reset_canvas(); // (with newly reset colors)
 		reset_magnification();
 		
-		file_name = new_file_name;
-		update_title();
-		
-		// @TODO: use copy helper
-		canvas.width = img.naturalWidth;
-		canvas.height = img.naturalHeight;
-		
-		ctx.clearRect(0, 0, canvas.width, canvas.height);
-		ctx.drawImage(img, 0, 0);
-		
+		ctx.copy(img);
+		detect_transparency();
 		$canvas_area.trigger("resize");
 		
-		detect_transparency();
+		callback && callback();
 	});
 }
-function open_from_URI(uri, new_file_name){
+function open_from_URI(uri, callback){
 	var img = new Image();
 	img.onload = function(){
-		open_from_Image(img, new_file_name);
+		open_from_Image(img, callback);
 	};
 	img.src = uri;
 }
-function open_from_File(file){
+function open_from_File(file, callback){
+	// @TODO: use URL.createObjectURL(file) when available
+	// use URL.revokeObjectURL() too
 	var reader = new FileReader();
 	reader.onload = function(e){
-		open_from_URI(e.target.result, file.name);
+		open_from_URI(e.target.result, function(){
+			file_name = file.name;
+			update_title();
+			saved = true;
+			callback && callback();
+		});
 	};
 	reader.readAsDataURL(file);
 }
-function open_from_FileList(files){
+function open_from_FileList(files, callback){
 	$.each(files, function(i, file){
 		if(file.type.match(/image/)){
-			open_from_File(file);
+			open_from_File(file, callback);
 			return false;
 		}
 	});
 }
-function open_from_FileEntry(entry){
-	entry.file(open_from_File);
+function open_from_FileEntry(entry, callback){
+	entry.file(function(file){
+		open_from_File(file, function(){
+			file_entry = entry;
+			callback && callback();
+		});
+	});
 }
-function save_to_FileEntry(entry){
+function save_to_FileEntry(entry, callback){
 	entry.createWriter(function(file_writer){
 		file_writer.onwriteend = function(e){
 			if(this.error){
 				console.error(this.error + '\n\n\n@ ' + e);
 			}else{
+				callback && callback();
 				console.log("File written!");
 			}
 		};
@@ -142,16 +153,13 @@ function file_open(){
 function file_save(){
 	if(file_name.match(/\.svg$/)){
 		file_name += ".png";
+		//update_title()?
 		return file_save_as();
 	}
-	if(window.chrome && chrome.fileSystem && chrome.fileSystem.chooseEntry){
-		if(window.file_entry){
-			save_to_FileEntry(file_entry);
-		}else{
-			file_save_as();
-		}
+	if(window.chrome && chrome.fileSystem && chrome.fileSystem.chooseEntry && window.file_entry){
+		save_to_FileEntry(file_entry);
 	}else{
-		window.open(canvas.toDataURL());
+		file_save_as();
 	}
 }
 
@@ -171,21 +179,29 @@ function file_save_as(){
 			save_to_FileEntry(file_entry);
 		});
 	}else{
-		window.open(canvas.toDataURL());
+		canvas.toBlob(function(blob){
+			var file_saver = saveAs(blob, file_name);
+			file_saver.onwriteend = function(){
+				// this won't fire in chrome
+				saved = true;
+			};
+		});
 	}
 }
 
 
 function are_you_sure(action){
-	if(undos.length || redos.length){
-		var $w = new $Window();
+	if(saved){
+		action();
+	}else{
+		var $w = new $FormWindow().addClass("jspaint-dialogue-window");
 		$w.title("Paint");
-		$w.$content.text("Save changes to "+file_name+"?");
+		$w.$main.text("Save changes to "+file_name+"?");
 		$w.$Button("Save", function(){
 			$w.close();
 			file_save();
 			action();
-		});
+		}).focus();
 		$w.$Button("Discard", function(){
 			$w.close();
 			action();
@@ -194,8 +210,6 @@ function are_you_sure(action){
 			$w.close();
 		});
 		$w.center();
-	}else{
-		action();
 	}
 }
 
@@ -238,14 +252,14 @@ function paste(img){
 				canvas.width = Math.max(original.width, img.width);
 				canvas.height = Math.max(original.height, img.height);
 				if(!transparency){
-					ctx.fillStyle = colors[1];
+					ctx.fillStyle = colors.background;
 					ctx.fillRect(0, 0, canvas.width, canvas.height);
 				}
 				ctx.drawImage(original, 0, 0);
 				paste_img();
 				$canvas_area.trigger("resize");
 			});
-		});
+		}).focus();
 		$w.$Button("Crop", function(){
 			paste_img();
 		});
@@ -265,77 +279,59 @@ function paste(img){
 }
 
 function render_history_as_gif(){
-	var $win = $Window();
+	var $win = $FormWindow();
 	$win.title("Rendering GIF");
 	$win.center();
-	var $output = $win.$content;
+	var $output = $win.$main;
 	var $progress = $(E("progress")).appendTo($output);
 	var $progress_percent = $(E("span")).appendTo($output).css({
 		width: "2.3em",
 		display: "inline-block",
 		textAlign: "center",
 	});
+	$win.$main.css({padding: 5});
 	
-	$win.$Button('Cancel');
+	var $cancel = $win.$Button('Cancel', function(){
+		$win.close();
+	});
 	
 	$win.on('close', function(){
 		gif.abort();
 	});
 	
-	try {
+	try{
+		var width = canvas.width;
+		var height = canvas.height;
 		var gif = new GIF({
 			//workers: Math.min(5, Math.floor(undos.length/50)+1),
-			workerScript: 'lib/gif.js/gif.worker.js',
-			width: canvas.width,
-			height: canvas.height,
+			workerScript: "lib/gif.js/gif.worker.js",
+			width: width,
+			height: height,
 		});
-	
-		gif.on('progress', function(p){
+		
+		gif.on("progress", function(p){
 			$progress.val(p);
 			$progress_percent.text(~~(p*100)+"%");
 		});
-	
-		gif.on('finished', function(blob){
+		
+		gif.on("finished", function(blob){
 			$win.title("Rendered GIF");
 			var url = URL.createObjectURL(blob);
 			$output.empty().append(
-				$(E("a")).attr({
-					href: url,
-					target: "_blank",
-				}).append(
-					$(E("img")).on("load", function(){
-						$win.center();
-					}).attr({
-						src: url,
-					})
-				).on("click", function(e){
-					$win.close();
-					if(window.chrome && chrome.fileSystem && chrome.fileSystem.chooseEntry){
-						e.preventDefault();
-						chrome.fileSystem.chooseEntry({
-							type: "saveFile",
-							suggestedName: file_name+" history",
-							accepts: [{mimeTypes: ["image/gif"]}]
-						}, function(entry){
-							if(chrome.runtime.lastError){
-								return console.error(chrome.runtime.lastError.message);
-							}
-							entry.createWriter(function(file_writer){
-								file_writer.onwriteend = function(e){
-									if(this.error){
-										console.error(this.error + '\n\n\n@ ' + e);
-									}else{
-										console.log("File written!");
-									}
-								};
-								file_writer.write(blob);
-							});
-						});
-					}
+				$(E("img")).attr({
+					src: url,
+					width: width,
+					height: height,
 				})
 			);
+			$win.$Button("Save", function(){
+				$win.close();
+				saveAs(blob, file_name + " history");
+			});
+			$cancel.appendTo($win.$buttons);
+			$win.center();
 		});
-	
+		
 		for(var i=0; i<undos.length; i++){
 			gif.addFrame(undos[i], {delay: 200});
 		}
@@ -345,7 +341,7 @@ function render_history_as_gif(){
 		});
 		gif.render();
 		
-	} catch(e) {
+	}catch(e){
 		$output.empty().append(
 			$(E("p")).text("Failed to render GIF:\n").append(
 				$(E("pre")).text(e.stack).css({
@@ -364,15 +360,16 @@ function render_history_as_gif(){
 }
 
 function undoable(callback, action){
+	saved = false;
 	if(redos.length > 5){
-		var $w = new $Window();
+		var $w = new $FormWindow().addClass("jspaint-dialogue-window");
 		$w.title("Paint");
-		$w.$content.html("Discard "+redos.length+" possible redo-able actions?<br>(Ctrl+Y or Ctrl+Shift+Z to redo)<br>");
+		$w.$main.html("Discard "+redos.length+" possible redo-able actions?<br>(Ctrl+Y or Ctrl+Shift+Z to redo)<br>");
 		$w.$Button(action ? "Discard and Apply" : "Discard", function(){
 			$w.close();
 			redos = [];
 			action && action();
-		});
+		}).focus();
 		$w.$Button("Keep", function(){
 			$w.close();
 		});
@@ -394,10 +391,7 @@ function undo(){
 	
 	redos.push(new Canvas(canvas));
 	
-	var c = undos.pop();
-	canvas.width = c.width;
-	canvas.height = c.height;
-	ctx.drawImage(c, 0, 0);
+	ctx.copy(undos.pop());
 	
 	$canvas_area.trigger("resize");
 	
@@ -409,10 +403,7 @@ function redo(){
 	
 	undos.push(new Canvas(canvas));
 	
-	var c = redos.pop();
-	canvas.width = c.width;
-	canvas.height = c.height;
-	ctx.drawImage(c, 0, 0);
+	ctx.copy(redos.pop());
 	
 	$canvas_area.trigger("resize");
 	
@@ -420,11 +411,12 @@ function redo(){
 }
 function cancel(){
 	if(!selected_tool.passive){ undo(); }
-	$G.triggerHandler("mouseup", "cancel");
+	$G.triggerHandler("pointerup", "cancel");
 }
 function this_ones_a_frame_changer(){
 	deselect();
-	$G.triggerHandler("mouseup", "cancel");
+	saved = false;
+	$G.triggerHandler("pointerup", "cancel");
 	$G.triggerHandler("session-update");
 }
 function deselect(){
@@ -473,7 +465,7 @@ function clear(){
 		if(transparency){
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 		}else{
-			ctx.fillStyle = colors[1];
+			ctx.fillStyle = colors.background;
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 		}
 	});
@@ -500,7 +492,8 @@ function detect_transparency(){
 	transparency = false;
 	
 	// @TODO Optimization: Assume JPEGs and some other file types are opaque.
-	// Raster file formats that support transparency include GIF, PNG, BMP and TIFF
+	// Raster file formats that SUPPORT transparency include GIF, PNG, BMP and TIFF
+	// (Yes, even BMPs support transparency!)
 	
 	var id = ctx.getImageData(0, 0, canvas.width, canvas.height);
 	for(var i=0, l=id.data.length; i<l; i+=4){
@@ -516,17 +509,17 @@ function image_attributes(){
 	}
 	var $w = image_attributes.$window = new $FormWindow("Attributes");
 	
-	var $form_left = $w.$form_left;
-	var $form_right = $w.$form_right;
+	var $main = $w.$main;
+	var $buttons = $w.$buttons;
 	
 	// Information
 	
 	var table = {
-		"File last saved": "Not available",
-		"Size on disk": "Not available",
+		"File last saved": "Not available", // @TODO
+		"Size on disk": "Not available", // @TODO
 		"Resolution": "72 x 72 dots per inch",
 	};
-	var $table = $(E("table")).appendTo($form_left);
+	var $table = $(E("table")).appendTo($main);
 	for(var k in table){
 		var $tr = $(E("tr")).appendTo($table);
 		var $key = $(E("td")).appendTo($tr).text(k + ":");
@@ -540,14 +533,14 @@ function image_attributes(){
 	var width_in_px = canvas.width;
 	var height_in_px = canvas.height;
 	
-	var $width_label = $(E("label")).appendTo($form_left).text("Width:");
-	var $height_label = $(E("label")).appendTo($form_left).text("Height:");
+	var $width_label = $(E("label")).appendTo($main).text("Width:");
+	var $height_label = $(E("label")).appendTo($main).text("Height:");
 	var $width = $(E("input")).appendTo($width_label);
 	var $height = $(E("input")).appendTo($height_label);
 	
-	$form_left.find("input")
+	$main.find("input")
 		.css({width: "40px"})
-		.on("change keyup keydown keypress mousedown mousemove paste drop", function(){
+		.on("change keyup keydown keypress pointerdown pointermove paste drop", function(){
 			if($(this).is($width)){
 				width_in_px = $width.val() * unit_sizes_in_px[current_unit];
 			}
@@ -558,7 +551,7 @@ function image_attributes(){
 	
 	// Fieldsets
 	
-	var $units = $(E("fieldset")).appendTo($form_left).append('<legend>Transparency</legend>');
+	var $units = $(E("fieldset")).appendTo($main).append('<legend>Transparency</legend>');
 	$units.append('<label><input type="radio" name="units" value="in">Inches</label>');
 	$units.append('<label><input type="radio" name="units" value="cm">Cm</label>');
 	$units.append('<label><input type="radio" name="units" value="px">Pixels</label>');
@@ -570,7 +563,7 @@ function image_attributes(){
 		current_unit = new_unit;
 	}).triggerHandler("change");
 	
-	var $transparency = $(E("fieldset")).appendTo($form_left).append('<legend>Transparency</legend>');
+	var $transparency = $(E("fieldset")).appendTo($main).append('<legend>Transparency</legend>');
 	$transparency.append('<label><input type="radio" name="transparency" value="transparent">Transparent</label>');
 	$transparency.append('<label><input type="radio" name="transparency" value="opaque">Opaque</label>');
 	$transparency.find("[value=" + (transparency ? "transparent" : "opaque") + "]").attr({checked: true});
@@ -590,7 +583,7 @@ function image_attributes(){
 		$canvas.trigger("user-resized", [0, 0, ~~width, ~~height]);
 		
 		image_attributes.$window.close();
-	});
+	}).focus();
 	
 	$w.$Button("Cancel", function(){
 		image_attributes.$window.close();
@@ -611,7 +604,7 @@ function image_attributes(){
 function image_flip_and_rotate(){
 	var $w = new $FormWindow("Flip and Rotate");
 	
-	var $fieldset = $(E("fieldset")).appendTo($w.$form_left);
+	var $fieldset = $(E("fieldset")).appendTo($w.$main);
 	$fieldset.append("<legend>Flip or rotate</legend>");
 	$fieldset.append("<label><input type='radio' name='flip-or-rotate' value='flip-horizontal' checked/>Flip horizontal</label>");
 	$fieldset.append("<label><input type='radio' name='flip-or-rotate' value='flip-vertical'/>Flip vertical</label>");
@@ -622,56 +615,53 @@ function image_flip_and_rotate(){
 	$rotate_by_angle.append("<label><input type='radio' name='rotate-by-angle' value='90' checked/>90°</label>");
 	$rotate_by_angle.append("<label><input type='radio' name='rotate-by-angle' value='180'/>180°</label>");
 	$rotate_by_angle.append("<label><input type='radio' name='rotate-by-angle' value='270'/>270°</label>");
+	$rotate_by_angle.append("<label><input type='radio' name='rotate-by-angle' value='arbitrary'/><input type='number' min='-360' max='360' name='rotate-by-arbitrary-angle' value=''/> Degrees</label>");
 	$rotate_by_angle.find("input").attr({disabled: true});
 	
 	$fieldset.find("input").on("change", function(){
-		var flip_or_rotate = $fieldset.find("input[name='flip-or-rotate']:checked").val();
+		var action = $fieldset.find("input[name='flip-or-rotate']:checked").val();
 		$rotate_by_angle.find("input").attr({
-			disabled: flip_or_rotate !== 'rotate-by-angle'
+			disabled: action !== "rotate-by-angle"
 		});
 	});
+	$rotate_by_angle.find("label, input").on("click", function(e){
+		// Select "Rotate by angle" and enable subfields
+		$fieldset.find("input[value='rotate-by-angle']").prop("checked", true);
+		$fieldset.find("input").triggerHandler("change");
+		
+		var $label = $(this).closest("label");
+		// Focus the numerical input if this field has one
+		$label.find("input[type='number']").focus();
+		// Select the radio for this field
+		$label.find("input[type='radio']").prop("checked", true);
+	});
+	// @TODO: enable all controls that are accessable to the pointer
 	
 	$fieldset.find("label").css({display: "block"});
 	
 	$w.$Button("Okay", function(){
-		apply_image_transformation(function(original_canvas, original_ctx, new_canvas, new_ctx){
-			var flip_or_rotate = $fieldset.find("input[name='flip-or-rotate']:checked").val();
-			var rotate_by_angle = $fieldset.find("input[name='rotate-by-angle']:checked").val();
-			
-			switch(flip_or_rotate){
-				case "flip-horizontal":
-					new_ctx.translate(new_canvas.width, 0);
-					new_ctx.scale(-1, 1);
-					break;
-				case "flip-vertical":
-					new_ctx.translate(0, new_canvas.height);
-					new_ctx.scale(1, -1);
-					break;
-				case "rotate-by-angle":
-					switch(rotate_by_angle){
-						case "90":
-							new_canvas.width = original_canvas.height;
-							new_canvas.height = original_canvas.width;
-							new_ctx.translate(new_canvas.width, 0);
-							new_ctx.rotate(TAU / 4);
-							break;
-						case "180":
-							new_ctx.translate(new_canvas.width, new_canvas.height);
-							new_ctx.rotate(TAU / 2);
-							break;
-						case "270":
-							new_canvas.width = original_canvas.height;
-							new_canvas.height = original_canvas.width;
-							new_ctx.translate(0, new_canvas.height);
-							new_ctx.rotate(TAU / -4);
-							break;
-					}
-					break;
-			}
-			new_ctx.drawImage(original_canvas, 0, 0);
-		});
+		var action = $fieldset.find("input[name='flip-or-rotate']:checked").val();
+		var angle_val = $fieldset.find("input[name='rotate-by-angle']:checked").val();
+		if(angle_val === "arbitrary"){
+			angle_val = $fieldset.find("input[name='rotate-by-arbitrary-angle']").val();
+		}
+		var angle_deg = parseFloat(angle_val);
+		var angle = angle_deg / 360 * TAU;
+		
+		switch(action){
+			case "flip-horizontal":
+				flip_horizontal();
+				break;
+			case "flip-vertical":
+				flip_vertical();
+				break;
+			case "rotate-by-angle":
+				rotate(angle);
+				break;
+		}
+		
 		$w.close();
-	});
+	}).focus();
 	$w.$Button("Cancel", function(){
 		$w.close();
 	});
@@ -682,9 +672,9 @@ function image_flip_and_rotate(){
 function image_stretch_and_skew(){
 	var $w = new $FormWindow("Stretch and Skew");
 	
-	var $fieldset_stretch = $(E("fieldset")).appendTo($w.$form_left);
+	var $fieldset_stretch = $(E("fieldset")).appendTo($w.$main);
 	$fieldset_stretch.append("<legend>Stretch</legend><table></table>");
-	var $fieldset_skew = $(E("fieldset")).appendTo($w.$form_left);
+	var $fieldset_skew = $(E("fieldset")).appendTo($w.$main);
 	$fieldset_skew.append("<legend>Skew</legend><table></table>");
 	
 	var $RowInput = function($table, img_src, label_text, default_value, label_unit){
@@ -719,7 +709,8 @@ function image_stretch_and_skew(){
 		var vskew = parseFloat(skew_y.val())/360*TAU;
 		stretch_and_skew(xscale, yscale, hskew, vskew);
 		$w.close();
-	});
+	}).focus();
+	
 	$w.$Button("Cancel", function(){
 		$w.close();
 	});
@@ -749,6 +740,25 @@ function set_as_wallpaper_centered(c){
 			layout: 'CENTER_CROPPED',
 			name: file_name,
 		}, function(){});
+	}else if(window.require){
+		var gui = require("nw.gui");
+		var fs = require("fs");
+		var wallpaper = require("wallpaper");
+		
+		var base64 = c.toDataURL().replace(/^data:image\/png;base64,/, "");
+		var imgPath = require("path").join(gui.App.dataPath, "bg.png");
+		
+		fs.writeFile(imgPath, base64, "base64", function(err){
+			if(err){
+				alert("Failed to set as desktop background:\nCouldn't write temporary image file");
+			}else{
+				wallpaper.set(imgPath, function(err){
+					if(err){
+						alert("Failed to set as desktop background!\n" + err);
+					}
+				});
+			}
+		});
 	}else{
 		window.open(c.toDataURL());
 	}

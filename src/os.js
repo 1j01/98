@@ -67,7 +67,7 @@ function Task($win){
 		$task.addClass("selected");
 		$win.triggerHandler("focus");
 	}
-	$win.on("mousedown", function(e){
+	$win.on("pointerdown", function(e){
 		$task.addClass("selected");
 		$win.triggerHandler("focus");
 	});
@@ -86,7 +86,7 @@ function $DesktopIcon(title, icon_name, exe, is_shortcut){
 	$container.on("dblclick", function(){
 		new exe
 	});
-	$container.on("mousedown", function(){
+	$container.on("pointerdown", function(){
 		$desktop.find(".desktop-icon").removeClass("selected");
 		$container.addClass("selected");
 	});
@@ -116,30 +116,30 @@ function $IframeWindow(url, icon_name){
 	};
 	
 	$win.on("focus", focus_window_contents);
-	var delegate_mouseup = function(){
+	var delegate_pointerup = function(){
 		if(!iframe.contentWindow){return}
 		if(!iframe.contentWindow.jQuery){return}
-		iframe.contentWindow.jQuery("body").trigger("mouseup");
+		iframe.contentWindow.jQuery("body").trigger("pointerup");
 	};
-	$G.on("mouseup blur", delegate_mouseup);
+	$G.on("pointerup blur", delegate_pointerup);
 	$win.on("close", function(){
-		$G.off("mouseup blur", delegate_mouseup);
+		$G.off("pointerup blur", delegate_pointerup);
 	});
-	// @TODO: delegate mousemove events too?
+	// @TODO: delegate pointermove events too?
 	
 	$iframe
 		.on("load", function(){
 			iframe.contentWindow.focus();
 			var $contentWindow = $(iframe.contentWindow);
-			$contentWindow.on("mousedown click", function(e){
+			$contentWindow.on("pointerdown click", function(e){
 				focus_window_contents();
 			});
 			// We want to disable pointer events for other iframes, but not this one
-			$contentWindow.on("mousedown", function(e){
+			$contentWindow.on("pointerdown", function(e){
 				$iframe.css("pointer-events", "all");
 				$("body").addClass("drag");
 			});
-			$contentWindow.on("mouseup", function(e){
+			$contentWindow.on("pointerup", function(e){
 				$("body").removeClass("drag");
 				$iframe.css("pointer-events", "");
 			});
@@ -203,7 +203,7 @@ $start_button.attr("title", "Click here to begin.");
 
 var $tasks = $("<div class='tasks'/>").appendTo($start_bar);
 
-$desktop.on("mousedown", function(){
+$desktop.on("pointerdown", function(){
 	$desktop.addClass("selected"); // yes, even the desktop can be selected (given focus)
 }); // @TODO: relinquish focus
 
@@ -237,7 +237,7 @@ $desktop.on("mousedown", function(){
 			}
 		});
 	};
-	$desktop.on("mousedown", function(e){
+	$desktop.on("pointerdown", function(e){
 		var $icon = $(e.target).closest(".desktop-icon");
 		$selection.hide();
 		start = {x: e.clientX, y: e.clientY};
@@ -249,13 +249,13 @@ $desktop.on("mousedown", function(){
 			update();
 		}
 	});
-	$desktop.on("mousemove", function(e){
+	$desktop.on("pointermove", function(e){
 		current = {x: e.clientX, y: e.clientY};
 		if(dragging){
 			update();
 		}
 	});
-	$G.on("mouseup blur", function(){
+	$G.on("pointerup blur", function(){
 		$selection.hide();
 		dragging = false;
 	});
@@ -264,11 +264,11 @@ $desktop.on("mousedown", function(){
 // Fix dragging things (like windows) over iframes
 // (when combined with a bit of css, .drag iframe { pointer-events: none; })
 // (and a similar thing in $Window.js)
-$(window).on("mousedown", function(e){
+$(window).on("pointerdown", function(e){
 	//console.log(e.type);
 	$("body").addClass("drag");
 });
-$(window).on("mouseup dragend blur", function(e){
+$(window).on("pointerup dragend blur", function(e){
 	//console.log(e.type);
 	if(e.type === "blur"){
 		if(document.activeElement.tagName.match(/iframe/i)){

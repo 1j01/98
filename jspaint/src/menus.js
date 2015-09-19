@@ -168,6 +168,8 @@ var menus = {
 			checkbox: {
 				toggle: function(){
 					$toolbox.toggle();
+				},
+				check: function(){
 					return $toolbox.is(":visible");
 				},
 			},
@@ -179,6 +181,8 @@ var menus = {
 			checkbox: {
 				toggle: function(){
 					$colorbox.toggle();
+				},
+				check: function(){
 					return $colorbox.is(":visible");
 				},
 			},
@@ -189,6 +193,8 @@ var menus = {
 			checkbox: {
 				toggle: function(){
 					$status_area.toggle();
+				},
+				check: function(){
 					return $status_area.is(":visible");
 				},
 			},
@@ -296,7 +302,8 @@ var menus = {
 					}[transparent_opaque];
 					
 					$G.trigger("option-changed");
-					
+				},
+				check: function(){
 					return transparent_opaque === "opaque";
 				},
 			},
@@ -306,34 +313,36 @@ var menus = {
 	"&Colors": [
 		{
 			item: "&Edit Colors...",
-			enabled: function(){
-				// @FIXME: make it work when the colorbox is hidden
-				return $colorbox.is(":visible");
-			},
 			action: function(){
-				// Edit the last color cell that's been selected as the foreground color.
-				var $b = $colorbox.get_last_foreground_color_$button();
-				$b.trigger({type: "mousedown", ctrlKey: false, button: 0});
-				$b.find("input").trigger("click", "synthetic");
+				$colorbox.edit_last_color();
 			},
 			description: "Creates a new color.",
-		}
-		/*
+		},
 		{
 			item: "&Get Colors",
 			action: function(){
-				@TODO
+				$file_input.click().one("change", function(){
+					var file = $file_input[0].files[0];
+					Palette.load(file, function(err, new_palette){
+						if(err){
+							alert("This file is not in a format the paint recognizes, or no colors were found.");
+						}else{
+							palette = new_palette;
+							$colorbox.rebuild_palette();
+						}
+					});
+				});
 			},
 			description: "Uses a previously saved palette of colors.",
 		},
 		{
 			item: "&Save Colors",
 			action: function(){
-				@TODO
+				var blob = new Blob([JSON.stringify(palette)], {type: "application/json"});
+				saveAs(blob, "colors.json");
 			},
 			description: "Saves the current palette of colors to a file.",
 		}
-		*/
 	],
 	"&Help": [
 		{

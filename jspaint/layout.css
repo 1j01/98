@@ -48,6 +48,33 @@ html, body, .jspaint {
 	flex-flow: column;
 	flex: 1;
 }
+@media (max-width: 300px) {
+	.jspaint-horizontal > .jspaint-component-area {
+		display: none;
+	}
+}
+@media (max-height: 340px) {
+	.jspaint-vertical > .jspaint-component-area {
+		display: none;
+	}
+}
+@media (max-height: 370px) {
+	.jspaint-vertical > .jspaint-status-area {
+		display: none !important;
+	}
+}
+.jspaint-component-area,
+.jspaint-menus {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.jspaint-status-area,
+.jspaint-component-area,
+.jspaint-menus {
+	flex: 0 0 auto;
+}
 .jspaint-selection > img,
 .jspaint-selection > canvas {
 	width: 100%;
@@ -98,12 +125,14 @@ html, body, .jspaint {
 	height: 1.25em;
 }
 .jspaint-status-text {
-	flex: 1;
+	flex-basis: auto;
+	flex-grow: 1;
+	flex-shrink: 0;
+	padding-right: 2px;
 	overflow: hidden;
 }
 .jspaint-status-coordinates {
-	flex-basis: 114px;
-	flex-grow: 0;
+	flex: 0 0 114px;
 	min-width: 0px;
 	padding-left: 3px;
 	border-left: 1px solid #7b7b7b;
@@ -141,7 +170,6 @@ html, body, .jspaint {
 .jspaint-palette {
 	display: flex;
 	flex-flow: row wrap;
-	width: 225px;
 }
 .jspaint-color-box,
 .jspaint-palette {
@@ -201,11 +229,26 @@ html, body, .jspaint {
 }
 
 .jspaint-window-content .jspaint-button-group {
-	width: 85px;
+	display: flex;
+	flex: 0 0 auto;
+	flex-flow: column;
 }
 .jspaint-window-content .jspaint-button-group > button {
-	width: 95%;
+	width: 80px;
 	padding: 3px 5px;
+}
+.jspaint-window-content > form {
+	display: flex;
+	flex-flow: row;
+}
+.jspaint-dialogue-window .jspaint-window-content > form {
+	flex-flow: column;
+}
+.jspaint-dialogue-window .jspaint-window-content > form > .jspaint-button-group {
+	flex-flow: row;
+}
+.jspaint-dialogue-window .jspaint-window-content > form > div:first-child {
+	padding: 5px;
 }
 
 ::before, ::after {

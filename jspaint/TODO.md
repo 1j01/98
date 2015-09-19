@@ -2,8 +2,9 @@
 # ![](images/icons/32.png) JS Paint Todo
 
 * Visual
-	* Some window layouts are bad
+	* Warning sign for "Save changes to X?" dialogue
 	* The window close button uses text; font rendering is not consistent
+	* The menus use text; the arrow character is converted to an icon on some mobile devices
 	* The progress bar (Rendering GIF) is left native
 	* Use win98 default scrollbar size
 	* Minor color differences (0x808080 != 0x7b7b7b)
@@ -11,68 +12,39 @@
 	* Dynamic cursors
 		* Inverty fill bucket and airbrush cursors
 		* Previewy brush and eraser cursors
-	* Pixelate graphics when zoomed in
-
-
-* Keep track of what's saved
-	* Don't warn about saving saved files (Ctrl+S and then Ctrl+N)
-	* Do warn about losing unsaved files (close button, etc.)
-
-
-* Gracefully hide things as the window gets smaller (With media queries!)
-	* This could be animated ;)
-	* Gracefully push the dimension displays off the edge
-	  instead of covering up the text with (usually blank) space
+	* Pixelize icons, images, checkered backgrounds when zoomed in
 
 
 * Issues
-	* Components
-		* Colors > Edit Colors... doesn't work when the $colorbox is hidden
-		* Component windows are gone forever once closed (can't be shown from the View menu)
-		* Components in windows hidden from the View menu don't hide their windows
+	* Image > Flip/Rotate, Rotate by angle, `[_________]` Degrees sort of nullifies the image
+	* Crashes when saving large images
+	* If you open an image it resets the zoom but if you're on the magnification tool it doesn't update the options
+	* If you zoom in with the magnifier without previously changing the magnification on the toolbar,
+	  then switch back to the magnifier, the toolbar doesn't show any magnification highlighted
+	* Dragging the selection fails when zoomed in
 	* Firefox
 		* It lags unusably when using tools
 			* For some tools it only happens while dragging the mouse on the canvas
 		* Tool options flicker... *and lag*, when they're redrawn in quick succession
-	* Global event handlers interfering with stuff
-		* In Image > Attributes and other places
-			* You can't drag&drop in the inputs
-		* In Help > About Paint and other places
-			* You can't select text
-			* You can't drag links
-	* Free-form select can leave behind inverty brush in multiplayer
 	* The TextBox scrollbars have extra buttons
 	* The TextBox contents move down and right when rasterizing
+	* Free-form select can leave behind inverty brush in multiplayer
 	* Multiplayer cursors that go outside the parent can cause the page to be scrollable
 	* Multiplayer interupts you:
 		* If you try to make a selection when there's a selection
 		* If you try to play with multiple players
 
 
-* Handling actions that interfere with each other
-	* I currently have a function `this_ones_a_frame_changer();`
-	  that finalizes the selection among other things, called at various times
-	  (undo, redo, reset, file_open, ...and in the future, switching between frames of an animation)
-	* MS Paint disables actions while you're drawing. Maybe I should do that?
-
-
 ### Menus
 
-* Keyboard Navigation
-* Use keyboard shortcuts defined in the menu data structure to declaratively setup hotkeys
-* Sliding animation
+* Keyboard navigation of submenus
+* <kbd>Alt</kbd> (by itself)?
 
 
 ### Components / Windows
 
 * Use the ghost when dragging on a component window's titlebar
-* Make the component ghost account for the window titlebar
-
-
-* Keyboard interaction with dialogues
-	* Close dialogues with Escape
-	* Navigating form windows
-	* Left/Right, Enter/Space
+* Make the component ghost account for the window's titlebar
 
 
 * Handle windows going off the screen
@@ -99,6 +71,10 @@
 	* Multi-size Icons
 		* Windows ICO ([jBinary can read](http://jdataview.github.io/jBinary.Repo/demo/#ico) and presumably write ICO files)
 		* Mac ICNS
+	* Layered images?
+		* Photoshop PSD ([via psd.js](https://github.com/trevorlinton/psd.js))
+		* OpenRaster ORA ([via ora.js](https://github.com/zsgalusz/ora.js/tree/master))
+
 
 * Multiplayer
 	* See [multiplayer.js](multiplayer.js)
@@ -107,12 +83,15 @@
 
 ### Device support
 
-* Use pointer events polyfill
-	* Multi-touch devices
-		* Second touch cancels current action just like a second button does on the desktop
-		* Two-finger drag to pan
-	* Single-touch devices
-		* Pan tool
+* Multi-touch devices
+	* Two-finger drag to pan (the second touch cancels the default action just like normal)
+* Single-touch devices
+	* Pan tool
+
+
+* Enlarge GUI elements on touch devices
+	* Menus!
+	* Resize handles
 
 
 * You can't use the Eraser/Color Eraser tool as a "Color Eraser" without a secondary mouse button
@@ -124,20 +103,6 @@
 	* Shift (toggle): Proportional, Smear / Trail Selection, "Snap to 8 directions" / "Octosnap"?
 	* Ctrl+Select: Crop tool
 	* Ctrl+Shift+G: "Render GIF"
-
-
-* Add Pan and Color Eraser tools to the toolbox
-	* What about multitouch devices that don't need a pan tool?
-	  Maybe add some other random tool?
-
-
-### Colors
-
-For mobile, tap (or click) the selected colors area to swap background/foreground colors.
-
-The ability to change the current color without changing the palette
-
-Load palettes with [palette.js](https://github.com/1j01/palette.js/)
 
 
 ### Tools
@@ -182,7 +147,6 @@ Load palettes with [palette.js](https://github.com/1j01/palette.js/)
 	* Underline
 	* Expanding to new lines
 	* Minimum size of 3em x 1em
-	* Detect fonts with [Font Detective](https://github.com/1j01/font-detective/)
 	* Store position of FontBox
 	* Keep an old TextBox while drawing a new one
 	* Save text and record transformations so the image can be saved as
@@ -261,7 +225,6 @@ Prankily wait for next user input before fullscreening and bluescreening
 ### Chrome App
 
 * Set up build process
-	* ~~Concatenate & Minify~~ (Why?)
 	* Increment version
 	* Compress into zip file
 	* Upload new version to the Chrome Web Store?
@@ -288,43 +251,38 @@ Prankily wait for next user input before fullscreening and bluescreening
 
 * Improve README
 	* Introduce and explain the project ...better?
-	* Make it pretty with images (screenshots plz)
-
-
-* Stop improving TODO
-	* It's just a TODO
-	* You're wasting your time
-	* Why did I even make this a markdown document?
-	* Work on the project
+	* More images? Animated GIFs perhaps? :)
 
 
 * CSS
-	* Buttons shouldn't need a class `.jspaint-button`
+	* Buttons shouldn't need a class `.jspaint-button`!
 	* Color cells probably shouldn't be buttons
 	* There also shouldn't be classes `.jspaint-window-button` (`.jspaint-window-titlebar button`) or `.jspaint-dialogue-button` (`.jspaint-window-content button`) at all
 	* DRY, especially for the buttons
 	* Seriously, the buttons
-	* Move into folder (called what? styles? stylesheets? css?)
+	* Move into styles folder
 	* Deal with `z-index`es
 	* Comment stuff
+	* Buttons
+	* Srsly
+	* C'mon
+	* Buttons
+	* Also other `.jspaint-` classes
 
 
 * JS
-	* Refactor old code
 	* Selection and TextBox should inherit from a base class
 	* Remove either `selection.x/y/w/h` or `._x/_y/_w/_h`; and use `x/y/width/height`
 	* Outdated names like sel.$ghost = div.jspaint-selection (not exactly a ghost)
 	* Everything is in random files! "functions.js", REALLY?
 	* $Window has a $Button facility; $FormWindow overrides it with essentially a better one
 	* Image inversion code is duplicated in ChooserCanvas from tool-options.js but should go in image-manipulation.js
-	* render_brush shouldn't be in tool-options.js
-	* `$w.$form.addClass("jspaint-horizontal").css({display: "flex"});`
 	* Comment everything and then try to make the code as obvious as the comments
+	* Improve code quality: https://codeclimate.com/github/1j01/jspaint
 
 
 * Images
-	* Optimize
-	* Use a sprite sheet
+	* Use a global sprite sheet, and optimize it
 
 
 * Help

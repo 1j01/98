@@ -4,10 +4,19 @@ function $Component(name, orientation, $el){
 	var $c = $(E("div")).addClass("jspaint-component");
 	$c.addClass("jspaint-"+name+"-component");
 	$c.append($el);
+	$c.attr("touch-action", "none");
 	
 	$c.appendTo({
 		tall: $left,
 		wide: $bottom,
+	}[orientation]);
+	
+	var $w = new $Window($c);
+	$w.title(name);
+	$w.hide();
+	$w.$content.addClass({
+		tall: "jspaint-vertical",
+		wide: "jspaint-horizontal",
 	}[orientation]);
 	
 	// Nudge the Colors component over a tiny bit
@@ -28,10 +37,7 @@ function $Component(name, orientation, $el){
 	}
 	
 	var dock_to = function($dock_to){
-		if($w){
-			$w.close();
-			$w = null;
-		}
+		$w.hide();
 		
 		$dock_to.append($c);
 		
@@ -54,16 +60,15 @@ function $Component(name, orientation, $el){
 	var $last_docked_to;
 	var $dock_to;
 	var $ghost;
-	var $w;
-	$c.on("mousedown", function(e){
+	$c.on("pointerdown", function(e){
 		// Only start a drag via a left click directly on the component element
 		if(e.button !== 0){ return; }
 		if(!$c.is(e.target)){ return; }
 		
-		$G.on("mousemove", drag_onmousemove);
-		$G.one("mouseup", function(e){
-			$G.off("mousemove", drag_onmousemove);
-			drag_onmouseup(e);
+		$G.on("pointermove", drag_onpointermove);
+		$G.one("pointerup", function(e){
+			$G.off("pointermove", drag_onpointermove);
+			drag_onpointerup(e);
 		});
 		
 		var rect = $c[0].getBoundingClientRect();
@@ -89,7 +94,7 @@ function $Component(name, orientation, $el){
 		// Prevent text selection anywhere within the component
 		e.preventDefault();
 	});
-	var drag_onmousemove = function(e){
+	var drag_onpointermove = function(e){
 		
 		$ghost.css({
 			left: e.clientX + ox,
@@ -130,12 +135,9 @@ function $Component(name, orientation, $el){
 		e.preventDefault();
 	};
 	
-	var drag_onmouseup = function(e){
+	var drag_onpointerup = function(e){
 		
-		if($w){
-			$w.close();
-			$w = null;
-		}
+		$w.hide();
 		
 		// If the component is docked to a component area (a side)
 		if($c.parent().is(".jspaint-component-area")){
@@ -153,14 +155,10 @@ function $Component(name, orientation, $el){
 			$c.css("position", "relative");
 			$c.css(pos_axis, "");
 			
-			// Put the component in a new window
-			$w = new $Window($c);
-			$w.title(name);
+			// Put the component in the window
 			$w.$content.append($c);
-			$w.$content.addClass({
-				tall: "jspaint-vertical",
-				wide: "jspaint-horizontal",
-			}[orientation]);
+			// Show and position the window
+			$w.show();
 			var window_rect = $w[0].getBoundingClientRect();
 			var window_content_rect = $w.$content[0].getBoundingClientRect();
 			var dx = window_content_rect.left - window_rect.left;
@@ -181,6 +179,31 @@ function $Component(name, orientation, $el){
 		pos = last_docked_to_pos;
 		dock_to($last_docked_to);
 	};
+	
+	$c.show = function(){
+		$($c[0]).show();
+		if($.contains($w[0], $c[0])){
+			$w.show();
+		}
+		return $c;
+	};
+	$c.hide = function(){
+		$c.add($w).hide();
+		return $c;
+	};
+	$c.toggle = function(){
+		if($c.is(":visible")){
+			$c.hide();
+		}else{
+			$c.show();
+		}
+		return $c;
+	};
+	
+	$w.on("close", function(e){
+		e.preventDefault();
+		$w.hide();
+	});
 	
 	return $c;
 }

@@ -20,6 +20,7 @@ Selection.prototype.instantiate = function(_img, _passive){
 	sel.$ghost.addClass("instantiated").css({
 		cursor: Cursor(["move", [8, 8], "move"])
 	});
+	sel.$ghost.attr("touch-action", "none");
 	sel.position();
 	
 	if(_passive){
@@ -60,7 +61,7 @@ Selection.prototype.instantiate = function(_img, _passive){
 		});
 		
 		var mox, moy;
-		var mousemove = function(e){
+		var pointermove = function(e){
 			var m = e2c(e);
 			sel._x = Math.max(Math.min(m.x - mox, canvas.width), -sel._w);
 			sel._y = Math.max(Math.min(m.y - moy, canvas.height), -sel._h);
@@ -71,7 +72,7 @@ Selection.prototype.instantiate = function(_img, _passive){
 			}
 		};
 		
-		sel.canvas_mousedown = function(e){
+		sel.canvas_pointerdown = function(e){
 			e.preventDefault();
 			
 			var rect = sel.canvas.getBoundingClientRect();
@@ -80,9 +81,9 @@ Selection.prototype.instantiate = function(_img, _passive){
 			mox = ~~(cx / rect.width * sel.canvas.width);
 			moy = ~~(cy / rect.height * sel.canvas.height);
 			
-			$G.on("mousemove", mousemove);
-			$G.one("mouseup", function(){
-				$G.off("mousemove", mousemove);
+			$G.on("pointermove", pointermove);
+			$G.one("pointerup", function(){
+				$G.off("pointermove", pointermove);
 			});
 			
 			if(e.shiftKey){
@@ -90,7 +91,7 @@ Selection.prototype.instantiate = function(_img, _passive){
 			}
 		};
 		
-		$(sel.canvas).on("mousedown", sel.canvas_mousedown);
+		$(sel.canvas).on("pointerdown", sel.canvas_pointerdown);
 		$canvas_area.trigger("resize");
 		$status_position.text("");
 		$status_size.text("");
@@ -102,6 +103,7 @@ Selection.prototype.cut_out_background = function(){
 	var sel = this;
 	var cutout = sel.canvas;
 	if(transparency){
+		// @FIXME: this doesn't work so well with transparency between 0 and 1
 		ctx.save();
 		ctx.globalCompositeOperation = "destination-out";
 		ctx.drawImage(cutout, sel._x, sel._y);
@@ -109,7 +111,7 @@ Selection.prototype.cut_out_background = function(){
 	}else{
 		var colored_canvas = new Canvas(cutout);
 		colored_canvas.ctx.globalCompositeOperation = "source-in";
-		colored_canvas.ctx.fillStyle = colors[1];
+		colored_canvas.ctx.fillStyle = colors.background;
 		colored_canvas.ctx.fillRect(0, 0, colored_canvas.width, colored_canvas.height);
 		ctx.drawImage(colored_canvas, sel._x, sel._y);
 	}
@@ -129,12 +131,11 @@ Selection.prototype.position = function(){
 
 Selection.prototype.resize = function(){
 	var sel = this;
-	var width = sel._w;
-	var height = sel._h;
+	var new_width = sel._w;
+	var new_height = sel._h;
 	
-	var new_canvas = new Canvas(width, height);
-	
-	new_canvas.ctx.drawImage(sel.canvas, 0, 0, width, height);
+	var new_canvas = new Canvas(new_width, new_height);
+	new_canvas.ctx.drawImage(sel.canvas, 0, 0, new_width, new_height);
 	
 	sel.replace_canvas(new_canvas);
 };
@@ -156,8 +157,8 @@ Selection.prototype.replace_canvas = function(new_canvas){
 	
 	$(sel.canvas).replaceWith(new_canvas);
 	sel.canvas = new_canvas;
-
-	$(sel.canvas).on("mousedown", sel.canvas_mousedown);
+	
+	$(sel.canvas).on("pointerdown", sel.canvas_pointerdown);
 	sel.$ghost.triggerHandler("new-element", [sel.canvas]);
 	sel.$ghost.triggerHandler("resize");//?
 };
@@ -188,9 +189,7 @@ Selection.prototype.crop = function(){
 	sel.instantiate(null, "passive");
 	if(sel.canvas){
 		undoable(0, function(){
-			canvas.width = sel.canvas.width;
-			canvas.height = sel.canvas.height;
-			ctx.drawImage(sel.canvas, 0, 0);
+			ctx.copy(sel.canvas);
 			$canvas.trigger("update"); //update handles
 		});
 	}

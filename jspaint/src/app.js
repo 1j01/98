@@ -10,6 +10,7 @@ var my_canvas_width = default_canvas_width;
 var my_canvas_height = default_canvas_height;
 
 try{
+	// @TODO support for chrome app where only chrome.storage is available
 	if(localStorage){
 		my_canvas_width = Number(localStorage.width) || default_canvas_width;
 		my_canvas_height = Number(localStorage.height) || default_canvas_height;
@@ -23,12 +24,16 @@ var palette = [
 
 var stroke_color;
 var fill_color;
-var stroke_color_i = 0;
-var fill_color_i = 0;
+var stroke_color_k = 0;
+var fill_color_k = 0;
 
 var selected_tool = tools[6];
 var previous_tool = selected_tool;
-var colors = ["", "", ""];
+var colors = {
+	foreground: "",
+	background: "",
+	ternary: "",
+};
 
 var selection; //the one and only Selection
 var textbox; //the one and only TextBox
@@ -43,21 +48,22 @@ var redos = []; //array of <canvas>
 //var frames = []; //array of {delay: N, undos: [<canvas>], redos: [<canvas>], canvas: <canvas>}? array of Frames?
 
 var file_name;
+var saved = true;
 
 
 
-var $body = $("body");
-var $G = $(window);
 var $app = $(E("div")).addClass("jspaint").appendTo("body");
 
 var $V = $(E("div")).addClass("jspaint-vertical").appendTo($app);
 var $H = $(E("div")).addClass("jspaint-horizontal").appendTo($V);
 
 var $canvas_area = $(E("div")).addClass("jspaint-canvas-area").appendTo($H);
+$canvas_area.attr("touch-action", "pan-x pan-y");
 
 var canvas = new Canvas();
 var ctx = canvas.ctx;
 var $canvas = $(canvas).appendTo($canvas_area);
+$canvas.attr("touch-action", "none");
 
 var $canvas_handles = $Handles($canvas_area, canvas, {outset: 4, offset: 4, size_only: true});
 
@@ -71,10 +77,11 @@ var $status_text = $(E("div")).addClass("jspaint-status-text").appendTo($status_
 var $status_position = $(E("div")).addClass("jspaint-status-coordinates").appendTo($status_area);
 var $status_size = $(E("div")).addClass("jspaint-status-coordinates").appendTo($status_area);
 
-$status_text.default = function(){
+($status_text.default = function(){
 	$status_text.text("For Help, click Help Topics on the Help Menu.");
-};
-$status_text.default();
+})();
+
+var $file_input = $("<input type=file>").appendTo($app).css({width: 0, height: 0, padding: 0, border: 0, flex: "0 0 0"});
 
 var $toolbox = $ToolBox();
 var $colorbox = $ColorBox();
@@ -87,7 +94,7 @@ reset_magnification();
 if(window.file_entry){
 	open_from_FileEntry(window.file_entry);
 }else if(window.intent){
-	open_from_URI(window.intent.data, "intent");
+	open_from_URI(window.intent.data);
 }
 
 $canvas.on("user-resized", function(e, _x, _y, width, height){
@@ -97,7 +104,7 @@ $canvas.on("user-resized", function(e, _x, _y, width, height){
 		if(transparency){
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 		}else{
-			ctx.fillStyle = colors[1];
+			ctx.fillStyle = colors.background;
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 		}
 		
@@ -117,12 +124,22 @@ $canvas.on("user-resized", function(e, _x, _y, width, height){
 	});
 });
 
-$body.on("dragover dragenter", function(e){
+$("body").on("dragover dragenter", function(e){
+	if(
+		e.target instanceof HTMLInputElement ||
+		e.target instanceof HTMLTextAreaElement
+	){
+		return;
+	}
 	e.preventDefault();
-	e.stopPropagation();
 }).on("drop", function(e){
+	if(
+		e.target instanceof HTMLInputElement ||
+		e.target instanceof HTMLTextAreaElement
+	){
+		return;
+	}
 	e.preventDefault();
-	e.stopPropagation();
 	var dt = e.originalEvent.dataTransfer;
 	if(dt && dt.files && dt.files.length){
 		open_from_FileList(dt.files);
@@ -134,6 +151,15 @@ $G.on("keyup", function(e){
 	delete keys[e.keyCode];
 });
 $G.on("keydown", function(e){
+	if(e.isDefaultPrevented()){
+		return;
+	}
+	if(
+		e.target instanceof HTMLInputElement ||
+		e.target instanceof HTMLTextAreaElement
+	){
+		return;
+	}
 	var brush_shapes = {
 		circle: [
 			0, 1, 0,
@@ -232,7 +258,7 @@ $G.on("keydown", function(e){
 			$G.trigger("option-changed");
 		}
 		e.preventDefault();
-		return false;
+		return;
 	}else if(e.ctrlKey){
 		var key = String.fromCharCode(e.keyCode).toUpperCase();
 		if(textbox){
@@ -244,8 +270,18 @@ $G.on("keydown", function(e){
 				case "B":
 				case "U":
 					// Don't prevent the default. Allow text editing commands.
-					return true;
+					return;
 			}
+		}
+		switch(e.keyCode){
+			case 188: // , <
+			case 219: // [ {
+				rotate(-TAU/4);
+			break;
+			case 190: // . >
+			case 221: // ] }
+				rotate(+TAU/4);
+			break;
 		}
 		switch(key){
 			case "Z":
@@ -279,11 +315,9 @@ $G.on("keydown", function(e){
 				image_attributes();
 			break;
 			default:
-				// This shortcut is not handled, do not try to prevent the default.
-				return true;
+				return; // don't preventDefault
 		}
 		e.preventDefault();
-		return false;
 	}
 });
 $G.on("cut copy paste", function(e){
@@ -320,16 +354,16 @@ $G.on("cut copy paste", function(e){
 					};
 					img.src = str;
 				});
-				return false; // break $.each
+				return false; // break out of $.each loop
 			}else if(item.type.match(/^image/)){
 				paste_file(item.getAsFile());
-				return false; // break $.each
+				return false; // break out of $.each loop
 			}
 		});
 	}
 });
 
-var mouse, mouse_start, mouse_previous;
+var pointer, pointer_start, pointer_previous;
 var reverse, ctrl, button;
 function e2c(e){
 	var rect = canvas.getBoundingClientRect();
@@ -348,13 +382,13 @@ function tool_go(event_name){
 	ctx.fillStyle = fill_color =
 	ctx.strokeStyle = stroke_color =
 		colors[
-			(ctrl && colors[2]) ? 2 :
-			(reverse ? 1 : 0)
+			(ctrl && colors.ternary) ? "ternary" :
+			(reverse ? "background" : "foreground")
 		];
 	
-	fill_color_i =
-	stroke_color_i =
-		ctrl ? 2 : (reverse ? 1 : 0)
+	fill_color_k =
+	stroke_color_k =
+		ctrl ? "ternary" : (reverse ? "background" : "foreground")
 	
 	if(selected_tool.shape){
 		var previous_canvas = undos[undos.length-1];
@@ -366,86 +400,87 @@ function tool_go(event_name){
 	if(selected_tool.shape || selected_tool.shape_colors){
 		if(!selected_tool.stroke_only){
 			if(reverse){
-				fill_color_i = 0;
-				stroke_color_i = 1;
+				fill_color_k = 0;
+				stroke_color_k = 1;
 			}else{
-				fill_color_i = 1;
-				stroke_color_i = 0;
+				fill_color_k = 1;
+				stroke_color_k = 0;
 			}
 		}
-		ctx.fillStyle = fill_color = colors[fill_color_i];
-		ctx.strokeStyle = stroke_color = colors[stroke_color_i];
+		ctx.fillStyle = fill_color = colors[fill_color_k];
+		ctx.strokeStyle = stroke_color = colors[stroke_color_k];
 	}
 	if(selected_tool.shape){
-		selected_tool.shape(ctx, mouse_start.x, mouse_start.y, mouse.x-mouse_start.x, mouse.y-mouse_start.y);
+		selected_tool.shape(ctx, pointer_start.x, pointer_start.y, pointer.x-pointer_start.x, pointer.y-pointer_start.y);
 	}
 	
 	if(selected_tool[event_name]){
-		selected_tool[event_name](ctx, mouse.x, mouse.y);
+		selected_tool[event_name](ctx, pointer.x, pointer.y);
 	}
 	if(selected_tool.paint){
 		if(selected_tool.continuous === "space"){
 			var ham = brush_shape.match(/diagonal/) ? brosandham_line : bresenham_line;
-			ham(mouse_previous.x, mouse_previous.y, mouse.x, mouse.y, function(x, y){
+			ham(pointer_previous.x, pointer_previous.y, pointer.x, pointer.y, function(x, y){
 				selected_tool.paint(ctx, x, y);
 			});
 		}else{
-			selected_tool.paint(ctx, mouse.x, mouse.y);
+			selected_tool.paint(ctx, pointer.x, pointer.y);
 		}
 	}
 }
-function canvas_mouse_move(e){
+function canvas_pointer_move(e){
 	ctrl = e.ctrlKey;
-	mouse = e2c(e);
+	pointer = e2c(e);
 	if(e.shiftKey){
 		if(selected_tool.name.match(/Line|Curve/)){
 			var dist = Math.sqrt(
-				(mouse.y - mouse_start.y) * (mouse.y - mouse_start.y) +
-				(mouse.x - mouse_start.x) * (mouse.x - mouse_start.x)
+				(pointer.y - pointer_start.y) * (pointer.y - pointer_start.y) +
+				(pointer.x - pointer_start.x) * (pointer.x - pointer_start.x)
 			);
 			var octurn = (TAU / 8);
-			var dir08 = Math.atan2(mouse.y - mouse_start.y, mouse.x - mouse_start.x) / octurn;
+			var dir08 = Math.atan2(pointer.y - pointer_start.y, pointer.x - pointer_start.x) / octurn;
 			var dir = Math.round(dir08) * octurn;
-			mouse.x = Math.round(mouse_start.x + Math.cos(dir) * dist);
-			mouse.y = Math.round(mouse_start.y + Math.sin(dir) * dist);
+			pointer.x = Math.round(pointer_start.x + Math.cos(dir) * dist);
+			pointer.y = Math.round(pointer_start.y + Math.sin(dir) * dist);
 		}else if(selected_tool.shape){
-			var w = Math.abs(mouse.x - mouse_start.x);
-			var h = Math.abs(mouse.y - mouse_start.y);
+			var w = Math.abs(pointer.x - pointer_start.x);
+			var h = Math.abs(pointer.y - pointer_start.y);
 			if(w < h){
-				if(mouse.y > mouse_start.y){
-					mouse.y = mouse_start.y + w;
+				if(pointer.y > pointer_start.y){
+					pointer.y = pointer_start.y + w;
 				}else{
-					mouse.y = mouse_start.y - w;
+					pointer.y = pointer_start.y - w;
 				}
 			}else{
-				if(mouse.x > mouse_start.x){
-					mouse.x = mouse_start.x + h;
+				if(pointer.x > pointer_start.x){
+					pointer.x = pointer_start.x + h;
 				}else{
-					mouse.x = mouse_start.x - h;
+					pointer.x = pointer_start.x - h;
 				}
 			}
 		}
 	}
 	tool_go();
-	mouse_previous = mouse;
+	pointer_previous = pointer;
 }
-$canvas.on("mousemove", function(e){
-	mouse = e2c(e);
-	$status_position.text(mouse.x + "," + mouse.y);
+$canvas.on("pointermove", function(e){
+	pointer = e2c(e);
+	$status_position.text(pointer.x + "," + pointer.y);
 });
-$canvas.on("mouseleave", function(e){
+$canvas.on("pointerleave", function(e){
 	$status_position.text("");
 });
 
-var mouse_was_pressed = false;
-$canvas.on("mousedown", function(e){
-	if(mouse_was_pressed && (reverse ? (button === 2) : (button === 0))){
-		mouse_was_pressed = false;
-		return cancel();
+var pointer_was_pressed = false;
+$canvas.on("pointerdown", function(e){
+	if(pointer_was_pressed && (reverse ? (button === 2) : (button === 0))){
+		pointer_was_pressed = false;
+		cancel();
+		return;
 	}
-	mouse_was_pressed = true;
-	$G.one("mouseup", function(e){
-		mouse_was_pressed = false;
+	pointer_was_pressed = true;
+	$G.one("pointerup", function(e){
+		pointer_was_pressed = false;
 	});
 	
 	if(e.button === 0){
@@ -453,54 +488,48 @@ $canvas.on("mousedown", function(e){
 	}else if(e.button === 2){
 		reverse = true;
 	}else{
-		return false;
+		return;
 	}
 	button = e.button;
 	ctrl = e.ctrlKey;
-	mouse_start = mouse_previous = mouse = e2c(e);
+	pointer_start = pointer_previous = pointer = e2c(e);
 	
-	var mousedown_action = function(){
-		if(selected_tool.paint || selected_tool.mousedown){
-			tool_go("mousedown");
+	var pointerdown_action = function(){
+		if(selected_tool.paint || selected_tool.pointerdown){
+			tool_go("pointerdown");
 		}
 		
-		$G.on("mousemove", canvas_mouse_move);
+		$G.on("pointermove", canvas_pointer_move);
 		if(selected_tool.continuous === "time"){
-			var iid = setInterval(function(){
-				tool_go();
-			}, 5);
+			var iid = setInterval(tool_go, 5);
 		}
-		$G.one("mouseup", function(e, canceling){
+		$G.one("pointerup", function(e, canceling){
 			button = undefined;
 			if(canceling){
 				selected_tool.cancel && selected_tool.cancel();
 			}else{
-				mouse = e2c(e);
-				selected_tool.mouseup && selected_tool.mouseup(ctx, mouse.x, mouse.y);
+				pointer = e2c(e);
+				selected_tool.pointerup && selected_tool.pointerup(ctx, pointer.x, pointer.y);
 			}
 			if(selected_tool.deselect){
 				selected_tool = previous_tool;
 				$toolbox && $toolbox.update_selected_tool();
 			}
-			$G.off("mousemove", canvas_mouse_move);
+			$G.off("pointermove", canvas_pointer_move);
 			if(iid){
 				clearInterval(iid);
 			}
 		});
 	};
 	
-	// This would be a lot nicer in ruby (or in OOPLiE!)
-	// It would be just `if selected_tool.passive`
-	// (Or in OOPLiE, `If the selected tool is passive`)
-	// Or it could use a getter
 	if((typeof selected_tool.passive === "function") ? selected_tool.passive() : selected_tool.passive){
-		mousedown_action();
+		pointerdown_action();
 	}else{
-		undoable(mousedown_action);
+		undoable(pointerdown_action);
 	}
 });
 
-$canvas_area.on("mousedown", function(e){
+$canvas_area.on("pointerdown", function(e){
 	if(e.button === 0){
 		if($canvas_area.is(e.target)){
 			if(selection){
@@ -510,19 +539,19 @@ $canvas_area.on("mousedown", function(e){
 	}
 });
 
-$body.on("mousedown contextmenu", function(e){
+$app.on("mousedown selectstart contextmenu", function(e){
 	if(
 		e.target instanceof HTMLSelectElement ||
 		e.target instanceof HTMLTextAreaElement ||
 		(e.target instanceof HTMLLabelElement && e.type !== "contextmenu") ||
 		(e.target instanceof HTMLInputElement && e.target.type !== "color")
 	){
-		return true;
+		return;
 	}
 	e.preventDefault();
 });
 
 // Stop drawing (or dragging or whatver) if you Alt+Tab or whatever
 $G.on("blur", function(e){
-	$G.triggerHandler("mouseup");
+	$G.triggerHandler("pointerup");
 });
