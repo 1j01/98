@@ -1,4 +1,4 @@
-arocket.extend($ = rocket.$, rocket);
+rocket.extend($ = rocket.$, rocket);
 var arcade = {};
 
 minesweeper = function(play_area, face) {

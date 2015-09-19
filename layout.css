@@ -60,6 +60,9 @@ html, body {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
+.jspaint-window-titlebar .icon {
+	vertical-align: bottom;
+}
 .jspaint-window-content {
 	margin: 0;
 	padding: 0;
