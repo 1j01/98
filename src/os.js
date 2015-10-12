@@ -104,27 +104,36 @@ function $IframeWindow(url, icon_name){
 	var $iframe = $win.$iframe = $win.$content.find("iframe");
 	var iframe = $win.iframe = $iframe[0];
 	
-	var focus_window_contents = function(){
-		if(!iframe.contentWindow){return}
+	var focus_window_contents = function(e){
+		if(!iframe.contentWindow){
+			return;
+		}
+		
+		$win.bringToFront();
+		
+		if($(e.target).closest(".jspaint-menus, .jspaint-menu-popup").length === 0){
+			return;
+		}
 		
 		iframe.contentWindow.focus();
 		setTimeout(function(){
 			iframe.contentWindow.focus();
 		});
-		
-		$win.bringToFront();
 	};
 	
 	$win.on("focus", focus_window_contents);
+	
+	// Let the iframe to handle mouseup events outside itself
 	var delegate_pointerup = function(){
-		if(!iframe.contentWindow){return}
-		if(!iframe.contentWindow.jQuery){return}
-		iframe.contentWindow.jQuery("body").trigger("pointerup");
+		if(iframe.contentWindow && iframe.contentWindow.jQuery){
+			iframe.contentWindow.jQuery("body").trigger("pointerup");
+		}
 	};
-	$G.on("pointerup blur", delegate_pointerup);
+	$G.on("mouseup blur", delegate_pointerup);
 	$win.on("close", function(){
-		$G.off("pointerup blur", delegate_pointerup);
+		$G.off("mouseup blur", delegate_pointerup);
 	});
+	
 	// @TODO: delegate pointermove events too?
 	
 	$iframe
@@ -132,7 +141,7 @@ function $IframeWindow(url, icon_name){
 			iframe.contentWindow.focus();
 			var $contentWindow = $(iframe.contentWindow);
 			$contentWindow.on("pointerdown click", function(e){
-				focus_window_contents();
+				focus_window_contents(e);
 			});
 			// We want to disable pointer events for other iframes, but not this one
 			$contentWindow.on("pointerdown", function(e){
@@ -181,7 +190,7 @@ function Minesweeper(){
 function SoundRecorder(){
 	var $win = new $IframeWindow("sound-recorder/index.html", "speaker");
 	$win.title("Sound - Sound Recorder");
-	$win.$iframe.width(252+10).height(21+102);
+	$win.$iframe.width(252+10).height(102);
 	$win.center();
 	return new Task($win);
 }
@@ -202,6 +211,8 @@ $start_button.html("<img src='images/start.png'/><b>Start</b>");
 $start_button.attr("title", "Click here to begin.");
 
 var $tasks = $("<div class='tasks'/>").appendTo($start_bar);
+
+$desktop.attr("touch-action", "none");
 
 $desktop.on("pointerdown", function(){
 	$desktop.addClass("selected"); // yes, even the desktop can be selected (given focus)

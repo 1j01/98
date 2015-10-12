@@ -91,7 +91,10 @@ html, body {
 }
 
 /* @TODO: remove jspaintisms */
-
+.jspaint-menus {
+	display: flex;
+	flex: 0 0 auto;
+}
 
 .jspaint-choose-shape-style {
 	flex-flow: column;

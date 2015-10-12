@@ -1,7 +1,17 @@
 
 (function(){
-	
-	var $menus = $(E("div")).addClass("jspaint-menus").prependTo($V);
+	var $ = jQuery;
+	var $G = $(self);
+	if(frameElement){
+		$ = parent.jQuery;
+		$G = $([self, parent]);
+	}
+	var $menus = $(E("div")).addClass("jspaint-menus");
+	if(frameElement){
+		$menus.insertBefore(frameElement);
+	}else{
+		$menus.prependTo($V);
+	}
 	$menus.attr("touch-action", "none");
 	var selecting_menus = false;
 	
