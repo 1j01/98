@@ -195,6 +195,17 @@ function SoundRecorder(){
 	return new Task($win);
 }
 
+function Notepad(){
+	var $win = new $IframeWindow("notepad/index.html", "Notepad");
+	$win.title("untitled - Text Edit");
+	return new Task($win);
+}
+
+function NotepadFile(file, title){
+	var $win = new $IframeWindow("notepad/index.html?file="+file, "Notepad");
+	$win.title(title);
+	return new Task($win);
+}
 
 // be creepy
 var username_match = location.href.match(/\/Users\/(\w+)\//);
@@ -300,6 +311,5 @@ new $DesktopIcon("Internet Explorer", ("internet-explorer"), function(){window.o
 new $DesktopIcon("Paint", ("paint"), Paint, "shortcut");
 new $DesktopIcon("Minesweeper", ("minesweeper"), Minesweeper, "shortcut");
 new $DesktopIcon("Sound Recorder", ("speaker"), SoundRecorder, "shortcut");
-
-
-
+new $DesktopIcon("Notepad", ("notepad"), Notepad, "shortcut");
+new $DesktopIcon("Notepad", ("notepad-file"), Notepad, "shortcut");
