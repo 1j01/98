@@ -11,7 +11,8 @@ var parseQueryString = function() {
 }
 params = parseQueryString();
 
-document.getElementById("content").innerHTML = localStorage["notepad-"+params["file"]] || "Put something in the body";
+// TODO use save button instead of automatic saving every 2 seconds
+document.getElementById("content").innerHTML = localStorage["notepad-"+params["file"]] || "Change me, saved to local storage every 2 seconds.";
 
 setInterval(function(){
     localStorage["notepad-"+params["file"]] = document.getElementById("content").innerHTML;

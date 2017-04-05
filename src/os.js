@@ -195,9 +195,10 @@ function SoundRecorder(){
 	return new Task($win);
 }
 
-function Notepad(file, title){
+function Notepad(file){
+  console.log(file.title);
   var $win = new $IframeWindow("notepad/index.html?file="+file, "Notepad");
-  $win.title(title);
+  $win.title(file.title);
   return new Task($win);
 }
 
@@ -305,6 +306,6 @@ new $DesktopIcon("Internet Explorer", ("internet-explorer"), function(){window.o
 new $DesktopIcon("Paint", ("paint"), Paint, "shortcut");
 new $DesktopIcon("Minesweeper", ("minesweeper"), Minesweeper, "shortcut");
 new $DesktopIcon("Sound Recorder", ("speaker"), SoundRecorder, "shortcut");
-new $DesktopIcon("Notepad", ("notepad"), Notepad, "shortcut");
+//new $DesktopIcon("Notepad", ("notepad"), Notepad, "shortcut");
 var myNote = {"file": "test", "title": "test"};
 new $DesktopIcon("Notepad", ("notepad-file"), Notepad, "shortcut", myNote);
