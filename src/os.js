@@ -76,7 +76,7 @@ function Task($win){
 	});
 }
 
-function $DesktopIcon(title, icon_name, exe, is_shortcut){
+function $DesktopIcon(title, icon_name, exe, is_shortcut, params){
 	var $container = $("<div class='desktop-icon' draggable='true'/>").appendTo($desktop);
 	var $icon_wrapper = $("<div class='icon-wrapper'/>").appendTo($container).width(DESKTOP_ICON_SIZE).height(DESKTOP_ICON_SIZE);
 	var $icon = $Icon([icon_name, "task"], DESKTOP_ICON_SIZE).width(DESKTOP_ICON_SIZE).height(DESKTOP_ICON_SIZE);
@@ -84,7 +84,7 @@ function $DesktopIcon(title, icon_name, exe, is_shortcut){
 	$container.append($icon_wrapper, $title);
 	$icon_wrapper.append($icon);
 	$container.on("dblclick", function(){
-		new exe
+		new exe(params)
 	});
 	$container.on("pointerdown", function(){
 		$desktop.find(".desktop-icon").removeClass("selected");
