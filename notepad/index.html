@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Notepad</title>
+		<!-- FIXME: menus in standalone webapp -->
+		<link href="../layout.css" rel="stylesheet" type="text/css">
+		<link href="../classic.css" rel="stylesheet" type="text/css">
+		<link rel="icon" href="../images/icons/notepad-16x16.png" sizes="16x16" type="image/png">
+		<link rel="icon" href="../images/icons/notepad-32x32.png" sizes="32x32" type="image/png">
+		<link rel="icon" href="../images/icons/notepad-48x48.png" sizes="48x48" type="image/png">
+		<meta name="viewport" content="width=device-width, user-scalable=no">
+	</head>
+	<body>
+		<div id="app">
+			<textarea id="document-textarea"></textarea>
+		</div>
+		<div id="print-helper"></div>
+		<script src="../lib/jquery.min.js"></script>
+		<script src="../lib/pep.js"></script>
+		<script src="../src/helpers.js"></script>
+		<script src="src/app.js"></script>
+		<script src="src/menus.js"></script>
+		<script src="src/$menus.js"></script>
+		<style>
+			#app {
+				background: #c0c0c0;
+				display: flex;
+				flex-direction: column;
+			}
+			#document-textarea {
+				width: 100%;
+				height: 100%;
+				resize: none;
+				outline: none;
+				overflow: scroll;
+				padding: 0;
+				border: 0;
+				white-space: pre;
+			}
+			#document-textarea,
+			#print-helper {
+				font-family: "FixedSys", monospace;
+				font-size: 12px;
+				background: white;
+				color: black;
+			}
+			html,
+			body,
+			#app {
+				box-sizing: border-box;
+				padding: 0;
+				margin: 0;
+			}
+			@media not print {
+				#print-helper {
+					display: none;
+				}
+				html,
+				body,
+				#app {
+					width: 100%;
+					height: 100%;
+				}
+			}
+			@media print {
+				#app {
+					display: none;
+				}
+				html,
+				body,
+				#print-helper {
+					height: auto;
+				}
+				#print-helper {
+					overflow: visible;
+					white-space: pre-wrap;
+				}
+			}
+			
+			/* @TODO: remove jspaintisms */
+			.jspaint-menu-container {
+				display: inline-block;
+			}
+			/* From .jspaint-menus *, .jspaint-menu-popup * {} */
+			* {
+				font-family: "Segoe UI", sans-serif;
+				font-size: 12px;
+				cursor: default;
+			}
+			/* From .jspaint-tool-options {} */
+			#app {
+				border: 1px solid white;
+				border-top-color: #7b7b7b;
+				border-left-color: #7b7b7b;
+			}
+		</style>
+	</body>
+</html>

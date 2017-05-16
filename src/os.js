@@ -173,6 +173,12 @@ function $IframeWindow(url, icon_name){
 	return $win;
 }
 
+function Notepad(){
+	var $win = new $IframeWindow("notepad/index.html", "notepad");
+	$win.title("untitled - Notepad");
+	return new Task($win);
+}
+
 function Paint(){
 	var $win = new $IframeWindow("jspaint/index.html", "paint");
 	$win.title("untitled - Paint");
@@ -300,6 +306,5 @@ new $DesktopIcon("Internet Explorer", ("internet-explorer"), function(){window.o
 new $DesktopIcon("Paint", ("paint"), Paint, "shortcut");
 new $DesktopIcon("Minesweeper", ("minesweeper"), Minesweeper, "shortcut");
 new $DesktopIcon("Sound Recorder", ("speaker"), SoundRecorder, "shortcut");
-
-
+new $DesktopIcon("Notepad", ("notepad"), Notepad, "shortcut");
 
