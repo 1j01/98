@@ -31,6 +31,16 @@ function insert_time_and_date(){
 	document.execCommand("insertText", false, str);
 }
 
+var word_wrap_enabled = false;
+function is_word_wrap_enabled(){
+	return $textarea.css("white-space") == "pre-wrap";
+}
+function toggle_word_wrap(){
+	var enable = !is_word_wrap_enabled();
+	$textarea.css("white-space", enable ? "pre-wrap" : "pre");
+	$textarea.css("overflow-x", enable ? "auto" : "scroll");
+}
+
 // TODO: insert time/date on file open if file content starts with ".LOG"
 
 var document_id = "default";

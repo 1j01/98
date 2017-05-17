@@ -182,14 +182,9 @@ var menus = {
 		____________________________,
 		{
 			item: "&Word Wrap",
-			enabled: false,
 			checkbox: {
-				toggle: function(){
-					// @TODO
-				},
-				check: function(){
-					// @TODO return ...;
-				},
+				toggle: toggle_word_wrap,
+				check: is_word_wrap_enabled,
 			},
 			description: "Makes overflowing lines either wrap or scroll.", // NOTE: made up text
 		},
