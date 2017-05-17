@@ -33,22 +33,19 @@ function E(t){
 	return document.createElement(t);
 }
 
-function get_rgba_from_color(color){
-	
-	var _c = new Canvas(1, 1);
-	
-	_c.ctx.fillStyle = color;
-	_c.ctx.fillRect(0, 0, 1, 1);
-	
-	var _id = _c.ctx.getImageData(0, 0, 1, 1);
-	
-	// We could just return _id.data, but let's return an array instead
-	var fill_r = _id.data[0];
-	var fill_g = _id.data[1];
-	var fill_b = _id.data[2];
-	var fill_a = _id.data[3];
-	return [fill_r, fill_g, fill_b, fill_a];
-	
+var DESKTOP_ICON_SIZE = 32;
+var TASKBAR_ICON_SIZE = 16;
+var TITLEBAR_ICON_SIZE = 16;
+
+function getIconPath(name, size){
+	return "images/icons/" + name + "-" + size + "x" + size + ".png";
+}
+
+function $Icon(name, size){
+	var $img = $("<img class='icon'/>");
+	$img.attr({draggable: false});
+	$img.attr({src: getIconPath(name, size)});
+	return $img;
 }
 
 function Canvas(width, height){
@@ -73,3 +70,12 @@ function Canvas(width, height){
 	new_canvas.ctx = new_ctx;
 	return new_canvas;
 }
+
+/*
+function saveAsDialog(){
+	var $win = new $Window();
+	$win.title("Save As");
+	return $win;
+}
+*/
+

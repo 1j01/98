@@ -11,9 +11,13 @@
 
 * Integrate Minesweeper better (i.e. with menus)
 
-* Integrate Paint better (with windows that pop out; will need to display graphics via data URIs or canvases, and rely on inline or scoped styles)
+* Integrate Paint better
 
-* Integrate Pipes screensaver
+	* Windows that pop out; will need to display graphics via data URIs or canvases, and rely on inline and/or scoped styles
+	
+	* Setting the wallpaper
 
-* Integrate Blue Screen of Death
+* Integrate [Pipes screensaver](https://github.com/1j01/pipes)
+
+* Integrate Blue Screen of Death similar to http://fakebsod.com/generic
 
