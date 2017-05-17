@@ -12,7 +12,7 @@ html, body {
 	height: 100%;
 	position: relative;
 }
-.start-bar {
+.taskbar {
 	position: absolute;
 	bottom: 0;
 	left: 0;
@@ -21,16 +21,16 @@ html, body {
 	display: flex;
 	flex: 1;
 }
-.start-bar > * {
+.taskbar > * {
 	display: inline-block;
 }
-.start-bar button {
+.taskbar button {
 	height: 22px;
 	margin: 3px;
 	padding: 2px !important;
 	line-height: 14px;
 }
-.start-bar button * {
+.taskbar button * {
 	vertical-align: middle;
 }
 .tasks {
@@ -46,7 +46,7 @@ html, body {
 	padding-right: 4px;
 }
 .desktop,
-.start-bar,
+.taskbar,
 .start-button,
 .tasks,
 .task,
