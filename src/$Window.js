@@ -11,9 +11,9 @@ function $Window(options){
 	$w.$content = $(E("div")).addClass("jspaint-window-content").appendTo($w);
 	
 	var $component = options.$component;
-	$w.icon_name = options.icon_name;
-	if($w.icon_name){
-		$w.$icon = $Icon($w.icon_name || "task", TITLEBAR_ICON_SIZE).prependTo($w.$titlebar);
+	if(options.icon){
+		$w.icon_name = options.icon;
+		$w.$icon = $Icon(options.icon, TITLEBAR_ICON_SIZE).prependTo($w.$titlebar);
 	}
 	if($component){
 		$w.addClass("jspaint-component-window");
@@ -182,6 +182,10 @@ function $Window(options){
 		$w.closed = true;
 	};
 	$w.closed = false;
+	
+	if(options.title){
+		$w.title(options.title);
+	}
 	
 	if(!$component){
 		$w.center();

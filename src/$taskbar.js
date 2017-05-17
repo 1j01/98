@@ -3,6 +3,7 @@ function Task($win){
 	var $task = this.$task = $("<button class='task'/>").appendTo($tasks);
 	$task.addClass("jspaint-button"); // @TODO: remove jspaintisms
 	var $icon = $Icon($win.icon_name || "task", TASKBAR_ICON_SIZE);
+	// TODO: update task button title when window title changes
 	var $title = $("<span class='title'/>").text($win.title());
 	$task.append($icon, $title);
 	$task.on("click", function(){

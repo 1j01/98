@@ -1,6 +1,7 @@
 
-function $IframeWindow(url, icon_name){
-	var $win = new $Window({icon_name: icon_name});
+function $IframeWindow(options){
+	
+	var $win = new $Window(options);
 	$win.$content.html("<iframe allowfullscreen>");
 	
 	var $iframe = $win.$iframe = $win.$content.find("iframe");
@@ -68,7 +69,7 @@ function $IframeWindow(url, icon_name){
 			// };
 			
 		})
-		.attr({src: url})
+		.attr({src: options.src})
 		.width(640)
 		.height(380)
 		.css({
