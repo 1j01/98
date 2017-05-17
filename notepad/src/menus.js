@@ -4,6 +4,8 @@ var ____________________________ = "A HORIZONTAL RULE / DIVIDER";
 var menus = {
 	"&File": [
 		// TODO: file management
+		// NOTE: Notepad in Windows 98 doesn't actually have shortcuts for anything in the File menu
+		// also, it leaves off periods from the end of the descriptions
 		{
 			item: "&New",
 			shortcut: "Ctrl+N",
@@ -66,7 +68,7 @@ var menus = {
 		____________________________,
 		{
 			item: "E&xit",
-			shortcut: "Alt+F4",
+			// shortcut: "Alt+F4",
 			action: function(){
 				close();
 			},
@@ -132,7 +134,7 @@ var menus = {
 			action: function(){
 				document.execCommand("paste");
 			},
-			description: "Inserts the contents of the Clipboard into the document.",
+			description: "Inserts the contents of the Clipboard.",
 		},
 		{
 			item: "De&lete",
@@ -166,7 +168,7 @@ var menus = {
 			// NOTE: Notepad in Windows 98 doesn't actually have Ctrl+A as a shortcut
 			shortcut: "Ctrl+A",
 			action: select_all,
-			description: "Selects everything.",
+			description: "Selects the entire document.",
 		},
 		{
 			item: "Time/&Date",
@@ -194,23 +196,40 @@ var menus = {
 			item: "Set &Font",
 			action: function(){},
 			enabled: false,
-			description: "Chooses a font or changes the text size.", // NOTE: made up text
+			description: "Sets the font and text size.", // NOTE: made up text
 		},
 	],
 	"&Search": [
 		{
 			item: "&Find...",
+			// NOTE: Notepad in Windows 98 doesn't actually have Ctrl+F as a shortcut (although WordPad does)
+			shortcut: "Ctrl+F",
 			action: function(){},
 			enabled: false,
-			description: "Search for characters or words within the document.", // NOTE: made up text
+			description: "Finds the specified text.",
 		},
 		{
 			item: "Find &Next",
 			shortcut: "F3",
 			action: function(){},
 			enabled: false,
-			description: "Go to the next search result.", // NOTE: made up text
+			description: "Repeats the last find.",
 		},
+		// NOTE: Notepad in Windows 98 doesn't have Replace or Go to... options
+		// {
+		// 	item: "&Replace",
+		// 	shortcut: "Ctrl+H",
+		// 	action: function(){},
+		// 	enabled: false,
+		// 	description: "Replaces specific text with different text.",
+		// },
+		// {
+		// 	item: "&Go to",
+		// 	shortcut: "Ctrl+G",
+		// 	action: function(){},
+		// 	enabled: false,
+		// 	description: "Goes to a specified line number.", // NOTE: made up text
+		// },
 	],
 	"&Help": [
 		// TODO: help options
@@ -218,14 +237,18 @@ var menus = {
 			item: "&Help Topics",
 			action: function(){},
 			enabled: false,
-			description: "Displays Help for the current task or command.",
+			description: "Lists Help topics.",
+			// WordPad: "Lists Help topics"
+			// Windows Explorer: "Opens Help."
+			// Paint: "Displays Help for the current task or command."
 		},
 		____________________________,
 		{
 			item: "&About Notepad",
 			action: function(){},
 			enabled: false,
-			description: "Displays information about this application."
+			description: "Displays program information, version number, and copyright."
+			// or just "Displays information about this application." if that's more accurate
 		}
 	],
 };
