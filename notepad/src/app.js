@@ -26,6 +26,13 @@ function select_all(){
 	$textarea.focus().select();
 }
 
+function insert_time_and_date(){
+	var str = moment().format("LT l");
+	document.execCommand("insertText", false, str);
+}
+
+// TODO: insert time/date on file open if file content starts with ".LOG"
+
 var document_id = "default";
 
 function update_print_helper(){
@@ -42,5 +49,12 @@ $textarea.on("input", function(e){
 try {
 	$textarea.val(localStorage["notepad:" + document_id] || "");
 } catch(e) {}
+
+$(window).on("keydown", function(e){
+	if(e.key == "F5"){
+		e.preventDefault();
+		insert_time_and_date();
+	}
+});
 
 update_print_helper();

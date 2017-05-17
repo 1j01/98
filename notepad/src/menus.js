@@ -173,9 +173,10 @@ var menus = {
 		{
 			item: "Time/&Date",
 			shortcut: "F5",
-			// @TODO
-			action: function(){},
-			enabled: false,
+			enabled: function(){
+				return document.queryCommandEnabled("insertText");
+			},
+			action: insert_time_and_date,
 			description: "Inserts the current time and date.", // NOTE: made up text
 		},
 		____________________________,
