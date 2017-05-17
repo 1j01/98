@@ -1,15 +1,19 @@
 
 $Window.Z_INDEX = 5;
 
-function $Window(icon_name, $component){
+function $Window(options){
+	options = options || {};
+	
 	var $w = $(E("div")).addClass("jspaint-window").appendTo("body");
 	$w.$titlebar = $(E("div")).addClass("jspaint-window-titlebar").appendTo($w);
 	$w.$title = $(E("span")).addClass("jspaint-window-title").appendTo($w.$titlebar);
 	$w.$x = $(E("button")).addClass("jspaint-window-close-button jspaint-window-button jspaint-button").appendTo($w.$titlebar);
 	$w.$content = $(E("div")).addClass("jspaint-window-content").appendTo($w);
 	
-	if(icon_name){
-		$w.$icon = $Icon([$w.icon_name = icon_name, "task"], TITLEBAR_ICON_SIZE).prependTo($w.$titlebar);
+	var $component = options.$component;
+	$w.icon_name = options.icon_name;
+	if($w.icon_name){
+		$w.$icon = $Icon($w.icon_name || "task", TITLEBAR_ICON_SIZE).prependTo($w.$titlebar);
 	}
 	if($component){
 		$w.addClass("jspaint-component-window");
