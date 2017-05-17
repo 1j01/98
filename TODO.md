@@ -3,7 +3,15 @@
 
 * Start Menu
 
-* Integrate Minesweeper better
+* Unfocused window state
+
+* Reliably focus window contents (i.e. for keyboard shortcuts in Paint)
+
+* File save and open dialogs
+
+* Integrate Minesweeper better (i.e. with menus)
+
+* Integrate Paint better (with windows that pop out; will need to display graphics via data URIs or canvases, and rely on inline or scoped styles)
 
 * Integrate Pipes screensaver
 
