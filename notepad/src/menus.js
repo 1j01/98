@@ -14,7 +14,7 @@ var menus = {
 			description: "Creates a new document.",
 		},
 		{
-			item: "&Open",
+			item: "&Open...",
 			shortcut: "Ctrl+O",
 			action: file_open,
 			enabled: false,
@@ -28,7 +28,7 @@ var menus = {
 			description: "Saves the active document.",
 		},
 		{
-			item: "Save &As",
+			item: "Save &As...",
 			shortcut: "Ctrl+Shift+S",
 			action: file_save_as,
 			enabled: false,
@@ -44,7 +44,7 @@ var menus = {
 		// 	//description: "Displays full pages.",
 		// },
 		{
-			item: "Page Se&tup",
+			item: "Page Se&tup...",
 			action: function(){
 				print();
 			},
@@ -52,7 +52,7 @@ var menus = {
 			//description: "Changes the page layout.",
 		},
 		{
-			item: "&Print",
+			item: "&Print...",
 			shortcut: "Ctrl+P",
 			action: function(){
 				print();
@@ -189,8 +189,8 @@ var menus = {
 			description: "Makes overflowing lines either wrap or scroll.", // NOTE: made up text
 		},
 		{
-			item: "Set &Font",
-			action: function(){},
+			item: "Set &Font...",
+			action: function(){}, // TODO: font options dialog
 			enabled: false,
 			description: "Sets the font and text size.", // NOTE: made up text
 		},
@@ -200,14 +200,14 @@ var menus = {
 			item: "&Find...",
 			// NOTE: Notepad in Windows 98 doesn't actually have Ctrl+F as a shortcut (although WordPad does)
 			shortcut: "Ctrl+F",
-			action: function(){},
+			action: function(){}, // TODO
 			enabled: false,
 			description: "Finds the specified text.",
 		},
 		{
 			item: "Find &Next",
 			shortcut: "F3",
-			action: function(){},
+			action: function(){}, // TODO
 			enabled: false,
 			description: "Repeats the last find.",
 		},
