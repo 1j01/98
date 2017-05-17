@@ -281,12 +281,12 @@ $(window).on("pointerup dragend blur", function(e){
 });
 
 
-new $DesktopIcon("My Computer", ("my-computer"), function(){window.open("http://lmgtfy.com/?q=My+Computer")});
-new $DesktopIcon("My Documents", ("my-documents-folder"), function(){});
-new $DesktopIcon("Network Neighborhood", ("network"), function(){window.open("http://lmgtfy.com/?q=Network+Neighborhood")});
-new $DesktopIcon("Recycle Bin", ("recycle-bin"), function(){window.open("http://www.dmaresponsibility.org/recycle/")});
-new $DesktopIcon("My Pictures", ("folder"), function(){window.open("http://images.google.com/")});
-new $DesktopIcon("Internet Explorer", ("internet-explorer"), function(){window.open("http://modern.ie/")});
+new $DesktopIcon("My Computer", ("my-computer"), function(){ window.open("https://copy.sh/v86/?profile=windows98"); });
+new $DesktopIcon("My Documents", ("my-documents-folder"), function(){ window.open("https://docs.google.com/"); });
+new $DesktopIcon("Network Neighborhood", ("network"), function(){ window.open("https://nextdoor.com/"); });
+new $DesktopIcon("Recycle Bin", ("recycle-bin"), function(){ window.open("https://www.epa.gov/recycle"); });
+new $DesktopIcon("My Pictures", ("folder"), function(){ window.open("http://photos.google.com/"); });
+new $DesktopIcon("Internet Explorer", ("internet-explorer"), function(){ window.open("http://modern.ie/"); });
 new $DesktopIcon("Paint", ("paint"), Paint, "shortcut");
 new $DesktopIcon("Minesweeper", ("minesweeper"), Minesweeper, "shortcut");
 new $DesktopIcon("Sound Recorder", ("speaker"), SoundRecorder, "shortcut");
