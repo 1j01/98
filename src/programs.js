@@ -12,8 +12,8 @@ function Paint(){
 	var $win = new $IframeWindow({
 		src: "jspaint/index.html",
 		icon: "paint",
+		// NOTE: in Windows 98, "untitled" is lowercase, but TODO: we should just make it consistent
 		title: "untitled - Paint"
-		// Note: in Windows 98, "untitled" is lowercase, but maybe we should just make it consistent
 	});
 	return new Task($win);
 }
@@ -22,10 +22,10 @@ function Minesweeper(){
 	var $win = new $IframeWindow({
 		src: "embed-minesweeper.html",
 		icon: "minesweeper",
-		title: "Minesweeper"
+		title: "Minesweeper",
+		innerWidth: 280,
+		innerHeight: 320
 	});
-	$win.$iframe.width(280).height(320);
-	$win.center();
 	return new Task($win);
 }
 
@@ -33,10 +33,10 @@ function SoundRecorder(){
 	var $win = new $IframeWindow({
 		src: "sound-recorder/index.html",
 		icon: "speaker",
-		title: "Sound - Sound Recorder"
+		title: "Sound - Sound Recorder",
+		innerWidth: 252+10,
+		innerHeight: 102
 	});
-	$win.$iframe.width(252+10).height(102);
-	$win.center();
 	return new Task($win);
 }
 

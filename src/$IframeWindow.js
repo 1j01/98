@@ -70,15 +70,16 @@ function $IframeWindow(options){
 			
 		})
 		.attr({src: options.src})
-		.width(640)
-		.height(380)
+		.width(options.innerWidth || 640)
+		.height(options.innerHeight || 380)
 		.css({
 			border: 0,
 			verticalAlign: "bottom", // avoid unaccounted-for space on the bottom
 		});
 	
+	// TODO: cascade windows
 	$win.center();
-	// $win.hide();
+	$win.hide();
 	
 	return $win;
 }
