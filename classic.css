@@ -24,11 +24,10 @@
 	color: white;
 	border: 1px dotted transparent;
 }
-.desktop.selected .desktop-icon.selected .title {
+.desktop.focused .desktop-icon.selected .title {
 	background: #000080;
 }
-/* TODO: this is supposed to be for the focused icon, different from the selection */
-.desktop.selected .desktop-icon.selected .title {
+.desktop.focused .desktop-icon.focused .title {
 	border: 1px dotted #FF7F7F;
 	border: 1px dotted invert;
 	outline: 1px dotted invert;
@@ -36,7 +35,7 @@
 .desktop-icon .selection-effect {
 	display: none;
 }
-.desktop-icon.selected .selection-effect {
+.desktop.focused .desktop-icon.selected .selection-effect {
 	display: block;
 	position: absolute;
 	left: 0;

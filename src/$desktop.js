@@ -2,10 +2,6 @@
 var $desktop = $(".desktop");
 $desktop.attr("touch-action", "none");
 
-$desktop.on("pointerdown", function(){
-	$desktop.addClass("selected"); // as in focused
-}); // @TODO: relinquish focus
-
 var grid_size_x = 75;
 var grid_size_y = 75;
 
@@ -22,8 +18,8 @@ function $DesktopIcon(options){
 		options.open();
 	});
 	$container.on("pointerdown", function(){
-		$desktop.find(".desktop-icon").removeClass("selected");
-		$container.addClass("selected");
+		$desktop.find(".desktop-icon").removeClass("selected focused");
+		$container.addClass("selected focused");
 	});
 	if(options.shortcut){
 		$container.addClass("shortcut");
@@ -71,7 +67,7 @@ $G.on("resize", arrange_icons);
 	var start = {x: 0, y: 0};
 	var current = {x: 0, y: 0};
 	var dragging = false;
-	var update = function(){
+	var drag_update = function(){
 		var min_x = Math.min(start.x, current.x);
 		var min_y = Math.min(start.y, current.y);
 		var max_x = Math.max(start.x, current.x);
@@ -96,6 +92,9 @@ $G.on("resize", arrange_icons);
 		});
 	};
 	$desktop.on("pointerdown", function(e){
+		// TODO: allow a margin of mouse movement before starting selecting
+		var desktop_was_focused = $desktop.hasClass("focused");
+		$desktop.addClass("focused");
 		var $icon = $(e.target).closest(".desktop-icon");
 		$selection.hide();
 		start = {x: e.clientX, y: e.clientY};
@@ -104,13 +103,21 @@ $G.on("resize", arrange_icons);
 			$selection.hide();
 		}else{
 			dragging = true;
-			update();
+			// don't deselect right away unless the desktop was focused
+			if(desktop_was_focused){
+				drag_update();
+			}
+		}
+	});
+	$G.on("pointerdown", function(e){
+		if($(e.target).closest(".desktop").length == 0){
+			$desktop.removeClass("focused");
 		}
 	});
 	$desktop.on("pointermove", function(e){
 		current = {x: e.clientX, y: e.clientY};
 		if(dragging){
-			update();
+			drag_update();
 		}
 	});
 	$G.on("pointerup blur", function(){
@@ -122,7 +129,11 @@ $G.on("resize", arrange_icons);
 // TODO: select icons with the keyboard
 
 $G.on("keydown", function(e){
-	if(e.key == "Enter"){
-		$desktop.find(".desktop-icon.selected").trigger("dblclick");
+	if($desktop.is(".focused")){
+		if(e.key == "Enter"){
+			$desktop.find(".desktop-icon.selected").trigger("dblclick");
+		}else if(e.ctrlKey && e.key == "a"){
+			$desktop.find(".desktop-icon").addClass("selected");
+		}
 	}
 });
