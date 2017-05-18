@@ -60,6 +60,9 @@ html, body {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
+.loading-program * {
+	cursor: progress;
+}
 .jspaint-window-titlebar .icon {
 	vertical-align: bottom;
 }

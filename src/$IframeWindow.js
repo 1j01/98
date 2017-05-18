@@ -1,4 +1,6 @@
 
+var programs_being_loaded = 0;
+
 function $IframeWindow(options){
 	
 	var $win = new $Window(options);
@@ -39,8 +41,15 @@ function $IframeWindow(options){
 	
 	// @TODO: delegate pointermove events too?
 	
+	$("body").addClass("loading-program");
+	programs_being_loaded += 1;
+	
 	$iframe
 		.on("load", function(){
+			
+			if(--programs_being_loaded <= 0){
+				$("body").removeClass("loading-program");
+			}
 			$win.show();
 			iframe.contentWindow.focus();
 			
