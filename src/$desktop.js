@@ -3,7 +3,7 @@ var $desktop = $(".desktop");
 $desktop.attr("touch-action", "none");
 
 $desktop.on("pointerdown", function(){
-	$desktop.addClass("selected"); // yes, even the desktop can be selected (given focus)
+	$desktop.addClass("selected"); // as in focused
 }); // @TODO: relinquish focus
 
 var grid_size_x = 80;
@@ -29,10 +29,11 @@ function $DesktopIcon(options){
 	return $container;
 }
 
+// TODO: sort (by name I guess)
 var arrange_icons = function(){
 	var x = 0;
 	var y = 0;
-	$(".desktop-icon").each(function(){
+	$desktop.find(".desktop-icon").each(function(){
 		$(this).css({
 			position: "absolute",
 			width: grid_size_x,
@@ -49,10 +50,9 @@ var arrange_icons = function(){
 };
 
 // NOTE: in Windows, icons only get moved if they go offscreen (by maybe half the grid size)
-$(window).on("resize", arrange_icons);
+$G.on("resize", arrange_icons);
 
 // Handle selecting icons on the desktop
-// TODO: keyboard support
 (function(){
 	var $selection = $("<div class='selection'/>").appendTo($desktop).hide();
 	var start = {x: 0, y: 0};
@@ -105,3 +105,11 @@ $(window).on("resize", arrange_icons);
 		dragging = false;
 	});
 })();
+
+// TODO: select icons with the keyboard
+
+$G.on("keydown", function(e){
+	if(e.key == "Enter"){
+		$desktop.find(".desktop-icon.selected").trigger("dblclick");
+	}
+});
