@@ -6,6 +6,9 @@ $desktop.on("pointerdown", function(){
 	$desktop.addClass("selected"); // yes, even the desktop can be selected (given focus)
 }); // @TODO: relinquish focus
 
+var grid_size_x = 80;
+var grid_size_y = 80;
+
 function $DesktopIcon(options){
 	var $container = $("<div class='desktop-icon' draggable='true'/>").appendTo($desktop);
 	var $icon_wrapper = $("<div class='icon-wrapper'/>").appendTo($container).width(DESKTOP_ICON_SIZE).height(DESKTOP_ICON_SIZE);
@@ -25,6 +28,28 @@ function $DesktopIcon(options){
 	}
 	return $container;
 }
+
+var arrange_icons = function(){
+	var x = 0;
+	var y = 0;
+	$(".desktop-icon").each(function(){
+		$(this).css({
+			position: "absolute",
+			width: grid_size_x,
+			height: grid_size_y,
+			left: x,
+			top: y,
+		});
+		y += grid_size_y;
+		if(y + grid_size_y > innerHeight){
+			x += grid_size_x;
+			y = 0;
+		}
+	});
+};
+
+// NOTE: in Windows, icons only get moved if they go offscreen (by maybe half the grid size)
+$(window).on("resize", arrange_icons);
 
 // Handle selecting icons on the desktop
 // TODO: keyboard support

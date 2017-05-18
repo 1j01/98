@@ -94,3 +94,5 @@ new $DesktopIcon({
 	open: Notepad,
 	shortcut: true
 });
+
+arrange_icons();
