@@ -83,7 +83,6 @@ html, body {
 }
 .desktop-icon .title {
 	line-height: 1;
-	max-width: 71px;
 	max-height: 2em;
 	text-overflow: ellipsis;
 }

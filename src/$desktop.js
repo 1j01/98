@@ -6,8 +6,8 @@ $desktop.on("pointerdown", function(){
 	$desktop.addClass("selected"); // as in focused
 }); // @TODO: relinquish focus
 
-var grid_size_x = 80;
-var grid_size_y = 80;
+var grid_size_x = 75;
+var grid_size_y = 75;
 
 function $DesktopIcon(options){
 	var $container = $("<div class='desktop-icon' draggable='true'/>").appendTo($desktop);

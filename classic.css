@@ -15,8 +15,11 @@
 	outline: 0; /* sorry (breaks some accessibility) */
 }
 .desktop-icon .title {
+	margin-top: 5px;
 	font-family: sans-serif;
-	font-size: 10px;
+	font-family: "MS Sans Serif", "Segoe UI", sans-serif;
+	/*font-size: 10px;*/
+	font-size: 8pt;
 	background: #008080;
 	color: white;
 	border: 1px dotted transparent;
