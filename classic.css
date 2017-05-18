@@ -24,18 +24,24 @@
 .desktop.selected .desktop-icon.selected .title {
 	background: #000080;
 }
+/* TODO: this is supposed to be for the focused icon, different from the selection */
 .desktop.selected .desktop-icon.selected .title {
 	border: 1px dotted #FF7F7F;
 	border: 1px dotted invert;
 	outline: 1px dotted invert;
 }
-.desktop-icon.selected img {
-	filter: sepia() brightness(50%) saturate(2) hue-rotate(0.5turn);
-	-o-filter: sepia() brightness(50%) saturate(2) hue-rotate(0.5turn);
-	-ms-filter: sepia() brightness(50%) saturate(2) hue-rotate(0.5turn);
-	-moz-filter: sepia() brightness(50%) saturate(2) hue-rotate(0.5turn);
-	-webkit-filter: sepia() brightness(50%) saturate(2) hue-rotate(0.5turn);
-	/* @TODO: much more primitive filter */
+.desktop-icon .selection-effect {
+	display: none;
+}
+.desktop-icon.selected .selection-effect {
+	display: block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	filter: drop-shadow(32px 0 0 #000080);
+	transform: translateX(-32px);
+	clip-path: polygon(100% 0, 200% 0, 200% 100%, 100% 100%);
+	opacity: 0.5;
 }
 .desktop-icon.shortcut .icon-wrapper {
 	position: relative;

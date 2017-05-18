@@ -13,9 +13,11 @@ function $DesktopIcon(options){
 	var $container = $("<div class='desktop-icon' draggable='true'/>").appendTo($desktop);
 	var $icon_wrapper = $("<div class='icon-wrapper'/>").appendTo($container).width(DESKTOP_ICON_SIZE).height(DESKTOP_ICON_SIZE);
 	var $icon = $Icon(options.icon || "task", DESKTOP_ICON_SIZE).width(DESKTOP_ICON_SIZE).height(DESKTOP_ICON_SIZE);
+	var $selection_effect = $icon.clone().addClass("selection-effect");
+	
 	var $title = $("<div class='title'/>").text(options.title);
 	$container.append($icon_wrapper, $title);
-	$icon_wrapper.append($icon);
+	$icon_wrapper.append($icon, $selection_effect);
 	$container.on("dblclick", function(){
 		options.open();
 	});
@@ -33,6 +35,16 @@ function $DesktopIcon(options){
 var arrange_icons = function(){
 	var x = 0;
 	var y = 0;
+	// $desktop.find(".desktop-icon")
+	// .toArray()
+	// .sort(function(a, b){
+	// 	return (
+	// 		$(a).find(".title").text().toLowerCase() >
+	// 		$(b).find(".title").text().toLowerCase()
+	// 	);
+	// })
+	// .forEach(function(el){
+	// 	$(el).css({
 	$desktop.find(".desktop-icon").each(function(){
 		$(this).css({
 			position: "absolute",
@@ -49,7 +61,8 @@ var arrange_icons = function(){
 	});
 };
 
-// NOTE: in Windows, icons only get moved if they go offscreen (by maybe half the grid size)
+// NOTE: in Windows, icons normally only get moved if they go offscreen (by maybe half the grid size)
+// we're essentially handling it as if Auto Arrange is on
 $G.on("resize", arrange_icons);
 
 // Handle selecting icons on the desktop
