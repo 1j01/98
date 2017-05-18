@@ -480,6 +480,11 @@ button:hover:active:before {
 	top: -2px;
 }
 
+* {
+	image-rendering: crisp-edges;
+	image-rendering: pixelated;
+}
+
 ::selection {
 	background-color: #000080;
 	color: white;
