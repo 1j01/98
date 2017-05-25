@@ -2,14 +2,14 @@
 $Window.Z_INDEX = 5;
 
 function $Window($component){
-	var $w = $(E("div")).addClass("jspaint-window").appendTo("body");
-	$w.$titlebar = $(E("div")).addClass("jspaint-window-titlebar").appendTo($w);
-	$w.$title = $(E("span")).addClass("jspaint-window-title").appendTo($w.$titlebar);
-	$w.$x = $(E("button")).addClass("jspaint-window-close-button jspaint-window-button jspaint-button").appendTo($w.$titlebar);
-	$w.$content = $(E("div")).addClass("jspaint-window-content").appendTo($w);
+	var $w = $(E("div")).addClass("window").appendTo("body");
+	$w.$titlebar = $(E("div")).addClass("window-titlebar").appendTo($w);
+	$w.$title = $(E("span")).addClass("window-title").appendTo($w.$titlebar);
+	$w.$x = $(E("button")).addClass("window-close-button").appendTo($w.$titlebar);
+	$w.$content = $(E("div")).addClass("window-content").appendTo($w);
 	
 	if($component){
-		$w.addClass("jspaint-component-window");
+		$w.addClass("component-window");
 	}
 	
 	$w.attr("touch-action", "none");
@@ -35,7 +35,7 @@ function $Window($component){
 		if(e.ctrlKey || e.altKey || e.shiftKey){
 			return;
 		}
-		var $buttons = $w.$content.find("button.jspaint-button");
+		var $buttons = $w.$content.find("button.button");
 		var $focused = $(document.activeElement);
 		var focused_index = $buttons.index($focused);
 		// console.log(e.keyCode);
@@ -128,9 +128,11 @@ function $Window($component){
 		drag_offset_x = e.clientX - $w[0].getBoundingClientRect().left;
 		drag_offset_y = e.clientY - $w[0].getBoundingClientRect().top;
 		$G.on("pointermove", drag);
+		$("body").addClass("dragging");
 	});
 	$G.on("pointerup", function(e){
 		$G.off("pointermove", drag);
+		$("body").removeClass("dragging");
 	});
 	$w.$titlebar.on("dblclick", function(e){
 		if($component){
@@ -141,7 +143,6 @@ function $Window($component){
 	$w.$Button = function(text, handler){
 		var $b = $(E("button"))
 			.appendTo($w.$content)
-			.addClass("jspaint-dialogue-button")
 			.text(text)
 			.on("click", function(){
 				if(handler){
@@ -186,7 +187,7 @@ function $FormWindow(title){
 	$w.title(title);
 	$w.$form = $(E("form")).appendTo($w.$content);
 	$w.$main = $(E("div")).appendTo($w.$form);
-	$w.$buttons = $(E("div")).appendTo($w.$form).addClass("jspaint-button-group");
+	$w.$buttons = $(E("div")).appendTo($w.$form).addClass("button-group");
 	
 	$w.$Button = function(label, action){
 		var $b = $(E("button")).appendTo($w.$buttons).text(label);
@@ -197,9 +198,6 @@ function $FormWindow(title){
 			
 			action();
 		});
-		
-		// this should really not be needed @TODO
-		$b.addClass("jspaint-button jspaint-dialogue-button");
 		
 		$b.on("pointerdown", function(){
 			$b.focus();

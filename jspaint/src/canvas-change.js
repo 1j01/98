@@ -2,16 +2,13 @@
 (function(){
 	
 	var may_be_changed = function(){
-		console.log("change may have occured");
+		window.console && console.log("change may have occured");
 		$canvas.triggerHandler("change");
 	};
 	
 	var debug_event = function(e, synthetic){
-		if(synthetic){
-			console.debug(e.type + " (synthetic)");
-		}else{
-			console.debug(e.type + " (not synthetic)");
-		}
+		// var label = synthetic ? "(synthetic)" : "(normal)";
+		// window.console && console.debug && console.debug(e.type, label);
 	};
 	
 	// Hook into some events that imply a change might have occured
@@ -27,7 +24,7 @@
 			// A change might occur immediately
 			may_be_changed();
 		}else{
-			// Changes may occur when you release from a stroke
+			// Changes may occur when you release
 			pointer_operations = [e];
 			var pointermove = function(e, synthetic){
 				debug_event(e, synthetic);

@@ -1,7 +1,12 @@
 
+function update_magnified_canvas_size(){
+	$canvas.css("width", canvas.width * magnification);
+	$canvas.css("height", canvas.height * magnification);
+}
+
 function set_magnification(scale){
 	magnification = scale;
-	$canvas.css("zoom", scale);
+	update_magnified_canvas_size();
 	$G.triggerHandler("resize");
 }
 
@@ -42,18 +47,25 @@ function update_title(){
 	document.title = file_name + " - Paint";
 }
 
-function get_FileList(callback){
-	var $input = $(E("input")).attr({type: "file"})
+function create_and_trigger_input(attrs, callback){
+	var $input = $(E("input")).attr(attrs)
 		.on("change", function(){
-			callback(this.files);
+			callback(this);
 			$input.remove();
 		})
-		.appendTo("body")
+		.appendTo($app)
 		.hide()
 		.click();
+	return $input;
 }
 
-function open_from_Image(img, callback){
+function get_FileList(callback){
+	create_and_trigger_input({type: "file"}, function(input){
+		callback(input.files);
+	});
+}
+
+function open_from_Image(img, callback, canceled){
 	are_you_sure(function(){
 		this_ones_a_frame_changer();
 		
@@ -67,40 +79,54 @@ function open_from_Image(img, callback){
 		$canvas_area.trigger("resize");
 		
 		callback && callback();
-	});
+	}, canceled);
 }
-function open_from_URI(uri, callback){
+function open_from_URI(uri, callback, canceled){
 	var img = new Image();
 	img.onload = function(){
-		open_from_Image(img, callback);
+		if(!this.complete || typeof this.naturalWidth == "undefined" || this.naturalWidth == 0){
+            return callback() && callback(new Error("Image failed to load; naturalWidth == " + this.naturalWidth));
+		}
+		open_from_Image(img, callback, canceled);
+	};
+	img.onerror = function(){
+		callback && callback(new Error("Image failed to load"));
 	};
 	img.src = uri;
 }
 function open_from_File(file, callback){
-	// @TODO: use URL.createObjectURL(file) when available
-	// use URL.revokeObjectURL() too
-	var reader = new FileReader();
-	reader.onload = function(e){
-		open_from_URI(e.target.result, function(){
-			file_name = file.name;
-			update_title();
-			saved = true;
-			callback && callback();
-		});
-	};
-	reader.readAsDataURL(file);
+	var url = URL.createObjectURL(file);
+	open_from_URI(url, function(err){
+		console.log("opened or error, revokeObjectURL");
+		URL.revokeObjectURL(file);
+		if(err){ return callback && callback(err); }
+		file_name = file.name;
+		update_title();
+		saved = true;
+		callback && callback();
+	}, function(){
+		console.log("canceled, revokeObjectURL");
+		URL.revokeObjectURL(file);
+	});
 }
 function open_from_FileList(files, callback){
-	$.each(files, function(i, file){
-		if(file.type.match(/image/)){
+	for(var i=0; i<files.length; i++){
+		var file = files[i];
+		if(file.type.match(/^image/)){
 			open_from_File(file, callback);
-			return false;
+			return;
 		}
-	});
+	}
+	if(files.length > 1){
+		callback(new Error("None of the given files appear to be images"));
+	}else{
+		callback(new Error("File does not appear to be an image"));
+	}
 }
 function open_from_FileEntry(entry, callback){
 	entry.file(function(file){
-		open_from_File(file, function(){
+		open_from_File(file, function(err){
+			if(err){ return callback && callback(err); }
 			file_entry = entry;
 			callback && callback();
 		});
@@ -134,6 +160,11 @@ function file_new(){
 }
 
 function file_open(){
+	var callback = function(err){
+		if(err){
+			show_error_message("Failed to open file:", err);
+		}
+	};
 	if(window.chrome && chrome.fileSystem && chrome.fileSystem.chooseEntry){
 		chrome.fileSystem.chooseEntry({
 			type: "openFile",
@@ -143,10 +174,12 @@ function file_open(){
 			if(chrome.runtime.lastError){
 				return console.error(chrome.runtime.lastError.message);
 			}
-			open_from_FileEntry(entry);
+			open_from_FileEntry(entry, callback);
 		});
 	}else{
-		get_FileList(open_from_FileList);
+		get_FileList(function(files){
+			open_from_FileList(files, callback);
+		});
 	}
 }
 
@@ -190,11 +223,11 @@ function file_save_as(){
 }
 
 
-function are_you_sure(action){
+function are_you_sure(action, canceled){
 	if(saved){
 		action();
 	}else{
-		var $w = new $FormWindow().addClass("jspaint-dialogue-window");
+		var $w = new $FormWindow().addClass("dialogue-window");
 		$w.title("Paint");
 		$w.$main.text("Save changes to "+file_name+"?");
 		$w.$Button("Save", function(){
@@ -208,10 +241,36 @@ function are_you_sure(action){
 		});
 		$w.$Button("Cancel", function(){
 			$w.close();
+			canceled && canceled();
+		});
+		$w.$x.on("click", function(){
+			canceled && canceled();
 		});
 		$w.center();
 	}
 }
+
+function show_error_message(message, error){
+	$w = $FormWindow().title("Error").addClass("dialogue-window");
+	$w.$main.text(message);
+	$(E("pre"))
+		.appendTo($w.$main)
+		.text(error.stack || error.toString())
+		.css({
+			background: "white",
+			color: "#333",
+			// background: "#A00",
+			// color: "white",
+			fontFamily: "monospace",
+			width: "500px",
+			overflow: "auto",
+		});
+	$w.$Button("OK", function(){
+		$w.close();
+	});
+	console.error(message, error);
+}
+
 
 function paste_file(blob){
 	var reader = new FileReader();
@@ -220,6 +279,7 @@ function paste_file(blob){
 		img.onload = function(){
 			paste(img);
 		};
+		// TODO: error handling
 		img.src = e.target.result;
 	};
 	reader.readAsDataURL(blob);
@@ -239,13 +299,14 @@ function paste_from(){
 function paste(img){
 	
 	if(img.width > canvas.width || img.height > canvas.height){
-		var $w = new $Window();
+		var $w = new $FormWindow().addClass("dialogue-window");
 		$w.title("Paint");
-		$w.$content.html(
+		$w.$main.html(
 			"The image is bigger than the canvas.<br>" +
 			"Would you like the canvas to be enlarged?<br>"
 		);
 		$w.$Button("Enlarge", function(){
+			$w.close();
 			// Additional undoable
 			undoable(function(){
 				var original = undos[undos.length-1];
@@ -261,9 +322,12 @@ function paste(img){
 			});
 		}).focus();
 		$w.$Button("Crop", function(){
+			$w.close();
 			paste_img();
 		});
-		$w.$Button("Cancel", function(){});
+		$w.$Button("Cancel", function(){
+			$w.close();
+		});
 		$w.center();
 	}else{
 		paste_img();
@@ -326,7 +390,7 @@ function render_history_as_gif(){
 			);
 			$win.$Button("Save", function(){
 				$win.close();
-				saveAs(blob, file_name + " history");
+				saveAs(blob, file_name + " history.gif");
 			});
 			$cancel.appendTo($win.$buttons);
 			$win.center();
@@ -341,28 +405,16 @@ function render_history_as_gif(){
 		});
 		gif.render();
 		
-	}catch(e){
-		$output.empty().append(
-			$(E("p")).text("Failed to render GIF:\n").append(
-				$(E("pre")).text(e.stack).css({
-					background: "#A00",
-					color: "white",
-					fontFamily: "monospace",
-					width: "500px",
-					overflow: "auto",
-				})
-			)
-		);
-		$win.title("Error Rendering GIF");
-		$win.center();
-		console.error("Failed to render GIF:\n", e);
+	}catch(err){
+		$win.close();
+		show_error_message("Failed to render GIF:", err);
 	}
 }
 
 function undoable(callback, action){
 	saved = false;
 	if(redos.length > 5){
-		var $w = new $FormWindow().addClass("jspaint-dialogue-window");
+		var $w = new $FormWindow().addClass("dialogue-window");
 		$w.title("Paint");
 		$w.$main.html("Discard "+redos.length+" possible redo-able actions?<br>(Ctrl+Y or Ctrl+Shift+Z to redo)<br>");
 		$w.$Button(action ? "Discard and Apply" : "Discard", function(){
@@ -441,7 +493,9 @@ function delete_selection(){
 	}
 }
 function select_all(){
-	deselect();
+	// Note: selecting a tool calls deselect();
+	select_tool("Select");
+	
 	selection = new Selection(0, 0, canvas.width, canvas.height);
 	selection.instantiate();
 }
@@ -551,7 +605,7 @@ function image_attributes(){
 	
 	// Fieldsets
 	
-	var $units = $(E("fieldset")).appendTo($main).append('<legend>Transparency</legend>');
+	var $units = $(E("fieldset")).appendTo($main).append('<legend>Units</legend>');
 	$units.append('<label><input type="radio" name="units" value="in">Inches</label>');
 	$units.append('<label><input type="radio" name="units" value="cm">Cm</label>');
 	$units.append('<label><input type="radio" name="units" value="px">Pixels</label>');
@@ -647,6 +701,15 @@ function image_flip_and_rotate(){
 		}
 		var angle_deg = parseFloat(angle_val);
 		var angle = angle_deg / 360 * TAU;
+		
+		if(isNaN(angle)){
+			var $msgw = new $FormWindow("Invalid Value").addClass("dialogue-window");
+			$msgw.$main.text("The value specified for Degrees was invalid.");
+			$msgw.$Button("Okay", function(){
+				$msgw.close();
+			});
+			return;
+		}
 		
 		switch(action){
 			case "flip-horizontal":
@@ -760,7 +823,9 @@ function set_as_wallpaper_centered(c){
 			}
 		});
 	}else{
-		window.open(c.toDataURL());
+		c.toBlob(function(blob){
+			saveAs(blob, file_name.replace(/\.(bmp|png|gif|jpe?g|tiff|webp)/, "") + " wallpaper.png");
+		});
 	}
 }
 
@@ -789,7 +854,9 @@ function save_selection_to_file(){
 				});
 			});
 		}else{
-			window.open(selection.canvas.toDataURL());
+			selection.canvas.toBlob(function(blob){
+				saveAs(blob, "selection.png");
+			});
 		}
 	}
 }

@@ -2,7 +2,7 @@
 (function(){
 	
 	var debug = function(text){
-		if(console){
+		if(typeof console !== "undefined"){
 			console.log(text);
 		}
 	};
@@ -14,23 +14,36 @@
 	
 	var LocalSession = function(session_id){
 		var lsid = "image#" + session_id;
-		debug("localStorage id: "+lsid);
+		debug("local storage id: " + lsid);
 		
-		var uri = localStorage[lsid];
-		if(uri){
-			open_from_URI(uri, function(){
-				saved = false; // it's safe, sure, but you haven't "Saved" it
-			});
-		}
+		storage.get(lsid, function(err, uri){
+			if(err){
+				show_error_message("Error retrieving image from localStorage:", err);
+			}else if(uri){
+				open_from_URI(uri, function(err){
+					if(err){
+						show_error_message("Error opening image from localStorage:", err);
+					}else{
+						saved = false; // it may be safe, sure, but you haven't "Saved" it
+					}
+				});
+			}
+		});
 		
 		$canvas.on("change.session-hook", function(){
-			localStorage[lsid] = canvas.toDataURL("image/png");
+			storage.set(lsid, canvas.toDataURL("image/png"), function(err){
+				if(err){
+					if(err.quotaExceeded){
+						storage_quota_exceeded();
+					}else{
+						// e.g. localStorage is disabled
+						// (or there's some other error?)
+					}
+				}
+			});
 		});
 	};
 	LocalSession.prototype.end = function(){
-		//?
-		// @TODO: clean up localStorage sessions (when?)
-		
 		// Remove session-related hooks
 		$app.find("*").off(".session-hook");
 		$G.off(".session-hook");
@@ -259,7 +272,7 @@
 					// and other options will be established)
 					
 					// Playback recorded in-progress pointer operations
-					console.log("playback", pointer_operations);
+					window.console && console.log("playback", pointer_operations);
 					for(var i=0; i<pointer_operations.length; i++){
 						var e = pointer_operations[i];
 						// Trigger the event at each place it is listened for

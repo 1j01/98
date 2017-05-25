@@ -1,38 +1,69 @@
 
 # ![](images/icons/32.png) JS Paint Todo
 
+* Help Topics
+	* Resizable panes
+	* Resizable window
+	* Link-esque things
+		* Popups (I'll probably make the text selectable within the popups)
+		* Related topics (I'll probably make this a heading with links instead of the weird context menu thing)
+	* Note unsupported features
+		* "To use black and white instead of color"
+		* "To display gridlines"
+	* Update topics
+		* "To use a picture as the desktop background":
+		  add a third step? It's not quite that easy (at least in the browser)
+		* "To create custom colors": way too OS-specific
+		  (unless I'm gonna emulate the color selection dialogue)
+		* "To enlarge the size of the viewing area" (`paint_enlarge_area.htm`):
+		  jspaint currently allows you to draw while "Viewing the Bitmap"
+		* "To zoom in or out of a picture", "To type and format text":
+		  "You can enter text into a picture only in Normal view."
+		  — jspaint handles this case (well, as well as it handles the Normal case)
+	* Add topics
+		* In "Tips and Tricks" (which is just a lame section)
+		* Transparency
+			* Replace "To use black and white instead of color"?
+		* Multiplayer / collaboration / "To share the document On-Line" or whatever
+	* Index
+	* Search
+	* Keyboard support
+	* Rename everything
+		* `paint_squares` to `paint_rectangles`
+		* `*.htm` to `*.html`
+
+
 * Visual
 	* Warning sign for "Save changes to X?" dialogue
+	* Error symbol for error message dialogues
 	* The window close button uses text; font rendering is not consistent
-	* The menus use text; the arrow character is converted to an icon on some mobile devices
 	* The progress bar (Rendering GIF) is left native
-	* Use win98 default scrollbar size
+	* Menu separator spacing
 	* Minor color differences (0x808080 != 0x7b7b7b)
 	* I want to give most things a revisit later on for Pixel Perfection
 	* Dynamic cursors
 		* Inverty fill bucket and airbrush cursors
 		* Previewy brush and eraser cursors
-	* Pixelize icons, images, checkered backgrounds when zoomed in
 
 
 * Issues
-	* Image > Flip/Rotate, Rotate by angle, `[_________]` Degrees sort of nullifies the image
-	* Crashes when saving large images
+	* Stretch/skew and rotate don't update the canvas size
+	* Since when does clicking with the other mouse button not cancel the action by undoing it?
 	* If you open an image it resets the zoom but if you're on the magnification tool it doesn't update the options
 	* If you zoom in with the magnifier without previously changing the magnification on the toolbar,
 	  then switch back to the magnifier, the toolbar doesn't show any magnification highlighted
-	* Dragging the selection fails when zoomed in
+	* Middle-click scrolling is prevented
 	* Firefox
 		* It lags unusably when using tools
 			* For some tools it only happens while dragging the mouse on the canvas
 		* Tool options flicker... *and lag*, when they're redrawn in quick succession
-	* The TextBox scrollbars have extra buttons
 	* The TextBox contents move down and right when rasterizing
 	* Free-form select can leave behind inverty brush in multiplayer
 	* Multiplayer cursors that go outside the parent can cause the page to be scrollable
 	* Multiplayer interupts you:
 		* If you try to make a selection when there's a selection
 		* If you try to play with multiple players
+	* If you click on a menu item (up/down) and then move over to a menu item and click (up/down) it does nothing (and you can repeat this)
 
 
 ### Menus
@@ -76,9 +107,11 @@
 		* OpenRaster ORA ([via ora.js](https://github.com/zsgalusz/ora.js/tree/master))
 
 
-* Multiplayer
-	* See [multiplayer.js](multiplayer.js)
+* Multiplayer and local sessions
+	* See [sessions.js](src/sessions.js)
 	* Deal with undo/redo for sessions
+		* Particularly it might be helpful to undo to the state after your last change, not just before that;
+		  this could happen automatically if there have been changes since your last change
 
 
 ### Device support
@@ -109,19 +142,17 @@
 
 * Free-Form Select
 	* Passive: create no undoables until you do something
+		* You should be able to make a selection, then change the secondary color, then drag the selection cutting it out with the color you selected
 	* See [On-Canvas Objects](#on-canvas-objects) for Selection
 
 
 * Select
 	* Passive: create no undoables until you do something
+		* You should be able to make a selection, then change the secondary color, then drag the selection cutting it out with the color you selected
 	* See [On-Canvas Objects](#on-canvas-objects) for Selection
 
 
 * Eraser/Color Eraser ✓
-
-
-* Fill With Color
-	* Find a better fill algorithm that gets into all the corners
 
 
 * Pick Color ✓
@@ -132,7 +163,7 @@
 
 
 * Pencil
-	* Adjust size
+	* Adjust size (with numpad)
 
 
 * Brush ✓
@@ -142,19 +173,13 @@
 
 
 * Text
-	* Handles
-	* Wrapping!
 	* Underline
-	* Expanding to new lines
+	* Expand box to make room for new lines
 	* Minimum size of 3em x 1em
 	* Store position of FontBox
 	* Keep an old TextBox while drawing a new one
 	* Save text and record transformations so the image can be saved as
 	  SVG (or HTML?) with invisible selectable transformed text elements
-
-
-* Line
-	* Stroke size when aliased
 
 
 * Curve
@@ -167,17 +192,17 @@
 
 * Polygon
 	* Aliasing
-	* Handle self-intersecting shapes like MS Paint, not like the canvas API
+	* Handle self-intersecting shapes like MS Paint, with an `"evenodd"` [winding rule](http://blogs.adobe.com/webplatform/2013/01/30/winding-rules-in-canvas/)
 	* Issue with extra undoables
 	* Close and finalize the polygon when switching to a different tool
 
 
 * Ellipse
-	* See below
+	* See Shape Styles and Strokes below
 
 
 * Rounded Rectangle
-	* See below
+	* See Shape Styles and Strokes below
 
 
 * **Options**
@@ -187,12 +212,10 @@
 
 * **Shape Styles and Strokes**
 	* Shapes: respond to Ctrl (It's complicated)
-	* Lots of things: Use stroke size
 	* Rounded Rectangle & Ellipse:
-		* Support shape styles!
-		* If the width/height is less than the stroke size,
-		  it should draw a shape with no stroke, filled with
-		  the color that would normally be used for the stroke.
+		* Support stroke size and shape styles!
+	* Rectangle, Rounded Rectangle & Ellipse:
+		* Stroke should be entirely inside the dragged region
 
 
 ### On-Canvas Objects
@@ -207,12 +230,6 @@
 
 * TextBox
 	* See Text tool
-
-
-* Handles
-	* Hide the canvas handles when there is a selection. (This used to work!)
-	* I have a git stash where I'm trying to improve selections.
-	  Canvas handles hiding is fixed there, but other stuff is broken
 
 
 ### BSOD
@@ -239,9 +256,27 @@ Prankily wait for next user input before fullscreening and bluescreening
 	* (Note: Minimum window size might need updating)
 
 
+* Save/manage application state
+	* On restart, reopen images from storage
+	* On close / Exit, ask to save, remove image from storage
+
+
+* Basic things that people would complain about
+
+
+* [Analytics](https://developer.chrome.com/apps/analytics)
+
+
 * Publish to the Chrome Web Store!
-	* [Analytics](https://developer.chrome.com/apps/analytics)
-	* Basic things that people would complain about
+
+
+### Native App
+
+* Proper clipboard support
+* A dialogue when closing
+* Subwindows outside the main window
+* A different way of handling always-saved documents
+  (recovery?)
 
 
 ### Also
@@ -250,44 +285,26 @@ Prankily wait for next user input before fullscreening and bluescreening
 
 
 * Improve README
-	* Introduce and explain the project ...better?
-	* More images? Animated GIFs perhaps? :)
+	* More images! Animated GIFs perhaps? :)
 
 
 * CSS
-	* Buttons shouldn't need a class `.jspaint-button`!
-	* Color cells probably shouldn't be buttons
-	* There also shouldn't be classes `.jspaint-window-button` (`.jspaint-window-titlebar button`) or `.jspaint-dialogue-button` (`.jspaint-window-content button`) at all
-	* DRY, especially for the buttons
-	* Seriously, the buttons
-	* Move into styles folder
-	* Deal with `z-index`es
-	* Comment stuff
-	* Buttons
-	* Srsly
-	* C'mon
-	* Buttons
-	* Also other `.jspaint-` classes
+	* DRY, especially button styles
+	* Deal with `z-index` rules?
+	* Comment stuff?
+	* Use a CSS preprocessor so we can do color-swap themes (maybe even load Windows theme files)
+	* Stuff should go in an OS GUI library with themes for Windows 98 and other OSes
 
 
 * JS
-	* Selection and TextBox should inherit from a base class
-	* Remove either `selection.x/y/w/h` or `._x/_y/_w/_h`; and use `x/y/width/height`
-	* Outdated names like sel.$ghost = div.jspaint-selection (not exactly a ghost)
 	* Everything is in random files! "functions.js", REALLY?
-	* $Window has a $Button facility; $FormWindow overrides it with essentially a better one
-	* Image inversion code is duplicated in ChooserCanvas from tool-options.js but should go in image-manipulation.js
-	* Comment everything and then try to make the code as obvious as the comments
-	* Improve code quality: https://codeclimate.com/github/1j01/jspaint
+	* `$Window` has a `$Button` facility; `$FormWindow` overrides it with essentially a better one
+	* Image inversion code is duplicated in `ChooserCanvas` from tool-options.js but should go in image-manipulation.js
+	* Make code clearer / improve code quality: https://codeclimate.com/github/1j01/jspaint
 
 
 * Images
 	* Use a global sprite sheet, and optimize it
-
-
-* Help
-	* Actual Help Topics
-	* Interactive tutorial(s)?
 
 
 * Search Engine Optimization

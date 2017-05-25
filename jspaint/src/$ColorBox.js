@@ -1,22 +1,21 @@
 
 function $ColorBox(){
-	var $cb = $(E("div")).addClass("jspaint-color-box");
+	var $cb = $(E("div")).addClass("color-box");
 	
-	var $current_colors = $(E("div")).addClass("jspaint-current-colors");
-	var $palette = $(E("div")).addClass("jspaint-palette");
+	var $current_colors = $(E("div")).addClass("current-colors");
+	var $palette = $(E("div")).addClass("palette");
 	
 	$cb.append($current_colors, $palette);
 	
-	var $foreground_color = $(E("div")).addClass("jspaint-color-selection");
-	var $background_color = $(E("div")).addClass("jspaint-color-selection");
-	$current_colors.append($foreground_color, $background_color);
+	var $foreground_color = $(E("div")).addClass("color-selection");
+	var $background_color = $(E("div")).addClass("color-selection");
+	$current_colors.append($background_color, $foreground_color);
 	
 	$current_colors.css({
 		position: "relative",
 	});
 	$foreground_color.css({
 		position: "absolute",
-		zIndex: 1,
 		left: 2,
 		top: 4,
 	});
@@ -44,7 +43,7 @@ function $ColorBox(){
 	var build_palette = function(){
 		$palette.empty();
 		$.each(palette, function(i, color){
-			var $b = $(E("button")).addClass("jspaint-color-button");
+			var $b = $(E("div")).addClass("color-button");
 			$b.appendTo($palette);
 			$b.css("background-color", color);
 			
@@ -119,14 +118,14 @@ function $ColorBox(){
 	
 	var $c = $Component("Colors", "wide", $cb);
 	
-	var $input = $("<input type=color>").appendTo($app).css({width: 0, height: 0, padding: 0, border: 0, flex: "0 0 0"});
-	
 	$c.edit_last_color = function(){
 		// Edit the last color cell that's been selected as the foreground color.
-		$input.click().one("change", function(){
+		create_and_trigger_input({type: "color"}, function(input){
+			// console.log(input, input.value);
 			$last_fg_color_button.trigger({type: "pointerdown", ctrlKey: false, button: 0});
-			$last_fg_color_button.find("input").val($input.val()).triggerHandler("change");
-		});
+			$last_fg_color_button.find("input").val(input.value).triggerHandler("change");
+		})
+		.show().css({width: 0, height: 0, padding: 0, border: 0, position: "absolute", pointerEvents: "none", overflow: "hidden"});
 	};
 	
 	$c.rebuild_palette = build_palette;

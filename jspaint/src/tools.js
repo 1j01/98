@@ -22,11 +22,12 @@ tools = [{
 		tool.y_max = pointer.y+1;
 		tool.points = [];
 		
-		if(selection){
-			selection.draw();
-			selection.destroy();
-			selection = null;
-		}
+		// End prior selection, drawing it to the canvas
+		deselect();
+		// Checkpoint so we can roll back inverty brush
+		// @TODO Still probably need to use something other than the undo stack
+		undoable();
+
 		// The inverty brush is continuous in space which means
 		// paint(ctx, x, y) will be called for each pixel the pointer moves
 		// and we only need to record individual pointer events to make the polygon
@@ -66,10 +67,6 @@ tools = [{
 		var rect_w = inverty_size;
 		var rect_h = inverty_size;
 		
-		// @TODO @FIXME get rid of this part:
-		if(!undos.length){
-			undoable();//ugh... this is supposed to be passive
-		}//phhh
 		var ctx_src = undos[undos.length-1].getContext("2d");//psh
 		
 		// Make two tiny ImageData objects,
@@ -116,7 +113,11 @@ tools = [{
 	description: "Selects a rectangular part of the picture to move, copy, or edit.",
 	cursor: ["precise", [16, 16], "crosshair"],
 	passive: true,
+	drag_start_x: 0,
+	drag_start_y: 0,
 	pointerdown: function(){
+		this.drag_start_x = pointer.x;
+		this.drag_start_y = pointer.y;
 		if(selection){
 			selection.draw();
 			selection.destroy();
@@ -137,16 +138,14 @@ tools = [{
 	},
 	paint: function(){
 		if(!selection){ return; }
-		selection.w = selection.x - pointer.x;
-		selection.h = selection.y - pointer.y;
-		var x1 = Math.max(0, Math.min(selection.x, pointer.x));
-		var y1 = Math.max(0, Math.min(selection.y, pointer.y));
-		var x2 = Math.min(canvas.width, Math.max(selection.x, pointer.x));
-		var y2 = Math.min(canvas.height, Math.max(selection.y, pointer.y));
-		selection._x = x1;
-		selection._y = y1;
-		selection._w = Math.max(1, x2 - x1);
-		selection._h = Math.max(1, y2 - y1);
+		var x1 = Math.max(0, Math.min(this.drag_start_x, pointer.x));
+		var y1 = Math.max(0, Math.min(this.drag_start_y, pointer.y));
+		var x2 = Math.min(canvas.width, Math.max(this.drag_start_x, pointer.x));
+		var y2 = Math.min(canvas.height, Math.max(this.drag_start_y, pointer.y));
+		selection.x = x1;
+		selection.y = y1;
+		selection.width = Math.max(1, x2 - x1);
+		selection.height = Math.max(1, y2 - y1);
 		selection.position();
 	},
 	pointerup: function(){
@@ -346,7 +345,11 @@ tools = [{
 	activate: function(){
 		setTimeout(FontDetective.preload, 10);
 	},
+	drag_start_x: 0,
+	drag_start_y: 0,
 	pointerdown: function(){
+		this.drag_start_x = pointer.x;
+		this.drag_start_y = pointer.y;
 		if(textbox){
 			textbox.draw();
 			textbox.destroy();
@@ -366,16 +369,14 @@ tools = [{
 	},
 	paint: function(){
 		if(!textbox){ return; }
-		textbox.w = textbox.x - pointer.x;
-		textbox.h = textbox.y - pointer.y;
-		var x1 = Math.max(0, Math.min(textbox.x, pointer.x));
-		var y1 = Math.max(0, Math.min(textbox.y, pointer.y));
-		var x2 = Math.min(canvas.width, Math.max(textbox.x, pointer.x));
-		var y2 = Math.min(canvas.height, Math.max(textbox.y, pointer.y));
-		textbox._x = x1;
-		textbox._y = y1;
-		textbox._w = Math.max(1, x2 - x1);
-		textbox._h = Math.max(1, y2 - y1);
+		var x1 = Math.max(0, Math.min(this.drag_start_x, pointer.x));
+		var y1 = Math.max(0, Math.min(this.drag_start_y, pointer.y));
+		var x2 = Math.min(canvas.width, Math.max(this.drag_start_x, pointer.x));
+		var y2 = Math.min(canvas.height, Math.max(this.drag_start_y, pointer.y));
+		textbox.x = x1;
+		textbox.y = y1;
+		textbox.width = Math.max(1, x2 - x1);
+		textbox.height = Math.max(1, y2 - y1);
 		textbox.position();
 	},
 	pointerup: function(){
@@ -394,7 +395,7 @@ tools = [{
 	cursor: ["precise", [16, 16], "crosshair"],
 	stroke_only: true,
 	shape: function(ctx, x, y, w, h){
-		draw_line(ctx, x, y, x+w, y+h);
+		draw_line(ctx, x, y, x+w, y+h, stroke_size);
 	},
 	$options: $choose_stroke_size
 }, {
@@ -585,7 +586,8 @@ tools = [{
 		for(var i=0, j=1; j<this.points.length; i++, j++){
 			draw_line(ctx,
 				this.points[i].x, this.points[i].y,
-				this.points[j].x, this.points[j].y
+				this.points[j].x, this.points[j].y,
+				stroke_size
 			);
 		}
 	},
@@ -606,12 +608,14 @@ tools = [{
 		ctx.lineTo(this.points[0].x, this.points[0].y);
 		ctx.closePath();
 		
+		ctx.lineWidth = stroke_size;
+		ctx.lineJoin = "bevel";
 		if(this.$options.fill){
 			ctx.fillStyle = fill_color;
 			ctx.fill();
 		}
 		if(this.$options.stroke){
-			ctx.fillStyle = stroke_color;
+			ctx.strokeStyle = stroke_color;
 			ctx.stroke();
 		}
 		
@@ -651,14 +655,16 @@ tools = [{
 			for(var i=0, j=1; j<this.points.length; i++, j++){
 				draw_line(ctx,
 					this.points[i].x, this.points[i].y,
-					this.points[j].x, this.points[j].y
+					this.points[j].x, this.points[j].y,
+					stroke_size
 				);
 			}
 			j = 0;
 			i = this.points.length - 1;
 			draw_line(ctx,
 				this.points[i].x, this.points[i].y,
-				this.points[j].x, this.points[j].y
+				this.points[j].x, this.points[j].y,
+				stroke_size
 			);
 		}
 		*/

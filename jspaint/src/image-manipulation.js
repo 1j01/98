@@ -27,7 +27,7 @@ function render_brush(ctx, shape, size){
 	}else if(shape === "vertical"){
 		draw_line(ctx, mid_x, top, mid_x, size);
 	}
-};
+}
 
 function draw_ellipse(ctx, x, y, w, h, stroke, fill){
 	
@@ -138,16 +138,30 @@ function draw_rounded_rectangle(ctx, x, y, width, height, radius){
 	}
 }
 
-function draw_line(ctx, x1, y1, x2, y2){
+function draw_line(ctx, x1, y1, x2, y2, stroke_size){
+	stroke_size = stroke_size || 1;
 	if(aliasing){
-		bresenham_line(x1, y1, x2, y2, function(x, y){
-			ctx.fillRect(x, y, 1, 1);
-		});
+		if(stroke_size > 1){
+			var csz = stroke_size * 2.1; // XXX: magic constant duplicated from tools.js
+			var brush_canvas = new Canvas(csz, csz);
+			brush_canvas.width = csz;
+			brush_canvas.height = csz;
+			brush_canvas.ctx.fillStyle = brush_canvas.ctx.strokeStyle = stroke_color;
+			render_brush(brush_canvas.ctx, "circle", stroke_size);
+			bresenham_line(x1, y1, x2, y2, function(x, y){
+				ctx.drawImage(brush_canvas, ~~(x - brush_canvas.width/2), ~~(y - brush_canvas.height/2));
+			});
+		}else{
+			bresenham_line(x1, y1, x2, y2, function(x, y){
+				ctx.fillRect(x, y, 1, 1);
+			});
+		}
 	}else{
 		ctx.beginPath();
 		ctx.moveTo(x1, y1);
 		ctx.lineTo(x2, y2);
 		
+		ctx.lineWidth = stroke_size;
 		ctx.lineCap = "round";
 		ctx.stroke();
 		ctx.lineCap = "butt";
@@ -175,7 +189,7 @@ function bresenham_line(x1, y1, x2, y2, callback){
 }
 
 function brosandham_line(x1, y1, x2, y2, callback){
-	// Bresenham's line algorithm modified to callback in-between going horizontal and vertical
+	// Bresenham's line argorithm with a callback between going horizontal and vertical
 	x1=~~x1, x2=~~x2, y1=~~y1, y2=~~y2;
 	
 	var dx = Math.abs(x2 - x1);
@@ -223,17 +237,24 @@ function draw_fill(ctx, x, y, fill_r, fill_g, fill_b, fill_a){
 		y = new_pos[1];
 
 		pixel_pos = (y*c_width + x) * 4;
-		while(match_start_color(pixel_pos)){
-			pixel_pos -= c_width * 4, y--;
+		while(matches_start_color(pixel_pos)){
+			y--;
+			pixel_pos = (y*c_width + x) * 4;
 		}
-		pixel_pos += c_width * 4, y++;
 		reach_left = false;
 		reach_right = false;
-		while(y++ < c_height && match_start_color(pixel_pos)){
+		while(true){
+			y++;
+			pixel_pos = (y*c_width + x) * 4;
+			
+			if(!(y < c_height && matches_start_color(pixel_pos))){
+				break;
+			}
+			
 			color_pixel(pixel_pos);
 
 			if(x > 0){
-				if(match_start_color(pixel_pos - 4)){
+				if(matches_start_color(pixel_pos - 4)){
 					if(!reach_left){
 						stack.push([x - 1, y]);
 						reach_left = true;
@@ -244,7 +265,7 @@ function draw_fill(ctx, x, y, fill_r, fill_g, fill_b, fill_a){
 			}
 
 			if(x < c_width-1){
-				if(match_start_color(pixel_pos + 4)){
+				if(matches_start_color(pixel_pos + 4)){
 					if(!reach_right){
 						stack.push([x + 1, y]);
 						reach_right = true;
@@ -259,7 +280,7 @@ function draw_fill(ctx, x, y, fill_r, fill_g, fill_b, fill_a){
 	}
 	ctx.putImageData(id, 0, 0);
 
-	function match_start_color(pixel_pos){
+	function matches_start_color(pixel_pos){
 		return (
 			id.data[pixel_pos+0] === start_r &&
 			id.data[pixel_pos+1] === start_g &&
@@ -279,9 +300,7 @@ function draw_fill(ctx, x, y, fill_r, fill_g, fill_b, fill_a){
 function apply_image_transformation(fn){
 	// Apply an image transformation function to either the selection or the entire canvas
 	var new_canvas = new Canvas();
-	var original_canvas =
-		selection? selection. // Selection!? Selection!
-		canvas: canvas; // Canvas, canvas, canvas.
+	var original_canvas = selection ? selection.canvas: canvas;
 	
 	// Sometimes selection.canvas is an Image
 	// Maybe that should be changed instead having of this here

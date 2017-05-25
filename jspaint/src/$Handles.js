@@ -8,7 +8,7 @@ function $Handles($container, element, options){
 		el = element;
 	});
 	
-	var $resize_ghost = $(E("div")).addClass("jspaint-resize-ghost");
+	var $resize_ghost = $(E("div")).addClass("resize-ghost");
 	var handles = $.map([
 		["top", "right"], // ↗
 		["top", "middle"], // ↑
@@ -22,17 +22,17 @@ function $Handles($container, element, options){
 		var y_axis = pos[0];
 		var x_axis = pos[1];
 		
-		var $h = $(E("div")).addClass("jspaint-handle");
+		var $h = $(E("div")).addClass("handle");
 		$h.appendTo($container);
 		
 		$h.attr("touch-action", "none");
 		
-		var x, y, width, height;
+		var delta_x = 0, delta_y = 0, width, height;
 		var dragged = false;
 		var resizes_height = y_axis !== "middle";
 		var resizes_width = x_axis !== "middle";
 		if(size_only && (y_axis === "top" || x_axis === "left")){
-			$h.addClass("jspaint-useless-handle");
+			$h.addClass("useless-handle");
 		}else{
 			
 			var cursor_fname;
@@ -61,12 +61,31 @@ function $Handles($container, element, options){
 				dragged = true;
 				
 				var rect = el.getBoundingClientRect();
-				width = ~~(resizes_width ? (e.clientX / magnification - rect.left) : (rect.width));
-				height = ~~(resizes_height ? (e.clientY / magnification - rect.top) : (rect.height));
+				var mx = e.clientX / magnification;
+				var my = e.clientY / magnification;
+				// TODO: decide between Math.floor/Math.ceil/Math.round for these values
+				if(x_axis === "right"){
+					delta_x = 0;
+					width = ~~(mx - rect.left);
+				}else if(x_axis === "left"){
+					delta_x = ~~(mx - rect.left);
+					width = ~~(rect.right - mx);
+				}else{
+					width = ~~(rect.width);
+				}
+				if(y_axis === "bottom"){
+					delta_y = 0;
+					height = ~~(my - rect.top);
+				}else if(y_axis === "top"){
+					delta_y = ~~(my - rect.top);
+					height = ~~(rect.bottom - my);
+				}else{
+					height = ~~(rect.height);
+				}
 				$resize_ghost.css({
 					position: "absolute",
-					left: offset,
-					top: offset,
+					left: magnification * delta_x + offset,
+					top: magnification * delta_y + offset,
 					width: magnification * width,
 					height: magnification * height,
 				});
@@ -75,15 +94,15 @@ function $Handles($container, element, options){
 				dragged = false;
 				if(e.button === 0){
 					$G.on("pointermove", drag);
-					$("body").css({cursor: cursor}).addClass("jspaint-cursor-bully");
+					$("body").css({cursor: cursor}).addClass("cursor-bully");
 				}
 				$G.one("pointerup", function(e){
 					$G.off("pointermove", drag);
-					$("body").css({cursor: ""}).removeClass("jspaint-cursor-bully");
+					$("body").css({cursor: ""}).removeClass("cursor-bully");
 					
 					$resize_ghost.remove();
 					if(dragged){
-						$(el).trigger("user-resized", [x, y, width, height]);
+						$(el).trigger("user-resized", [delta_x, delta_y, width, height]);
 					}
 					$container.trigger("update");
 				});
@@ -97,24 +116,26 @@ function $Handles($container, element, options){
 			var rect = el.getBoundingClientRect();
 			var hs = $h.width();
 			if(x_axis === "middle"){
-				$h.css({ left: offset + (magnification * rect.width - hs) / 2 });
+				$h.css({ left: offset + (rect.width - hs) / 2 });
 			}else if(x_axis === "left"){
 				$h.css({ left: offset - outset });
 			}else if(x_axis === "right"){
-				$h.css({ left: offset + (magnification * rect.width - hs/2) });
+				$h.css({ left: offset + (rect.width - hs/2) });
 			}
 			if(y_axis === "middle"){
-				$h.css({ top: offset + (magnification * rect.height - hs) / 2 });
+				$h.css({ top: offset + (rect.height - hs) / 2 });
 			}else if(y_axis === "top"){
 				$h.css({ top: offset - outset });
 			}else if(y_axis === "bottom"){
-				$h.css({ top: offset + (magnification * rect.height - hs/2) });
+				$h.css({ top: offset + (rect.height - hs/2) });
 			}
 		};
 		
 		$container.on("update resize scroll", update_handle);
 		$G.on("resize", update_handle);
 		setTimeout(update_handle, 50);
+		
+		return $h[0];
 	});
 	return $(handles);
 }

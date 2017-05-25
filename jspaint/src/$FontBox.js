@@ -1,6 +1,6 @@
 
 function $FontBox(){
-	var $fb = $(E("div")).addClass("jspaint-font-box");
+	var $fb = $(E("div")).addClass("font-box");
 	
 	var $family = $(E("select"));
 	var $size = $(E("input")).attr({
@@ -43,7 +43,7 @@ function $FontBox(){
 	
 	
 	function $Toggle(xi, thing){
-		var $button = $(E("button")).addClass("jspaint-button");
+		var $button = $(E("button"));
 		var $image = $(E("span")).appendTo($button);
 		$button.css({
 			width: 23,

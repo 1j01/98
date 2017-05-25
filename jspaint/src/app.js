@@ -9,14 +9,6 @@ var default_canvas_height = 384;
 var my_canvas_width = default_canvas_width;
 var my_canvas_height = default_canvas_height;
 
-try{
-	// @TODO support for chrome app where only chrome.storage is available
-	if(localStorage){
-		my_canvas_width = Number(localStorage.width) || default_canvas_width;
-		my_canvas_height = Number(localStorage.height) || default_canvas_height;
-	}
-}catch(e){}
-
 var palette = [
 	"#000000","#787878","#790300","#757A01","#007902","#007778","#0A0078","#7B0077","#767A38","#003637","#286FFE","#083178","#4C00FE","#783B00",
 	"#FFFFFF","#BBBBBB","#FF0E00","#FAFF08","#00FF0B","#00FEFF","#3400FE","#FF00FE","#FBFF7A","#00FF7B","#76FEFF","#8270FE","#FF0677","#FF7D36",
@@ -54,10 +46,10 @@ var saved = true;
 
 var $app = $(E("div")).addClass("jspaint").appendTo("body");
 
-var $V = $(E("div")).addClass("jspaint-vertical").appendTo($app);
-var $H = $(E("div")).addClass("jspaint-horizontal").appendTo($V);
+var $V = $(E("div")).addClass("vertical").appendTo($app);
+var $H = $(E("div")).addClass("horizontal").appendTo($V);
 
-var $canvas_area = $(E("div")).addClass("jspaint-canvas-area").appendTo($H);
+var $canvas_area = $(E("div")).addClass("canvas-area").appendTo($H);
 $canvas_area.attr("touch-action", "pan-x pan-y");
 
 var canvas = new Canvas();
@@ -67,21 +59,19 @@ $canvas.attr("touch-action", "none");
 
 var $canvas_handles = $Handles($canvas_area, canvas, {outset: 4, offset: 4, size_only: true});
 
-var $top = $(E("div")).addClass("jspaint-component-area").prependTo($V);
-var $bottom = $(E("div")).addClass("jspaint-component-area").appendTo($V);
-var $left = $(E("div")).addClass("jspaint-component-area").prependTo($H);
-var $right = $(E("div")).addClass("jspaint-component-area").appendTo($H);
+var $top = $(E("div")).addClass("component-area").prependTo($V);
+var $bottom = $(E("div")).addClass("component-area").appendTo($V);
+var $left = $(E("div")).addClass("component-area").prependTo($H);
+var $right = $(E("div")).addClass("component-area").appendTo($H);
 
-var $status_area = $(E("div")).addClass("jspaint-status-area").appendTo($V);
-var $status_text = $(E("div")).addClass("jspaint-status-text").appendTo($status_area);
-var $status_position = $(E("div")).addClass("jspaint-status-coordinates").appendTo($status_area);
-var $status_size = $(E("div")).addClass("jspaint-status-coordinates").appendTo($status_area);
+var $status_area = $(E("div")).addClass("status-area").appendTo($V);
+var $status_text = $(E("div")).addClass("status-text").appendTo($status_area);
+var $status_position = $(E("div")).addClass("status-coordinates").appendTo($status_area);
+var $status_size = $(E("div")).addClass("status-coordinates").appendTo($status_area);
 
 ($status_text.default = function(){
 	$status_text.text("For Help, click Help Topics on the Help Menu.");
 })();
-
-var $file_input = $("<input type=file>").appendTo($app).css({width: 0, height: 0, padding: 0, border: 0, flex: "0 0 0"});
 
 var $toolbox = $ToolBox();
 var $colorbox = $ColorBox();
@@ -93,17 +83,13 @@ reset_magnification();
 
 if(window.file_entry){
 	open_from_FileEntry(window.file_entry);
-}else if(window.intent){
-	open_from_URI(window.intent.data);
 }
 
 $canvas.on("user-resized", function(e, _x, _y, width, height){
 	undoable(0, function(){
 		canvas.width = Math.max(1, width);
 		canvas.height = Math.max(1, height);
-		if(transparency){
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
-		}else{
+		if(!transparency){
 			ctx.fillStyle = colors.background;
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 		}
@@ -113,15 +99,35 @@ $canvas.on("user-resized", function(e, _x, _y, width, height){
 			ctx.drawImage(previous_canvas, 0, 0);
 		}
 		
-		$canvas.trigger("update"); // update handles
+		$canvas_area.trigger("resize");
 		
-		try{
-			localStorage.width = canvas.width;
-			localStorage.height = canvas.height;
-		}catch(e){
+		storage.set({
+			width: canvas.width,
+			height: canvas.height,
+		}, function(err){
 			// oh well
-		}
+		})
 	});
+});
+
+$canvas_area.on("resize", function(){
+	update_magnified_canvas_size();
+});
+
+storage.get({
+	width: default_canvas_width,
+	height: default_canvas_height,
+}, function(err, values){
+	if(err){return;}
+	my_canvas_width = values.width;
+	my_canvas_height = values.height;
+	canvas.width = Math.max(1, my_canvas_width);
+	canvas.height = Math.max(1, my_canvas_height);
+	if(!transparency){
+		ctx.fillStyle = colors.background;
+		ctx.fillRect(0, 0, canvas.width, canvas.height);
+	}
+	$canvas_area.trigger("resize");
 });
 
 $("body").on("dragover dragenter", function(e){
@@ -142,7 +148,11 @@ $("body").on("dragover dragenter", function(e){
 	e.preventDefault();
 	var dt = e.originalEvent.dataTransfer;
 	if(dt && dt.files && dt.files.length){
-		open_from_FileList(dt.files);
+		open_from_FileList(dt.files, function(err){
+			if(err){
+				show_error_message("Failed to open file:", err);
+			}
+		});
 	}
 });
 
@@ -367,8 +377,8 @@ var pointer, pointer_start, pointer_previous;
 var reverse, ctrl, button;
 function e2c(e){
 	var rect = canvas.getBoundingClientRect();
-	var cx = e.clientX / magnification - rect.left;
-	var cy = e.clientY / magnification - rect.top;
+	var cx = e.clientX - rect.left;
+	var cy = e.clientY - rect.top;
 	return {
 		x: ~~(cx / rect.width * canvas.width),
 		y: ~~(cy / rect.height * canvas.height),
@@ -388,7 +398,7 @@ function tool_go(event_name){
 	
 	fill_color_k =
 	stroke_color_k =
-		ctrl ? "ternary" : (reverse ? "background" : "foreground")
+		ctrl ? "ternary" : (reverse ? "background" : "foreground");
 	
 	if(selected_tool.shape){
 		var previous_canvas = undos[undos.length-1];
@@ -400,11 +410,11 @@ function tool_go(event_name){
 	if(selected_tool.shape || selected_tool.shape_colors){
 		if(!selected_tool.stroke_only){
 			if(reverse){
-				fill_color_k = 0;
-				stroke_color_k = 1;
+				fill_color_k = "foreground";
+				stroke_color_k = "background";
 			}else{
-				fill_color_k = 1;
-				stroke_color_k = 0;
+				fill_color_k = "background";
+				stroke_color_k = "foreground";
 			}
 		}
 		ctx.fillStyle = fill_color = colors[fill_color_k];
@@ -433,16 +443,18 @@ function canvas_pointer_move(e){
 	pointer = e2c(e);
 	if(e.shiftKey){
 		if(selected_tool.name.match(/Line|Curve/)){
+			// snap to eight directions
 			var dist = Math.sqrt(
 				(pointer.y - pointer_start.y) * (pointer.y - pointer_start.y) +
 				(pointer.x - pointer_start.x) * (pointer.x - pointer_start.x)
 			);
-			var octurn = (TAU / 8);
-			var dir08 = Math.atan2(pointer.y - pointer_start.y, pointer.x - pointer_start.x) / octurn;
-			var dir = Math.round(dir08) * octurn;
-			pointer.x = Math.round(pointer_start.x + Math.cos(dir) * dist);
-			pointer.y = Math.round(pointer_start.y + Math.sin(dir) * dist);
+			var eighth_turn = TAU / 8;
+			var angle_0_to_8 = Math.atan2(pointer.y - pointer_start.y, pointer.x - pointer_start.x) / eighth_turn;
+			var angle = Math.round(angle_0_to_8) * eighth_turn;
+			pointer.x = Math.round(pointer_start.x + Math.cos(angle) * dist);
+			pointer.y = Math.round(pointer_start.y + Math.sin(angle) * dist);
 		}else if(selected_tool.shape){
+			// snap to four diagonals
 			var w = Math.abs(pointer.x - pointer_start.x);
 			var h = Math.abs(pointer.y - pointer_start.y);
 			if(w < h){
@@ -539,7 +551,10 @@ $canvas_area.on("pointerdown", function(e){
 	}
 });
 
-$app.on("mousedown selectstart contextmenu", function(e){
+$app
+.add($toolbox)
+.add($colorbox)
+.on("mousedown selectstart contextmenu", function(e){
 	if(
 		e.target instanceof HTMLSelectElement ||
 		e.target instanceof HTMLTextAreaElement ||

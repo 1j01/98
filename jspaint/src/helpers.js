@@ -1,4 +1,12 @@
 
+// make jQuery play well with PEP
+$.event.props.push("button", "buttons", "clientX", "clientY", "offsetX", "offsetY", "pageX", "pageY", "screenX", "screenY", "toElement");
+$.event.props.push("pointerType", "pointerId", "width", "height", "pressure", "tiltX", "tiltY", "hwTimestamp", "isPrimary");
+
+// configure Font Detective
+FontDetective.swf = "./lib/FontList.swf";
+
+
 var TAU =     //////|//////
           /////     |     /////
        ///         tau         ///
@@ -77,7 +85,7 @@ function Canvas(width, height){
 	// This must come after sizing the canvas
 	new_ctx.imageSmoothingEnabled = false;
 	new_ctx.mozImageSmoothingEnabled = false;
-	new_ctx.webkitImageSmoothingEnabled = false;
+	new_ctx.msImageSmoothingEnabled = false;
 	
 	return new_canvas;
 }
