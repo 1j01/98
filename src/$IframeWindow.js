@@ -16,7 +16,7 @@ function $IframeWindow(options){
 		
 		$win.bringToFront();
 		
-		if($(e.target).closest(".jspaint-menus, .jspaint-menu-popup").length === 0){
+		if($(e.target).closest(".menus, .menu-popup").length === 0){
 			return;
 		}
 		
