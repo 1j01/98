@@ -39,6 +39,8 @@ var $Button = function(title, n){
 	
 	$(enabled_canvas).add(disabled_canvas).css({
 		margin: "auto",
+		marginTop: 1,
+		marginBottom: 2,
 		pointerEvents: "none",
 	});
 	

@@ -38,17 +38,16 @@
 				/* box-shadow: 1px 2px red px blue px; */
 				box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.5);
 			}
-			
+			.sound-recorder {
+				background: #c0c0c0;
+			}
 			.main {
 				padding: 5px;
 				text-align: center;
 				width: 252px;
-				background: #c0c0c0;
-			}
-			.main * {
-				display: flex;
 			}
 			.display {
+				display: flex;
 				height: 35px;
 			}
 			.wave {
@@ -64,9 +63,13 @@
 				text-align: center;
 			}
 			
+			.controls {
+				display: flex;
+			}
 			.controls button {
 				width: 48px;
 				height: 24px;
+				display: flex;
 			}
 			.controls button + button {
 				margin-left: 3px;
@@ -109,16 +112,6 @@
 				margin-left: -10px;
 			}
 			
-			.menu-container {
-				display: inline-block;
-			}
-			.inset,
-			.main br {
-				display: block !important;
-			}
-			.inset span {
-				display: inline !important;
-			}
 			/* From .tool-options {} */
 			.inset {
 				border: 1px solid white;
