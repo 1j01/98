@@ -60,9 +60,6 @@ html, body {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
-.loading-program * {
-	cursor: progress;
-}
 .window-titlebar .icon {
 	vertical-align: bottom;
 }
@@ -92,72 +89,14 @@ html, body {
 	pointer-events: none;
 }
 
+.marquee {
+	pointer-events: none;
+}
+
 .menus {
 	display: flex;
 	flex: 0 0 auto;
 }
-
-/* @TODO: remove jspaint stuff */
-.choose-shape-style {
-	flex-flow: column;
-}
-.choose-eraser,
-.choose-magnification,
-.choose-stroke-size,
-.choose-transparency {
-	flex-flow: column;
-	align-items: center;
-	justify-content: space-around;
-}
-.choose-brush,
-.choose-airbrush-size {
-	flex-flow: row wrap;
-	justify-content: space-around;
-	align-content: space-around;
-}
-.choose-brush canvas {
-	width: 10px;
-	height: 10px;
-}
-.jspaint :not(table):not(tbody):not(tr):not(td) {
-	display: flex;
-}
-.component-window .window-content,
-.component-window .window-content :not(table):not(tbody):not(tr):not(td) {
-	display: flex;
-}
-.jspaint {
-	display: flex;
-	flex-flow: column;
-	flex: 1;
-}
-.horizontal {
-	flex-flow: row;
-	flex: 1;
-}
-.vertical {
-	flex-flow: column;
-	flex: 1;
-}
-.selection > img,
-.selection > canvas {
-	width: 100%;
-	height: 100%;
-}
-.resize-ghost,
-.selection:not(.instantiated),
-.component-ghost {
-	pointer-events: none;
-}
-.textbox-editor {
-	width: 100%;
-	height: 100%;
-	padding: 0;
-	margin: 0;
-	border: 0;
-	resize: none;
-}
-
 .menu-container {
 	position: relative;
 }
@@ -208,4 +147,11 @@ html, body {
 
 ::before, ::after {
 	pointer-events: none;
+}
+
+.cursor-bully * {
+	cursor: inherit !important;
+}
+.loading-program * {
+	cursor: progress;
 }

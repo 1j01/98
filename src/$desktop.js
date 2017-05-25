@@ -63,7 +63,7 @@ $G.on("resize", arrange_icons);
 
 // Handle selecting icons on the desktop
 (function(){
-	var $selection = $("<div class='selection'/>").appendTo($desktop).hide();
+	var $marquee = $("<div class='marquee'/>").appendTo($desktop).hide();
 	var start = {x: 0, y: 0};
 	var current = {x: 0, y: 0};
 	var dragging = false;
@@ -72,7 +72,7 @@ $G.on("resize", arrange_icons);
 		var min_y = Math.min(start.y, current.y);
 		var max_x = Math.max(start.x, current.x);
 		var max_y = Math.max(start.y, current.y);
-		$selection.show().css({
+		$marquee.show().css({
 			position: "absolute",
 			left: min_x,
 			top: min_y,
@@ -96,11 +96,11 @@ $G.on("resize", arrange_icons);
 		var desktop_was_focused = $desktop.hasClass("focused");
 		$desktop.addClass("focused");
 		var $icon = $(e.target).closest(".desktop-icon");
-		$selection.hide();
+		$marquee.hide();
 		start = {x: e.clientX, y: e.clientY};
 		current = {x: e.clientX, y: e.clientY};
 		if($icon.length > 0){
-			$selection.hide();
+			$marquee.hide();
 		}else{
 			dragging = true;
 			// don't deselect right away unless the desktop was focused
@@ -121,7 +121,7 @@ $G.on("resize", arrange_icons);
 		}
 	});
 	$G.on("pointerup blur", function(){
-		$selection.hide();
+		$marquee.hide();
 		dragging = false;
 	});
 })();

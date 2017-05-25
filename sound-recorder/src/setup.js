@@ -1,8 +1,9 @@
 
-var $body = $("body") // @TODO: remove jspaintisms
-var $V = $("<div class='sound-recorder'/>").addClass("jspaint").appendTo("body"); // @TODO: remove jspaintisms
-var $status_text = $(); // @TODO: remove jspaintisms
-$status_text.default = function(){}; // @TODO: remove jspaintisms
+// @TODO: make menus a component or jquery plugin, and the status bar optional
+var $body = $("body")
+var $V = $("<div class='sound-recorder'/>").appendTo("body");
+var $status_text = $();
+$status_text.default = function(){};
 
 var $log = $("<pre class='outside-app-widget'/>");
 var __log = function(message, data){
