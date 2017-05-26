@@ -100,9 +100,9 @@ var menus = {
 			description: "Redoes the previously undone action.",
 		},
 		____________________________,
-		// FIXME: Cut and Copy can show up as enabled when you open the menu
-		// and then disabled as you move over the menu,
-		// and then actually work even though they appear disabled.
+		// FIXME: Several of these commands can actually work even though they appear disabled.
+		// I probably need to change how menu item enabledness querying works,
+		// make it so it queries the enabled status of all items before switching focus to the menus.
 		{
 			item: "Cu&t",
 			shortcut: "Ctrl+X",
@@ -110,6 +110,7 @@ var menus = {
 				return document.queryCommandEnabled("cut");
 			},
 			action: function(){
+				$textarea.focus();
 				document.execCommand("cut");
 			},
 			description: "Cuts the selection and puts it on the Clipboard.",
@@ -121,6 +122,7 @@ var menus = {
 				return document.queryCommandEnabled("copy");
 			},
 			action: function(){
+				$textarea.focus();
 				document.execCommand("copy");
 			},
 			description: "Copies the selected text to the Clipboard.",
@@ -132,6 +134,7 @@ var menus = {
 				return document.queryCommandEnabled("paste");
 			},
 			action: function(){
+				$textarea.focus();
 				document.execCommand("paste");
 			},
 			description: "Inserts the contents of the Clipboard.",
@@ -146,6 +149,7 @@ var menus = {
 				return (endPos !== startPos);
 			},
 			action: function(){
+				$textarea.focus();
 				if(document.queryCommandEnabled("delete")){
 					document.execCommand("delete");
 				}else{

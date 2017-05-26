@@ -32,14 +32,14 @@ $slider.slider({
 
 /* ------------------------------------- */
 
-$("body").on("mousedown contextmenu", function(e){
+$("body").on("mousedown selectstart contextmenu", function(e){
 	if(
 		e.target instanceof HTMLSelectElement ||
 		e.target instanceof HTMLTextAreaElement ||
 		(e.target instanceof HTMLLabelElement && e.type !== "contextmenu") ||
 		(e.target instanceof HTMLInputElement && e.target.type !== "color")
 	){
-		return true;
+		return;
 	}
 	e.preventDefault();
 });

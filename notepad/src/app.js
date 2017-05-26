@@ -6,6 +6,18 @@ var $V = $("#app");
 var $status_text = $();
 $status_text.default = function(){};
 
+$("body").on("mousedown selectstart contextmenu", function(e){
+	if(
+		e.target instanceof HTMLSelectElement ||
+		e.target instanceof HTMLTextAreaElement ||
+		(e.target instanceof HTMLLabelElement && e.type !== "contextmenu") ||
+		(e.target instanceof HTMLInputElement && e.target.type !== "color")
+	){
+		return;
+	}
+	e.preventDefault();
+});
+
 function file_new(){
 	
 }
@@ -28,6 +40,7 @@ function select_all(){
 
 function insert_time_and_date(){
 	var str = moment().format("LT l");
+	$textarea.focus();
 	document.execCommand("insertText", false, str);
 }
 
