@@ -1,17 +1,13 @@
 
-(function(){
+$MenuBar.DIVIDER = "DIVIDER";
+
+function $MenuBar(menus){
+	
 	var $ = jQuery;
 	var $G = $(self);
-	if(frameElement){
-		$ = parent.jQuery;
-		$G = $([self, parent]);
-	}
+	
 	var $menus = $(E("div")).addClass("menus");
-	if(frameElement){
-		$menus.insertBefore(frameElement);
-	}else{
-		$menus.prependTo($V);
-	}
+	
 	$menus.attr("touch-action", "none");
 	var selecting_menus = false;
 	
@@ -25,7 +21,6 @@
 	};
 	
 	var close_menus = function(){
-		// console.log("close menus");
 		$menus.find(".menu-button").trigger("release");
 		// Close any rogue floating submenus
 		$(".menu-popup").hide();
@@ -41,13 +36,14 @@
 		}
 	};
 	
+	// TODO: API for context menus (i.e. floating menu popups)
 	function $MenuPopup(menu_items){
 		var $menu_popup = $(E("div")).addClass("menu-popup");
 		var $menu_popup_table = $(E("table")).addClass("menu-popup-table").appendTo($menu_popup);
 		
 		$.map(menu_items, function(item){
 			var $row = $(E("tr")).addClass("menu-row").appendTo($menu_popup_table)
-			if(item === ____________________________){
+			if(item === $MenuBar.DIVIDER){
 				var $td = $(E("td")).attr({colspan: 4}).appendTo($row);
 				var $hr = $(E("hr")).addClass("menu-hr").appendTo($td);
 			}else{
@@ -80,7 +76,7 @@
 				}
 				
 				if(item.submenu){
-					$submenu_area.text("▶");
+					$submenu_area.html('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="11" viewBox="0 0 10 11" style="fill:currentColor;display:inline-block;vertical-align:middle"><path d="M7.5 4.33L0 8.66L0 0z"/></svg>');
 					
 					var $submenu_popup = $MenuPopup(item.submenu).appendTo("body");
 					$submenu_popup.hide();
@@ -106,6 +102,7 @@
 						open_tid = setTimeout(open_submenu, 200);
 					});
 					$item.add($submenu_popup).on("pointerout", function(){
+						$menu_popup.closest(".menu-container").find(".menu-button").focus();
 						if(open_tid){clearTimeout(open_tid);}
 						if(close_tid){clearTimeout(close_tid);}
 						close_tid = setTimeout(function(){
@@ -132,16 +129,17 @@
 					}
 					item_action();
 				});
-				$item.on("pointerenter", function(){
+				$item.on("pointerover", function(){
 					if(item.submenu){
-						$status_text.text("");
+						$menus.triggerHandler("info", "");
 					}else{
-						$status_text.text(item.description || "");
+						$menus.triggerHandler("info", item.description || "");
 					}
 				});
-				$item.on("pointerleave", function(){
+				$item.on("pointerout", function(){
 					if($item.is(":visible")){
-						$status_text.text("");
+						$menus.triggerHandler("info", "");
+						$menu_popup.closest(".menu-container").find(".menu-button").focus();
 					}
 				});
 				
@@ -170,11 +168,21 @@
 		return $menu_popup;
 	}
 	
+	var this_click_opened_the_menu = false;
 	$.each(menus, function(menus_key, menu_items){
-		var this_click_opened_the_menu = false;
 		var $menu_container = $(E("div")).addClass("menu-container").appendTo($menus);
 		var $menu_button = $(E("div")).addClass("menu-button").appendTo($menu_container);
 		var $menu_popup = $MenuPopup(menu_items).appendTo($menu_container);
+		
+		var menu_id = menus_key.replace("&", "").replace(/ /g, "-").toLowerCase();
+		$menu_button.addClass("" + menu_id + "-menu-button");
+		if(menu_id == "extras"){
+			// TODO: refactor shared key string, move to function
+			if(localStorage["jspaint extras menu visible"] != "true"){
+				$menu_button.hide();
+			}
+		}
+		
 		$menu_popup.hide();
 		$menu_button.html(_html(menus_key));
 		$menu_button.attr("tabIndex", -1)
@@ -233,16 +241,17 @@
 				}
 			}
 		});
-		$menu_button.on("pointerdown pointerenter", function(e){
-			if(e.type === "pointerenter" && !selecting_menus){
+		$menu_button.on("pointerdown pointerover", function(e){
+			if(e.type === "pointerover" && !selecting_menus){
 				return;
 			}
-			if(!$menu_button.hasClass("active")){
-				this_click_opened_the_menu = true;
+			if(e.type !== "pointerover"){
+				if(!$menu_button.hasClass("active")){
+					this_click_opened_the_menu = true;
+				}
 			}
 			
 			close_menus();
-			// console.log("open menu");
 			
 			$menu_button.focus();
 			$menu_button.addClass("active");
@@ -251,7 +260,7 @@
 			
 			selecting_menus = true;
 			
-			$status_text.text("");
+			$menus.triggerHandler("info", "");
 		});
 		$menu_button.on("pointerup", function(e){
 			if(this_click_opened_the_menu){
@@ -259,7 +268,6 @@
 				return;
 			}
 			if($menu_button.hasClass("active")){
-				// console.log(e.type, "occurred and this click didn't open the menu, so...");
 				close_menus();
 			}
 		});
@@ -269,7 +277,7 @@
 			$menu_button.removeClass("active");
 			$menu_popup.hide();
 			
-			$status_text.default();
+			$menus.triggerHandler("default-info");
 		});
 	});
 	$G.on("keypress", function(e){
@@ -287,5 +295,7 @@
 			close_menus();
 		}
 	});
+	
+	return $menus;
 
-})();
+}

@@ -109,9 +109,6 @@ button {
 	color: #808080;
 }
 .menu-hr {
-	display: block !important;
-	height: 0;
-	width: auto;
 	border: 0;
 	border-top: 1px solid #808080;
 	border-bottom: 1px solid #ffffff;
@@ -119,10 +116,6 @@ button {
 }
 .menu-hotkey {
 	text-decoration: underline;
-}
-.menu-item-checkbox-area,
-.menu-item-submenu-area {
-	text-align: center;
 }
 
 button.selected {

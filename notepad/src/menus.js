@@ -1,6 +1,4 @@
 
-var ____________________________ = "A HORIZONTAL RULE / DIVIDER";
-
 var menus = {
 	"&File": [
 		// TODO: file management
@@ -34,7 +32,7 @@ var menus = {
 			enabled: false,
 			description: "Saves the active document with a new name.",
 		},
-		____________________________,
+		$MenuBar.DIVIDER,
 		// {
 		// 	item: "Print Pre&view",
 		// 	action: function(){
@@ -59,13 +57,13 @@ var menus = {
 			},
 			description: "Prints the active document and sets printing options.",
 		},
-		// ____________________________,
+		// $MenuBar.DIVIDER,
 		// {
 		// 	item: "Recent File",
 		// 	enabled: false,
 		// 	description: "Opens this document.",
 		// },
-		____________________________,
+		$MenuBar.DIVIDER,
 		{
 			item: "E&xit",
 			// shortcut: "Alt+F4",
@@ -99,7 +97,7 @@ var menus = {
 			},
 			description: "Redoes the previously undone action.",
 		},
-		____________________________,
+		$MenuBar.DIVIDER,
 		// FIXME: Several of these commands can actually work even though they appear disabled.
 		// I probably need to change how menu item enabledness querying works,
 		// make it so it queries the enabled status of all items before switching focus to the menus.
@@ -166,7 +164,7 @@ var menus = {
 			},
 			description: "Deletes the selection.",
 		},
-		____________________________,
+		$MenuBar.DIVIDER,
 		{
 			item: "Select &All",
 			// NOTE: Notepad in Windows 98 doesn't actually have Ctrl+A as a shortcut
@@ -183,7 +181,7 @@ var menus = {
 			action: insert_time_and_date,
 			description: "Inserts the current time and date.", // NOTE: made up text
 		},
-		____________________________,
+		$MenuBar.DIVIDER,
 		{
 			item: "&Word Wrap",
 			checkbox: {
@@ -242,7 +240,7 @@ var menus = {
 			// Windows Explorer: "Opens Help."
 			// Paint: "Displays Help for the current task or command."
 		},
-		____________________________,
+		$MenuBar.DIVIDER,
 		{
 			item: "&About Notepad",
 			action: function(){},
@@ -252,3 +250,19 @@ var menus = {
 		}
 	],
 };
+
+var go_outside_frame = false;
+if(frameElement){
+	try{
+		if(parent.$MenuBar){
+			$MenuBar = parent.$MenuBar;
+			go_outside_frame = true;
+		}
+	}catch(e){}
+}
+var $menu_bar = $MenuBar(menus);
+if(go_outside_frame){
+	$menu_bar.insertBefore(frameElement);
+}else{
+	$menu_bar.prependTo($("#app"));
+}

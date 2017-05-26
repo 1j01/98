@@ -102,7 +102,7 @@ html, body {
 }
 .menu-popup {
 	position: absolute;
-	top: 20px;
+	top: 100%;
 	left: 0;
 	z-index: 4;
 	box-sizing: border-box;
@@ -113,12 +113,21 @@ html, body {
 .menu-item {
 	white-space: nowrap;
 }
+.menu-hr {
+	display: block !important;
+	height: 0;
+	width: auto;
+}
 .menu-hotkey {
 	display: inline !important;
 }
 .menu-item-checkbox-area,
 .menu-item-submenu-area {
 	min-width: 16px;
+}
+.menu-item-checkbox-area,
+.menu-item-submenu-area {
+	text-align: center;
 }
 
 .window-title {

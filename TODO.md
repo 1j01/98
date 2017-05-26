@@ -16,6 +16,8 @@
 	* Windows that pop out; will need to display graphics via data URIs or canvases, and rely on inline and/or scoped styles
 	
 	* Setting the wallpaper
+	
+	* Submenus need to go in front of the window; might need to traverse the DOM looking at computed `z-index` styles
 
 * Integrate [Pipes screensaver](https://github.com/1j01/pipes)
 

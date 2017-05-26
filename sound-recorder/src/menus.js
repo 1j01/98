@@ -1,6 +1,4 @@
 
-var ____________________________ = "A HORIZONTAL RULE / DIVIDER";
-
 var menus = {
 	"&File": [
 		{
@@ -39,7 +37,7 @@ var menus = {
 			action: function(){},
 			description: "Shows properties for this sound file.",
 		},
-		____________________________,
+		$MenuBar.DIVIDER,
 		{
 			item: "E&xit",
 			shortcut: "Alt+F4",
@@ -69,7 +67,7 @@ var menus = {
 			action: redo,
 			description: "Redoes the previously undone action.",
 		},
-		____________________________,*/
+		$MenuBar.DIVIDER,*/
 		{
 			item: "&Copy",
 			shortcut: "Ctrl+C",
@@ -102,7 +100,7 @@ var menus = {
 			},
 			description: "Mixes the contents of the Clipboard into the sound.",
 		},
-		____________________________,
+		$MenuBar.DIVIDER,
 		{
 			item: "&Insert File...",
 			action: function(){},
@@ -113,7 +111,7 @@ var menus = {
 			action: function(){},
 			description: "Mixes a file into the sound.",
 		},
-		____________________________,
+		$MenuBar.DIVIDER,
 		{
 			item: "Delete &Before Current Position",
 			enabled: can_delete_before_current_position,
@@ -126,7 +124,7 @@ var menus = {
 			action: delete_after_current_position,
 			description: "Deletes all audio after the current position.",
 		},
-		____________________________,
+		$MenuBar.DIVIDER,
 		{
 			item: "A&udio Properties",
 			action: function(){},
@@ -144,7 +142,7 @@ var menus = {
 			action: effects_decrease_volume,
 			description: "Decreases the volume of the sound (by 25%?)",
 		},
-		____________________________,
+		$MenuBar.DIVIDER,
 		{
 			item: "I&ncrease Speed (by 100%)",
 			action: effects_increase_speed,
@@ -155,7 +153,7 @@ var menus = {
 			action: effects_decrease_speed,
 			description: "Makes your voice sound really deep and slow.",
 		},
-		____________________________,
+		$MenuBar.DIVIDER,
 		{
 			item: "&Add echo",
 			action: effects_add_echo,
@@ -173,7 +171,7 @@ var menus = {
 			action: function(){},
 			description: "Displays Help for the current task or command.",
 		},
-		____________________________,
+		$MenuBar.DIVIDER,
 		{
 			item: "&About Sound Recorder",
 			action: function(){},
@@ -181,3 +179,19 @@ var menus = {
 		}
 	],
 };
+
+var go_outside_frame = false;
+if(frameElement){
+	try{
+		if(parent.$MenuBar){
+			$MenuBar = parent.$MenuBar;
+			go_outside_frame = true;
+		}
+	}catch(e){}
+}
+var $menu_bar = $MenuBar(menus);
+if(go_outside_frame){
+	$menu_bar.insertBefore(frameElement);
+}else{
+	$menu_bar.prependTo($V);
+}

@@ -2,10 +2,6 @@
 var $textarea = $("#document-textarea");
 var $print_helper = $("#print-helper");
 
-var $V = $("#app");
-var $status_text = $();
-$status_text.default = function(){};
-
 $("body").on("mousedown selectstart contextmenu", function(e){
 	if(
 		e.target instanceof HTMLSelectElement ||
