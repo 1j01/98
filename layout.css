@@ -104,7 +104,7 @@ html, body {
 	position: absolute;
 	top: 100%;
 	left: 0;
-	z-index: 4;
+	z-index: 400000; /* so sub-menu-popups can be visible over the window */
 	box-sizing: border-box;
 }
 .menu-popup-table {
