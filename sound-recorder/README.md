@@ -1,7 +1,7 @@
 
 # Sound Recorder
 
-Try it at [98desktop.ml](http://98desktop.ml/) or [standalone](http://1j01.github.io/98/sound-recorder/)
+Try it [as part of 98](http://98.js.org/) or [standalone](http://98.js.org/sound-recorder/)
 
 
 ### TODO
