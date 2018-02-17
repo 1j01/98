@@ -55,7 +55,8 @@ button {
 	vertical-align: bottom;
 }
 .desktop > .marquee {
-	border: 1px dotted #FF7F7F; /* invert */
+	/* TODO: invert the underlying colors (the wallpaper can now be set) */
+	border: 1px dotted #FF7F7F;
 }
 
 .menus *,

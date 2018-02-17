@@ -22,10 +22,10 @@
 * Integrate Paint better
 
 	* Windows that pop out; will need to display graphics via data URIs or canvases, and rely on inline and/or scoped styles
-	
-	* Setting the wallpaper
-	
-	* Submenus need to go in front of the window; might need to traverse the DOM looking at computed `z-index` styles
+
+		 * Could *maybe* use [`<base>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base) for `<img>`s
+
+	* Can't focus the window because mousedown is prevented; should focus the body or something rather than just blurring or canceling the event
 
 * Integrate [Pipes screensaver](https://github.com/1j01/pipes)
 

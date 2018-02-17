@@ -15,6 +15,45 @@ function Paint(){
 		// NOTE: in Windows 98, "untitled" is lowercase, but TODO: we should just make it consistent
 		title: "untitled - Paint"
 	});
+
+	var contentWindow = $win.$iframe[0].contentWindow;
+
+	var waitUntil = function(test, interval, callback){
+		if(test()){
+			callback();
+		}else{
+			setTimeout(waitUntil, interval, test, interval, callback);
+		}
+	};
+
+	// it seems like I should be able to use onload here, but when it works (overrides the function),
+	// it for some reason *breaks the scrollbar styling* in jspaint
+	// I don't know what's going on there
+
+	// contentWindow.addEventListener("load", function(){
+	// $(contentWindow).on("load", function(){
+	// $win.$iframe.load(function(){
+	// $win.$iframe[0].addEventListener("load", function(){
+	waitUntil(function(){
+		return contentWindow.set_as_wallpaper_centered;
+	}, 500, function(){
+		// TODO: maybe save the wallpaper in localStorage
+		// TODO: maybe use blob URL (if only to not take up so much space in the inspector)
+		contentWindow.systemSetAsWallpaperCentered = function(canvas){
+			$desktop.css({
+				backgroundImage: "url(" + canvas.toDataURL() + ")",
+				backgroundRepeat: "no-repeat",
+				backgroundPosition: "center",
+			});
+		};
+		contentWindow.systemSetAsWallpaperTiled = function(canvas){
+			$desktop.css({
+				backgroundImage: "url(" + canvas.toDataURL() + ")",
+				backgroundRepeat: "repeat",
+			});
+		};
+	});
+	
 	return new Task($win);
 }
 
