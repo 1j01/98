@@ -24,9 +24,8 @@ html, body, .jspaint {
 	justify-content: space-around;
 	align-content: space-around;
 }
-.choose-brush canvas {
-	width: 10px;
-	height: 10px;
+.tool-options canvas {
+	flex: 0 0 auto;
 }
 .jspaint :not(table):not(tbody):not(tr):not(td) {
 	display: flex;
@@ -66,6 +65,16 @@ html, body, .jspaint {
 	.vertical > .status-area {
 		display: none !important;
 	}
+}
+.menus {
+	z-index: 5000; /*
+		really high so the menu popups go over subwindows (which dynamically increase z-index)
+		and also over other-user cursors in multi-user mode
+		also at least 2 so popups go over the canvas handles,
+		and at least 1 so that the modern theme's menubar can have a shadow
+	*/
+	/* TODO: put the menu popups in their own container, separate from the menubar */
+	/* FIXME: ..especially since now the text of the buttons goes over windows */
 }
 .component-area,
 .menus *,
@@ -209,6 +218,10 @@ html, body, .jspaint {
 	width: 30px;
 	height: 31px;
 }
+.current-colors,
+.color-button {
+	position: relative;
+}
 .color-button,
 .color-selection {
 	margin-left: 1px;
@@ -222,6 +235,9 @@ html, body, .jspaint {
 .color-button input {
 	margin: 0;
 	padding: 0;
+	position: absolute;
+	left: 0;
+	top: 0;
 	width: 100%;
 	height: 100%;
 }
@@ -238,6 +254,7 @@ html, body, .jspaint {
 	position: absolute;
 	width: 3px;
 	height: 3px;
+	z-index: 1;
 }
 
 
@@ -281,6 +298,12 @@ html, body, .jspaint {
 	padding: 5px;
 }
 
+.version-number {
+	/* TODO: separate into a shared.css? (not really layout!) */
+	font-size: 0.6em;
+	color: #7b7b7b;
+}
+
 .help-window .window-content {
 	display: flex;
 	flex-flow: row;
@@ -309,6 +332,24 @@ html, body, .jspaint {
 .help-window iframe {
 	flex: 1;
 }
+.help-window li ul {
+	padding-left: 16px;
+}
+.help-window li:before {
+	content: "";
+	display: inline-block;
+	vertical-align: middle;
+	width: 16px;
+	height: 16px;
+	background-position: 0 0;
+	margin-right: 2px;
+}
+.help-window .folder.expanded:before {
+	background-position: -16px 0;
+}
+.help-window .page:before {
+	background-position: -32px 0;
+}
 
 .dragging iframe {
 	pointer-events: none;
@@ -319,18 +360,30 @@ html, body, .jspaint {
 	overflow: auto;
 	display: block;
 }
-.storage-manager a > img {
-	max-width: 100px;
-	max-height: 100px;
-	vertical-align: middle;
-	margin: 5px;
+.storage-manager .thumbnail-container {
+	width: 64px;
+	height: 64px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
 }
-.storage-manager a > span,
-.storage-manager a > img,
+.storage-manager .thumbnail-container > img {
+	max-width: 64px;
+	max-height: 64px;
+	flex: 0 0 auto;
+}
+.storage-manager .thumbnail-container,
 .storage-manager p {
 	margin: 5px;
-} 
+}
+.storage-manager .remove-button {
+	margin-left: 15px;
+}
 
 ::before, ::after {
 	pointer-events: none;
+}
+
+.cursor-bully * {
+	cursor: inherit !important;
 }

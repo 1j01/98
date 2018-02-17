@@ -7,9 +7,16 @@
 	background: #7b7b7b;
 	border: 1px inset;
 }
+.canvas-area > canvas {
+	background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAABlBMVEW9vb3///8EwsWUAAAADElEQVQI12NoYHAAAAHEAMFJRSpJAAAAAElFTkSuQmCC") repeat;
+	/* 16px is a common grid size, but that gives 8px grid cells, and our max zoom is 8x */
+	/*background-size: 16px;*/
+	background-size: 8px;
+}
 * {
 	image-rendering: crisp-edges;
 	image-rendering: pixelated;
+	image-rendering: -moz-crisp-edges;
 }
 .selection:after,
 .textbox:after {
@@ -19,7 +26,8 @@
 	top: 0px;
 	right: 0px;
 	bottom: 0px;
-	border: 1px dashed black;
+	outline: 1px dashed black;
+	box-shadow: 0 0 0 1px white;
 }
 .handle {
 	background: #000080;
@@ -32,9 +40,6 @@
 	outline: 1px dotted black;
 	/*outline: 1px dotted invert;*/
 	/* I want this to be inverty, but in chrome this makes it invisible */
-}
-.cursor-bully * {
-	cursor: inherit !important;
 }
 
 .menus *,
@@ -76,7 +81,7 @@
 .menu-item[disabled] {
 	text-shadow: 0.8px 0.8px 0px #fff;
 }
-.menu-item:focus, 
+.menu-item:focus,
 .menu-item.active {
 	background: #007;
 	color: #fff;
@@ -208,7 +213,6 @@ button.selected,
 .current-colors {
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
-	border: 2px inset;
 }
 .color-selection {
 	box-sizing: border-box;
@@ -233,8 +237,31 @@ button.selected,
 	border-left: 1px solid #7B7B7B;
 	border-right: 1px solid #BBBBBB;
 	border-bottom: 1px solid #BBBBBB;
-	position: relative;
-	box-shadow: 1px 1px 0px black inset;
+	/*box-shadow: 1px 1px 0px black inset;*/
+}
+.swatch:before {
+	content: '';
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+}
+.color-selection:before {
+	left: 1px;
+	top: 1px;
+	right: 1px;
+	bottom: 1px;
+}
+.color-button:before,
+.current-colors:before,
+.swatch.pattern:before {
+	border-left: 1px solid black;
+	border-top: 1px solid black;
+}
+.swatch.pattern:before {
+	border-right: 1px solid black;
+	border-bottom: 1px solid black;
 }
 .current-colors:after,
 .color-button:after {
@@ -305,7 +332,7 @@ button.selected,
 	background: -ms-linear-gradient(left, #000080 0%, #1084d0 100%); /* IE10+ */
 	background: linear-gradient(to right, #000080 0%, #1084d0 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000080', endColorstr='#1084d0', GradientType=1 ); /* IE6-9 */
-	
+
 	color: white;
 	font-family: 'Segoe UI', sans-serif;
 	font-size: 12px;
@@ -389,24 +416,8 @@ button:focus {
 	color: #0000ff;
 	cursor: pointer;
 }
-.help-window li ul {
-	padding-left: 16px;
-}
 .help-window li:before {
-	content: "";
-	display: inline-block;
-	vertical-align: middle;
-	width: 16px;
-	height: 16px;
 	background-image: url("../../images/help-icons.png");
-	background-position: 0 0;
-	margin-right: 2px;
-}
-.help-window .folder.expanded:before {
-	background-position: -16px 0;
-}
-.help-window .page:before {
-	background-position: -32px 0;
 }
 .help-window .item.selected {
 	/* @TODO: separate into :focus */
@@ -416,6 +427,15 @@ button:focus {
 	outline-offset: -1px;
 }
 
+input[type=text],
+input[type=url] {
+	/* TODO: fancy 3d inset border (might need a surrounding element because pseudo elements won't work with input) */
+	/* I guess an image border could work; maybe I should be using (svg) image borders for stuff */
+	/* (css inset border style doesn't look good and isn't consistent between browsers) */
+	border: 1px solid gray;
+	background: white;
+	color: black;
+}
 
 ::selection {
 	background-color: #000080;

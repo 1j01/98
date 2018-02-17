@@ -25,7 +25,8 @@ tools = [{
 		// End prior selection, drawing it to the canvas
 		deselect();
 		// Checkpoint so we can roll back inverty brush
-		// @TODO Still probably need to use something other than the undo stack
+		// XXX: Shouldn't use the undo stack for this at all!
+		// TODO: Create an OnCanvasObject for the inverty brush, and make selection a passive action
 		undoable();
 
 		// The inverty brush is continuous in space which means
@@ -223,9 +224,13 @@ tools = [{
 		// Get the rgba values of the selected fill color
 		var rgba = get_rgba_from_color(fill_color);
 		
-		// Perform the fill operation
-		draw_fill(ctx, x, y, rgba[0], rgba[1], rgba[2], rgba[3]);
-		
+		if(shift){
+			// Perform a global (non-contiguous) fill operation, AKA color replacement
+			draw_noncontiguous_fill(ctx, x, y, rgba[0], rgba[1], rgba[2], rgba[3]);
+		} else {
+			// Perform a normal fill operation
+			draw_fill(ctx, x, y, rgba[0], rgba[1], rgba[2], rgba[3]);
+		}
 	}
 }, {
 	name: "Pick Color",
@@ -309,6 +314,7 @@ tools = [{
 		){
 			brush_canvas.width = csz;
 			brush_canvas.height = csz;
+			// don't need to do brush_ctx.disable_image_smoothing() currently because images aren't drawn to the brush
 
 			brush_ctx.fillStyle = brush_ctx.strokeStyle = stroke_color;
 			render_brush(brush_ctx, brush_shape, brush_size);
@@ -473,6 +479,10 @@ tools = [{
 			ctx.fillRect(x, y, w, h);
 		}
 		if(this.$options.stroke){
+			// FIXME: can draw 1x2 or 2x1 pixels of a rectangle with a stroke of 1px (the default)
+			// which doesn't get drawn at full opacity
+			// or more generally, a 0-width or 0-height rectangle gives
+			// non-full-opacity pixels at either side of the resulting line drawn
 			if((stroke_size % 2) === 1){
 				ctx.strokeRect(x-0.5, y-0.5, w, h);
 			}else{

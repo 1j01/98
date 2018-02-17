@@ -1,14 +1,47 @@
 
+
+function $Swatch(color){
+	var $b = $(E("div")).addClass("swatch");
+	var swatch_canvas = new Canvas();
+	$(swatch_canvas).css({pointerEvents: "none"}).appendTo($b);
+	
+	$b.update = function(_color){
+		color = _color;
+		if(color instanceof CanvasPattern){
+			$b.addClass("pattern");
+		}else{
+			$b.removeClass("pattern");
+		}
+		
+		requestAnimationFrame(function(){
+			swatch_canvas.width = $b.innerWidth();
+			swatch_canvas.height = $b.innerHeight();
+			// I don't think disable_image_smoothing() is needed here
+			
+			if(color){
+				swatch_canvas.ctx.fillStyle = color;
+				swatch_canvas.ctx.fillRect(0, 0, swatch_canvas.width, swatch_canvas.height);
+			}
+		});
+	};
+	$G.on("theme-load", function(){
+		$b.update(color);
+	});
+	$b.update(color);
+	
+	return $b;
+}
+
 function $ColorBox(){
 	var $cb = $(E("div")).addClass("color-box");
 	
-	var $current_colors = $(E("div")).addClass("current-colors");
+	var $current_colors = $Swatch().addClass("current-colors");
 	var $palette = $(E("div")).addClass("palette");
 	
 	$cb.append($current_colors, $palette);
 	
-	var $foreground_color = $(E("div")).addClass("color-selection");
-	var $background_color = $(E("div")).addClass("color-selection");
+	var $foreground_color = $Swatch().addClass("color-selection");
+	var $background_color = $Swatch().addClass("color-selection");
 	$current_colors.append($background_color, $foreground_color);
 	
 	$current_colors.css({
@@ -26,9 +59,9 @@ function $ColorBox(){
 	});
 	
 	$G.on("option-changed", function(){
-		$foreground_color.css({background: colors.foreground});
-		$background_color.css({background: colors.background});
-		$current_colors.css({background: colors.ternary});
+		$foreground_color.update(colors.foreground);
+		$background_color.update(colors.background);
+		$current_colors.update(colors.ternary);
 	});
 	
 	$current_colors.on("pointerdown", function(){
@@ -38,16 +71,19 @@ function $ColorBox(){
 		$G.triggerHandler("option-changed");
 	});
 	
-	// the only color editted by Colors > Edit Colors...
+	// the one color editted by "Edit Colors..."
 	var $last_fg_color_button;
+	
+	// TODO: base this on the element sizes
+	var width_per_button = 16;
+	
 	var build_palette = function(){
 		$palette.empty();
 		$.each(palette, function(i, color){
-			var $b = $(E("div")).addClass("color-button");
+			var $b = $Swatch(color).addClass("color-button");
 			$b.appendTo($palette);
-			$b.css("background-color", color);
 			
-			// the last foreground color button starts out as the first one
+			// the "last foreground color button" starts out as the first in the palette
 			if(i === 0){
 				$last_fg_color_button = $b;
 			}
@@ -56,14 +92,14 @@ function $ColorBox(){
 			$i.appendTo($b);
 			$i.on("change", function(){
 				color = $i.val();
-				$b.css("background-color", color);
+				$b.update(color);
 				set_color(color);
 			});
 			
 			$i.css("opacity", 0);
 			$i.prop("enabled", false);
 			
-			$i.val(rgb2hex($b.css("background-color")));
+			$i.val(rgb2hex(color));
 			
 			var button, ctrl;
 			$b.on("pointerdown", function(e){
@@ -73,19 +109,18 @@ function $ColorBox(){
 					$last_fg_color_button = $b;
 				}
 				
-				set_color($b.css("background-color"));
+				set_color(color);
 				
-				$i.val(rgb2hex($b.css("background-color")));
+				$i.val(rgb2hex(color));
+				
+				if(e.button === button && $i.prop("enabled")){
+					$i.trigger("click", "synthetic");
+				}
 				
 				$i.prop("enabled", true);
 				setTimeout(function(){
 					$i.prop("enabled", false);
 				}, 400);
-			});
-			$i.on("pointerdown", function(e){
-				if(e.button === button && $i.prop("enabled")){
-					$i.trigger("click", "synthetic");
-				}
 			});
 			$i.on("click", function(e, synthetic){
 				if(!synthetic){
@@ -104,6 +139,9 @@ function $ColorBox(){
 				$G.trigger("option-changed");
 			};
 			function rgb2hex(col){
+				if(!col.match){ // i.e. CanvasPattern
+					return "#000000";
+				}
 				var rgb = col.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
 				function hex(x){
 					return ("0" + parseInt(x).toString(16)).slice(-2);
@@ -111,8 +149,7 @@ function $ColorBox(){
 				return rgb ? ("#" + hex(rgb[1]) + hex(rgb[2]) + hex(rgb[3])) : col;
 			}
 		});
-		var button_width = 16;
-		$palette.width(Math.ceil(palette.length/2) * button_width);
+		$palette.width(Math.ceil(palette.length/2) * width_per_button);
 	};
 	build_palette();
 	

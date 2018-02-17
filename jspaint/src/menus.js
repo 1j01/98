@@ -22,9 +22,27 @@ var menus = {
 		{
 			item: "Save &As",
 			shortcut: "Ctrl+Shift+S",
-			//shortcut: "",
+			// in mspaint, no shortcut is listed, but it supports F12; it doesn't support Ctrl+Shift+S
 			action: file_save_as,
 			description: "Saves the active document with a new name.",
+		},
+		$MenuBar.DIVIDER,
+		{
+			item: "&Load From URL",
+			// shortcut: "Ctrl+L",
+			action: file_load_from_url,
+			description: "Opens an image from the web.",
+		},
+		{
+			item: "&Upload To Imgur",
+			action: upload_to_imgur,
+			description: "Uploads the active document to Imgur",
+		},
+		$MenuBar.DIVIDER,
+		{
+			item: "Manage Storage",
+			action: manage_storage,
+			description: "Manages storage of previously created or opened pictures.",
 		},
 		$MenuBar.DIVIDER,
 		{
@@ -58,20 +76,14 @@ var menus = {
 			description: "Tiles this bitmap as the desktop background.",
 		},
 		{
-			item: "Set As Wa&llpaper (Centered)",
+			item: "Set As Wallpaper (&Centered)", // in mspaint it's Wa&llpaper
 			action: set_as_wallpaper_centered,
 			description: "Centers this bitmap as the desktop background.",
 		},
 		$MenuBar.DIVIDER,
 		{
-			item: "Manage Storage",
-			action: manage_storage,
-			description: "Manages storage of previously created or opened pictures.",
-		},
-		$MenuBar.DIVIDER,
-		{
 			item: "Recent File",
-			enabled: false, // @TODO for chrome app
+			enabled: false, // @TODO for chrome app / desktop app
 			description: "",
 		},
 		$MenuBar.DIVIDER,
@@ -161,7 +173,7 @@ var menus = {
 		},
 		{
 			item: "Paste &From...",
-			action: paste_from,
+			action: paste_from_file_select_dialog,
 			description: "Pastes a file into the selection.",
 		}
 	],
@@ -320,7 +332,7 @@ var menus = {
 						"opaque": "transparent",
 						"transparent": "opaque",
 					}[transparent_opaque];
-					
+
 					$G.trigger("option-changed");
 				},
 				check: function(){
@@ -341,11 +353,11 @@ var menus = {
 		{
 			item: "&Get Colors",
 			action: function(){
-				get_FileList(function(files){
+				get_FileList_from_file_select_dialog(function(files){
 					var file = files[0];
 					Palette.load(file, function(err, new_palette){
 						if(err){
-							alert("This file is not in a format the paint recognizes, or no colors were found.");
+							show_error_message("This file is not in a format that paint recognizes, or no colors were found.");
 						}else{
 							palette = new_palette;
 							$colorbox.rebuild_palette();
@@ -377,9 +389,11 @@ var menus = {
 				var $msgbox = new $Window();
 				$msgbox.title("About Paint");
 				$msgbox.$content.html(
-					"<h1><img src='images/icons/32.png'/> JS Paint<hr/></h1>" +
+					"<h1><img src='images/icons/32.png'/> JS Paint <small class='version-number' title='Is that a thing? What I mean is, expect bugs!'>Public Alpha</small><hr/></h1>" +
 					"<p>JS Paint is a web-based remake of MS Paint by <a href='http://1j01.github.io/'>Isaiah Odhner</a>.</p>" +
-					"<p>You can check out the project <a href='https://github.com/1j01/jspaint'>on github</a>.</p>"
+					"<p>Read about the project and <b>extra features</b> on <a href='https://github.com/1j01/jspaint#readme'>the README</a>.</p>" +
+					"<p>Request features and report bugs <a href='https://github.com/1j01/jspaint/issues'>on GitHub</a> " +
+					"or <a href='mailto:isaiahodhner@gmail.com?subject=JS%20Paint'>by email</a>.</p>"
 				).css({padding: "15px"});
 				$msgbox.center();
 			},
@@ -389,11 +403,17 @@ var menus = {
 	],
 	"E&xtras": [
 		{
-			item: "&Render History as GIF",
+			item: "&Render History As GIF",
 			// shortcut: "Ctrl+Shift+G",
 			action: render_history_as_gif,
 			description: "Creates an animation from the document history.",
 		},
+		// {
+		// 	item: "Render History as &APNG",
+		// 	// shortcut: "Ctrl+Shift+A",
+		// 	action: render_history_as_apng,
+		// 	description: "Creates an animation from the document history.",
+		// },
 		// {
 		// 	item: "&Additional Tools",
 		// 	action: function(){
@@ -409,7 +429,7 @@ var menus = {
 		// 	description: "Configures JS Paint.",
 		// }
 		{
-			item: "&Multiplayer",
+			item: "&Multi-User",
 			submenu: [
 				{
 					item: "&New Session From Document",
@@ -418,23 +438,23 @@ var menus = {
 						if(typeof name == "string"){
 							name = name.trim();
 							if(name == ""){
-								alert("The session name cannot be empty.");
+								show_error_message("The session name cannot be empty.");
 							}else if(name.match(/[.\/\[\]#$]/)){
-								alert("The session name cannot contain any of ./[]#$");
+								show_error_message("The session name cannot contain any of ./[]#$");
 							}else{
 								location.hash = "session:" + name;
 							}
 						}
 					},
-					description: "Starts a new multiplayer session from the current document.",
+					description: "Starts a new multi-user session from the current document.",
 				},
 				{
 					item: "New &Blank Session",
 					action: function(){
-						alert("Not supported yet");
+						show_error_message("Not supported yet");
 					},
 					enabled: false,
-					description: "Starts a new multiplayer session from an empty document.",
+					description: "Starts a new multi-user session from an empty document.",
 				},
 			]
 		},
@@ -490,7 +510,9 @@ $menu_bar.on("default-info", function(e){
 });
 
 var $extras_menu_button = $menu_bar.get(0).ownerDocument.defaultView.$(".extras-menu-button");
-// TODO: refactor shared key string
-if(localStorage["jspaint extras menu visible"] != "true"){
-	$extras_menu_button.hide();
-}
+try{
+	// TODO: refactor shared key string
+	if(localStorage["jspaint extras menu visible"] != "true"){
+		$extras_menu_button.hide();
+	}
+}catch(e){}

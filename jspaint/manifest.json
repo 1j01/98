@@ -8,11 +8,14 @@
 		"128": "images/icons/128.png"
 	},
 	"file_handlers": {
-		"edit": {
+		"image": {
 			"types": ["image/*"]
 		}
 	},
 	"permissions": [
+		"http://*/*",
+		"https://*/*",
+		"wallpaper",
 		"storage",
 		"fullscreen",
 		"clipboardRead",

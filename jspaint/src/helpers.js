@@ -42,21 +42,16 @@ function E(t){
 }
 
 function get_rgba_from_color(color){
+	var single_pixel_canvas = new Canvas(1, 1);
 	
-	var _c = new Canvas(1, 1);
+	single_pixel_canvas.ctx.fillStyle = color;
+	single_pixel_canvas.ctx.fillRect(0, 0, 1, 1);
 	
-	_c.ctx.fillStyle = color;
-	_c.ctx.fillRect(0, 0, 1, 1);
+	var image_data = single_pixel_canvas.ctx.getImageData(0, 0, 1, 1);
 	
-	var _id = _c.ctx.getImageData(0, 0, 1, 1);
-	
-	// We could just return _id.data, but let's return an array instead
-	var fill_r = _id.data[0];
-	var fill_g = _id.data[1];
-	var fill_b = _id.data[2];
-	var fill_a = _id.data[3];
-	return [fill_r, fill_g, fill_b, fill_a];
-	
+	// We could just return image_data.data, but let's return an Array instead
+	// I'm not totally sure image_data.data wouldn't keep image_data around in memory
+	return Array.from(image_data.data);
 }
 
 function Canvas(width, height){
@@ -67,9 +62,24 @@ function Canvas(width, height){
 	
 	new_canvas.ctx = new_ctx;
 	
+	new_ctx.disable_image_smoothing = function(image){
+		new_ctx.mozImageSmoothingEnabled = false;
+		new_ctx.webkitImageSmoothingEnabled = false;
+		new_ctx.msImageSmoothingEnabled = false;
+		new_ctx.imageSmoothingEnabled = false;
+	};
+	
+	// TODO: simplify the abstraction by defining setters for width/height
+	// that reset the image smoothing to disabled
+	// and remove all external calls to disable_image_smoothing
+	
 	new_ctx.copy = function(image){
 		new_canvas.width = image.naturalWidth || image.width;
 		new_canvas.height = image.naturalHeight || image.height;
+		
+		// setting width/height resets image smoothing (along with everything)
+		new_ctx.disable_image_smoothing();
+		
 		new_ctx.drawImage(image, 0, 0);
 	};
 	
@@ -77,15 +87,12 @@ function Canvas(width, height){
 		// new Canvas(width, height)
 		new_canvas.width = width;
 		new_canvas.height = height;
+		// setting width/height resets image smoothing (along with everything)
+		new_ctx.disable_image_smoothing();
 	}else if(image){
 		// new Canvas(image)
 		new_ctx.copy(image);
 	}
-	
-	// This must come after sizing the canvas
-	new_ctx.imageSmoothingEnabled = false;
-	new_ctx.mozImageSmoothingEnabled = false;
-	new_ctx.msImageSmoothingEnabled = false;
 	
 	return new_canvas;
 }

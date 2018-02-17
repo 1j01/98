@@ -7,7 +7,41 @@ var eraser_size = 8;
 var airbrush_size = 9;
 var pencil_size = 1;
 var stroke_size = 1; // lines, curves, shape outlines
-var transparent_opaque = "opaque";
+var transparent_opaque = "opaque"; // TODO: make this a boolean (and think of a good name)
+
+
+var $shape_styles_warning_window;
+var dont_show_shape_styles_warning_again = false;
+try{
+	dont_show_shape_styles_warning_again = localStorage["don't show shape styles not implemented warning again"];
+}catch(e){}
+var show_shape_styles_warning = function(){
+	if($shape_styles_warning_window || dont_show_shape_styles_warning_again){
+		return;
+	}
+	var $w = $shape_styles_warning_window = $FormWindow().title("Warning").addClass("dialogue-window");
+	$w.$main.html(
+		"<p>Shape styles and line widths are not implemented for all tools.</p>" +
+		"<p>See issue <a href='https://github.com/1j01/jspaint/issues/7'>#7</a></p>" +
+		"<label><input type='checkbox' class='dont-tell-me-again'> Don't tell me again</label>"
+	);
+	$w.$main.find(".dont-tell-me-again").on("change", function(){
+		dont_show_shape_styles_warning_again = $(this).is(":checked");
+		try{
+			if(dont_show_shape_styles_warning_again){
+				localStorage["don't show shape styles not implemented warning again"] = "yeah, shush";
+			}else{
+				delete localStorage["don't show shape styles not implemented warning again"];
+			}
+		}catch(e){}
+	});
+	$w.$Button("OK", function(){
+		$w.close();
+		$shape_styles_warning_window = null;
+	});
+	$w.center();
+};
+
 
 var ChooserCanvas = function(
 	url, invert,
@@ -119,6 +153,7 @@ var $ChooseShapeStyle = function(){
 		function(a){
 			$chooser.stroke = a.stroke;
 			$chooser.fill = a.fill;
+			show_shape_styles_warning();
 		},
 		function(a){
 			return $chooser.stroke === a.stroke && $chooser.fill === a.fill;
@@ -202,24 +237,30 @@ var $choose_stroke_size = $Choose(
 	},
 	function(size){
 		stroke_size = size;
+		show_shape_styles_warning();
 	},
 	function(size){
 		return stroke_size === size;
 	}
 ).addClass("choose-stroke-size");
 
-var magnifications = [1, 2, 6, 8/*, 10*/]; // ten is secret
+var magnifications = [1, 2, 6, 8, 10];
 var $choose_magnification = $Choose(
 	magnifications,
 	function(scale, is_chosen){
 		var i = magnifications.indexOf(scale);
-		return ChooserCanvas(
+		var secret = scale === 10; // 10x is secret
+		var chooser_canvas = ChooserCanvas(
 			"images/options-magnification.png",
 			is_chosen, // invert if chosen
-			39, 13, // width, height of destination canvas
+			39, (secret ? 2 : 13), // width, height of destination canvas
 			i*23, 0, 23, 9, // x, y, width, height from source image
 			8, 2, 23, 9 // x, y, width, height on destination
 		);
+		if(secret){
+			$(chooser_canvas).addClass("secret-option");
+		}
+		return chooser_canvas;
 	},
 	function(scale){
 		set_magnification(scale);
@@ -230,7 +271,15 @@ var $choose_magnification = $Choose(
 	function(scale){
 		return scale === magnification;
 	}
-).addClass("choose-magnification");
+).addClass("choose-magnification")
+.css({position: "relative"}); // positioning context for above `position: "absolute"` canvas
+
+$choose_magnification.on("update", function(){
+	$choose_magnification
+		.find(".secret-option")
+		.parent()
+		.css({position: "absolute", bottom: "-2px", left: 0, opacity: 0});
+});
 
 // The default enlarged (>1) magnification for when you use the tool
 // is 4x, which isn't an option you can get to from the tool options.
@@ -288,3 +337,4 @@ var $choose_transparency = $Choose(
 		return t_o === transparent_opaque;
 	}
 ).addClass("choose-transparency");
+

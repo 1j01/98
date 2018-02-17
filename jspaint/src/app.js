@@ -1,6 +1,7 @@
 
 var aliasing = true;
 var transparency = false;
+var monochrome = false;
 
 var magnification = 1;
 
@@ -9,10 +10,16 @@ var default_canvas_height = 384;
 var my_canvas_width = default_canvas_width;
 var my_canvas_height = default_canvas_height;
 
+var canvas = new Canvas();
+var ctx = canvas.ctx;
+
 var palette = [
 	"#000000","#787878","#790300","#757A01","#007902","#007778","#0A0078","#7B0077","#767A38","#003637","#286FFE","#083178","#4C00FE","#783B00",
 	"#FFFFFF","#BBBBBB","#FF0E00","#FAFF08","#00FF0B","#00FEFF","#3400FE","#FF00FE","#FBFF7A","#00FF7B","#76FEFF","#8270FE","#FF0677","#FF7D36",
 ];
+var polychrome_palette = palette;
+var monochrome_palette = make_monochrome_palette();
+
 
 var stroke_color;
 var fill_color;
@@ -52,12 +59,15 @@ var $H = $(E("div")).addClass("horizontal").appendTo($V);
 var $canvas_area = $(E("div")).addClass("canvas-area").appendTo($H);
 $canvas_area.attr("touch-action", "pan-x pan-y");
 
-var canvas = new Canvas();
-var ctx = canvas.ctx;
 var $canvas = $(canvas).appendTo($canvas_area);
 $canvas.attr("touch-action", "none");
 
-var $canvas_handles = $Handles($canvas_area, canvas, {outset: 4, offset: 4, size_only: true});
+var $canvas_handles = $Handles($canvas_area, canvas, {
+	outset: 4,
+	get_offset_left: function(){ return parseFloat($canvas_area.css("padding-left")) + 1; },
+	get_offset_top: function(){ return parseFloat($canvas_area.css("padding-top")) + 1; },
+	size_only: true
+});
 
 var $top = $(E("div")).addClass("component-area").prependTo($V);
 var $bottom = $(E("div")).addClass("component-area").appendTo($V);
@@ -77,31 +87,33 @@ $status_text.default();
 var $toolbox = $ToolBox();
 var $colorbox = $ColorBox();
 
+if(window.file_entry){
+	open_from_FileEntry(window.file_entry);
+}
+
 reset_file();
 reset_colors();
 reset_canvas(); // (with newly reset colors)
 reset_magnification();
 
-if(window.file_entry){
-	open_from_FileEntry(window.file_entry);
-}
-
 $canvas.on("user-resized", function(e, _x, _y, width, height){
 	undoable(0, function(){
 		canvas.width = Math.max(1, width);
 		canvas.height = Math.max(1, height);
+		ctx.disable_image_smoothing();
+		
 		if(!transparency){
 			ctx.fillStyle = colors.background;
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 		}
-		
+
 		var previous_canvas = undos[undos.length-1];
 		if(previous_canvas){
 			ctx.drawImage(previous_canvas, 0, 0);
 		}
-		
+
 		$canvas_area.trigger("resize");
-		
+
 		storage.set({
 			width: canvas.width,
 			height: canvas.height,
@@ -124,6 +136,7 @@ storage.get({
 	my_canvas_height = values.height;
 	canvas.width = Math.max(1, my_canvas_width);
 	canvas.height = Math.max(1, my_canvas_height);
+	ctx.disable_image_smoothing();
 	if(!transparency){
 		ctx.fillStyle = colors.background;
 		ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -131,29 +144,24 @@ storage.get({
 	$canvas_area.trigger("resize");
 });
 
+
 $("body").on("dragover dragenter", function(e){
-	if(
-		e.target instanceof HTMLInputElement ||
-		e.target instanceof HTMLTextAreaElement
-	){
-		return;
-	}
-	e.preventDefault();
-}).on("drop", function(e){
-	if(
-		e.target instanceof HTMLInputElement ||
-		e.target instanceof HTMLTextAreaElement
-	){
-		return;
-	}
-	e.preventDefault();
 	var dt = e.originalEvent.dataTransfer;
-	if(dt && dt.files && dt.files.length){
-		open_from_FileList(dt.files, function(err){
-			if(err){
-				show_error_message("Failed to open file:", err);
-			}
-		});
+	var has_files = Array.from(dt.types).indexOf("Files") !== -1;
+	if(has_files){
+		e.preventDefault();
+	}
+}).on("drop", function(e){
+	if(e.isDefaultPrevented()){
+		return;
+	}
+	var dt = e.originalEvent.dataTransfer;
+	var has_files = Array.from(dt.types).indexOf("Files") !== -1;
+	if(has_files){
+		e.preventDefault();
+		if(dt && dt.files && dt.files.length){
+			open_from_FileList(dt.files, "dropped");
+		}
 	}
 });
 
@@ -165,12 +173,25 @@ $G.on("keydown", function(e){
 	if(e.isDefaultPrevented()){
 		return;
 	}
+	// TODO: return if menus/menubar focused or focus in dialog window
+	// or maybe there's a better way to do this that works more generally
+	// maybe it should only handle the event if document.activeElement is the body or html element?
+	// (or $app could have a tabIndex and no focus style and be focused under various conditions,
+	// if that turned out to make more sense for some reason)
 	if(
 		e.target instanceof HTMLInputElement ||
 		e.target instanceof HTMLTextAreaElement
 	){
 		return;
 	}
+
+	// TODO: preventDefault in all cases where the event is handled
+	// also, ideally check that modifiers *aren't* pressed
+	// probably best to use a library at this point!
+	
+	// TODO: probably get rid of this silly feature
+	// it's kinda fun, but it's a lot of code for something I've virtually never used
+	// (and it's not based on any version of mspaint, it was just a fun idea I had)
 	var brush_shapes = {
 		circle: [
 			0, 1, 0,
@@ -227,11 +248,38 @@ $G.on("keydown", function(e){
 		brush_shape = "diagonal";
 		$G.trigger("option-changed");
 	}
-	
+
 	if(e.altKey){
 		//find key codes
 		window.console && console.log(e.keyCode);
 	}
+	
+	if(selection){
+		var nudge_selection = function(delta_x, delta_y){
+			selection.x += delta_x;
+			selection.y += delta_y;
+			selection.position();
+		};
+		switch(e.keyCode){
+			case 37: // Left
+				nudge_selection(-1, 0);
+				e.preventDefault();
+				break;
+			case 39: // Right
+				nudge_selection(+1, 0);
+				e.preventDefault();
+				break;
+			case 40: // Down
+				nudge_selection(0, +1);
+				e.preventDefault();
+				break;
+			case 38: // Up
+				nudge_selection(0, -1);
+				e.preventDefault();
+				break;
+		}
+	}
+
 	if(e.keyCode === 27){ //Escape
 		if(selection){
 			deselect();
@@ -250,7 +298,7 @@ $G.on("keydown", function(e){
 		var plus = e.keyCode === 107;
 		var minus = e.keyCode === 109;
 		var delta = plus - minus; // +plus++ -minus--; // Δ = ±±±±
-		
+
 		if(selection){
 			selection.scale(Math.pow(2, delta));
 		}else{
@@ -265,7 +313,7 @@ $G.on("keydown", function(e){
 			}else if(selected_tool.name.match(/Line|Curve|Rectangle|Ellipse|Polygon/)){
 				stroke_size = Math.max(1, Math.min(stroke_size + delta, 500));
 			}
-			
+
 			$G.trigger("option-changed");
 		}
 		e.preventDefault();
@@ -288,10 +336,12 @@ $G.on("keydown", function(e){
 			case 188: // , <
 			case 219: // [ {
 				rotate(-TAU/4);
+				$canvas_area.trigger("resize");
 			break;
 			case 190: // . >
 			case 221: // ] }
 				rotate(+TAU/4);
+				$canvas_area.trigger("resize");
 			break;
 		}
 		switch(key){
@@ -332,24 +382,38 @@ $G.on("keydown", function(e){
 	}
 });
 $G.on("cut copy paste", function(e){
-	if(
-		document.activeElement instanceof HTMLInputElement ||
-		document.activeElement instanceof HTMLTextAreaElement
-	){
-		// Don't prevent cutting/copying/pasting within inputs or textareas
+	if(e.isDefaultPrevented()){
 		return;
 	}
-	
+	if(
+		document.activeElement instanceof HTMLInputElement ||
+		document.activeElement instanceof HTMLTextAreaElement ||
+		!window.getSelection().isCollapsed
+	){
+		// Don't prevent cutting/copying/pasting within inputs or textareas, or if there's a selection
+		return;
+	}
+
 	e.preventDefault();
 	var cd = e.originalEvent.clipboardData || window.clipboardData;
 	if(!cd){ return; }
-	
+
 	if(e.type === "copy" || e.type === "cut"){
 		if(selection && selection.canvas){
 			var data_url = selection.canvas.toDataURL();
 			cd.setData("text/x-data-uri; type=image/png", data_url);
 			cd.setData("text/uri-list", data_url);
 			cd.setData("URL", data_url);
+			// var svg = `
+			// 	<svg
+			// 		xmlns="http://www.w3.org/2000/svg" version="1.1"
+			// 		viewBox="0 0 ${selection.canvas.width} ${selection.canvas.height}" preserveAspectRatio="xMidYMid slice">
+			// 		<image xlink:href="${data_url}" x="0" y="0" height="${selection.canvas.height}" width="${selection.canvas.width}"/>
+			// 	</svg>
+			// `;
+			// cd.setData("image/svg+xml", svg);
+			// cd.setData("text/html", svg);
+
 			if(e.type === "cut"){
 				selection.destroy();
 				selection = null;
@@ -357,17 +421,27 @@ $G.on("cut copy paste", function(e){
 		}
 	}else if(e.type === "paste"){
 		$.each(cd.items, function(i, item){
-			if(item.type.match(/^text\/(?:x-data-)?uri/)){
-				item.getAsString(function(str){
-					var img = E("img");
-					img.onload = function(){
+			if(item.type.match(/^text\/(?:x-data-uri|uri-list|plain)|URL$/)){
+				item.getAsString(function(text){
+					// parse text/uri-list (might as well do it properly)
+					var uris = text.split(/[\n\r]+/).filter(function(line){return line[0] !== "#" && line});
+					// TODO: check that it's actually a URI,
+					// and if text/plain maybe silently ignore the paste
+					// but definitely generally show a better error than show_resource_load_error_message()
+					// "The information on the Clipboard can't be inserted into Paint."
+					// also
+					// "Downloading picture"
+					// "Reading data from the device (%1!ld!%% complete)"
+					// "Processing data (%1!ld!%% complete)"
+					// "Transferring data (%1!ld!%% complete)"
+					load_image_from_URI(uris[0], function(err, img){
+						if(err){ return show_resource_load_error_message(); }
 						paste(img);
-					};
-					img.src = str;
+					});
 				});
 				return false; // break out of $.each loop
-			}else if(item.type.match(/^image/)){
-				paste_file(item.getAsFile());
+			}else if(item.type.match(/^image\//)){
+				paste_image_from_file(item.getAsFile());
 				return false; // break out of $.each loop
 			}
 		});
@@ -387,20 +461,20 @@ function e2c(e){
 }
 
 function tool_go(event_name){
-	
+
 	ctx.lineWidth = stroke_size;
-	
+
 	ctx.fillStyle = fill_color =
 	ctx.strokeStyle = stroke_color =
 		colors[
 			(ctrl && colors.ternary) ? "ternary" :
 			(reverse ? "background" : "foreground")
 		];
-	
+
 	fill_color_k =
 	stroke_color_k =
 		ctrl ? "ternary" : (reverse ? "background" : "foreground");
-	
+
 	if(selected_tool.shape){
 		var previous_canvas = undos[undos.length-1];
 		if(previous_canvas){
@@ -424,7 +498,7 @@ function tool_go(event_name){
 	if(selected_tool.shape){
 		selected_tool.shape(ctx, pointer_start.x, pointer_start.y, pointer.x-pointer_start.x, pointer.y-pointer_start.y);
 	}
-	
+
 	if(selected_tool[event_name]){
 		selected_tool[event_name](ctx, pointer.x, pointer.y);
 	}
@@ -441,6 +515,7 @@ function tool_go(event_name){
 }
 function canvas_pointer_move(e){
 	ctrl = e.ctrlKey;
+	shift = e.shiftKey;
 	pointer = e2c(e);
 	if(e.shiftKey){
 		if(selected_tool.name.match(/Line|Curve/)){
@@ -495,7 +570,7 @@ $canvas.on("pointerdown", function(e){
 	$G.one("pointerup", function(e){
 		pointer_was_pressed = false;
 	});
-	
+
 	if(e.button === 0){
 		reverse = false;
 	}else if(e.button === 2){
@@ -505,13 +580,14 @@ $canvas.on("pointerdown", function(e){
 	}
 	button = e.button;
 	ctrl = e.ctrlKey;
+	shift = e.shiftKey;
 	pointer_start = pointer_previous = pointer = e2c(e);
-	
+
 	var pointerdown_action = function(){
 		if(selected_tool.paint || selected_tool.pointerdown){
 			tool_go("pointerdown");
 		}
-		
+
 		$G.on("pointermove", canvas_pointer_move);
 		if(selected_tool.continuous === "time"){
 			var iid = setInterval(tool_go, 5);
@@ -534,7 +610,7 @@ $canvas.on("pointerdown", function(e){
 			}
 		});
 	};
-	
+
 	if((typeof selected_tool.passive === "function") ? selected_tool.passive() : selected_tool.passive){
 		pointerdown_action();
 	}else{
@@ -556,6 +632,9 @@ $app
 .add($toolbox)
 .add($colorbox)
 .on("mousedown selectstart contextmenu", function(e){
+	if(e.isDefaultPrevented()){
+		return;
+	}
 	if(
 		e.target instanceof HTMLSelectElement ||
 		e.target instanceof HTMLTextAreaElement ||
@@ -564,7 +643,14 @@ $app
 	){
 		return;
 	}
+	if(e.button === 1){
+		return; // allow middle-click scrolling
+	}
 	e.preventDefault();
+	// we're just trying to prevent selection
+	// but part of the default for mousedown is *deselection*
+	// so we have to do that ourselves explicitly
+	window.getSelection().removeAllRanges();
 });
 
 // Stop drawing (or dragging or whatver) if you Alt+Tab or whatever

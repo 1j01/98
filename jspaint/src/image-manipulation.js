@@ -211,6 +211,15 @@ function brosandham_line(x1, y1, x2, y2, callback){
 
 function draw_fill(ctx, x, y, fill_r, fill_g, fill_b, fill_a){
 	
+	// TODO: split up processing in case it takes too long?
+	// progress bar and abort button (outside of image-manipulation.js)
+	// or at least just free up the main thread every once in a while
+	// TODO: speed up with typed arrays? https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
+	// could avoid endianness issues if only copying colors
+	// the jsperf only shows ~15% improvement
+	// maybe do something fancier like special-casing large chunks of single-color image
+	// (octree? or just have a higher level stack of chunks to fill and check at if a chunk is homogeneous)
+
 	var stack = [[x, y]];
 	var c_width = canvas.width;
 	var c_height = canvas.height;
@@ -297,27 +306,64 @@ function draw_fill(ctx, x, y, fill_r, fill_g, fill_b, fill_a){
 	}
 }
 
-function apply_image_transformation(fn){
-	// Apply an image transformation function to either the selection or the entire canvas
-	var new_canvas = new Canvas();
-	var original_canvas = selection ? selection.canvas: canvas;
+function draw_noncontiguous_fill(ctx, x, y, fill_r, fill_g, fill_b, fill_a){
 	
-	// Sometimes selection.canvas is an Image
-	// Maybe that should be changed instead having of this here
-	if(!original_canvas.getContext){
-		original_canvas = new Canvas(original_canvas);
+	var c_width = canvas.width;
+	var c_height = canvas.height;
+	var id = ctx.getImageData(0, 0, c_width, c_height);
+	pixel_pos = (y*c_width + x) * 4;
+	var start_r = id.data[pixel_pos+0];
+	var start_g = id.data[pixel_pos+1];
+	var start_b = id.data[pixel_pos+2];
+	var start_a = id.data[pixel_pos+3];
+	
+	if(
+		fill_r === start_r &&
+		fill_g === start_g &&
+		fill_b === start_b &&
+		fill_a === start_a
+	){
+		return;
 	}
 	
-	var new_ctx = new_canvas.getContext("2d");
+	for(var i=0; i<id.data.length; i+=4){
+		if(matches_start_color(i)){
+			color_pixel(i);
+		}
+	}
+	
+	ctx.putImageData(id, 0, 0);
+
+	function matches_start_color(pixel_pos){
+		return (
+			id.data[pixel_pos+0] === start_r &&
+			id.data[pixel_pos+1] === start_g &&
+			id.data[pixel_pos+2] === start_b &&
+			id.data[pixel_pos+3] === start_a
+		);
+	}
+
+	function color_pixel(pixel_pos){
+		id.data[pixel_pos+0] = fill_r;
+		id.data[pixel_pos+1] = fill_g;
+		id.data[pixel_pos+2] = fill_b;
+		id.data[pixel_pos+3] = fill_a;
+	}
+}
+
+function apply_image_transformation(fn){
+	// Apply an image transformation function to either the selection or the entire canvas
+	var original_canvas = selection ? selection.source_canvas: canvas;
+	
+	var new_canvas = new Canvas(original_canvas.width, original_canvas.height);
+
 	var original_ctx = original_canvas.getContext("2d");
-	
-	new_canvas.width = original_canvas.width;
-	new_canvas.height = original_canvas.height;
-	
+	var new_ctx = new_canvas.getContext("2d");
+
 	fn(original_canvas, original_ctx, new_canvas, new_ctx);
 	
 	if(selection){
-		selection.replace_canvas(new_canvas);
+		selection.replace_source_canvas(new_canvas);
 	}else{
 		undoable(0, function(){
 			this_ones_a_frame_changer();
@@ -353,6 +399,7 @@ function rotate(angle){
 			case TAU * -3/4:
 				new_canvas.width = original_canvas.height;
 				new_canvas.height = original_canvas.width;
+				new_ctx.disable_image_smoothing();
 				new_ctx.translate(new_canvas.width, 0);
 				new_ctx.rotate(TAU / 4);
 				break;
@@ -365,6 +412,7 @@ function rotate(angle){
 			case TAU / -4:
 				new_canvas.width = original_canvas.height;
 				new_canvas.height = original_canvas.width;
+				new_ctx.disable_image_smoothing();
 				new_ctx.translate(0, new_canvas.height);
 				new_ctx.rotate(TAU / -4);
 				break;
@@ -397,6 +445,7 @@ function rotate(angle){
 				
 				new_canvas.width = bb_w;
 				new_canvas.height = bb_h;
+				new_ctx.disable_image_smoothing();
 				
 				if(!transparency){
 					new_ctx.fillStyle = colors.background;
@@ -443,6 +492,7 @@ function stretch_and_skew(xscale, yscale, hsa, vsa){
 		
 		new_canvas.width = bb_w;
 		new_canvas.height = bb_h;
+		new_ctx.disable_image_smoothing();
 		
 		if(!transparency){
 			new_ctx.fillStyle = colors.background;
