@@ -37,7 +37,7 @@ function $Window($component){
 		if(e.ctrlKey || e.altKey || e.shiftKey){
 			return;
 		}
-		var $buttons = $w.$content.find("button.button");
+		var $buttons = $w.$content.find("button");
 		var $focused = $(document.activeElement);
 		var focused_index = $buttons.index($focused);
 		// console.log(e.keyCode);

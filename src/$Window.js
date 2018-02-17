@@ -7,7 +7,7 @@ function $Window(options){
 	var $w = $(E("div")).addClass("window").appendTo("body");
 	$w.$titlebar = $(E("div")).addClass("window-titlebar").appendTo($w);
 	$w.$title = $(E("span")).addClass("window-title").appendTo($w.$titlebar);
-	$w.$x = $(E("button")).addClass("window-close-button window-button button").appendTo($w.$titlebar);
+	$w.$x = $(E("button")).addClass("window-close-button window-button").appendTo($w.$titlebar);
 	$w.$content = $(E("div")).addClass("window-content").appendTo($w);
 	
 	var $component = options.$component;
@@ -45,7 +45,7 @@ function $Window(options){
 		if(e.ctrlKey || e.altKey || e.shiftKey){
 			return;
 		}
-		var $buttons = $w.$content.find("button.button");
+		var $buttons = $w.$content.find("button");
 		var $focused = $(document.activeElement);
 		var focused_index = $buttons.index($focused);
 		// console.log(e.keyCode);
@@ -151,7 +151,6 @@ function $Window(options){
 	$w.$Button = function(text, handler){
 		var $b = $(E("button"))
 			.appendTo($w.$content)
-			.addClass("dialogue-button")
 			.text(text)
 			.on("click", function(){
 				if(handler){
@@ -211,9 +210,6 @@ function $FormWindow(title){
 			
 			action();
 		});
-		
-		// this should really not be needed @TODO
-		$b.addClass("button dialogue-button");
 		
 		$b.on("pointerdown", function(){
 			$b.focus();

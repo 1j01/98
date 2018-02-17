@@ -1,7 +1,6 @@
 
 function Task($win){
 	var $task = this.$task = $("<button class='task'/>").appendTo($tasks);
-	$task.addClass("button"); // @TODO: get rid of "button" class
 	var $icon = $Icon($win.icon_name || "task", TASKBAR_ICON_SIZE);
 	// TODO: update task button title when window title changes
 	var $title = $("<span class='title'/>").text($win.title());
