@@ -15,9 +15,17 @@ Includes:
 
 [![](images/3d.jpg)](https://98.js.org/)
 
-## See also
+## Related Projects
 
 * [Pipes](https://github.com/1j01/pipes) (not yet integrated)
 * [Winamp2-js](https://github.com/captbaritone/winamp2-js) (not yet integrated)
 * [rahul.io](https://rahul.io/), another Windows 98 remake
 * [Windows 93](https://www.windows93.net/), which is... something. definitely something.
+
+## Contributing
+
+See [CONTRIBUTING](CONTRIBUTING.md)
+
+## TODO
+
+See [TODO](TODO.md)
