@@ -1,5 +1,5 @@
 
-# Sound Recorder
+# ![](../images/icons/speaker-32x32.png) Sound Recorder
 
 Try it [as part of 98](http://98.js.org/) or [standalone](http://98.js.org/sound-recorder/)
 
@@ -24,14 +24,16 @@ Try it [as part of 98](http://98.js.org/) or [standalone](http://98.js.org/sound
 
 * Audio Properties?
   Ha, who cares about that...
-  Maybe have a dialogue that says
-    ---------------------------
-    Sound - Sound Recorder: SNDREC32.EXE - Ordinal Not Found
-    ---------------------------
-    The ordinal 379 could not be located in the dynamic link library C:\Windows\SYSTEM32\MMSYS.CPL. 
-    ---------------------------
-    OK   
-    ---------------------------
+  Maybe have a dialogue that says, *exactly*, the following (with an error icon):
+  ```
+  ---------------------------
+  Sound - Sound Recorder: SNDREC32.EXE - Ordinal Not Found
+  ---------------------------
+  The ordinal 379 could not be located in the dynamic link library C:\Windows\SYSTEM32\MMSYS.CPL. 
+  ---------------------------
+  OK   
+  ---------------------------
+  ```
 
 * Better echo effect?
   Interpolation for stretching effects?

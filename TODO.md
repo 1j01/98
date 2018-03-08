@@ -3,8 +3,6 @@
 
 * Provide credits in the actual application, possibly in a CREDITS text file
 
-* Add "see also" / "similar projects" section to README
-
 * Also, link to the repo from within the app
 
 * Start Menu
@@ -17,15 +15,20 @@
 
 * Integrate [winamp2-js](https://github.com/captbaritone/winamp2-js)
 
+* Integrate [js-solitaire](https://github.com/uzi88/js-solitaire)
+
 * Integrate Minesweeper better (i.e. with menus)
 
 * Integrate Paint better
 
 	* Windows that pop out; will need to display graphics via data URIs or canvases, and rely on inline and/or scoped styles
 
-		 * Could *maybe* use [`<base>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base) for `<img>`s
+		* Could *maybe* use [`<base>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base) for `<img>`s, but all styles (that aren't shared) would have to be inline, and I think it would be better just to try to make everything canvases
 
 	* Can't focus the window because mousedown is prevented; should focus the body or something rather than just blurring or canceling the event
+
+	* Can't drag outside of the window bounds when drawing or making a selection
+	([`setCapture`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setCapture) could make this work)
 
 * Integrate [Pipes screensaver](https://github.com/1j01/pipes)
 
