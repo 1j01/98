@@ -183,7 +183,7 @@ Paint, Sound Recorder, Notepad, and the 98 desktop by Isaiah Odhner
 
 
 Images and other assets from Microsoft.
-Microsoft® and other trademarks are respective of their own respective holders, respectively, in the United States and/or other countries.
+Microsoft® and other trademarks are respective of their own respective holders, respectively, in the United States and/or other countries, respectively.
 
 --------------------------------------
 

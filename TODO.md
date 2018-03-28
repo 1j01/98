@@ -1,9 +1,7 @@
 
 # ![](images/icons/shutdown-32x32.png) Todo
 
-* Provide credits in the actual application, possibly in a CREDITS text file
-
-* Also, link to the repo from within the app
+* Link to the repo from within the app, not just in a text file
 
 * Start Menu
 
