@@ -1,0 +1,31 @@
+{
+	"name": "98",
+	"description": "Web-based Windows 98 clone",
+	"version": "0.1.3",
+	"repository": {
+		"type": "git",
+		"url": "http://github.com/1j01/98.git"
+	},
+	"bugs": {
+		"url": "http://github.com/1j01/98/issues"
+	},
+	"license": "UNLICENSED",
+	"private": true,
+	"keywords": [
+		"web-based",
+		"recreation",
+		"clone",
+		"simulator",
+		"retro",
+		"classic",
+		"desktop",
+		"web-desktop",
+		"web",
+		"browser",
+		"windows",
+		"98",
+		"windows-98",
+		"operating-system",
+		"os"
+	]
+}
