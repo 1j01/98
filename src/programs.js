@@ -1,9 +1,12 @@
 
-function Notepad(){
+function Notepad(file_spec){
+	var document_title = file_spec ? file_spec.name : "Untitled";
+	var win_title = document_title + " - Notepad";
+
 	var $win = new $IframeWindow({
-		src: "notepad/index.html",
+		src: "notepad/index.html" + (file_spec ? ("?" + file_spec.name) : ""),
 		icon: "notepad",
-		title: "Untitled - Notepad"
+		title: win_title
 	});
 	return new Task($win);
 }
@@ -79,6 +82,18 @@ function SoundRecorder(){
 	return new Task($win);
 }
 
+/*
+function Links(){
+	var $win = new $Window({
+		icon: "internet-folder",
+		title: "Links",
+		innerWidth: 640,
+		innerHeight: 480
+	});
+	return new Task($win);
+}
+*/
+
 new $DesktopIcon({
 	title: "My Computer",
 	icon: "my-computer",
@@ -133,5 +148,57 @@ new $DesktopIcon({
 	open: Notepad,
 	shortcut: true
 });
+
+// new $DesktopIcon({
+// 	title: "Links",
+// 	icon: "internet-folder",
+// 	open: Links
+// });
+
+var add_icon_for_file = function(file_spec){
+	new $DesktopIcon({
+		title: file_spec.name,
+		icon: "notepad-file",
+		open: function(){
+			localStorage["notepad:" + file_spec.name] = file_spec.content;
+			return Notepad(file_spec);
+		}
+	});
+};
+// TODO: some kind of virtual filesystem
+add_icon_for_file({
+	name: "CREDITS.txt",
+	content: `Hello! Welcome to 98.
+https://github.com/1j01/98
+
+--------------------------------------
+
+Minesweeper by Jon Ziebell
+	https://github.com/ziebelje/minesweeper
+
+
+Paint, Sound Recorder, Notepad, and the 98 desktop by Isaiah Odhner
+	https://github.com/1j01/98
+	https://github.com/1j01/jspaint
+
+
+Images and other assets from Microsoft.
+Microsoft® and other trademarks are respective of their own respective holders, respectively, in the United States and/or other countries.
+
+--------------------------------------
+
+(This file is not editable.)
+`
+});
+/*
+
+--------------------------------------
+
+Libraries used:
+jQuery, Pointer Events Polyfil, ah, so many...
+and should I include the licenses of all of them??
+
+--------------------------------------
+*/
 
 arrange_icons();

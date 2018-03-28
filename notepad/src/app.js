@@ -52,7 +52,9 @@ function toggle_word_wrap(){
 
 // TODO: insert time/date on file open if file content starts with ".LOG"
 
-var document_id = "default";
+var document_id = location.search ? location.search.replace("?", "") : "default";
+var document_title = location.search ? location.search.replace("?", "") : "Untitled";
+document.title = document_title + " - Notepad";
 
 function update_print_helper(){
 	$print_helper.text($textarea.val());
