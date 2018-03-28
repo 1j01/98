@@ -27,5 +27,11 @@
 		"windows-98",
 		"operating-system",
 		"os"
-	]
+	],
+	"devDependencies": {
+		"winamp2-js": "0.0.5"
+	},
+	"scripts": {
+		"postinstall": "cp node_modules/winamp2-js/built/winamp.bundle.js winamp/lib/winamp.bundle.js && cp node_modules/winamp2-js/built/winamp.bundle.min.js winamp/lib/winamp.bundle.min.js"
+	}
 }

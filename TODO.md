@@ -1,7 +1,7 @@
 
 # ![](images/icons/shutdown-32x32.png) Todo
 
-* Link to the repo from within the app, not just in a text file
+* *Properly* link to the repo from within the app, not just with a URL in a virtual text file
 
 * Start Menu
 
@@ -10,8 +10,6 @@
 * Reliably focus window contents (i.e. for keyboard shortcuts in Paint)
 
 * File save and open dialogs
-
-* Integrate [winamp2-js](https://github.com/captbaritone/winamp2-js)
 
 * Integrate [js-solitaire](https://github.com/uzi88/js-solitaire)
 

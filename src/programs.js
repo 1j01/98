@@ -82,6 +82,87 @@ function SoundRecorder(){
 	return new Task($win);
 }
 
+var winamp_bundle_loaded = false;
+var load_winamp_bundle_if_not_loaded = function(callback){
+	if(winamp_bundle_loaded){
+		callback();
+	}else{
+		// $.getScript("winamp/lib/winamp.bundle.js", callback);
+		$.getScript("winamp/lib/winamp.bundle.min.js", callback);
+	}
+}
+function openWinamp(){
+	load_winamp_bundle_if_not_loaded(function(){
+		const winamp = new winamp2js({
+			initialTracks: [{
+				metaData: {
+					artist: "DJ Mike Llama",
+					title: "Llama Whippin' Intro",
+				},
+				url: "winamp/mp3/llama-2.91.mp3"
+			}],
+			initialSkin: {
+				url: "winamp/skins/base-2.91.wsz"
+			},
+			enableHotkeys: true // Enable hotkeys
+		});
+		
+		var container = document.createElement("div");
+		container.classList.add("winamp-container");
+		document.body.appendChild(container);
+		// Render after the skin has loaded.
+		var renderPromise = winamp.renderWhenReady(container);
+
+		// TODO: handle blurring (currently one of the winamp windows is always selected)
+		// (but I don't really handle blurring for regular windows yet, so maybe I should do that first!)
+		
+		// TODO: refactor for less hackiness
+		var $win_for_Task = $(container);
+		$win_for_Task.title = function(title){
+			if(title !== undefined){
+				// this probably shouldn't ever happen
+			}else{
+				return "Winamp";
+			}
+		};
+		$win_for_Task.icon_name = "winamp2";
+		new Task($win_for_Task);
+		// a close event would be nice ;)
+		renderPromise.then(function(){
+			var iid = setInterval(function(){
+				if($win_for_Task.find("[role=application]").length === 0){
+					clearInterval(iid);
+					$win_for_Task.triggerHandler("close");
+				}
+			}, 50);
+		});
+		
+		// TODO: Bring window to front, initially and when clicked
+		/*
+		$win_for_Task.css({
+			position: "absolute",
+			left: 0,
+			top: 0,
+			right: 0,
+			bottom: 0,
+			pointerEvents: "none" // ..and then reset for the contents
+			// or maybe not 100%, just needs to be top left
+			zIndex: $Window.Z_INDEX++
+		});
+		$win_for_Task.bringToFront = function(){
+			$win_for_Task.css({
+				zIndex: $Window.Z_INDEX++
+			});
+		};
+		$win_for_Task.on("pointerdown", function(){
+			$win_for_Task.bringToFront();
+		});
+		*/
+
+	});
+	// return new Task($win);
+}
+
 /*
 function Links(){
 	var $win = new $Window({
@@ -148,7 +229,12 @@ new $DesktopIcon({
 	open: Notepad,
 	shortcut: true
 });
-
+new $DesktopIcon({
+	title: "Winamp",
+	icon: "winamp2",
+	open: openWinamp,
+	shortcut: true
+});
 // new $DesktopIcon({
 // 	title: "Links",
 // 	icon: "internet-folder",
@@ -176,6 +262,8 @@ https://github.com/1j01/98
 Minesweeper by Jon Ziebell
 	https://github.com/ziebelje/minesweeper
 
+Winamp2-js by Jordan Eldredge
+	https://github.com/captbaritone/winamp2-js
 
 Paint, Sound Recorder, Notepad, and the 98 desktop by Isaiah Odhner
 	https://github.com/1j01/98

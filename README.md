@@ -8,6 +8,7 @@ Includes:
 * ![](images/icons/speaker-16x16.png) Sound Recorder ([separate README](sound-recorder/README.md))
 * ![](images/icons/paint-16x16.png) Paint ([separate repository](https://github.com/1j01/jspaint))
 * [![](images/icons/minesweeper-16x16.png) Minesweeper](https://github.com/ziebelje/minesweeper) by [Jon Ziebell](https://github.com/ziebelje/)
+* [![](images/icons/winamp2-16x16.png) Winamp2-js](https://github.com/captbaritone/winamp2-js) by [Jordan Eldredge](https://jordaneldredge.com/) ([separate README](winamp/README.md))
 
 ## Try it out
 
@@ -21,7 +22,6 @@ Includes:
 
 Apps that it would be nice to integrate:
 * [![](images/icons/pipes-16x16.png) Pipes](https://github.com/1j01/pipes)
-* [![](images/icons/winamp2-16x16.png) Winamp2-js](https://github.com/captbaritone/winamp2-js)
 * [![](images/icons/solitaire-16x16.png) js-solitaire](https://github.com/uzi88/js-solitaire)
 * [![](images/icons/settings-16x16.png) winclassic](https://github.com/tpenguinltg/winclassic) (theme designer)
 
