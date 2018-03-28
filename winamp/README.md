@@ -8,7 +8,7 @@ Try it [as part of 98](http://98.js.org/) or [standalone at webamp.org](http://w
 
 ### TODO
 
-* Window z-indexing (bring to front initially and on click - generally, when focusing - it should really be done on `focusin`, if possible)
+* Don't reset layout to center when the containing page is resized
 
 * Window blurring (also needed for regular windows!)
 

@@ -137,16 +137,14 @@ function openWinamp(){
 			}, 50);
 		});
 		
-		// TODO: Bring window to front, initially and when clicked
-		/*
+		// Bring window to front, initially and when clicked
+		// copied from $Window.js, with `left: 0, top: 0` added
+		// (because it's a container rather than a window,
+		// and needs the left top origin for positioning the window)
 		$win_for_Task.css({
 			position: "absolute",
 			left: 0,
 			top: 0,
-			right: 0,
-			bottom: 0,
-			pointerEvents: "none" // ..and then reset for the contents
-			// or maybe not 100%, just needs to be top left
 			zIndex: $Window.Z_INDEX++
 		});
 		$win_for_Task.bringToFront = function(){
@@ -157,7 +155,6 @@ function openWinamp(){
 		$win_for_Task.on("pointerdown", function(){
 			$win_for_Task.bringToFront();
 		});
-		*/
 
 	});
 	// return new Task($win);
