@@ -4,7 +4,7 @@
 A web based Windows 98 desktop remake.
 
 Includes:
-* ![](images/icons/notepad-16x16.png) Notepad
+* ![](images/icons/notepad-16x16.png) Notepad ([separate README](notepad/README.md))
 * ![](images/icons/speaker-16x16.png) Sound Recorder ([separate README](sound-recorder/README.md))
 * ![](images/icons/paint-16x16.png) Paint ([separate repo](https://github.com/1j01/jspaint))
 * [![](images/icons/minesweeper-16x16.png) Minesweeper](https://github.com/ziebelje/minesweeper) by [Jon Ziebell](https://github.com/ziebelje/)
