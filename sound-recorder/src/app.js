@@ -211,7 +211,23 @@ $(function(){
 	var gotError = function(err){
 		__log("No live audio input: " + err);
 	};
-	navigator.getUserMedia({audio: true}, gotStream, gotError);
+
+	navigator.getUserMedia = (
+		navigator.getUserMedia ||
+		navigator.webkitGetUserMedia ||
+		navigator.mozGetUserMedia ||
+		navigator.msGetUserMedia
+	);
+
+	if (typeof navigator.mediaDevices.getUserMedia === 'undefined') {
+		navigator.getUserMedia({
+			audio: true
+		}, gotStream, gotError);
+	} else {
+		navigator.mediaDevices.getUserMedia({
+			audio: true
+		}).then(gotStream).catch(gotError);
+	}
 	
 	update();
 	
