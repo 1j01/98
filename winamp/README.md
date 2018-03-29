@@ -8,6 +8,11 @@ Try it [as part of 98](http://98.js.org/) or [standalone at webamp.org](http://w
 
 ### TODO
 
+* Fix z-indexing with context menu: it uses a fixed z-index and I have an indefinitely incrementing z-index
+	* Also see if there are other uses of z-index
+
+* Drag and drop: prevent redirecting the whole page!
+
 * Don't reset layout to center when the containing page is resized
 
 * Window blurring (also needed for regular windows!)

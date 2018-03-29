@@ -17,7 +17,7 @@
 
 * Integrate Paint better
 
-	* Windows that pop out; will need to display graphics via data URIs or canvases, and rely on inline and/or scoped styles
+	* Windows that pop out; will need to display graphics via data URIs or canvases, and rely only on inline styles (or `<style scoped>`?) and the shared styles
 
 		* Could *maybe* use [`<base>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base) for `<img>`s, but all styles (that aren't shared) would have to be inline, and I think it would be better just to try to make everything canvases
 
