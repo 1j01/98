@@ -13,8 +13,6 @@ Try it [as part of 98](http://98.js.org/) or [standalone at webamp.org](http://w
 
 * Drag and drop: prevent redirecting the whole page!
 
-* Don't reset layout to center when the containing page is resized
-
 * Window blurring (also needed for regular windows!)
 
 * Localize keyboard shortcuts (currently pretty much everything in 98 is in iframes, and I haven't implemented arrow keys for icons on the desktop, so it's hard to tell, and it doesn't matter much, but the keyboard shortcuts should only apply when Winamp is focused - so this depends on window blurring)

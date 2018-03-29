@@ -29,7 +29,7 @@
 		"os"
 	],
 	"devDependencies": {
-		"winamp2-js": "0.0.5"
+		"winamp2-js": "0.0.6"
 	},
 	"scripts": {
 		"postinstall": "cp node_modules/winamp2-js/built/winamp.bundle.js winamp/lib/winamp.bundle.js && cp node_modules/winamp2-js/built/winamp.bundle.min.js winamp/lib/winamp.bundle.min.js"

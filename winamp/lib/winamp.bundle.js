@@ -203,7 +203,7 @@ var _skinParser2 = _interopRequireDefault(_skinParser);
 
 var _constants = __webpack_require__(8);
 
-var _selectors = __webpack_require__(20);
+var _selectors = __webpack_require__(18);
 
 var _utils = __webpack_require__(13);
 
@@ -1793,44 +1793,13 @@ if (false) {
 /* 18 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var anObject = __webpack_require__(21);
-var IE8_DOM_DEFINE = __webpack_require__(89);
-var toPrimitive = __webpack_require__(67);
-var dP = Object.defineProperty;
-
-exports.f = __webpack_require__(22) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
-  anObject(O);
-  P = toPrimitive(P, true);
-  anObject(Attributes);
-  if (IE8_DOM_DEFINE) try {
-    return dP(O, P, Attributes);
-  } catch (e) { /* empty */ }
-  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');
-  if ('value' in Attributes) O[P] = Attributes.value;
-  return O;
-};
-
-
-/***/ }),
-/* 19 */
-/***/ (function(module, exports) {
-
-module.exports = function (it) {
-  return typeof it === 'object' ? it !== null : typeof it === 'function';
-};
-
-
-/***/ }),
-/* 20 */
-/***/ (function(module, exports, __webpack_require__) {
-
 "use strict";
 
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.getWindowGraph = exports.getPlaylistURL = exports.getMediaText = exports.getMinimalMediaText = exports.getCurrentTrackDisplayName = exports.getTrackDisplayName = exports.getDuration = exports.getPlaylist = exports.getVisibleTracks = exports.getTrackIsVisibleFunction = exports.getVisibleTrackIds = exports.getScrollOffset = exports.getPlaylistScrollPosition = exports.getOverflowTrackCount = exports.getNumberOfVisibleTracks = exports.nextTrack = exports.getCurrentTrackId = exports.getCurrentTrackNumber = exports.getCurrentTrackIndex = exports.getRunningTimeMessage = exports.getSelectedTrackObjects = exports.getOrderedTracks = exports.getTracks = exports.getEqfData = undefined;
+exports.getWindowGraph = exports.getPlaylistURL = exports.getMediaText = exports.getMinimalMediaText = exports.getCurrentTrackDisplayName = exports.getTrackDisplayName = exports.getDuration = exports.getPlaylist = exports.getVisibleTracks = exports.getTrackIsVisibleFunction = exports.getVisibleTrackIds = exports.getScrollOffset = exports.getPlaylistScrollPosition = exports.getOverflowTrackCount = exports.getNumberOfVisibleTracks = exports.nextTrack = exports.getCurrentTrackId = exports.getCurrentTrackNumber = exports.getCurrentTrackIndex = exports.getRunningTimeMessage = exports.getSelectedTrackObjects = exports.getOrderedTracks = exports.getTrackCount = exports.getTracks = exports.getEqfData = undefined;
 
 var _extends2 = __webpack_require__(12);
 
@@ -1894,6 +1863,10 @@ var getTrackOrder = function getTrackOrder(state) {
   return state.playlist.trackOrder;
 };
 
+var getTrackCount = exports.getTrackCount = (0, _reselect.createSelector)(getTrackOrder, function (trackOrder) {
+  return trackOrder.length;
+});
+
 var getOrderedTracks = exports.getOrderedTracks = (0, _reselect.createSelector)(getTracks, getTrackOrder, function (tracks, trackOrder) {
   return trackOrder.filter(function (id) {
     return tracks[id];
@@ -1946,7 +1919,8 @@ var nextTrack = exports.nextTrack = function nextTrack(state) {
   var trackOrder = state.playlist.trackOrder,
       repeat = state.media.repeat;
 
-  if (trackOrder.length === 0) {
+  var trackCount = getTrackCount(state);
+  if (trackCount === 0) {
     return null;
   }
 
@@ -1954,21 +1928,21 @@ var nextTrack = exports.nextTrack = function nextTrack(state) {
 
   var nextIndex = currentIndex + n;
   if (repeat) {
-    nextIndex = nextIndex % trackOrder.length;
+    nextIndex = nextIndex % trackCount;
     if (nextIndex < 0) {
       // Handle wrapping around backwards
-      nextIndex += trackOrder.length;
+      nextIndex += trackCount;
     }
     return trackOrder[nextIndex];
   }
 
-  if (currentIndex === trackOrder.length - 1 && n > 0) {
+  if (currentIndex === trackCount - 1 && n > 0) {
     return null;
   } else if (currentIndex === 0 && n < 0) {
     return null;
   }
 
-  nextIndex = (0, _utils.clamp)(nextIndex, 0, trackOrder.length - 1);
+  nextIndex = (0, _utils.clamp)(nextIndex, 0, trackCount - 1);
   return trackOrder[nextIndex];
 };
 
@@ -1979,8 +1953,8 @@ var getNumberOfVisibleTracks = exports.getNumberOfVisibleTracks = function getNu
   return Math.floor((BASE_WINDOW_HEIGHT + _constants.PLAYLIST_RESIZE_SEGMENT_HEIGHT * playlistSize[1]) / _constants.TRACK_HEIGHT);
 };
 
-var getOverflowTrackCount = exports.getOverflowTrackCount = (0, _reselect.createSelector)(getTrackOrder, getNumberOfVisibleTracks, function (trackOrder, numberOfVisibleTracks) {
-  return Math.max(0, trackOrder.length - numberOfVisibleTracks);
+var getOverflowTrackCount = exports.getOverflowTrackCount = (0, _reselect.createSelector)(getTrackCount, getNumberOfVisibleTracks, function (trackCount, numberOfVisibleTracks) {
+  return Math.max(0, trackCount - numberOfVisibleTracks);
 });
 
 var _getPlaylistScrollPosition = function _getPlaylistScrollPosition(state) {
@@ -1994,8 +1968,8 @@ var getPlaylistScrollPosition = exports.getPlaylistScrollPosition = (0, _reselec
   return Math.round(Math.round(overflowTrackCount * playlistScrollPosition / 100) / overflowTrackCount * 100);
 });
 
-var getScrollOffset = exports.getScrollOffset = (0, _reselect.createSelector)(_getPlaylistScrollPosition, getTrackOrder, getNumberOfVisibleTracks, function (playlistScrollPosition, trackOrder, numberOfVisibleTracks) {
-  var overflow = Math.max(0, trackOrder.length - numberOfVisibleTracks);
+var getScrollOffset = exports.getScrollOffset = (0, _reselect.createSelector)(_getPlaylistScrollPosition, getTrackCount, getNumberOfVisibleTracks, function (playlistScrollPosition, trackCount, numberOfVisibleTracks) {
+  var overflow = Math.max(0, trackCount - numberOfVisibleTracks);
   return (0, _utils.percentToIndex)(playlistScrollPosition / 100, overflow + 1);
 });
 
@@ -2141,10 +2115,41 @@ var getWindowGraph = exports.getWindowGraph = (0, _reselect.createSelector)(getW
 });
 
 /***/ }),
+/* 19 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var anObject = __webpack_require__(21);
+var IE8_DOM_DEFINE = __webpack_require__(89);
+var toPrimitive = __webpack_require__(67);
+var dP = Object.defineProperty;
+
+exports.f = __webpack_require__(22) ? Object.defineProperty : function defineProperty(O, P, Attributes) {
+  anObject(O);
+  P = toPrimitive(P, true);
+  anObject(Attributes);
+  if (IE8_DOM_DEFINE) try {
+    return dP(O, P, Attributes);
+  } catch (e) { /* empty */ }
+  if ('get' in Attributes || 'set' in Attributes) throw TypeError('Accessors not supported!');
+  if ('value' in Attributes) O[P] = Attributes.value;
+  return O;
+};
+
+
+/***/ }),
+/* 20 */
+/***/ (function(module, exports) {
+
+module.exports = function (it) {
+  return typeof it === 'object' ? it !== null : typeof it === 'function';
+};
+
+
+/***/ }),
 /* 21 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(19);
+var isObject = __webpack_require__(20);
 module.exports = function (it) {
   if (!isObject(it)) throw TypeError(it + ' is not an object!');
   return it;
@@ -2248,7 +2253,7 @@ exports.default = function (fn) {
 /* 27 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var dP = __webpack_require__(18);
+var dP = __webpack_require__(19);
 var createDesc = __webpack_require__(41);
 module.exports = __webpack_require__(22) ? function (object, key, value) {
   return dP.f(object, key, createDesc(1, value));
@@ -2898,7 +2903,7 @@ module.exports = function (it) {
 /* 43 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var def = __webpack_require__(18).f;
+var def = __webpack_require__(19).f;
 var has = __webpack_require__(29);
 var TAG = __webpack_require__(14)('toStringTag');
 
@@ -3693,7 +3698,7 @@ module.exports = function (Base, NAME, Constructor, next, DEFAULT, IS_SET, FORCE
 /* 66 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(19);
+var isObject = __webpack_require__(20);
 var document = __webpack_require__(16).document;
 // typeof document.createElement is 'object' in old IE
 var is = isObject(document) && isObject(document.createElement);
@@ -3707,7 +3712,7 @@ module.exports = function (it) {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.1 ToPrimitive(input [, PreferredType])
-var isObject = __webpack_require__(19);
+var isObject = __webpack_require__(20);
 // instead of the ES6 spec version, we didn't implement @@toPrimitive case
 // and the second argument - flag - preferred type is a string
 module.exports = function (it, S) {
@@ -4097,9 +4102,9 @@ exports.default = function (arr) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var META = __webpack_require__(55)('meta');
-var isObject = __webpack_require__(19);
+var isObject = __webpack_require__(20);
 var has = __webpack_require__(29);
-var setDesc = __webpack_require__(18).f;
+var setDesc = __webpack_require__(19).f;
 var id = 0;
 var isExtensible = Object.isExtensible || function () {
   return true;
@@ -4364,7 +4369,7 @@ var global = __webpack_require__(16);
 var core = __webpack_require__(5);
 var LIBRARY = __webpack_require__(52);
 var wksExt = __webpack_require__(85);
-var defineProperty = __webpack_require__(18).f;
+var defineProperty = __webpack_require__(19).f;
 module.exports = function (name) {
   var $Symbol = core.Symbol || (core.Symbol = LIBRARY ? {} : global.Symbol || {});
   if (name.charAt(0) != '_' && !(name in $Symbol)) defineProperty($Symbol, name, { value: wksExt.f(name) });
@@ -4899,7 +4904,7 @@ module.exports = function (exec) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var anObject = __webpack_require__(21);
-var isObject = __webpack_require__(19);
+var isObject = __webpack_require__(20);
 var newPromiseCapability = __webpack_require__(74);
 
 module.exports = function (C, x) {
@@ -4920,7 +4925,7 @@ module.exports = function (C, x) {
 
 var global = __webpack_require__(16);
 var core = __webpack_require__(5);
-var dP = __webpack_require__(18);
+var dP = __webpack_require__(19);
 var DESCRIPTORS = __webpack_require__(22);
 var SPECIES = __webpack_require__(14)('species');
 
@@ -5991,7 +5996,7 @@ var getTrackDisplayName = exports.getTrackDisplayName = function getTrackDisplay
 /* 114 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(19);
+var isObject = __webpack_require__(20);
 module.exports = function (it, TYPE) {
   if (!isObject(it) || it._t !== TYPE) throw TypeError('Incompatible receiver, ' + TYPE + ' required!');
   return it;
@@ -8144,6 +8149,8 @@ var _media = __webpack_require__(339);
 
 var _media2 = _interopRequireDefault(_media);
 
+var _selectors = __webpack_require__(18);
+
 var _actionCreators = __webpack_require__(2);
 
 var _constants = __webpack_require__(8);
@@ -8208,7 +8215,7 @@ var Winamp = function () {
     this.store.dispatch((0, _actionCreators.setSkinFromUrl)(this.options.initialSkin.url));
 
     if (initialTracks) {
-      this.store.dispatch((0, _actionCreators.loadMediaFiles)(initialTracks, _constants.LOAD_STYLE.BUFFER));
+      this.appendTracks(initialTracks);
     }
     if (avaliableSkins) {
       this.store.dispatch({
@@ -8222,7 +8229,24 @@ var Winamp = function () {
     }
   }
 
+  // Append this array of tracks to the end of the current playlist.
+
+
   (0, _createClass3.default)(Winamp, [{
+    key: "appendTracks",
+    value: function appendTracks(tracks) {
+      var nextIndex = (0, _selectors.getTrackCount)(this.store.getState());
+      this.store.dispatch((0, _actionCreators.loadMediaFiles)(tracks, _constants.LOAD_STYLE.BUFFER, nextIndex));
+    }
+
+    // Replace any existing tracks with this array of tracks, and begin playing.
+
+  }, {
+    key: "setTracksToPlay",
+    value: function setTracksToPlay(tracks) {
+      this.store.dispatch((0, _actionCreators.loadMediaFiles)(tracks, _constants.LOAD_STYLE.PLAY));
+    }
+  }, {
     key: "renderWhenReady",
     value: function () {
       var _ref = (0, _asyncToGenerator3.default)( /*#__PURE__*/_regenerator2.default.mark(function _callee(node) {
@@ -9103,7 +9127,7 @@ module.exports = function (Constructor, NAME, next) {
 /* 141 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var dP = __webpack_require__(18);
+var dP = __webpack_require__(19);
 var anObject = __webpack_require__(21);
 var getKeys = __webpack_require__(36);
 
@@ -9219,7 +9243,7 @@ var global = __webpack_require__(16);
 var ctx = __webpack_require__(23);
 var classof = __webpack_require__(56);
 var $export = __webpack_require__(11);
-var isObject = __webpack_require__(19);
+var isObject = __webpack_require__(20);
 var aFunction = __webpack_require__(40);
 var anInstance = __webpack_require__(72);
 var forOf = __webpack_require__(45);
@@ -9647,7 +9671,7 @@ module.exports = function defineProperty(it, key, desc) {
 
 var $export = __webpack_require__(11);
 // 19.1.2.4 / 15.2.3.6 Object.defineProperty(O, P, Attributes)
-$export($export.S + $export.F * !__webpack_require__(22), 'Object', { defineProperty: __webpack_require__(18).f });
+$export($export.S + $export.F * !__webpack_require__(22), 'Object', { defineProperty: __webpack_require__(19).f });
 
 
 /***/ }),
@@ -12176,7 +12200,7 @@ $export($export.S + $export.F * !__webpack_require__(102)(function (iter) { Arra
 
 "use strict";
 
-var $defineProperty = __webpack_require__(18);
+var $defineProperty = __webpack_require__(19);
 var createDesc = __webpack_require__(41);
 
 module.exports = function (object, index, value) {
@@ -12226,7 +12250,7 @@ module.exports = __webpack_require__(204)(SET, function (get) {
 
 "use strict";
 
-var dP = __webpack_require__(18).f;
+var dP = __webpack_require__(19).f;
 var create = __webpack_require__(53);
 var redefineAll = __webpack_require__(75);
 var ctx = __webpack_require__(23);
@@ -12385,9 +12409,9 @@ var hide = __webpack_require__(27);
 var redefineAll = __webpack_require__(75);
 var forOf = __webpack_require__(45);
 var anInstance = __webpack_require__(72);
-var isObject = __webpack_require__(19);
+var isObject = __webpack_require__(20);
 var setToStringTag = __webpack_require__(43);
-var dP = __webpack_require__(18).f;
+var dP = __webpack_require__(19).f;
 var each = __webpack_require__(205)(0);
 var DESCRIPTORS = __webpack_require__(22);
 
@@ -12503,7 +12527,7 @@ module.exports = function (original, length) {
 /* 207 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var isObject = __webpack_require__(19);
+var isObject = __webpack_require__(20);
 var isArray = __webpack_require__(115);
 var SPECIES = __webpack_require__(14)('species');
 
@@ -17964,7 +17988,7 @@ var _actionTypes = __webpack_require__(3);
 
 var _actionCreators = __webpack_require__(2);
 
-var _selectors = __webpack_require__(20);
+var _selectors = __webpack_require__(18);
 
 exports.default = function (media) {
   return function (store) {
@@ -31363,7 +31387,7 @@ var _reactRedux = __webpack_require__(1);
 
 var _snapUtils = __webpack_require__(123);
 
-var _selectors = __webpack_require__(20);
+var _selectors = __webpack_require__(18);
 
 var _actionCreators = __webpack_require__(2);
 
@@ -31397,13 +31421,7 @@ var WindowManager = function (_React$Component) {
   (0, _createClass3.default)(WindowManager, [{
     key: "componentDidMount",
     value: function componentDidMount() {
-      window.addEventListener("resize", this.centerWindows);
       this.centerWindows();
-    }
-  }, {
-    key: "componentWillUnmount",
-    value: function componentWillUnmount() {
-      window.removeEventListener("resize", this.centerWindows);
     }
   }, {
     key: "centerWindows",
@@ -31428,8 +31446,8 @@ var WindowManager = function (_React$Component) {
       keys.forEach(function (key, i) {
         var offset = WINDOW_HEIGHT * i;
         windowPositions[key] = {
-          x: offsetLeft + (width / 2 - WINDOW_WIDTH / 2),
-          y: offsetTop + (height / 2 - totalHeight / 2 + offset)
+          x: Math.ceil(offsetLeft + (width / 2 - WINDOW_WIDTH / 2)),
+          y: Math.ceil(offsetTop + (height / 2 - totalHeight / 2 + offset))
         };
       });
       this.props.updateWindowPositions(windowPositions);
@@ -31697,14 +31715,14 @@ var wksDefine = __webpack_require__(86);
 var enumKeys = __webpack_require__(255);
 var isArray = __webpack_require__(115);
 var anObject = __webpack_require__(21);
-var isObject = __webpack_require__(19);
+var isObject = __webpack_require__(20);
 var toIObject = __webpack_require__(30);
 var toPrimitive = __webpack_require__(67);
 var createDesc = __webpack_require__(41);
 var _create = __webpack_require__(53);
 var gOPNExt = __webpack_require__(256);
 var $GOPD = __webpack_require__(126);
-var $DP = __webpack_require__(18);
+var $DP = __webpack_require__(19);
 var $keys = __webpack_require__(36);
 var gOPD = $GOPD.f;
 var dP = $DP.f;
@@ -32004,7 +32022,7 @@ $export($export.S, 'Object', { setPrototypeOf: __webpack_require__(262).set });
 
 // Works with __proto__ only. Old v8 can't work with null proto objects.
 /* eslint-disable no-proto */
-var isObject = __webpack_require__(19);
+var isObject = __webpack_require__(20);
 var anObject = __webpack_require__(21);
 var check = function (O, proto) {
   anObject(O);
@@ -33069,7 +33087,7 @@ var _CharacterString = __webpack_require__(49);
 
 var _CharacterString2 = _interopRequireDefault(_CharacterString);
 
-var _selectors = __webpack_require__(20);
+var _selectors = __webpack_require__(18);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -34097,7 +34115,7 @@ var _actionTypes = __webpack_require__(3);
 
 var _actionCreators = __webpack_require__(2);
 
-var _selectors = __webpack_require__(20);
+var _selectors = __webpack_require__(18);
 
 var _utils = __webpack_require__(13);
 
@@ -34368,7 +34386,7 @@ var _classnames = __webpack_require__(6);
 
 var _classnames2 = _interopRequireDefault(_classnames);
 
-var _selectors = __webpack_require__(20);
+var _selectors = __webpack_require__(18);
 
 var _utils = __webpack_require__(13);
 
@@ -34658,6 +34676,8 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(1);
 
+var _selectors = __webpack_require__(18);
+
 var _actionCreators = __webpack_require__(2);
 
 var _fileUtils = __webpack_require__(84);
@@ -34698,7 +34718,7 @@ var AddMenu = function AddMenu(_ref) {
 
 var mapStateToProps = function mapStateToProps(state) {
   return {
-    nextIndex: state.playlist.trackOrder.length
+    nextIndex: (0, _selectors.getTrackCount)(state)
   };
 };
 
@@ -35094,7 +35114,7 @@ var _CharacterString = __webpack_require__(49);
 
 var _CharacterString2 = _interopRequireDefault(_CharacterString);
 
-var _selectors = __webpack_require__(20);
+var _selectors = __webpack_require__(18);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -35167,7 +35187,7 @@ var _reactRedux = __webpack_require__(1);
 
 var _utils = __webpack_require__(13);
 
-var _selectors = __webpack_require__(20);
+var _selectors = __webpack_require__(18);
 
 var _constants = __webpack_require__(8);
 
@@ -35361,7 +35381,7 @@ var _classnames2 = _interopRequireDefault(_classnames);
 
 var _actionTypes = __webpack_require__(3);
 
-var _selectors = __webpack_require__(20);
+var _selectors = __webpack_require__(18);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -35476,7 +35496,7 @@ var _react2 = _interopRequireDefault(_react);
 
 var _reactRedux = __webpack_require__(1);
 
-var _selectors = __webpack_require__(20);
+var _selectors = __webpack_require__(18);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -35519,7 +35539,7 @@ var _Slider2 = _interopRequireDefault(_Slider);
 
 var _actionCreators = __webpack_require__(2);
 
-var _selectors = __webpack_require__(20);
+var _selectors = __webpack_require__(18);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
