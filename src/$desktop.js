@@ -139,11 +139,55 @@ $G.on("keydown", function(e){
 });
 
 // Prevent drag and drop from redirecting the page (the browser default behavior for files)
-// TODO: allow dragging files onto the desktop (and off of it, with <a download> or dataTransfer.setData("DownloadURL", ...) or whatever)
 // TODO: only prevent if there are actually files; there's nothing that uses text inputs atm that's not in an iframe, so it doesn't matter YET (afaik)
 $G.on("dragover", function(e){
 	e.preventDefault();
 });
 $G.on("drop", function(e){
 	e.preventDefault();
+});
+
+// TODO: allow dragging files off FROM the desktop, with dataTransfer.setData("DownloadURL", ...)
+// sadly will only work for a single file (unless it secretly supports text/uri-list (either as a separate type or for DownloadURL))
+$desktop.on("dragover", function(e){
+	e.preventDefault();
+});
+var drop_file_on_desktop = function(file, x, y){
+
+	var Buffer = BrowserFS.BFSRequire('buffer').Buffer;
+	var fs = BrowserFS.BFSRequire('fs');
+
+	var reader = new FileReader;
+	reader.onerror = function(error){
+		throw error;
+	};
+	reader.onload = function(e){
+		var buffer = Buffer.from(reader.result);
+		// fs.createFile(file.name, "wx", 0x777, function(error, bfs_file){
+		// 	if(error){
+		// 		throw error;
+		// 	}
+		// 	// could do utimes as well with file.lastModified or file.lastModifiedDate
+		// 	bfs_file.write(buffer);
+		// });
+		fs.writeFile(file.name, buffer, {flag: "wx"}, function(error){
+			if(error){
+				if(error.code === "EEXIST"){
+					// TODO: options to replace or keep both files with numbers like "file (1).txt"
+					alert("File already exists!");
+				}
+				throw error;
+			}
+			alert("Wrote file!");
+			// TODO: add file representation to the desktop
+		});
+	};
+	reader.readAsArrayBuffer(file);
+};
+$desktop.on("drop", function(e){
+	e.preventDefault();
+	var files = e.originalEvent.dataTransfer.files;
+	$.map(files, function(file){
+		drop_file_on_desktop(file, e.pageX, e.pageY);
+	});
 });

@@ -172,6 +172,7 @@ function Links(){
 }
 */
 
+// TODO: base all the desktop icons off of the filesystem
 new $DesktopIcon({
 	title: "My Computer",
 	icon: "my-computer",
