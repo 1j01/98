@@ -24,6 +24,11 @@ function $DesktopIcon(options){
 	if(options.shortcut){
 		$container.addClass("shortcut");
 	}
+	$container.css({
+		position: "absolute",
+		width: grid_size_x,
+		height: grid_size_y,
+	});
 	return $container;
 }
 
@@ -43,9 +48,6 @@ var arrange_icons = function(){
 	// 	$(el).css({
 	$desktop.find(".desktop-icon").each(function(){
 		$(this).css({
-			position: "absolute",
-			width: grid_size_x,
-			height: grid_size_y,
 			left: x,
 			top: y,
 		});
@@ -178,16 +180,35 @@ var drop_file_on_desktop = function(file, x, y){
 				}
 				throw error;
 			}
-			alert("Wrote file!");
-			// TODO: add file representation to the desktop
+			$DesktopIcon({
+				title: file.name,
+				icon: "file", // TODO: base on file type, notepad-file for txt etc.
+				open: function(){ executeFile(file); } // TODO: don't hold file in memory
+			}).css({
+				left: x,
+				top: y,
+			});
 		});
 	};
 	reader.readAsArrayBuffer(file);
 };
+
+var dragover_pageX = 0;
+var dragover_pageY = 0;
+$desktop.on("dragover", function(e){
+	dragover_pageX = e.originalEvent.pageX;
+	dragover_pageY = e.originalEvent.pageY;
+});
 $desktop.on("drop", function(e){
 	e.preventDefault();
-	var files = e.originalEvent.dataTransfer.files;
-	$.map(files, function(file){
-		drop_file_on_desktop(file, e.pageX, e.pageY);
+	var x = e.originalEvent.pageX || dragover_pageX;
+	var y = e.originalEvent.pageY || e.dragover_pageY
+	// TODO: handle dragging icons onto other icons
+	withFilesystem(function(){
+		var files = e.originalEvent.dataTransfer.files;
+		$.map(files, function(file){
+			// TODO: stagger positions, don't just put everything on top of each other
+			drop_file_on_desktop(file, x, y);
+		});
 	});
 });

@@ -172,6 +172,27 @@ function Links(){
 }
 */
 
+withFilesystem(function(){
+	var fs = BrowserFS.BFSRequire('fs');
+	fs.readdir('/', function (error, contents) {
+		if(error){
+			alert("Failed to read desktop directory contents!");
+			throw error;
+		}
+		// TODO: show existing contents
+		// console.log(error, contents);
+	});
+});
+
+function executeFile(file){
+	// execute file with default handler
+	// like the START command in CMD.EXE
+	var file_extension = (file.name.match(/\.(\w+)$/) || ["this feels a bit hacky :(", ""])[1];
+	// console.log(file_extension);
+	alert("Looks like a "+file_extension+" file");
+	// TODO
+}
+
 // TODO: base all the desktop icons off of the filesystem
 new $DesktopIcon({
 	title: "My Computer",
@@ -244,6 +265,7 @@ var add_icon_for_file = function(file_spec){
 		title: file_spec.name,
 		icon: "notepad-file",
 		open: function(){
+			// TODO: base off the filesystem!
 			localStorage["notepad:" + file_spec.name] = file_spec.content;
 			return Notepad(file_spec);
 		}
