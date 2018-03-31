@@ -152,9 +152,6 @@ $G.on("drop", function(e){
 	e.preventDefault();
 });
 
-$desktop.on("dragover", function(e){
-	e.preventDefault();
-});
 // var add_icon_for_bfs_file = function(file_path, x, y){
 var add_icon_for_bfs_file = function(file_name, x, y){
 	var file_path = desktop_folder_path + file_name;
@@ -202,6 +199,7 @@ var drop_file_on_desktop = function(file, x, y){
 var dragover_pageX = 0;
 var dragover_pageY = 0;
 $desktop.on("dragover", function(e){
+	e.preventDefault();
 	dragover_pageX = e.originalEvent.pageX;
 	dragover_pageY = e.originalEvent.pageY;
 });
