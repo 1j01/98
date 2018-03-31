@@ -2,6 +2,8 @@ Hello! Welcome to 98.
 https://github.com/1j01/98
 
 --------------------------------------
+Apps
+====----------------------------------
 
 Minesweeper by Jon Ziebell
 	https://github.com/ziebelje/minesweeper
@@ -13,10 +15,28 @@ Paint, Sound Recorder, Notepad, and the 98 desktop by Isaiah Odhner
 	https://github.com/1j01/98
 	https://github.com/1j01/jspaint
 
+--------------------------------------
+Assets
+======--------------------------------
 
-Images and other assets from Microsoft.
-Microsoft® and other trademarks are respective of their own respective holders, respectively, in the United States and/or other countries, respectively.
+Many icons and other assets from Microsoft.
+Microsoft® and other trademarks are respective of their own respective holders,
+respectively, in the United States and/or other countries, respectively.
 
 --------------------------------------
+Libraries
+=========-----------------------------
 
-(This file is not editable.)
+BrowserFS
+	https://github.com/jvilk/BrowserFS
+
+jQuery
+	https://github.com/jquery/jquery
+
+Pointer Events Polyfill
+	https://github.com/jquery/PEP
+
+FileSaver.js
+	https://github.com/eligrey/FileSaver.js/
+
+and many more!
