@@ -3,7 +3,9 @@
   "classic.css": null,
   "CNAME": null,
   "CONTRIBUTING.md": null,
-  "desktop": {},
+  "desktop": {
+    "CREDITS.txt": null
+  },
   "embed-minesweeper.html": null,
   "filesystem-index.json": null,
   "images": {

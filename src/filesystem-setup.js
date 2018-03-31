@@ -18,7 +18,8 @@ BrowserFS.configure({
 		readable: {
 			fs: "XmlHttpRequest",
 			options: {
-				index: "filesystem-index.json"
+				index: "/filesystem-index.json",
+				baseUrl: "/"
 			}
 		}
 	}
@@ -70,3 +71,7 @@ function withFilesystem(callback){
 }
 // TODO: never use alert(); use thematic, non-blocking dialog windows,preferably with warning and error icons
 // I have a show_error_message in jspaint, but no warning or error icons
+
+function file_name_from_path(file_path){
+	return file_path.split("\\").pop().split("/").pop();
+}

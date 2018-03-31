@@ -1,10 +1,10 @@
 
-function Notepad(file_spec){
-	var document_title = file_spec ? file_spec.name : "Untitled";
+function Notepad(file_path){
+	var document_title = file_path ? file_name_from_path(file_path) : "Untitled";
 	var win_title = document_title + " - Notepad";
 
 	var $win = new $IframeWindow({
-		src: "notepad/index.html" + (file_spec ? ("?" + file_spec.name) : ""),
+		src: "notepad/index.html" + (file_path ? ("?path=" + file_path) : ""),
 		icon: "notepad",
 		title: win_title
 	});
@@ -171,6 +171,7 @@ function Links(){
 }
 */
 
+// TODO: this should go in $desktop.js
 withFilesystem(function(){
 	var fs = BrowserFS.BFSRequire('fs');
 	fs.readdir(desktop_folder_path, function (error, contents) {
@@ -191,17 +192,43 @@ withFilesystem(function(){
 	});
 });
 
+var file_extension_associations = {
+	"": Notepad,
+	txt: Notepad,
+	md: Notepad,
+	json: Notepad,
+	js: Notepad,
+	css: Notepad,
+	html: Notepad,
+	gitattributes: Notepad,
+	gitignore: Notepad,
+	png: Paint,
+	jpg: Paint,
+	jpeg: Paint,
+	gif: Paint,
+	webp: Paint,
+	bmp: Paint,
+	tif: Paint,
+	tiff: Paint,
+	wav: SoundRecorder,
+	mp3: openWinamp,
+};
+
 function executeFile(file_path){
 	// execute file with default handler
 	// like the START command in CMD.EXE
 	// TODO: check if it's a folder
 	var file_extension = (file_path.match(/\.(\w+)$/) || ["this feels a bit hacky :(", ""])[1];
-	if(file_extension){
-		alert("Looks like a "+file_extension+" file");
+	var program = file_extension_associations[file_extension];
+	if(program){
+		if(program !== Notepad){
+			alert(program.name + " does not support opening files via the filesystem");
+			return;
+		}
+		program(file_path);
 	}else{
-		alert("That sure is a file"); // except that it's not necessesarily (not to mention a/an)
-	}		
-	// TODO
+		alert("No program is associated with "+file_extension+" files");
+	}
 }
 
 // TODO: base all the desktop icons off of the filesystem
@@ -270,54 +297,5 @@ new $DesktopIcon({
 // 	icon: "internet-folder",
 // 	open: Links
 // });
-
-var add_icon_for_file_spec = function(file_spec){
-	new $DesktopIcon({
-		title: file_spec.name,
-		icon: "notepad-file",
-		open: function(){
-			// TODO: base off the filesystem!
-			localStorage["notepad:" + file_spec.name] = file_spec.content;
-			return Notepad(file_spec);
-		}
-	});
-};
-// TODO: use the virtual filesystem!
-add_icon_for_file_spec({
-	name: "CREDITS.txt",
-	content: `Hello! Welcome to 98.
-https://github.com/1j01/98
-
---------------------------------------
-
-Minesweeper by Jon Ziebell
-	https://github.com/ziebelje/minesweeper
-
-Winamp2-js by Jordan Eldredge
-	https://github.com/captbaritone/winamp2-js
-
-Paint, Sound Recorder, Notepad, and the 98 desktop by Isaiah Odhner
-	https://github.com/1j01/98
-	https://github.com/1j01/jspaint
-
-
-Images and other assets from Microsoft.
-Microsoft® and other trademarks are respective of their own respective holders, respectively, in the United States and/or other countries, respectively.
-
---------------------------------------
-
-(This file is not editable.)
-`
-});
-/*
-
---------------------------------------
-
-Libraries used:
-jQuery, Pointer Events Polyfil, ah, so many...
-and should I include the licenses of all of them??
-
---------------------------------------
-*/
 
 arrange_icons();

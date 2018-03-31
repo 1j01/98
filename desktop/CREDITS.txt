@@ -1,0 +1,22 @@
+Hello! Welcome to 98.
+https://github.com/1j01/98
+
+--------------------------------------
+
+Minesweeper by Jon Ziebell
+	https://github.com/ziebelje/minesweeper
+
+Winamp2-js by Jordan Eldredge
+	https://github.com/captbaritone/winamp2-js
+
+Paint, Sound Recorder, Notepad, and the 98 desktop by Isaiah Odhner
+	https://github.com/1j01/98
+	https://github.com/1j01/jspaint
+
+
+Images and other assets from Microsoft.
+Microsoft® and other trademarks are respective of their own respective holders, respectively, in the United States and/or other countries, respectively.
+
+--------------------------------------
+
+(This file is not editable.)

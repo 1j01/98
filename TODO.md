@@ -1,6 +1,8 @@
 
 # ![](images/icons/shutdown-32x32.png) Todo
 
+* Add libraries to CREDITS.txt
+
 * *Properly* link to the repo from within the app, not just with a URL in a virtual text file
 
 * Start Menu
