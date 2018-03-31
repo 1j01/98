@@ -29,17 +29,75 @@ if(query.path){
 	var file_path = query.path;
 	var file_name = file_name_from_path(file_path);
 }else{
+	// TODO: remove default ID
 	var localstorage_document_id = location.search ? location.search.replace("?", "") : "default";
 	var file_name = location.search ? location.search.replace("?", "") : "Untitled";
 }
-document.title = file_name + " - Notepad";
 
-function file_new(){
-	// TODO
+function update_title(){
+	document.title = (file_name || "Untitled") + " - Notepad";
+	// TODO: update title in parent window
+	// either with polling (outside), or a message, or direct manipulation of the outside DOM, or whatver
+	// could maybe set up a setter on document.title from outside
 }
 
+update_title();
+
+var saved = true;
+
+function are_you_sure(callback){
+	if(saved){
+		return callback();
+	}
+	// TODO: Use a proper dialog window!
+	if(confirm("Are you sure?")){
+		callback();
+	}
+}
+
+// TODO: are_you_sure about closing
+
+function file_new(){
+	are_you_sure(function(){
+		$textarea.val("");
+		saved = true;
+		file_path = null;
+		file_name = null;
+		localstorage_document_id = null;
+		update_title();
+	});
+}
+
+function load_from_blob(blob){
+	var file_reader = new FileReader;
+	file_reader.onerror = function(){
+		alert("Failed to read file: " + file_reader.error);
+	};
+	file_reader.onload = function(){
+		$textarea.val(file_reader.result);
+		saved = true;
+		file_path = null;
+		file_name = blob.name;
+		localstorage_document_id = null;
+		update_title();
+	};
+	file_reader.readAsText(blob);
+}
+// TODO: load_from_blob via drag and drop as well
+
 function file_open(){
-	// TODO
+	are_you_sure(function(){
+		var input = document.createElement("input");
+		input.type = "file";
+		input.addEventListener("change", function(){
+			var file = input.files[0];
+			if(file){
+				load_from_blob(file);
+			}
+		});
+		input.click();
+		// saved = true;
+	});
 }
 
 function file_save(){
@@ -56,7 +114,6 @@ function file_save(){
 				alert("Failed to save file: "+error);
 				throw error;
 			}
-			// NOTE: could be missing changes since retrieving content, since this is (potentially) async
 		});
 	});
 }
@@ -99,6 +156,7 @@ function update_print_helper(){
 
 $textarea.on("input", function(e){
 	update_print_helper();
+	saved = false;
 	if(localstorage_document_id){
 		try {
 			localStorage["notepad:" + localstorage_document_id] = $textarea.val();
@@ -129,12 +187,18 @@ $(window).on("keydown", function(e){
 	if(e.key == "F5" && !e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey){
 		e.preventDefault();
 		insert_time_and_date();
-	}else if(e.key == "S" && e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey){
+	}else if(e.key == "s" && e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey){
 		e.preventDefault();
 		file_save();
-	}else if(e.key == "S" && e.ctrlKey && e.shiftKey && !e.altKey && !e.metaKey){
+	}else if(e.key == "s" && e.ctrlKey && e.shiftKey && !e.altKey && !e.metaKey){
 		e.preventDefault();
 		file_save_as();
+	}else if(e.key == "n" && e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey){
+		e.preventDefault();
+		file_new();
+	}else if(e.key == "o" && e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey){
+		e.preventDefault();
+		file_open();
 	}
 });
 

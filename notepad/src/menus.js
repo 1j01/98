@@ -8,14 +8,12 @@ var menus = {
 			item: "&New",
 			shortcut: "Ctrl+N",
 			action: file_new,
-			enabled: false,
 			description: "Creates a new document.",
 		},
 		{
 			item: "&Open...",
 			shortcut: "Ctrl+O",
 			action: file_open,
-			enabled: false,
 			description: "Opens an existing document.",
 		},
 		{
