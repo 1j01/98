@@ -4,6 +4,8 @@ var __fs_errored;
 var __fs_timed_out;
 var __fs_waiting_callbacks = [];
 
+const desktop_folder_path = "/"; // TODO: change me; also make it so I can be changed without introducing inconsistency
+
 BrowserFS.configure({
 	fs: "OverlayFS",
 	options: {
@@ -33,15 +35,8 @@ BrowserFS.configure({
 		}
 		__fs_waiting_callbacks = [];
 		// TODO: message box
-		// return console.error(error);
 		throw error;
 	}
-	// var fs = BrowserFS.BFSRequire('fs');
-	// window.fs = fs;
-	// fs.readdir('/', function (e, contents) {
-	// 	// etc.
-	// 	console.log(contents);
-	// });
 	__fs_initialized = true;
 	for(var i=0; i<__fs_waiting_callbacks.length; i++){
 		__fs_waiting_callbacks[i]();
@@ -66,7 +61,6 @@ function withFilesystem(callback){
 	}else if(__fs_timed_out){
 		alert("Filesystem not initialized, and it probably never will.");
 	}else{
-		// alert("Filesystem not initialized.");
 		// wait within a global period of time while it should be configuring (and not show a message box)
 		// TODO: hm, maybe a global timeout isn't what we want
 		// The desktop should load, regardless of how long it takes.

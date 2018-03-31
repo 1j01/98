@@ -157,7 +157,6 @@ function openWinamp(){
 		});
 
 	});
-	// return new Task($win);
 }
 
 /*
@@ -174,7 +173,6 @@ function Links(){
 
 withFilesystem(function(){
 	var fs = BrowserFS.BFSRequire('fs');
-	var desktop_folder_path = "/"; // TODO: change me
 	fs.readdir(desktop_folder_path, function (error, contents) {
 		if(error){
 			alert("Failed to read desktop directory contents!");
@@ -188,14 +186,6 @@ withFilesystem(function(){
 			var y = Math.random() * innerHeight;
 			// add_icon_for_bfs_file(path, x, y);
 			add_icon_for_bfs_file(fname, x, y);
-			// $DesktopIcon({
-			// 	title: fname,
-			// 	icon: "file", // TODO: base on file type, notepad-file for txt etc.
-			// 	open: function(){ executeFile(path); }
-			// }).css({
-			// 	left: x,
-			// 	top: y,
-			// });
 		}
 		arrange_icons();
 	});
@@ -204,12 +194,12 @@ withFilesystem(function(){
 function executeFile(file_path){
 	// execute file with default handler
 	// like the START command in CMD.EXE
+	// TODO: check if it's a folder
 	var file_extension = (file_path.match(/\.(\w+)$/) || ["this feels a bit hacky :(", ""])[1];
-	// console.log(file_path, file_extension);
 	if(file_extension){
 		alert("Looks like a "+file_extension+" file");
 	}else{
-		alert("That sure is a file");
+		alert("That sure is a file"); // except that it's not necessesarily (not to mention a/an)
 	}		
 	// TODO
 }

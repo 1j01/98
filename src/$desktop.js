@@ -21,6 +21,9 @@ function $DesktopIcon(options){
 		$desktop.find(".desktop-icon").removeClass("selected focused");
 		$container.addClass("selected focused");
 	});
+	// TODO: allow dragging files off FROM the desktop, with dataTransfer.setData("DownloadURL", ...)
+	// sadly will only work for a single file (unless it secretly supports text/uri-list (either as a separate type or for DownloadURL))
+
 	if(options.shortcut){
 		$container.addClass("shortcut");
 	}
@@ -149,14 +152,11 @@ $G.on("drop", function(e){
 	e.preventDefault();
 });
 
-// TODO: allow dragging files off FROM the desktop, with dataTransfer.setData("DownloadURL", ...)
-// sadly will only work for a single file (unless it secretly supports text/uri-list (either as a separate type or for DownloadURL))
 $desktop.on("dragover", function(e){
 	e.preventDefault();
 });
 // var add_icon_for_bfs_file = function(file_path, x, y){
 var add_icon_for_bfs_file = function(file_name, x, y){
-	var desktop_folder_path = "/"; // TODO: change me
 	var file_path = desktop_folder_path + file_name;
 	return $DesktopIcon({
 		title: file_name,
