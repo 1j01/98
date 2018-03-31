@@ -96,7 +96,6 @@ function load_from_blob(blob){
 	};
 	file_reader.readAsText(blob);
 }
-// TODO: load_from_blob via drag and drop as well
 
 function file_open(){
 	are_you_sure(function(){
@@ -212,6 +211,17 @@ $(window).on("keydown", function(e){
 	}else if(e.key == "o" && e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey){
 		e.preventDefault();
 		file_open();
+	}
+});
+$G.on("dragover", function(e){
+	e.preventDefault();
+});
+$G.on("drop", function(e){
+	e.preventDefault();
+	var files = e.originalEvent.dataTransfer.files;
+	var file = files[0];
+	if(file){
+		load_from_blob(file);
 	}
 });
 
