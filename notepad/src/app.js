@@ -28,10 +28,11 @@ var query = parse_query_string(location.search);
 if(query.path){
 	var file_path = query.path;
 	var file_name = file_name_from_path(file_path);
+}else if(location.search.length > 1){
+	var localstorage_document_id = location.search.replace("?", "");
+	var file_name = location.search.replace("?", "");
 }else{
-	// TODO: remove default ID
-	var localstorage_document_id = location.search ? location.search.replace("?", "") : "default";
-	var file_name = location.search ? location.search.replace("?", "") : "Untitled";
+	file_name = "Untitled"; // TODO: make null and handle default title elsewhere or make file_name never null
 }
 
 function update_title(){
