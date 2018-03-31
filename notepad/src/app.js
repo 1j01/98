@@ -31,12 +31,12 @@ if(query.path){
 }else if(location.search.length > 1){
 	var localstorage_document_id = location.search.replace("?", "");
 	var file_name = location.search.replace("?", "");
-}else{
-	file_name = "Untitled"; // TODO: make null and handle default title elsewhere or make file_name never null
 }
+var default_file_name_for_title = "Untitled";
+var default_file_name_for_saving = "Untitled.txt";
 
 function update_title(){
-	document.title = (file_name || "Untitled") + " - Notepad";
+	document.title = (file_name || default_file_name_for_title) + " - Notepad";
 	// TODO: update title in parent window
 	// either with polling (outside), or a message, or direct manipulation of the outside DOM, or whatver
 	// could maybe set up a setter on document.title from outside
@@ -54,6 +54,18 @@ function are_you_sure(callback){
 	if(confirm("Are you sure?")){
 		callback();
 	}
+	// // TODO: warning symbol
+	// var $win = new $FormWindow;
+	// $win.$content.html("The text in the "+(file_path || file_name || default_file_name_for_saving)+" file has changed.<br><br>Do you want to save the changes?");
+	// $win.$Button("Yes", function(){
+	// 	file_save_as_ish();
+	// });
+	// $win.$Button("No", function(){
+	// 	callback();
+	// });
+	// $win.$Button("Cancel", function(){
+	// 	// NOP
+	// });
 }
 
 // TODO: are_you_sure about closing
@@ -122,7 +134,7 @@ function file_save(){
 function file_save_as(){
 	var content = $textarea.val();
 	var blob = new Blob([content], {type: "text/plain"});
-	var file_saver = saveAs(blob, file_name);
+	var file_saver = saveAs(blob, (file_name || default_file_name_for_saving));
 	// file_saver.onwriteend = function(){
 		// NOTE: this won't fire in chrome
 		// saved = true;
