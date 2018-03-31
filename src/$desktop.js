@@ -172,14 +172,18 @@ var drop_file_on_desktop = function(file, x, y){
 	var Buffer = BrowserFS.BFSRequire('buffer').Buffer;
 	var fs = BrowserFS.BFSRequire('fs');
 
+	var file_path = desktop_folder_path + file.name;
+	// TODO: investigate maximum callstack size exceeded when there's an accidental trailing slash
+	// file_path = "sdfsdfsdf/sdf/";
+	// I guess it's probably that it splits it and the last component is "" and "" = "."
+	
 	var reader = new FileReader;
 	reader.onerror = function(error){
 		throw error;
 	};
 	reader.onload = function(e){
 		var buffer = Buffer.from(reader.result);
-
-		fs.writeFile(file.name, buffer, {flag: "wx"}, function(error){
+		fs.writeFile(file_path, buffer, {flag: "wx"}, function(error){
 			if(error){
 				if(error.code === "EEXIST"){
 					// TODO: options to replace or keep both files with numbers like "file (1).txt"

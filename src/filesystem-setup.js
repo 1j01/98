@@ -4,7 +4,7 @@ var __fs_errored;
 var __fs_timed_out;
 var __fs_waiting_callbacks = [];
 
-const desktop_folder_path = "/"; // TODO: change me; also make it so I can be changed without introducing inconsistency
+const desktop_folder_path = "/desktop/"; // TODO: change me; also make it so I can be changed without introducing inconsistency
 
 BrowserFS.configure({
 	fs: "OverlayFS",
