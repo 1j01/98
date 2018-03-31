@@ -56,7 +56,7 @@ setTimeout(function(){
 		alert("Filesystem not initialized, and it probably never will.");
 	}
 	__fs_waiting_callbacks = [];
-}, 1000);
+}, 5000);
 
 function withFilesystem(callback){
 	if(__fs_initialized){
@@ -68,6 +68,9 @@ function withFilesystem(callback){
 	}else{
 		// alert("Filesystem not initialized.");
 		// wait within a global period of time while it should be configuring (and not show a message box)
+		// TODO: hm, maybe a global timeout isn't what we want
+		// The desktop should load, regardless of how long it takes.
+		// Other operations could fail in a second or more. Depending on the operation.
 		__fs_waiting_callbacks.push(callback);
 	}
 }

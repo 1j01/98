@@ -154,6 +154,19 @@ $G.on("drop", function(e){
 $desktop.on("dragover", function(e){
 	e.preventDefault();
 });
+// var add_icon_for_bfs_file = function(file_path, x, y){
+var add_icon_for_bfs_file = function(file_name, x, y){
+	var desktop_folder_path = "/"; // TODO: change me
+	var file_path = desktop_folder_path + file_name;
+	return $DesktopIcon({
+		title: file_name,
+		icon: "file", // TODO: base on file type, notepad-file for txt etc.
+		open: function(){ executeFile(file_path); }
+	}).css({
+		left: x,
+		top: y,
+	});
+};
 var drop_file_on_desktop = function(file, x, y){
 
 	var Buffer = BrowserFS.BFSRequire('buffer').Buffer;
@@ -165,13 +178,7 @@ var drop_file_on_desktop = function(file, x, y){
 	};
 	reader.onload = function(e){
 		var buffer = Buffer.from(reader.result);
-		// fs.createFile(file.name, "wx", 0x777, function(error, bfs_file){
-		// 	if(error){
-		// 		throw error;
-		// 	}
-		// 	// could do utimes as well with file.lastModified or file.lastModifiedDate
-		// 	bfs_file.write(buffer);
-		// });
+
 		fs.writeFile(file.name, buffer, {flag: "wx"}, function(error){
 			if(error){
 				if(error.code === "EEXIST"){
@@ -180,14 +187,9 @@ var drop_file_on_desktop = function(file, x, y){
 				}
 				throw error;
 			}
-			$DesktopIcon({
-				title: file.name,
-				icon: "file", // TODO: base on file type, notepad-file for txt etc.
-				open: function(){ executeFile(file); } // TODO: don't hold file in memory
-			}).css({
-				left: x,
-				top: y,
-			});
+			// TODO: could do utimes as well with file.lastModified or file.lastModifiedDate
+			
+			add_icon_for_bfs_file(file.name, x, y);
 		});
 	};
 	reader.readAsArrayBuffer(file);
@@ -208,6 +210,7 @@ $desktop.on("drop", function(e){
 		var files = e.originalEvent.dataTransfer.files;
 		$.map(files, function(file){
 			// TODO: stagger positions, don't just put everything on top of each other
+			// also center
 			drop_file_on_desktop(file, x, y);
 		});
 	});

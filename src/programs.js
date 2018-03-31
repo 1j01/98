@@ -174,22 +174,43 @@ function Links(){
 
 withFilesystem(function(){
 	var fs = BrowserFS.BFSRequire('fs');
-	fs.readdir('/', function (error, contents) {
+	var desktop_folder_path = "/"; // TODO: change me
+	fs.readdir(desktop_folder_path, function (error, contents) {
 		if(error){
 			alert("Failed to read desktop directory contents!");
 			throw error;
 		}
-		// TODO: show existing contents
-		// console.log(error, contents);
+		
+		for(var i = 0; i < contents.length; i++){
+			var fname = contents[i];
+			var path = desktop_folder_path + fname;
+			var x = Math.random() * innerWidth;
+			var y = Math.random() * innerHeight;
+			// add_icon_for_bfs_file(path, x, y);
+			add_icon_for_bfs_file(fname, x, y);
+			// $DesktopIcon({
+			// 	title: fname,
+			// 	icon: "file", // TODO: base on file type, notepad-file for txt etc.
+			// 	open: function(){ executeFile(path); }
+			// }).css({
+			// 	left: x,
+			// 	top: y,
+			// });
+		}
+		arrange_icons();
 	});
 });
 
-function executeFile(file){
+function executeFile(file_path){
 	// execute file with default handler
 	// like the START command in CMD.EXE
-	var file_extension = (file.name.match(/\.(\w+)$/) || ["this feels a bit hacky :(", ""])[1];
-	// console.log(file_extension);
-	alert("Looks like a "+file_extension+" file");
+	var file_extension = (file_path.match(/\.(\w+)$/) || ["this feels a bit hacky :(", ""])[1];
+	// console.log(file_path, file_extension);
+	if(file_extension){
+		alert("Looks like a "+file_extension+" file");
+	}else{
+		alert("That sure is a file");
+	}		
 	// TODO
 }
 
@@ -260,7 +281,7 @@ new $DesktopIcon({
 // 	open: Links
 // });
 
-var add_icon_for_file = function(file_spec){
+var add_icon_for_file_spec = function(file_spec){
 	new $DesktopIcon({
 		title: file_spec.name,
 		icon: "notepad-file",
@@ -271,8 +292,8 @@ var add_icon_for_file = function(file_spec){
 		}
 	});
 };
-// TODO: some kind of virtual filesystem
-add_icon_for_file({
+// TODO: use the virtual filesystem!
+add_icon_for_file_spec({
 	name: "CREDITS.txt",
 	content: `Hello! Welcome to 98.
 https://github.com/1j01/98
