@@ -235,7 +235,7 @@ function executeFile(file_path){
 	var program = file_extension_associations[file_extension];
 	if(program){
 		if(program !== Notepad){
-			alert(program.name + " does not support opening files via the filesystem");
+			alert(program.name + " does not support opening files via the virtual filesystem yet");
 			return;
 		}
 		program(file_path);

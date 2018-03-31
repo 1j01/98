@@ -32,10 +32,10 @@ BrowserFS.configure({
 		__fs_errored = true;
 		if(__fs_waiting_callbacks.length){
 			// TODO: DRY (can probably simplify this logic significantly)
-			alert("Filesystem not available; it failed to initialize.");
+			alert("The filesystem is not available. It failed to initialize.");
 		}
 		__fs_waiting_callbacks = [];
-		// TODO: message box
+		// TODO: message box; offer to reset the filesystem
 		throw error;
 	}
 	__fs_initialized = true;
@@ -49,7 +49,7 @@ setTimeout(function(){
 	__fs_timed_out = true;
 	if(__fs_waiting_callbacks.length){
 		// TODO: DRY (can probably simplify this logic significantly)
-		alert("Filesystem not initialized, and it probably never will.");
+		alert("The filesystem is not working.");
 	}
 	__fs_waiting_callbacks = [];
 }, 5000);
@@ -58,9 +58,9 @@ function withFilesystem(callback){
 	if(__fs_initialized){
 		callback();
 	}else if(__fs_errored){
-		alert("Filesystem not available; it failed to initialize.");
+		alert("The filesystem is not available. It failed to initialize.");
 	}else if(__fs_timed_out){
-		alert("Filesystem not initialized, and it probably never will.");
+		alert("The filesystem is not working.");
 	}else{
 		// wait within a global period of time while it should be configuring (and not show a message box)
 		// TODO: hm, maybe a global timeout isn't what we want
