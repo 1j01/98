@@ -192,6 +192,19 @@ withFilesystem(function(){
 	});
 });
 
+/*
+function saveAsDialog(){
+	var $win = new $Window();
+	$win.title("Save As");
+	return $win;
+}
+function openFileDialog(){
+	var $win = new $Window();
+	$win.title("Open");
+	return $win;
+}
+*/
+
 var file_extension_associations = {
 	"": Notepad,
 	txt: Notepad,

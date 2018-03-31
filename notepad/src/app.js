@@ -27,12 +27,12 @@ function parse_query_string(queryString) {
 var query = parse_query_string(location.search);
 if(query.path){
 	var file_path = query.path;
-	var document_title = file_name_from_path(file_path);
+	var file_name = file_name_from_path(file_path);
 }else{
 	var localstorage_document_id = location.search ? location.search.replace("?", "") : "default";
-	var document_title = location.search ? location.search.replace("?", "") : "Untitled";
+	var file_name = location.search ? location.search.replace("?", "") : "Untitled";
 }
-document.title = document_title + " - Notepad";
+document.title = file_name + " - Notepad";
 
 function file_new(){
 	// TODO
@@ -43,11 +43,32 @@ function file_open(){
 }
 
 function file_save(){
-	// TODO!!
+	if(!file_path){
+		return file_save_as();
+	}
+	
+	var content = $textarea.val();
+	
+	withFilesystem(function(){
+		var fs = BrowserFS.BFSRequire('fs');
+		fs.writeFile(file_path, content, "utf8", function(error){
+			if(error){
+				alert("Failed to save file: "+error);
+				throw error;
+			}
+			// NOTE: could be missing changes since retrieving content, since this is (potentially) async
+		});
+	});
 }
 
 function file_save_as(){
-	// TODO
+	var content = $textarea.val();
+	var blob = new Blob([content], {type: "text/plain"});
+	var file_saver = saveAs(blob, file_name);
+	// file_saver.onwriteend = function(){
+		// NOTE: this won't fire in chrome
+		// saved = true;
+	// };
 }
 
 function select_all(){
@@ -105,9 +126,15 @@ if(file_path){
 }
 
 $(window).on("keydown", function(e){
-	if(e.key == "F5"){
+	if(e.key == "F5" && !e.ctrlKey && !e.altKey && !e.metaKey && !e.shiftKey){
 		e.preventDefault();
 		insert_time_and_date();
+	}else if(e.key == "S" && e.ctrlKey && !e.shiftKey && !e.altKey && !e.metaKey){
+		e.preventDefault();
+		file_save();
+	}else if(e.key == "S" && e.ctrlKey && e.shiftKey && !e.altKey && !e.metaKey){
+		e.preventDefault();
+		file_save_as();
 	}
 });
 

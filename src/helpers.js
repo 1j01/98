@@ -70,12 +70,3 @@ function Canvas(width, height){
 	new_canvas.ctx = new_ctx;
 	return new_canvas;
 }
-
-/*
-function saveAsDialog(){
-	var $win = new $Window();
-	$win.title("Save As");
-	return $win;
-}
-*/
-
