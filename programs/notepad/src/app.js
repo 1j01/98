@@ -119,7 +119,6 @@ function file_open(){
 			}
 		});
 		input.click();
-		// saved = true;
 	});
 }
 
