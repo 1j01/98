@@ -5,7 +5,7 @@ minesweeper = function(play_area, face) {
   play_area.preventSelect();
   this.play_area = play_area;
 }
-minesweeper.sprite = "url('minesweeper/img/sprite.png')";
+minesweeper.sprite = "url('img/sprite.png')";
 
 minesweeper.prototype.play_area;
 minesweeper.prototype.play_table;
