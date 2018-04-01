@@ -37,6 +37,7 @@ var reset_to_start_of_start = function(){
 			var $section_to_show;
 			if($a.text().match(/a computer program/i)){
 				$start_menu.hide();
+				$start_button.removeClass("selected");
 				Paint();
 				return;
 			}else if($a.text().match(/a program for people/i)){
