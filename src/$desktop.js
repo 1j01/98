@@ -152,12 +152,17 @@ $G.on("drop", function(e){
 	e.preventDefault();
 });
 
+var get_icon_name_for_file_path = function (file_path){
+	var file_extension = file_extension_from_path(file_path);
+	var icon_name = file_extension_icons[file_extension];
+	return icon_name || "file";
+}
 // var add_icon_for_bfs_file = function(file_path, x, y){
 var add_icon_for_bfs_file = function(file_name, x, y){
 	var file_path = desktop_folder_path + file_name;
 	return $DesktopIcon({
 		title: file_name,
-		icon: "file", // TODO: base on file type, notepad-file for txt etc.
+		icon: get_icon_name_for_file_path(file_path),
 		open: function(){ executeFile(file_path); }
 	}).css({
 		left: x,

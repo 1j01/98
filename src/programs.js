@@ -2,6 +2,7 @@
 function Notepad(file_path){
 	var document_title = file_path ? file_name_from_path(file_path) : "Untitled";
 	var win_title = document_title + " - Notepad";
+	// TODO: focus existing window if file is currently open
 
 	var $win = new $IframeWindow({
 		src: "notepad/index.html" + (file_path ? ("?path=" + file_path) : ""),
@@ -227,11 +228,44 @@ var file_extension_associations = {
 	mp3: openWinamp,
 };
 
+// TODO: what's the "right" way to do this sort of thing? (file associations and icons)
+
+// var file_type_icons_by_program = new Map;
+// file_type_icons_by_program.set(Notepad, "notepad-file");
+// file_type_icons_by_program.set(Paint, "");
+// file_type_icons_by_program.set(SoundRecorder, "");
+
+var file_extension_icons = {
+	txt: "notepad-file",
+	md: "notepad-file",
+	json: "notepad-file",
+	js: "notepad-file",
+	css: "notepad-file",
+	html: "notepad-file",
+	gitattributes: "notepad-file",
+	gitignore: "notepad-file",
+	// TODO: get more icons; can extract from shell32.dll, moricons.dll, and other files from a VM
+	// png: "image-file",
+	// jpg: "image-file",
+	// jpeg: "image-file",
+	// gif: "image-file",
+	// webp: "image-file",
+	// bmp: "image-file",
+	// tif: "image-file",
+	// tiff: "image-file",
+	// wav: "sound-file",
+	// mp3: "sound-file",
+	// ogg: "sound-file",
+	// wma: "sound-file",
+	// "doc": "doc"?
+	"exe": "task",
+};
+
 function executeFile(file_path){
 	// execute file with default handler
 	// like the START command in CMD.EXE
 	// TODO: check if it's a folder
-	var file_extension = (file_path.match(/\.(\w+)$/) || ["this feels a bit hacky :(", ""])[1];
+	var file_extension = file_extension_from_path(file_path);
 	var program = file_extension_associations[file_extension];
 	if(program){
 		if(program !== Notepad){
