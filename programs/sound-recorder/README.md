@@ -6,8 +6,11 @@ Try it [as part of 98](http://98.js.org/) or [standalone](http://98.js.org/progr
 
 ### TODO
 
-* Insert File &
-  Mix with File
+* Keep track of file savedness and warn about losing changes
+
+* Integrate with the virtual filesystem
+
+* Insert File & Mix with File
 
 * Clipboard stuff
 
@@ -15,16 +18,14 @@ Try it [as part of 98](http://98.js.org/) or [standalone](http://98.js.org/progr
 
 * Fix ghost playback
 
-* Fix recording over a file
-  (multiple times?)
+* Fix recording over a file (multiple times?)
 
 * Show error messages visibly when in window where log isn't visible
 
-* Help
+* Implement Help options
 
 * Audio Properties?
-  Ha, who cares about that...
-  Maybe have a dialogue that says, *exactly*, the following (with an error icon):
+  Make a dialogue with an error icon that says exactly the following:
   ```
   ---------------------------
   Sound - Sound Recorder: SNDREC32.EXE - Ordinal Not Found

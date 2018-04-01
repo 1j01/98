@@ -121,8 +121,8 @@ var seek = function(t){
 	update();
 };
 var are_you_sure = function(fn){
-	fn(); // probably, right?
-	// @TODO: dialouge box
+	fn(); // "probably, right?"
+	// TODO: dialog box!
 };
 var reset = function(){
 	recording = false;
