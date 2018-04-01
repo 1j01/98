@@ -84,6 +84,7 @@ if(frameElement){
 function file_new(){
 	are_you_sure(function(){
 		$textarea.val("");
+		update_print_helper();
 		saved = true;
 		file_path = null;
 		file_name = null;
@@ -99,6 +100,7 @@ function load_from_blob(blob){
 	};
 	file_reader.onload = function(){
 		$textarea.val(file_reader.result);
+		update_print_helper();
 		saved = true;
 		file_path = null;
 		file_name = blob.name;
@@ -197,13 +199,16 @@ if(file_path){
 			}
 			// NOTE: could be destroying changes, since this is (theoretically/potentially) async
 			// altho the user can probably undo
+			// TODO: lock the textarea as readonly until here
 			$textarea.val(content);
+			update_print_helper();
 		});
 	});
 }else if(localstorage_document_id){
 	try {
 		$textarea.val(localStorage["notepad:" + localstorage_document_id] || "");
 	} catch(e) {}
+	update_print_helper();
 }
 
 $(window).on("keydown", function(e){
