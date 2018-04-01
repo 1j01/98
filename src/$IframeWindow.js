@@ -8,7 +8,8 @@ function $IframeWindow(options){
 	
 	var $iframe = $win.$iframe = $win.$content.find("iframe");
 	var iframe = $win.iframe = $iframe[0];
-	
+	iframe.$window = $win;
+
 	var focus_window_contents = function(e){
 		if(!iframe.contentWindow){
 			return;

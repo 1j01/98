@@ -37,9 +37,10 @@ var default_file_name_for_saving = "Untitled.txt";
 
 function update_title(){
 	document.title = (file_name || default_file_name_for_title) + " - Notepad";
-	// TODO: update title in parent window
-	// either with polling (outside), or a message, or direct manipulation of the outside DOM, or whatver
-	// could maybe set up a setter on document.title from outside
+
+	if(frameElement){
+		frameElement.$window.title(document.title);
+	}
 }
 
 update_title();
