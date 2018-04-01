@@ -58,15 +58,9 @@ var menus = {
 			enabled: false,
 			checkbox: {
 				check: function(){
-					// return difficulty_levels.every(function(_, index){
-					// 	return !is_at_difficulty(index);
-					// });
-					for(var i=0; i<difficulty_levels.length; i++){
-						if(is_at_difficulty(i)){
-							return false;
-						}
-					}
-					return true;
+					return difficulty_levels.every(function(difficulty){
+						return !is_at_difficulty(difficulty);
+					});
 				},
 				toggle: function(){
 					// TODO
