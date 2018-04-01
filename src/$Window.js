@@ -169,17 +169,22 @@ function $Window(options){
 			return $w.$title.text();
 		}
 	};
-	$w.close = function(){
-		var e = $.Event("close");
-		$w.trigger(e);
-		if(e.isDefaultPrevented()){
-			return;
+	$w.close = function(force){
+		if(!force){
+			var e = $.Event("close");
+			$w.trigger(e);
+			if(e.isDefaultPrevented()){
+				return;
+			}
 		}
 		if($component){
 			$component.detach();
 		}
 		$w.remove();
 		$w.closed = true;
+		$w.trigger("closed");
+		// TODO: change usages of "close" to "closed" where appropriate
+		// and probably rename the "close" event
 	};
 	$w.closed = false;
 	

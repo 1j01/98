@@ -52,7 +52,7 @@ function are_you_sure(callback){
 		return callback();
 	}
 	// TODO: Use a proper dialog window!
-	if(confirm("Are you sure?")){
+	if(confirm("Discard changes to "+(file_path || file_name || default_file_name_for_saving)+"?")){
 		callback();
 	}
 	// // TODO: warning symbol
@@ -69,7 +69,17 @@ function are_you_sure(callback){
 	// });
 }
 
-// TODO: are_you_sure about closing
+if(frameElement){
+	frameElement.$window.on("close", function(e){
+		if(saved){
+			return;
+		}
+		e.preventDefault();
+		are_you_sure(function(){
+			frameElement.$window.close(true);
+		});
+	});
+}
 
 function file_new(){
 	are_you_sure(function(){
