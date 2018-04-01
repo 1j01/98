@@ -237,7 +237,9 @@ $G.on("drop", function(e){
 	var files = e.originalEvent.dataTransfer.files;
 	var file = files[0];
 	if(file){
-		load_from_blob(file);
+		are_you_sure(function(){
+			load_from_blob(file);
+		});
 	}
 });
 
