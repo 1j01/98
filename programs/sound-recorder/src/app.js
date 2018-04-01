@@ -232,3 +232,15 @@ $(function(){
 	update();
 	
 });
+
+$G.on("dragover", function(e){
+	e.preventDefault();
+});
+$G.on("drop", function(e){
+	e.preventDefault();
+	var files = e.originalEvent.dataTransfer.files;
+	var file = files[0];
+	if(file){
+		open_file(file);
+	}
+});
