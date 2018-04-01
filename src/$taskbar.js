@@ -30,8 +30,8 @@ function Task($win){
 	});
 }
 
-var $taskbar = $(".taskbar");
-var $start_button = $(".start-button");
+// var $taskbar = $(".taskbar");
+// var $start_button = $(".start-button");
 var $tasks = $(".tasks");
 var $time = $(".taskbar-time");
 setInterval(function(){

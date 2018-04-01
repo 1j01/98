@@ -14,14 +14,20 @@
 	font-family: "MS Sans Serif", "Segoe UI", sans-serif;
 	font-size: 12px;
 }
+/* TODO: move to layout.css */
 .start-menu {
-	/* TODO */
+	position: absolute !important; /* XXX */
+	left: 2px;
+	bottom: 26px;
+	height: 340px;
+	width: 180px;
 }
 .task.selected {
 	font-weight: bold;
 }
 button {
 	outline: 0; /* sorry (breaks some accessibility) */
+	/* TODO: have a focus ring for start button at least  */
 }
 .desktop-icon .title {
 	margin-top: 5px;
