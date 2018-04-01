@@ -126,6 +126,7 @@ function file_save(){
 				alert("Failed to save file: "+error);
 				throw error;
 			}
+			saved = true;
 		});
 	});
 }
