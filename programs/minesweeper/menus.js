@@ -84,7 +84,7 @@ var menus = {
 			}
 		},
 		{
-			item: "&Color",
+			item: "Co&lor",
 			enabled: false,
 			checkbox: {
 				check: function(){
