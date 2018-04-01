@@ -1,7 +1,6 @@
 
 var menus = {
 	"&File": [
-		// TODO: file management
 		// NOTE: Notepad in Windows 98 doesn't actually have shortcuts for anything in the File menu
 		// also, it leaves off periods from the end of the descriptions
 		{
