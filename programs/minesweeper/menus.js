@@ -4,24 +4,29 @@ var difficulty_levels = [
 	[16, 16, 40],
 	[30, 16, 99]
 ];
-var set_difficulty = function(index){
-	minesweeper_.new_game.apply(minesweeper_, difficulty_levels[index]);
-	// TODO: resize the window!
+var set_difficulty = function(difficulty){
+	minesweeper_.new_game.apply(minesweeper_, difficulty);
+	
+	var tile_size = 16;
+	var extra_width = 24;
+	var extra_height = 64;
+	frameElement.style.width = extra_width + tile_size * difficulty[0] + "px";
+	frameElement.style.height = extra_height + tile_size * difficulty[1] + "px";
 };
-var is_at_difficulty = function(index){
+var is_at_difficulty = function(difficulty){
 	return (
-		minesweeper_.width === difficulty_levels[index][0] &&
-		minesweeper_.height === difficulty_levels[index][1] &&
-		minesweeper_.number_mines === difficulty_levels[index][2]
+		minesweeper_.width === difficulty[0] &&
+		minesweeper_.height === difficulty[1] &&
+		minesweeper_.number_mines === difficulty[2]
 	);
 };
 var checkbox_for_difficulty = function(index){
 	return {
 		check: function(){
-			return is_at_difficulty(index);
+			return is_at_difficulty(difficulty_levels[index]);
 		},
 		toggle: function(){
-			set_difficulty(index);
+			set_difficulty(difficulty_levels[index]);
 		},
 	};
 };
