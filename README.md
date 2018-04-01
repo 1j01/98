@@ -4,11 +4,11 @@
 A web based Windows 98 desktop remake.
 
 Includes:
-* ![](images/icons/notepad-16x16.png) Notepad ([separate README](notepad/README.md))
-* ![](images/icons/speaker-16x16.png) Sound Recorder ([separate README](sound-recorder/README.md))
+* ![](images/icons/notepad-16x16.png) Notepad ([separate README](programs/notepad/README.md))
+* ![](images/icons/speaker-16x16.png) Sound Recorder ([separate README](programs/sound-recorder/README.md))
 * ![](images/icons/paint-16x16.png) Paint ([separate repository](https://github.com/1j01/jspaint))
 * [![](images/icons/minesweeper-16x16.png) Minesweeper](https://github.com/ziebelje/minesweeper) by [Jon Ziebell](https://github.com/ziebelje/)
-* [![](images/icons/winamp2-16x16.png) Winamp2-js](https://github.com/captbaritone/winamp2-js) by [Jordan Eldredge](https://jordaneldredge.com/) ([separate README](winamp/README.md))
+* [![](images/icons/winamp2-16x16.png) Winamp2-js](https://github.com/captbaritone/winamp2-js) by [Jordan Eldredge](https://jordaneldredge.com/) ([separate README](programs/winamp/README.md))
 
 ## Try it out
 
