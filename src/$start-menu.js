@@ -7,15 +7,29 @@ var username_match = location.href.match(/\/(Users|home)\/(\w+)\//);
 var username = username_match && username_match[1] || "Admin";
 */
 
-var $start_menu = $("<div class='start-menu'>").appendTo("body");
+var $start_menu = $(".start-menu");
 $start_menu.hide();
 // TODO: legitimate contents or whatever
-$start_menu.html("Welcome to the Start Menu.<br>Please enjoy your stay.<br><br>Amazing.<br><br><br><br><br><br>At the Start Menu, you can do all kinds of thing. Sit and wait, here you are. Look up at the night sky, say goodbye, maybe see a star. Rent a car. Sponds sword buy rent a car, anywher you went, that's a car™<br><br>And thus that's a thing. 420 blaze it, it's the blaze it hour.<br>This webpage cannot be displayed at this time. Stop. Don't Start. Allah-alla walluki. Manooki. Walaluigi.<br>Mononoki. Low key keyboard fee.<br>").css({padding: "15px"});
+$start_content_area = $start_menu.find(".all-kinds-of-thing-container");
+$start_content_default = $start_menu.find(".all-kinds-of-thing-start-content");
+$windows_cant_do_it_you_can = $start_menu.find(".windows-cant-do-it-you-can");
+var reset_to_start_of_start = function(){
+	$start_content_area.html("").append($start_content_default);
+	$start_content_default.on("click", "a", function(e){
+		e.preventDefault();
+		$windows_cant_do_it_you_can.attr({hidden: null});
+		$start_content_area.html("").append($windows_cant_do_it_you_can);
+		$windows_cant_do_it_you_can.find(".the-thing-heading").text($(e.target).text());
+		$windows_cant_do_it_you_can.find(".back-link").on("click", reset_to_start_of_start);
+	});
+};
+reset_to_start_of_start();
 var $start_button = $(".start-button");
 $start_button.on("pointerdown", function(){
+	reset_to_start_of_start();
 	if($start_menu.is(":hidden")){
 		$start_button.addClass("selected");
-		$start_menu.slideDown(100); // DOWN AS IN UP (stupid jQuery))
+		$start_menu.slideDown(100); // DOWN AS IN UP (stupid jQuery)
 	}else{
 		$start_button.removeClass("selected");
 		$start_menu.toggle();

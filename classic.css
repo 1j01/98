@@ -22,6 +22,37 @@
 	height: 340px;
 	width: 180px;
 }
+.start-menu ul {
+	list-style: none;
+	margin: 1em 0;
+	padding: 0;
+}
+.start-menu li a,
+.start-menu .back-link {
+	display: block;
+	padding: 5px 0;
+	color: blue !important;
+}
+.start-menu li a:before,
+.start-menu .back-link:before,
+.the-thing-heading:before {
+	content: "»";
+	text-decoration: none;
+	display: inline-block;
+	margin-right: 5px;
+}
+.start-menu .back-link:before {
+	content: "«"
+}
+.the-thing-heading {
+	/* font-size: 1em; */
+}
+.windows-cant-do-it-you-can {
+	margin-top: 2em;
+	/* background: white;
+	padding: 5px;
+	border: inset 1px; */
+}
 .task.selected {
 	font-weight: bold;
 }
