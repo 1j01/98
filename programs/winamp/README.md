@@ -3,7 +3,7 @@
 
 [Winamp2-js](https://github.com/captbaritone/winamp2-js) by [Jordan Eldredge](https://jordaneldredge.com/)
 
-Try it [as part of 98](http://98.js.org/) or [standalone at webamp.org](http://webamp.org/)
+Try it [on 98.js.org](http://98.js.org/) or [standalone at webamp.org](http://webamp.org/)
 
 
 ### TODO
