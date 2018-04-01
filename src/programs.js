@@ -63,7 +63,7 @@ function Paint(){
 
 function Minesweeper(){
 	var $win = new $IframeWindow({
-		src: "programs/minesweeper/embed-minesweeper.html",
+		src: "programs/minesweeper/index.html",
 		icon: "minesweeper",
 		title: "Minesweeper",
 		innerWidth: 280,
