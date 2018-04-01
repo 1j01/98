@@ -14,24 +14,11 @@
 	font-family: "MS Sans Serif", "Segoe UI", sans-serif;
 	font-size: 12px;
 }
-/* TODO: move to layout.css */
-.start-menu {
-	position: absolute !important; /* XXX */
-	left: 2px;
-	bottom: 26px;
-	height: 340px;
-	width: 180px;
-}
-.start-menu ul {
-	list-style: none;
-	margin: 1em 0;
-	padding: 0;
-}
 .start-menu li a,
 .start-menu .back-link {
 	display: block;
 	padding: 5px 0;
-	color: blue !important;
+	color: blue !important; /* regardless of :visited */
 }
 .start-menu li a:before,
 .start-menu .back-link:before,

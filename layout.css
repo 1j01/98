@@ -7,7 +7,20 @@ html, body {
 	border: 0;
 	overflow: hidden;
 }
-
+.start-menu {
+	position: absolute !important; /* XXX overriding relative */
+	/* FIXME: :after doesn't scroll; both of these things can be fixed by not using :after and instead border-image */
+	left: 2px;
+	bottom: 26px;
+	height: 340px;
+	width: 180px;
+	overflow: auto;
+}
+.start-menu ul {
+	list-style: none;
+	margin: 1em 0;
+	padding: 0;
+}
 .desktop {
 	height: 100%;
 	position: relative;
