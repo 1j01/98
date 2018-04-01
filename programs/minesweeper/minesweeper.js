@@ -153,19 +153,9 @@ minesweeper.prototype.win = function() {
 }
 
 $.ready(function() {
-  var minesweeper_ = new minesweeper($("#play_area"));
+  // global minesweeper_ also used by menus.js
+  minesweeper_ = new minesweeper($("#play_area"));
   minesweeper_.new_game(16, 16, 40);
-
-  $("#button_beginner").addEventListener("click", function() {
-    // minesweeper_.new_game(9, 9, 1);
-    minesweeper_.new_game(9, 9, 10);
-  });
-  $("#button_intermediate").addEventListener("click", function() {
-    minesweeper_.new_game(16, 16, 40);
-  });
-  $("#button_expert").addEventListener("click", function() {
-    minesweeper_.new_game(30, 16, 99);
-  });
 
   $(document)
     .addEventListener("mousedown", function(e) {
