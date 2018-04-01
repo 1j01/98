@@ -1,6 +1,6 @@
 
 function Task($win){
-	var $task = this.$task = $("<button class='task'/>").appendTo($tasks);
+	var $task = this.$task = $("<button class='task'/>").appendTo($(".tasks"));
 	var $icon = $Icon($win.icon_name || "task", TASKBAR_ICON_SIZE);
 	var $title = $("<span class='title'/>").text($win.title());
 	$win.on("title-change", function(e){
@@ -30,9 +30,6 @@ function Task($win){
 	});
 }
 
-// var $taskbar = $(".taskbar");
-// var $start_button = $(".start-button");
-var $tasks = $(".tasks");
 var $time = $(".taskbar-time");
 setInterval(function(){
 	$time.text(new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
