@@ -24,11 +24,23 @@ html, body {
 .taskbar > * {
 	display: inline-block;
 }
-.taskbar button {
+.taskbar button,
+.taskbar-time {
 	height: 22px;
 	margin: 3px;
-	padding: 2px !important;
+}
+.taskbar button {
 	line-height: 14px;
+	padding: 2px !important;
+}
+.taskbar-time {
+	height: 22px;
+	line-height: 22px;
+	margin: 3px;
+	padding-left: 10px;
+	padding-right: 10px;
+	box-sizing: border-box;
+	vertical-align: middle;
 }
 .taskbar button * {
 	vertical-align: middle;

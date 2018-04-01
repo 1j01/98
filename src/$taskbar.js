@@ -33,3 +33,7 @@ function Task($win){
 var $taskbar = $(".taskbar");
 var $start_button = $(".start-button");
 var $tasks = $(".tasks");
+var $time = $(".taskbar-time");
+setInterval(function(){
+	$time.text(new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+}, 1000);
