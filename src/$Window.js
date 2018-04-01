@@ -163,6 +163,7 @@ function $Window(options){
 	$w.title = function(title){
 		if(title){
 			$w.$title.text(title);
+			$w.triggerHandler("title-change");
 			return $w;
 		}else{
 			return $w.$title.text();
