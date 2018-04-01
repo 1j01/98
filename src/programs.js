@@ -5,7 +5,7 @@ function Notepad(file_path){
 	// TODO: focus existing window if file is currently open
 
 	var $win = new $IframeWindow({
-		src: "notepad/index.html" + (file_path ? ("?path=" + file_path) : ""),
+		src: "programs/notepad/index.html" + (file_path ? ("?path=" + file_path) : ""),
 		icon: "notepad",
 		title: win_title
 	});
@@ -14,7 +14,7 @@ function Notepad(file_path){
 
 function Paint(){
 	var $win = new $IframeWindow({
-		src: "jspaint/index.html",
+		src: "programs/jspaint/index.html",
 		icon: "paint",
 		// NOTE: in Windows 98, "untitled" is lowercase, but TODO: we should just make it consistent
 		title: "untitled - Paint"
@@ -63,7 +63,7 @@ function Paint(){
 
 function Minesweeper(){
 	var $win = new $IframeWindow({
-		src: "minesweeper/embed-minesweeper.html",
+		src: "programs/minesweeper/embed-minesweeper.html",
 		icon: "minesweeper",
 		title: "Minesweeper",
 		innerWidth: 280,
@@ -74,7 +74,7 @@ function Minesweeper(){
 
 function SoundRecorder(){
 	var $win = new $IframeWindow({
-		src: "sound-recorder/index.html",
+		src: "programs/sound-recorder/index.html",
 		icon: "speaker",
 		title: "Sound - Sound Recorder",
 		innerWidth: 252+10,
@@ -89,7 +89,7 @@ var load_winamp_bundle_if_not_loaded = function(callback){
 		callback();
 	}else{
 		// $.getScript("winamp/lib/winamp.bundle.js", callback);
-		$.getScript("winamp/lib/winamp.bundle.min.js", callback);
+		$.getScript("programs/winamp/lib/winamp.bundle.min.js", callback);
 	}
 }
 function openWinamp(){
@@ -100,10 +100,10 @@ function openWinamp(){
 					artist: "DJ Mike Llama",
 					title: "Llama Whippin' Intro",
 				},
-				url: "winamp/mp3/llama-2.91.mp3"
+				url: "programs/winamp/mp3/llama-2.91.mp3"
 			}],
 			initialSkin: {
-				url: "winamp/skins/base-2.91.wsz"
+				url: "programs/winamp/skins/base-2.91.wsz"
 			},
 			enableHotkeys: true // Enable hotkeys
 		});
