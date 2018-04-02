@@ -38,7 +38,7 @@ var reset_to_start_of_start = function(){
 			if($a.text().match(/a computer program/i)){
 				$start_menu.hide();
 				$start_button.removeClass("selected");
-				Paint();
+				Paint(); // FIXME: doubly executed (presumably other code as well, but most of it is basically idempotent)
 				return;
 			}else if($a.text().match(/a program for people/i)){
 				$section_to_show = $windows_cant_do_it_you_can;

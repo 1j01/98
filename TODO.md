@@ -7,6 +7,12 @@
 
 * Start Menu
 
+	* Aria attributes
+
+	* Close when clicking off
+
+	* "Legitimate content"
+
 * Unfocused window state
 
 * Reliably focus window contents (i.e. for keyboard shortcuts in Paint) (also close menus when clicking inside)
