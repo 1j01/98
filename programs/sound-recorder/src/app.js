@@ -15,12 +15,12 @@ var get_wav_file = function(file, callback){
 		command: "init",
 		config: {
 			sampleRate: audio_context.sampleRate,
-			numChannels: numChannels
+			numChannels: file.numberOfChannels
 		}
 	});
 	
 	var buffer = [];
-	for (var channel = 0; channel < numChannels; channel++){
+	for (var channel = 0; channel < file.numberOfChannels; channel++){
 		buffer.push(file.buffer.getChannelData(channel));
 	}
 	worker.postMessage({

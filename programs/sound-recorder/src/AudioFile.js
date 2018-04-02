@@ -11,6 +11,8 @@ function AudioFile(){
 	
 	var bufferLength = 4096;
 	var numChannels = 2;
+	this.numberOfChanels = numChannels; // TODO: Should you just access file.buffer.numberOfChannels?
+	// TODO: Should changing the number of channels be allowed?
 	var sampleRate = audio_context.sampleRate;
 	
 	var copy_buffer_data = function(old_buffer, new_buffer, offset){
