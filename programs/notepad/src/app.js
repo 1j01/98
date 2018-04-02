@@ -112,15 +112,13 @@ function load_from_blob(blob){
 
 function file_open(){
 	are_you_sure(function(){
-		var input = document.createElement("input");
-		input.type = "file";
-		input.addEventListener("change", function(){
-			var file = input.files[0];
-			if(file){
-				load_from_blob(file);
+		// no accept='text/*' because it hides many many types of text files, especially source code
+		// altho Notepad in Windows 98 shows only *.txt files
+		$("<input type='file'>").click().change(function(e){
+			if(this.files[0]){
+				load_from_blob(this.files[0]);
 			}
 		});
-		input.click();
 	});
 }
 
