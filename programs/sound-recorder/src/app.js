@@ -6,6 +6,58 @@ var playing = false;
 
 var file = new AudioFile;
 
+var get_wav_file = function(file, callback){
+	file.updateBufferSize(file.length);
+
+	var worker = new Worker("lib/recorderWorker.js");
+	
+	worker.postMessage({
+		command: "init",
+		config: {
+			sampleRate: audio_context.sampleRate,
+			numChannels: numChannels
+		}
+	});
+	
+	var buffer = [];
+	for (var channel = 0; channel < numChannels; channel++){
+		buffer.push(file.buffer.getChannelData(channel));
+	}
+	worker.postMessage({
+		command: "record",
+		buffer: buffer,
+	});
+	
+	worker.postMessage({
+		command: "exportWAV",
+		type: "audio/wav",
+	});
+	
+	worker.onmessage = function(e){
+		callback(e.data);
+	};
+}
+
+var download_wav_file = function(file){
+	
+	// FIXME: download click fails because of async
+	// TODO: display a window with a link to download, maybe prompt for a filename
+	// TODO: use Streams API to actually write in chunks where supported
+	// (There's a WritableStream but I don't think there's been a sink specified for writing to a file)
+
+	var gotWAV = function(blob){
+		var a = document.createElement('a');
+		a.href = (window.URL || window.webkitURL).createObjectURL(blob);
+		a.download = file.name.replace(/(?:\.wav)?$/, ".wav");
+		var click = document.createEvent("Event");
+		click.initEvent("click", true, true);
+		a.dispatchEvent(click);
+	};
+
+	get_wav_file(file, gotWAV);
+	
+};
+
 var update = function(position_from_slider){
 	document.title = file.name + " - Sound Recorder";
 	if(position_from_slider != null){
@@ -171,7 +223,7 @@ var file_revert = function(){
 };
 var file_save_as = function(){
 	if(file.length > 0){
-		file.download();
+		download_wav_file(file);
 	}
 };
 var file_save = file_save_as;

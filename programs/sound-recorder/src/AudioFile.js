@@ -147,47 +147,6 @@ function AudioFile(){
 		update();
 	};
 	
-	file.download = function(){
-		file.updateBufferSize(file.length);
-		
-		var gotWAV = function(blob){
-			var a = document.createElement('a');
-			a.href = (window.URL || window.webkitURL).createObjectURL(blob);
-			a.download = file.name.replace(/(?:\.wav)?$/, ".wav");
-			var click = document.createEvent("Event");
-			click.initEvent("click", true, true);
-			a.dispatchEvent(click);
-		};
-		
-		var worker = new Worker("lib/recorderWorker.js");
-		
-		worker.postMessage({
-			command: "init",
-			config: {
-				sampleRate: audio_context.sampleRate,
-				numChannels: numChannels
-			}
-		});
-		
-		var buffer = [];
-		for (var channel = 0; channel < numChannels; channel++){
-			buffer.push(file.buffer.getChannelData(channel));
-		}
-		worker.postMessage({
-			command: "record",
-			buffer: buffer,
-		});
-		
-		worker.postMessage({
-			command: "exportWAV",
-			type: "audio/wav",
-		});
-		
-		worker.onmessage = function(e){
-			gotWAV(e.data);
-		};
-	};
-	
 	// We have to connect the script processing node to the output
 	// or else we don't recieve any audioprocess events :(
 	// We don't want that to actually take effect,
