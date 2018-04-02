@@ -147,29 +147,6 @@ function AudioFile(){
 		update();
 	};
 	
-	file.applyEffect = function(effectFunction, timeScale){
-		var old_buffer = file.buffer;
-		var pos = file.position / file.length;
-		
-		file.length = file.availLength = file.availLength * Math.abs(timeScale || 1);
-		var new_buffer = file.newBuffer();
-		
-		for(var channel = 0; channel < numChannels; channel++){
-			var oldData = old_buffer.getChannelData(Math.min(channel, old_buffer.numberOfChanels-1));
-			var newData = new_buffer.getChannelData(channel);
-			effectFunction(oldData, newData);
-		}
-		
-		file.setBuffer(new_buffer);
-		
-		// Update the file position
-		var new_position = pos * file.length;
-		if(timeScale < 0){
-			new_position = file.length - new_position;
-		}
-		seek(new_position);
-	};
-	
 	file.download = function(){
 		file.updateBufferSize(file.length);
 		
