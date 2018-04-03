@@ -285,14 +285,6 @@ $(function(){
 	
 });
 
-$G.on("dragover", function(e){
-	e.preventDefault();
-});
-$G.on("drop", function(e){
-	e.preventDefault();
-	var files = e.originalEvent.dataTransfer.files;
-	var file = files[0];
-	if(file){
-		open_file(file);
-	}
-});
+// NOTE: DOM-related stuff is apparently supposed to happen in $app.js
+// This divide is not necessarily helpful
+// I accidentally added a second implementation of drag and drop here, not realizing there was $app.js to look in
