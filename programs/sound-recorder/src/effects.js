@@ -6,8 +6,8 @@ var applyEffect = function(file, effectFunction, timeScale){
 	file.length = file.availLength = file.availLength * Math.abs(timeScale || 1);
 	var new_buffer = file.newBuffer();
 	
-	for(var channel = 0; channel < file.numberOfChanels; channel++){
-		var oldData = old_buffer.getChannelData(Math.min(channel, old_buffer.numberOfChanels-1));
+	for(var channel = 0; channel < file.numberOfChannels; channel++){
+		var oldData = old_buffer.getChannelData(Math.min(channel, old_buffer.numberOfChannels-1));
 		var newData = new_buffer.getChannelData(channel);
 		effectFunction(oldData, newData);
 	}
@@ -20,6 +20,9 @@ var applyEffect = function(file, effectFunction, timeScale){
 		new_position = file.length - new_position;
 	}
 	seek(new_position);
+
+	// Mark as unsaved
+	saved = false;
 };
 
 var applyVolumeScale = function(scale){

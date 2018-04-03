@@ -5,6 +5,37 @@ var recording = false;
 var playing = false;
 
 var file = new AudioFile;
+var file_path;
+var saved = true;
+
+var default_file_name_for_title = "Sound";
+var default_file_name_for_saving = "Sound.wav";
+
+var are_you_sure = function(callback){
+	if(saved){
+		return callback();
+	}
+	// TODO: Use a proper dialog window! DRY with Notepad and Paint.
+	if(confirm("Discard changes to "+(file_path || file.name || default_file_name_for_saving)+"?")){
+		callback();
+	}
+}
+
+var parse_query_string = function(queryString) {
+    var query = {};
+    var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+    for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i].split('=');
+        query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+    }
+    return query;
+}
+
+var query = parse_query_string(location.search);
+if(query.path){
+	var file_path = query.path;
+	var file_name = file_name_from_path(file_path);
+}
 
 var get_wav_file = function(file, callback){
 	file.updateBufferSize(file.length);
@@ -58,8 +89,16 @@ var download_wav_file = function(file){
 	
 };
 
+var update_title = function(){
+	document.title = (file.name || default_file_name_for_title) + " - Sound Recorder";
+	if(frameElement && frameElement.$window){
+		frameElement.$window.title(document.title);
+	}
+};
+
 var update = function(position_from_slider){
-	document.title = file.name + " - Sound Recorder";
+	update_title();
+
 	if(position_from_slider != null){
 		file.position = position_from_slider;
 		
@@ -122,6 +161,7 @@ var record = function(){
 	previous_time = audio_context.currentTime;
 	tid = setInterval(update, 50);
 	recording = true;
+	saved = false;
 };
 
 var stop = function(){
@@ -172,14 +212,12 @@ var seek = function(t){
 	if(playing){ file.audio.play(); }
 	update();
 };
-var are_you_sure = function(fn){
-	fn(); // "probably, right?"
-	// TODO: dialog box!
-};
 var reset = function(){
 	recording = false;
 	playing = false;
 	file = new AudioFile;
+	file_path = null;
+	saved = true; // the new nothingness is effectively saved, doesn't need a confirmation dialog
 	update();
 };
 var read_audio_data = function(file, callback){
@@ -192,12 +230,12 @@ var read_audio_data = function(file, callback){
 	};
 	fileReader.readAsArrayBuffer(file);
 };
-var open_file = function(original){
-	read_audio_data(original, function(buffer){
+var load_from_blob_warning_if_unsaved = function(blob){
+	read_audio_data(blob, function(buffer){
 		are_you_sure(function(){
 			reset();
-			file.original = original;
-			file.name = original.name;
+			file.original_blob = blob;
+			file.name = blob.name;
 			file.setBuffer(buffer);
 			update();
 		});
@@ -211,15 +249,17 @@ var file_new = function(){
 };
 var file_open = function(){
 	$("<input type='file' accept='audio/*'>").click().change(function(e){
-		open_file(this.files[0]);
+		if(this.files[0]){
+			load_from_blob_warning_if_unsaved(this.files[0]);
+		}
 	});
 };
 var can_revert_file = function(){
-	return !!file.original;
+	return !!file.original_blob;
 };
 var file_revert = function(){
-	if(!file.original){ throw new Error("No original file"); }
-	open_file(file.original);
+	if(!file.original_blob){ throw new Error("No original_blob file"); }
+	load_from_blob_warning_if_unsaved(file.original_blob);
 };
 var file_save_as = function(){
 	if(file.length > 0){
@@ -245,6 +285,42 @@ var delete_after_current_position = function(){
 	file.crop(0, cut_position);
 	seek(cut_position);
 };
+
+
+if(file_path){
+	// TODO: lock editing starting here
+	
+	file.name = file_name_from_path(file_path);
+	update_title();
+
+	withFilesystem(function(){
+		var fs = BrowserFS.BFSRequire('fs');
+		fs.readFile(file_path, function(error, content){
+			if(error){
+				alert("Failed to load file: "+error);
+				throw error;
+			}
+			// NOTE: could be destroying changes, since this is (potentially) async
+			// altho the user can probably undo
+			// TODO: lock editing until here
+			var __opening_file_path = file_path;
+			var blob = new File([content], file_name_from_path(file_path));
+			load_from_blob_warning_if_unsaved(blob);
+		});
+	});
+}
+
+if(frameElement){
+	frameElement.$window.on("close", function(e){
+		if(saved){
+			return;
+		}
+		e.preventDefault();
+		are_you_sure(function(){
+			frameElement.$window.close(true);
+		});
+	});
+}
 
 
 var input;

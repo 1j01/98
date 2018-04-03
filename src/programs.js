@@ -1,8 +1,9 @@
 
 function Notepad(file_path){
+	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in $IframeWindow)
 	var document_title = file_path ? file_name_from_path(file_path) : "Untitled";
 	var win_title = document_title + " - Notepad";
-	// TODO: focus existing window if file is currently open
+	// TODO: focus existing window if file is currently open?
 
 	var $win = new $IframeWindow({
 		src: "programs/notepad/index.html" + (file_path ? ("?path=" + file_path) : ""),
@@ -11,6 +12,7 @@ function Notepad(file_path){
 	});
 	return new Task($win);
 }
+Notepad.acceptsFilePaths = true;
 
 function Paint(){
 	var $win = new $IframeWindow({
@@ -72,16 +74,21 @@ function Minesweeper(){
 	return new Task($win);
 }
 
-function SoundRecorder(){
+function SoundRecorder(file_path){
+	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in $IframeWindow)
+	var document_title = file_path ? file_name_from_path(file_path) : "Sound";
+	var win_title = document_title + " - Sound Recorder";
+	// TODO: focus existing window if file is currently open?
 	var $win = new $IframeWindow({
-		src: "programs/sound-recorder/index.html",
+		src: "programs/sound-recorder/index.html" + (file_path ? ("?path=" + file_path) : ""),
 		icon: "speaker",
-		title: "Sound - Sound Recorder",
+		title: win_title,
 		innerWidth: 252+10,
 		innerHeight: 102
 	});
 	return new Task($win);
 }
+SoundRecorder.acceptsFilePaths = true;
 
 var winamp_bundle_loaded = false;
 var load_winamp_bundle_if_not_loaded = function(callback){
@@ -268,7 +275,7 @@ function executeFile(file_path){
 	var file_extension = file_extension_from_path(file_path);
 	var program = file_extension_associations[file_extension];
 	if(program){
-		if(program !== Notepad){
+		if(!program.acceptsFilePaths){
 			alert(program.name + " does not support opening files via the virtual filesystem yet");
 			return;
 		}

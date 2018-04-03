@@ -83,10 +83,10 @@ $("body").on("keydown", function(e){
 	}
 });
 
-function open_from_FileList(files){
+function open_from_file_list_warning_if_unsaved(files){
 	$.each(files, function(i, file){
 		if(file.type.match(/audio/)){
-			open_file(file);
+			load_from_blob_warning_if_unsaved(file);
 			return false;
 		}else{
 			alert("File not recognized as an audio file");
@@ -102,7 +102,7 @@ $body.on("dragover dragenter", function(e){
 	e.stopPropagation();
 	var dt = e.originalEvent.dataTransfer;
 	if(dt && dt.files && dt.files.length){
-		open_from_FileList(dt.files);
+		open_from_file_list_warning_if_unsaved(dt.files);
 	}
 });
 

@@ -11,14 +11,14 @@ function AudioFile(){
 	
 	var bufferLength = 4096;
 	var numChannels = 2;
-	this.numberOfChanels = numChannels; // TODO: Should you just access file.buffer.numberOfChannels?
+	file.numberOfChannels = numChannels; // TODO: Should you just access file.buffer.numberOfChannels?
 	// TODO: Should changing the number of channels be allowed?
 	var sampleRate = audio_context.sampleRate;
 	
 	var copy_buffer_data = function(old_buffer, new_buffer, offset){
 		var offsetIndex = ~~((offset || 0) * sampleRate);
 		for(var channel = 0; channel < numChannels; channel++){
-			var oldData = old_buffer.getChannelData(Math.min(channel, old_buffer.numberOfChanels-1));
+			var oldData = old_buffer.getChannelData(Math.min(channel, old_buffer.numberOfChannels-1));
 			var newData = new_buffer.getChannelData(channel);
 			for(var i=0, len = oldData.length; i<len; i++){
 				newData[i] = oldData[i + offsetIndex];
@@ -126,7 +126,7 @@ function AudioFile(){
 		var new_buffer = file.newBuffer();
 		
 		for(var channel = 0; channel < numChannels; channel++){
-			var oldData = old_buffer.getChannelData(Math.min(channel, old_buffer.numberOfChanels-1));
+			var oldData = old_buffer.getChannelData(Math.min(channel, old_buffer.numberOfChannels-1));
 			var newData = new_buffer.getChannelData(channel);
 			/*for(var i=0, len=newData.length; i<len; i++){
 				newData[i] = oldData[~~f(i)];
