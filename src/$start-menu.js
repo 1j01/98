@@ -61,6 +61,7 @@ $start_button.on("pointerdown", function(){
 	if($start_menu.is(":hidden")){
 		$start_button.addClass("selected");
 		$start_menu.slideDown(100); // DOWN AS IN UP (stupid jQuery)
+		$start_menu.css({zIndex: ++$Window.Z_INDEX});
 	}else{
 		$start_button.removeClass("selected");
 		$start_menu.toggle();

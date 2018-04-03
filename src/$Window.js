@@ -6,7 +6,8 @@ function $Window(options){
 	
 	var $w = $(E("div")).addClass("window").appendTo("body");
 	$w.$titlebar = $(E("div")).addClass("window-titlebar").appendTo($w);
-	$w.$title = $(E("span")).addClass("window-title").appendTo($w.$titlebar);
+	$w.$title_area = $(E("div")).addClass("window-title-area").appendTo($w.$titlebar);
+	$w.$title = $(E("span")).addClass("window-title").appendTo($w.$title_area);
 	$w.$x = $(E("button")).addClass("window-close-button window-button").appendTo($w.$titlebar);
 	$w.$content = $(E("div")).addClass("window-content").appendTo($w);
 	

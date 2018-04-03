@@ -27,6 +27,7 @@ html, body {
 }
 .taskbar {
 	position: absolute;
+	z-index: 2;
 	bottom: 0;
 	left: 0;
 	right: 0;
@@ -37,6 +38,10 @@ html, body {
 .taskbar > * {
 	display: inline-block;
 }
+.start-button {
+	flex-shrink: 0;
+}
+/* .taskbar-button is generally .task or .start-button for now */
 .taskbar button,
 .taskbar-time {
 	height: 22px;
@@ -45,6 +50,15 @@ html, body {
 .taskbar button {
 	line-height: 14px;
 	padding: 2px !important;
+	overflow: hidden; /* TODO: If tons and tons of tasks don't show icons? (smaller than width of an icon?) */
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+.taskbar button .title {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .taskbar-time {
 	height: 22px;
@@ -58,6 +72,7 @@ html, body {
 .taskbar button * {
 	vertical-align: middle;
 }
+/* TODO: offset task button contents down a px when depressed... actually most buttons */
 .tasks {
 	display: flex;
 	flex: 1;
@@ -104,11 +119,20 @@ html, body {
 	position: relative;
 }
 .desktop-icon .title {
-	line-height: 1;
-	max-height: 2em;
-	text-overflow: ellipsis;
+	line-height: 13px;
+	font-size: 9px;
+	overflow: hidden;
+	text-overflow: ellipsis; /* TODO: make this work with multiline text! This is apparently a limitation of this CSS property and ther are various crazy CSS hacks and JS libs to solve this. */
+	word-wrap: break-word; /* All browsers since IE 5.5+ */
+	overflow-wrap: break-word; /* Renamed property in CSS3 draft spec */
 }
-
+.desktop-icon:not(.focused) .title {
+	/* max-height: 2em would only work with line-height: 1 */
+	max-height: calc(13px * 2);
+}
+.desktop-icon.focused {
+	z-index: 1;
+}
 /* Fix dragging things (like windows) over iframes */
 .drag iframe {
 	pointer-events: none;
@@ -155,13 +179,31 @@ html, body {
 	text-align: center;
 }
 
+.window-titlebar {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+.window-title-area {
+	position: relative;
+	flex: 1;
+	height: 16px; /* 100% doesn't work */
+}
 .window-title {
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
 	display: inline-block !important;
 	margin: 0;
 	padding: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 .window-close-button {
-	display: inline-block !important;
+	display: block !important;
 	float: right;
 	width: 13px;
 	height: 11px;

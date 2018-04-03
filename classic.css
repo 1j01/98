@@ -189,6 +189,7 @@ button.selected {
 	background: -ms-linear-gradient(left, #000080 0%, #1084d0 100%); /* IE10+ */
 	background: linear-gradient(to right, #000080 0%, #1084d0 100%); /* W3C */
 	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000080', endColorstr='#1084d0', GradientType=1 ); /* IE6-9 */
+	/* TODO: gradient shouldn't actually extend to the window controls */
 	
 	color: white;
 	font-family: 'Segoe UI', sans-serif;
