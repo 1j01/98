@@ -33,4 +33,5 @@ function Task($win){
 var $time = $(".taskbar-time");
 setInterval(function(){
 	$time.text(new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
+	$time.attr("title", new Date().toLocaleString([], {weekday: 'long', month: 'long', day: '2-digit', minute: '2-digit', hour: '2-digit'}));
 }, 1000);
