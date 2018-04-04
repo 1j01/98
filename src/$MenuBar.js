@@ -1,6 +1,10 @@
 
 $MenuBar.DIVIDER = "DIVIDER";
 
+function E(t){
+	return document.createElement(t);
+}
+
 function $MenuBar(menus){
 	
 	var $ = jQuery;

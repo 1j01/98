@@ -7,11 +7,14 @@ var difficulty_levels = [
 var set_difficulty = function(difficulty){
 	minesweeper_.new_game.apply(minesweeper_, difficulty);
 	
-	var tile_size = 16;
-	var extra_width = 24;
-	var extra_height = 64;
-	frameElement.style.width = extra_width + tile_size * difficulty[0] + "px";
-	frameElement.style.height = extra_height + tile_size * difficulty[1] + "px";
+	if(frameElement){
+		// TODO: um why not just use the computed width <punctuation="thinking-emoji"/> </sentence>
+		var tile_size = 16;
+		var extra_width = 24;
+		var extra_height = 64;
+		frameElement.style.width = extra_width + tile_size * difficulty[0] + "px";
+		frameElement.style.height = extra_height + tile_size * difficulty[1] + "px";
+	}
 };
 var is_at_difficulty = function(difficulty){
 	return (
@@ -143,5 +146,7 @@ var $menu_bar = $MenuBar(menus);
 if(go_outside_frame){
 	$menu_bar.insertBefore(frameElement);
 }else{
-	$menu_bar.prependTo($("#app"));
+	$(function(){
+		$menu_bar.prependTo(jQuery("body"));
+	});
 }
