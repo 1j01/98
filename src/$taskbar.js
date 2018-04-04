@@ -21,9 +21,8 @@ function Task($win){
 		$task.addClass("selected");
 		$win.triggerHandler("focus");
 	}
-	$win.on("pointerdown", function(e){
+	$win.on("focusin iframe-focusin", function(e){
 		$task.addClass("selected");
-		$win.triggerHandler("focus");
 	});
 	$win.on("close", function(){
 		$task.remove();

@@ -17,17 +17,13 @@ function $IframeWindow(options){
 		
 		$win.bringToFront();
 		
-		if($(e.target).closest(".menus, .menu-popup").length === 0){
-			return;
-		}
-		
 		iframe.contentWindow.focus();
 		setTimeout(function(){
 			iframe.contentWindow.focus();
 		});
+
+		$win.triggerHandler("iframe-focusin");
 	};
-	
-	$win.on("focus", focus_window_contents);
 	
 	// Let the iframe to handle mouseup events outside itself
 	var delegate_pointerup = function(){
