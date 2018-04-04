@@ -1,14 +1,10 @@
-// Run this in the context of the minesweeper iframe
-// TODO: expose a function in the console at least,
-// but maybe handle the konami code (there's libs for this)
-// or allow left+right / middle clicking the smiley to trigger this
 
-// For running in the console:
+// For running in the console (in the context of the minesweeper iframe):
 // parent.$(".minesweeper-playing-cursor").remove();
 // if (typeof iid !== "undefined") { clearInterval(iid); }
 // if (typeof rafid !== "undefined") { cancelAnimationFrame(rafid); }
 
-// For running as a script immediately by default:
+// For running as a script, triggering immediately by default:
 // $.ready(function () {
 
 // For running if you enter the sequence ↑↑↓↓←→←→BA

@@ -105,8 +105,8 @@ function $Window(options){
 	
 	$w.applyBounds = function(){
 		$w.css({
-			left: Math.max(0, Math.min(innerWidth - $w.width(), $w[0].getBoundingClientRect().left)),
-			top: Math.max(0, Math.min(innerHeight - $w.height(), $w[0].getBoundingClientRect().top)),
+			left: Math.max(0, Math.min(innerWidth - $w.width(), $w.position().left)),
+			top: Math.max(0, Math.min(innerHeight - $w.height(), $w.position().top)),
 		});
 	};
 	
@@ -136,8 +136,8 @@ function $Window(options){
 		if($(e.target).is("button")){
 			return;
 		}
-		drag_offset_x = e.clientX - $w[0].getBoundingClientRect().left;
-		drag_offset_y = e.clientY - $w[0].getBoundingClientRect().top;
+		drag_offset_x = e.clientX - $w.position().left;
+		drag_offset_y = e.clientY - $w.position().top;
 		$G.on("pointermove", drag);
 	});
 	$G.on("pointerup", function(e){

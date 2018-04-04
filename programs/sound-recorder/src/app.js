@@ -19,7 +19,7 @@ var are_you_sure = function(callback){
 	if(confirm("Discard changes to "+(file_path || file.name || default_file_name_for_saving)+"?")){
 		callback();
 	}
-}
+};
 
 var parse_query_string = function(queryString) {
     var query = {};
@@ -29,7 +29,7 @@ var parse_query_string = function(queryString) {
         query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
     }
     return query;
-}
+};
 
 var query = parse_query_string(location.search);
 if(query.path){
@@ -67,7 +67,7 @@ var get_wav_file = function(file, callback){
 	worker.onmessage = function(e){
 		callback(e.data);
 	};
-}
+};
 
 var download_wav_file = function(file){
 	
