@@ -156,7 +156,9 @@ button.selected {
 	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAABlBMVEW9vb3///8EwsWUAAAADElEQVQI12NoYHAAAAHEAMFJRSpJAAAAAElFTkSuQmCC) repeat;
 }
 
-.window {
+/* XXX: using .draggable as "a class that winamp2-js uses on its windows",
+because :not() doesn't support compound selectors like :not(.winamp-container .window) or :not(#winamp2-js *) */
+.window:not(.draggable) {
 	background: #c0c0c0;
 	border-top: 1px solid #dfdfdf;
 	border-left: 1px solid #dfdfdf;
@@ -164,7 +166,7 @@ button.selected {
 	border-bottom: 1px solid #000;
 	padding: 2px;
 }
-.window:after {
+.window:not(.draggable):after {
 	content: '';
 	pointer-events: none;
 	position: absolute;
@@ -177,7 +179,7 @@ button.selected {
 	border-right: 1px solid #7b7b7b;
 	border-bottom: 1px solid #7b7b7b;
 }
-.window > * {
+.window:not(.draggable):after > *  {
 	margin: 1px;
 }
 .window-titlebar {
