@@ -40,6 +40,6 @@
 		"make-fs-index @NOTE": "browserfs is currently assumed to be npm linked at around 2.0.0-beta",
 		"make-fs-index @TODO": "pre-commit hook",
 		"pull-libs @TODO": "# make it into a script so it's not all crammed onto one line in this package.json; include jquery and stuff; maybe even update script tags in html, with CDN URLs, integrity checksums, and fallbacks",
-		"pull-libs": "cp node_modules/winamp2-js/built/winamp.bundle.js winamp/lib/winamp.bundle.js && cp node_modules/winamp2-js/built/winamp.bundle.min.js winamp/lib/winamp.bundle.min.js && cp node_modules/browserfs/dist/browserfs.js lib/browserfs.js && cp node_modules/browserfs/dist/browserfs.min.js lib/browserfs.min.js"
+		"pull-libs": "cp node_modules/winamp2-js/built/winamp.bundle.js programs/winamp/lib/winamp.bundle.js && cp node_modules/winamp2-js/built/winamp.bundle.min.js programs/winamp/lib/winamp.bundle.min.js && cp node_modules/browserfs/dist/browserfs.js lib/browserfs.js && cp node_modules/browserfs/dist/browserfs.min.js lib/browserfs.min.js"
 	}
 }
