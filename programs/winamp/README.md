@@ -1,5 +1,5 @@
 
-# ![](../../images/icons/winamp2-32x32.png) Winamp 2
+# ![](../../images/icons/winamp2-32x32.png) Winamp 2.9
 
 [Winamp2-js](https://github.com/captbaritone/winamp2-js) by [Jordan Eldredge](https://jordaneldredge.com/)
 
@@ -13,6 +13,6 @@ Try it [on 98.js.org](http://98.js.org/) or [standalone at webamp.org](http://we
 
 * Window blurring (also needed for regular windows!)
 
-* Localize keyboard shortcuts (currently pretty much everything in 98 is in iframes, and I haven't implemented arrow keys for icons on the desktop, so it's hard to tell, and it doesn't matter much, but the keyboard shortcuts should only apply when Winamp is focused - so this depends on window blurring)
+* Localize keyboard shortcuts (currently pretty much everything in 98.js uses iframes, and I haven't implemented arrow keys for icons on the desktop, so it's hard to tell, and it doesn't matter much (yet), but the keyboard shortcuts should only apply when Winamp is focused - so this depends on window blurring)
 
 * Interop with Sound Recorder should be fun! ;)

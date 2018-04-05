@@ -1,4 +1,4 @@
-Hello! Welcome to 98.
+Hello! Welcome to 98.js
 https://github.com/1j01/98
 
 --------------------------------------
@@ -11,7 +11,7 @@ Minesweeper by Jon Ziebell
 Winamp2-js by Jordan Eldredge
 	https://github.com/captbaritone/winamp2-js
 
-Paint, Sound Recorder, Notepad, and the 98 desktop by Isaiah Odhner
+Paint, Sound Recorder, Notepad, and the 98.js desktop by Isaiah Odhner
 	https://github.com/1j01/98
 	https://github.com/1j01/jspaint
 

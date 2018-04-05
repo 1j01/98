@@ -24,9 +24,12 @@
 		"browser",
 		"windows",
 		"98",
+		"98.js",
 		"windows-98",
 		"operating-system",
-		"os"
+		"os",
+		"js",
+		"javascript"
 	],
 	"devDependencies": {
 		"browserfs": "^1.4.3",
