@@ -43,8 +43,12 @@ function getIconPath(name, size){
 
 function $Icon(name, size){
 	var $img = $("<img class='icon'/>");
-	$img.attr({draggable: false});
-	$img.attr({src: getIconPath(name, size)});
+	$img.attr({
+		draggable: false,
+		src: getIconPath(name, size),
+		width: size,
+		height: size,
+	});
 	return $img;
 }
 
