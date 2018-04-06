@@ -1,0 +1,23 @@
+{
+	"name": "98.js - Windows 98 Online",
+	"short_name": "98.js",
+	"version": "0.1.3",
+	"description": "Windows 98 retro remake",
+	"icons": [
+		{
+			"src": "/android-chrome-192x192.png?v=LbWArJzeO7",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "/android-chrome-256x256.png?v=LbWArJzeO7",
+			"sizes": "256x256",
+			"type": "image/png"
+		}
+	],
+	"lang": "en-US",
+	"start_url": ".",
+	"theme_color": "#008080",
+	"background_color": "#008080",
+	"display": "fullscreen"
+}
