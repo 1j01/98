@@ -12,8 +12,10 @@ html, body {
 	/* FIXME: :after doesn't scroll; both of these things can be fixed by not using :after and instead border-image */
 	left: 2px;
 	bottom: 26px;
+	width: 186px;
 	height: 340px;
-	width: 180px;
+	max-height: calc(100vh - 22px); /* based on taskbar height TODO: do this differently, probably in JS, since the taskbar will be resizable (or could be) */
+	box-sizing: border-box;
 	overflow: auto;
 }
 .start-menu ul {
