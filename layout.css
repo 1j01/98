@@ -8,16 +8,24 @@ html, body {
 	overflow: hidden;
 }
 .start-menu {
-	position: absolute !important; /* XXX overriding relative */
-	/* FIXME: :after doesn't scroll; both of these things can be fixed by not using :after and instead border-image */
-	/* Update: TODO: make an inner element scrollable instead to fix the border scrolling and the side image scrolling */
+	position: absolute !important; /* XXX overriding relative; could instead of using :after use border-image */
 	left: 2px;
 	bottom: 26px;
-	width: calc(186px + 21px); /* 186px isn't the proper width measured out, just what I had it before, for the content */
+	width: calc(186px + 21px); /* 186px isn't the proper width measured out, just what I had it before, (for the content, on chrome on windows 10; text wrapping is not cross-platform-consistent) */
+	padding-left: 21px; /* 21px = .start-menu-titlebar */
 	height: 340px;
 	max-height: calc(100vh - 22px); /* based on taskbar height TODO: do this differently, probably in JS, since the taskbar will be resizable (or could be) */
 	box-sizing: border-box;
-	overflow: auto; /* TODO: make an inner element scrollable instead! */
+	display: flex;
+	flex-direction: row;
+}
+.start-menu-titlebar {
+	flex: 0 0 auto;
+	width: 21px;
+}	
+.start-menu-content {
+	overflow: auto;
+	padding: 15px;
 }
 .start-menu ul {
 	list-style: none;
