@@ -64,6 +64,7 @@ var $start_button = $(".start-button");
 $start_button.on("pointerdown", function(){
 	toggle_start_menu();
 });
+
 $("body").on("pointerdown", function(e){
 	if($(e.target).closest(".start-menu, .start-button").length === 0){
 		close_start_menu();
@@ -76,4 +77,8 @@ $("body").on("pointerdown", function(e){
 // but generally I'd recommend making a control focusable and detecting loss of focus as in this answer:
 // [1]: https://stackoverflow.com/a/38317768/2624876
 
-// TODO: Esc to close
+$(window).on("keydown", function(e){
+	if(e.which === 27){ // Esc to close
+		close_start_menu();
+	}
+});
