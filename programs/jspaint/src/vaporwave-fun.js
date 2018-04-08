@@ -85,7 +85,8 @@ var start_movie = function () {
 		mixBlendMode: "multiply",
 		pointerEvents: "none",
 		transition: "opacity 0.4s ease",
-		// TODO: size video maybe with viewport units
+		width: "100vw",
+		height: "100vh",
 	});
 	// NOTE: placeholder not a container; the YT API replaces the element passed in the DOM
 	// but keeps inline styles apparently, and maybe other things, I don't know; it's weird
