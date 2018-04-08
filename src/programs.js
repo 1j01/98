@@ -260,10 +260,10 @@ var file_extension_icons = {
 	// bmp: "image-file",
 	// tif: "image-file",
 	// tiff: "image-file",
-	// wav: "sound-file",
-	// mp3: "sound-file",
-	// ogg: "sound-file",
-	// wma: "sound-file",
+	wav: "sound",
+	mp3: "sound", // TODO: show blue video icon, as it's a container format that can contain video
+	ogg: "sound", // TODO: probably ditto
+	wma: "sound",
 	// "doc": "doc"?
 	"exe": "task",
 };
