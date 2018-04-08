@@ -4,12 +4,18 @@
 }
 .taskbar {
 	outline: 1px solid #c0c0c0;
-	box-shadow: 0 1px white inset;
+	border-top: 1px solid white;
 	background: #c0c0c0;
-	border-bottom: 1px solid #555555;
+}
+.taskbar-divider {
+	border-left: 1px solid #707070; /* TODO: is this the correct color? */
+	border-right: 1px solid white;
+}
+.tray {
+	/* border: inset 1px; */
+	box-shadow: 1px 1px 0 #707070 inset, -1px -1px 0 white inset;
 }
 .taskbar-time {
-	border: inset 1px;
 	font-family: sans-serif;
 	font-family: "MS Sans Serif", "Segoe UI", sans-serif;
 	font-size: 12px;
@@ -215,6 +221,7 @@ because :not() doesn't support compound selectors like :not(.winamp-container .w
 	font-family: Arial, sans-serif;
 	font-size: 16px;
 }
+/* TODO: different kind of button effect (at least for taskbar buttons) where there's only a single 1px solid white on top and left borders (not depressed) */
 .start-menu,
 .ui-slider-handle,
 button {

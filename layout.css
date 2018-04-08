@@ -10,11 +10,11 @@ html, body {
 .start-menu {
 	position: absolute !important; /* XXX overriding relative; could instead of using :after use border-image */
 	left: 2px;
-	bottom: 26px;
+	bottom: 25px;
 	width: calc(186px + 21px); /* 186px isn't the proper width measured out, just what I had it before, (for the content, on chrome on windows 10; text wrapping is not cross-platform-consistent) */
 	padding-left: 21px; /* 21px = .start-menu-titlebar */
 	height: 340px;
-	max-height: calc(100vh - 22px); /* based on taskbar height TODO: do this differently, probably in JS, since the taskbar will be resizable (or could be) */
+	max-height: calc(100vh - 26px); /* based on taskbar height TODO: do this differently, probably in JS, since the taskbar will be resizable (or could be) */
 	box-sizing: border-box;
 	display: flex;
 	flex-direction: row;
@@ -42,51 +42,66 @@ html, body {
 	bottom: 0;
 	left: 0;
 	right: 0;
-	height: 28px;
+	height: 27px; /* not including outline part of border */
 	display: flex;
 	flex: 1;
 }
-.taskbar > * {
-	display: inline-block;
-}
-.start-button {
-	flex-shrink: 0;
-}
 /* .taskbar-button is generally .task or .start-button for now */
 .taskbar button,
-.taskbar-time {
-	height: 22px;
-	margin: 3px;
+.taskbar-divider,
+.tray {
+	margin: 2px;
+}
+.taskbar-divider {
+	margin-right: 0px;
+	margin-left: 0px;
+	/* TODO: maybe make that 2px rule padding on the taskbar instead and avoid reseting this */
 }
 .taskbar button {
 	line-height: 14px;
-	padding: 2px !important;
+	padding: 2px;
 	overflow: hidden; /* TODO: If tons and tons of tasks don't show icons? (smaller than width of an icon?) */
 	display: flex;
 	flex-direction: row;
 	align-items: center;
+	/* (justify-content: flex-start;) */
 }
 .taskbar button .title {
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
 }
-.taskbar-time {
-	height: 22px;
+.taskbar .start-button {
+	flex-shrink: 0;
+	padding: 2px 4px;
+}
+.tray {
+	display: flex;
+	flex-direction: row;
+	/* align-items: center; */
+	/* align-content: center; */
+	/* justify-content: center; */
 	line-height: 22px;
-	margin: 3px;
-	padding-left: 10px;
-	padding-right: 10px;
 	box-sizing: border-box;
 	vertical-align: middle;
 }
-.taskbar button * {
-	vertical-align: middle;
+.tray-icons {
+	display: flex;
+	align-items: center;
+	margin-left: 2px; /* XXX basically 1px, but 2px because of the way the border is done */
+}
+.tray-icon {
+	margin-left: 1px;
+}
+.taskbar-time {
+	width: 60px;
+	text-align: center;
 }
 /* TODO: offset task button contents down a px when depressed... actually most buttons */
 .tasks {
 	display: flex;
 	flex: 1;
+	height: 100%;
 }
 .task {
 	max-width: 200px;
