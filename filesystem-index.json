@@ -1,11 +1,17 @@
 {
-  "chrome-app.js": null,
+  "android-chrome-192x192.png": null,
+  "android-chrome-256x256.png": null,
+  "apple-touch-icon.png": null,
+  "browserconfig.xml": null,
   "classic.css": null,
   "CNAME": null,
   "CONTRIBUTING.md": null,
   "desktop": {
     "CREDITS.txt": null
   },
+  "favicon-16x16.png": null,
+  "favicon-32x32.png": null,
+  "favicon.ico": null,
   "filesystem-index.json": null,
   "font": {
     "fixedsys-excelsior": {
@@ -20,9 +26,28 @@
   },
   "images": {
     "3d.jpg": null,
+    "98-logo": {
+      "windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org-all-text-as-paths.svg": null,
+      "windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org.png": null,
+      "windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org.svg": null,
+      "windows-98-logo-vector-by-pkmnct-plus-js-logo.png": null,
+      "windows-98-logo-vector-by-pkmnct-plus-js-logo.svg": null
+    },
     "arrows.png": null,
+    "favicon-src": {
+      "favicon-16x16.png": null,
+      "favicon-32x32.png": null,
+      "favicon-48x48-enlarged-6x.png": null,
+      "favicon-48x48.png": null,
+      "faviconDescription.json": null,
+      "FOLDER-README.md": null,
+      "mstile-48x48-enlarged-6x.png": null,
+      "mstile-48x48-globe-outline.png": null,
+      "safari-pinned-tab-16x16.png": null
+    },
     "icons": {
       "3d-mode-32x32.png": null,
+      "3rd-party": {},
       "audio-nope-16x16.png": null,
       "audio-okay-16x16.png": null,
       "convert-audio-16x16.png": null,
@@ -96,6 +121,9 @@
       "notepad-32x32.png": null,
       "notepad-file-16x16.png": null,
       "notepad-file-32x32.png": null,
+      "os-js-16x16.png": null,
+      "os-js-32x32.png": null,
+      "os-js-48x48.png": null,
       "outlook-express-16x16-8.png": null,
       "outlook-express-16x16.png": null,
       "outlook-express-32x32-8.png": null,
@@ -162,11 +190,18 @@
       "warning-32x32.png": null,
       "winamp2-16x16.png": null,
       "winamp2-32x32.png": null,
+      "windows-93-16x16.png": null,
+      "windows-93-32x32.png": null,
+      "windows-93-48x48.png": null,
       "windows-update-16x16.png": null,
       "windows-update-32x32.png": null,
       "windows-update-48x48.png": null
     },
     "start-logo.png": null,
+    "start-menu-side-98-js-alt.png": null,
+    "start-menu-side-98-js.gif": null,
+    "start-menu-side-98-js.png": null,
+    "start-menu-side-98.png": null,
     "start-menu-side.png": null,
     "start.png": null
   },
@@ -176,10 +211,10 @@
     "browserfs.js": null,
     "browserfs.min.js": null,
     "jquery.min.js": null,
+    "konami.js": null,
     "pep.js": null
   },
-  "manifest.json": null,
-  "manifest.webapp": null,
+  "mstile-150x150.png": null,
   "npm-debug.log.1388102379": null,
   "package-lock.json": null,
   "package.json": null,
@@ -251,6 +286,13 @@
         "p_txt.gif": null
       },
       "images": {
+        "98-logo": {
+          "windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org-all-text-as-paths.svg": null,
+          "windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org.png": null,
+          "windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org.svg": null,
+          "windows-98-logo-vector-by-pkmnct-plus-js-logo.png": null,
+          "windows-98-logo-vector-by-pkmnct-plus-js-logo.svg": null
+        },
         "arrows.png": null,
         "cursors": {
           "airbrush.png": null,
@@ -353,6 +395,7 @@
           "gif.worker.js.map": null
         },
         "jquery.min.js": null,
+        "konami.js": null,
         "palette.js": null,
         "pep.js": null
       },
@@ -403,7 +446,8 @@
         "TextBox.js": null,
         "theme.js": null,
         "tool-options.js": null,
-        "tools.js": null
+        "tools.js": null,
+        "vaporwave-fun.js": null
       },
       "styles": {
         "layout.css": null,
@@ -419,12 +463,14 @@
     },
     "minesweeper": {
       "face.js": null,
+      "fun.js": null,
       "grid.js": null,
       "img": {
         "sprite.png": null
       },
       "index.html": null,
       "lib": {
+        "konami.js": null,
         "rocket.12.06.js": null,
         "seedrandom.js": null
       },
@@ -486,6 +532,8 @@
     }
   },
   "README.md": null,
+  "safari-pinned-tab.svg": null,
+  "site.webmanifest": null,
   "src": {
     "$desktop.js": null,
     "$IframeWindow.js": null,
@@ -493,9 +541,11 @@
     "$start-menu.js": null,
     "$taskbar.js": null,
     "$Window.js": null,
+    "3d-fun.js": null,
     "filesystem-setup.js": null,
     "helpers.js": null,
     "programs.js": null
   },
-  "TODO.md": null
+  "TODO.md": null,
+  "~ Pictures and stuff -  Shortcut ~.lnk": null
 }
