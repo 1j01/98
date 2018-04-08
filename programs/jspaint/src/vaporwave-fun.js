@@ -23,11 +23,6 @@ var start_movie = function () {
 		transition: "opacity 1s ease",
 		opacity: "0",
 	});
-	// TODO: sync time with video, i.e. if you pause it pause this timer
-	setTimeout(function(){
-		$(rotologo).css({opacity: 1});
-	// }, 3000);
-	}, 15000);
 
 	var animate = function () {
 		var rAF_ID = requestAnimationFrame(animate);
@@ -128,6 +123,12 @@ var start_movie = function () {
 
 	// The API calls this function when the player's state changes.
 	function onPlayerStateChange(event) {
+		if (event.data == YT.PlayerState.PLAYING) {
+			// TODO: pause and resume this timer with the video
+			setTimeout(function(){
+				$(rotologo).css({opacity: 1});
+			}, 14150);
+		}
 		if (event.data == YT.PlayerState.ENDED) {
 			player.destroy();
 			// TODO: fade to white instead of black, to work with the multiply effect
