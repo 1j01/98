@@ -252,14 +252,15 @@ var file_extension_icons = {
 	gitattributes: "notepad-file",
 	gitignore: "notepad-file",
 	// TODO: get more icons; can extract from shell32.dll, moricons.dll, and other files from a VM
-	// png: "image-file",
-	// jpg: "image-file",
-	// jpeg: "image-file",
-	// gif: "image-file",
-	// webp: "image-file",
-	// bmp: "image-file",
-	// tif: "image-file",
-	// tiff: "image-file",
+	// also get more file extensions; can file a mime types listing data dump
+	png: "paint-file",
+	jpg: "paint-file",
+	jpeg: "paint-file",
+	gif: "paint-file", // TODO: painting directly onto a picture in a picture frame image (or is it a stamp?)
+	webp: "paint-file",
+	bmp: "paint-file",
+	tif: "paint-file",
+	tiff: "paint-file",
 	wav: "sound",
 	mp3: "sound", // TODO: show blue video icon, as it's a container format that can contain video
 	ogg: "sound", // TODO: probably ditto
