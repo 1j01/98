@@ -26,13 +26,6 @@
   },
   "images": {
     "3d.jpg": null,
-    "98-logo": {
-      "windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org-all-text-as-paths.svg": null,
-      "windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org.png": null,
-      "windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org.svg": null,
-      "windows-98-logo-vector-by-pkmnct-plus-js-logo.png": null,
-      "windows-98-logo-vector-by-pkmnct-plus-js-logo.svg": null
-    },
     "arrows.png": null,
     "favicon-src": {
       "favicon-16x16.png": null,
@@ -206,6 +199,13 @@
       "windows-update-32x32.png": null,
       "windows-update-48x48.png": null
     },
+    "logo": {
+      "98.js.org.svg": null,
+      "98.js.org.svg.png": null,
+      "98.js.org.text-source.svg": null,
+      "98.js.svg": null,
+      "98.js.svg.png": null
+    },
     "start-logo.png": null,
     "start-menu-side-98-js-alt.png": null,
     "start-menu-side-98-js.gif": null,
@@ -295,13 +295,7 @@
         "p_txt.gif": null
       },
       "images": {
-        "98-logo": {
-          "windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org-all-text-as-paths.svg": null,
-          "windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org.png": null,
-          "windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org.svg": null,
-          "windows-98-logo-vector-by-pkmnct-plus-js-logo.png": null,
-          "windows-98-logo-vector-by-pkmnct-plus-js-logo.svg": null
-        },
+        "98.js.org.svg": null,
         "arrows.png": null,
         "cursors": {
           "airbrush.png": null,

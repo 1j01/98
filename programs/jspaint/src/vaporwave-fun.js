@@ -8,10 +8,10 @@ var start_movie = function () {
 	rotologo.classList.add("rotologo");
 	if (frameElement) {
 		frameElement.parentElement.appendChild(rotologo);
-		rotologo.src = "images/98-logo/windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org-all-text-as-paths.svg";
+		rotologo.src = "images/logo/98.js.org.svg";
 	} else {
 		document.body.appendChild(rotologo);
-		rotologo.src = "images/98-logo/windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org-all-text-as-paths.svg";
+		rotologo.src = "images/98.js.org.svg";
 	}
 
 	$(rotologo).css({
