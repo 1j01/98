@@ -4,17 +4,10 @@ var create_rotologo = function () {
 	rotologo.classList.add("rotologo");
 	if (frameElement) {
 		frameElement.parentElement.appendChild(rotologo);
-		rotologo.src = "../../images/windows-98-logo-vector-by-pkmnct-plus-js-logo.svg";
-		// TODO: add "98.js.org" to the flying logo
+		rotologo.src = "images/98-logo/windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org-all-text-as-paths.svg";
 	} else {
 		document.body.appendChild(rotologo);
-		// rotologo.src = "TODO://???/?=windows-98-logo-vector-by-pkmnct-plus-js-logo.svg"; // TODO!
-		// rotologo.src = "help/flag&clouds.gif";
-		// rotologo.style.mixBlendMode = "multiply";
-		// rotologo.style.mixBlendMode = "hard-light";
-		// rotologo.src = "images/tools-and-stuff.png";
-		rotologo.src = "images/readme/mobipaint	.png";
-		rotologo.style.mixBlendMode = "multiply";
+		rotologo.src = "images/98-logo/windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org-all-text-as-paths.svg";
 	}
 
 	var animate = function () {
@@ -24,6 +17,7 @@ var create_rotologo = function () {
 		// };
 
 		var $rotologo = $(rotologo);
+		// TODO: fade in rotologo after a few seconds
 		$rotologo.css({
 			position: "absolute",
 			left: "50%",
@@ -48,7 +42,6 @@ var create_rotologo = function () {
 		
 		var $window = parent.$(frameElement).closest(".window");
 		if($window.length){
-			//var offset = $window.offset();//position();
 			var el = $window[0];
 			var offsetLeft = 0;
 			var offsetTop = 0;
@@ -92,6 +85,7 @@ var start_movie = function () {
 		mixBlendMode: "multiply",
 		pointerEvents: "none",
 		transition: "opacity 0.4s ease",
+		// TODO: size video maybe with viewport units
 	});
 	// NOTE: placeholder not a container; the YT API replaces the element passed in the DOM
 	// but keeps inline styles apparently, and maybe other things, I don't know; it's weird
@@ -126,7 +120,6 @@ var start_movie = function () {
 	// 5. The API calls this function when the player's state changes.
 	function onPlayerStateChange(event) {
 		if (event.data == YT.PlayerState.ENDED) {
-			// $(player_container).remove();
 			player.destroy();
 			// TODO: fade to white instead of black, to work with the multiply effect
 			// or fade out opacity alternatively
