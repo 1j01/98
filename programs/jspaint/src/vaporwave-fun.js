@@ -1,5 +1,6 @@
 
 // TODO: make this whole thing work multiple times
+// (and allow reseting the effect entirely by re-entering the Konami Code)
 
 var start_movie = function () {
 
@@ -20,8 +21,13 @@ var start_movie = function () {
 		pointerEvents: "none",
 		transformOrigin: "0% 0%",
 		transition: "opacity 1s ease",
+		opacity: "0",
 	});
-	// TODO: fade in rotologo after a few seconds
+	// TODO: sync time with video, i.e. if you pause it pause this timer
+	setTimeout(function(){
+		$(rotologo).css({opacity: 1});
+	// }, 3000);
+	}, 15000);
 
 	var animate = function () {
 		var rAF_ID = requestAnimationFrame(animate);
@@ -105,6 +111,12 @@ var start_movie = function () {
 				onStateChange: onPlayerStateChange,
 			},
 		});
+		// TODO: attribution for this video!
+		// I mean, you can see the title if you hit spacebar, but
+		// I could make it wave across the screen behind Paint on the desktop
+		// I could add a "Song Name?" button that responds "Darude Sandstorm"
+		// I could add a "Song At 420?" button that actually links to the video
+		// some number of those things or something like that
 	};
 
 	// The API will call this function when the video player is ready.
