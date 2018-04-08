@@ -18,6 +18,11 @@
 			cleanup = function(){
 				cancelAnimationFrame(rAF_ID);
 			};
+			// var everything = $("*");
+			// $("iframe").each(function(){
+			// 	everything = everything.add(this.contentWindow.$ && this.contentWindow.$("*"));
+			// });
+			// everything.each(function(){
 			$(".window").each(function(){
 				var $window = $(this);
 				//var offset = $window.offset();//position();
@@ -36,7 +41,8 @@
 					}turn) rotateX(${
 						(offsetTop + (this.clientHeight - innerHeight) / 2) / innerHeight / 3
 					}turn)`,
-					transformOrigin: "50% 50%"
+					transformOrigin: "50% 50%",
+					transformStyle: "preserve-3d",
 				});
 			});
 		};
