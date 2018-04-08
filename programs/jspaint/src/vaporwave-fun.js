@@ -1,5 +1,8 @@
 
-var create_rotologo = function () {
+// TODO: make this whole thing work multiple times
+
+var start_movie = function () {
+
 	var rotologo = document.createElement("img");
 	rotologo.classList.add("rotologo");
 	if (frameElement) {
@@ -10,34 +13,34 @@ var create_rotologo = function () {
 		rotologo.src = "images/98-logo/windows-98-logo-vector-by-pkmnct-plus-js-logo-plus-98-js-org-all-text-as-paths.svg";
 	}
 
+	$(rotologo).css({
+		position: "absolute",
+		left: "50%",
+		top: "50%",
+		pointerEvents: "none",
+		transformOrigin: "0% 0%",
+		transition: "opacity 1s ease",
+	});
+	// TODO: fade in rotologo after a few seconds
+
 	var animate = function () {
 		var rAF_ID = requestAnimationFrame(animate);
 		// cleanup = function(){
 		// 	cancelAnimationFrame(rAF_ID);
 		// };
 
-		var $rotologo = $(rotologo);
-		// TODO: fade in rotologo after a few seconds
-		$rotologo.css({
-			position: "absolute",
-			left: "50%",
-			top: "50%",
-			pointerEvents: "none",
+		$(rotologo).css({
 			transform:
 				`perspective(4000px) rotateY(${
 					Math.sin(Date.now() / 5000)
 				}turn) rotateX(${
 					0
 				}turn) translate(-50%, -50%) translateZ(500px)`,
-			// transformOrigin: "50% 50%",
-			transformOrigin: "0% 0%",
-			// transformStyle: "preserve-3d",
 			filter:
 				`hue-rotate(${
 					Math.sin(Date.now() / 4000)
 					// TODO: slow down and stop when you pause
 				}turn)`,
-			transition: "opacity 1s ease",
 		});
 		
 		var $window = parent.$(frameElement).closest(".window");
@@ -60,16 +63,12 @@ var create_rotologo = function () {
 					}turn)`,
 				transformOrigin: "50% 50%",
 				transformStyle: "preserve-3d",
+				// FIXME: interactivity problems (with order elements are considered to have), I think related to preserve-3d
 			});
 		}
 	};
 	animate();
 
-	return rotologo;
-};
-
-// TODO: make this whole thing work multiple times
-var start_movie = function () {
 	var tag = document.createElement('script');
 	tag.src = "https://www.youtube.com/player_api";
 	var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -91,9 +90,7 @@ var start_movie = function () {
 	// NOTE: placeholder not a container; the YT API replaces the element passed in the DOM
 	// but keeps inline styles apparently, and maybe other things, I don't know; it's weird
 
-	var rotologo;
-
-	// The YouTube API calls this
+	// The YouTube API will call this global function when loaded and ready.
 	window.onYouTubeIframeAPIReady = function () {
 		player = new YT.Player(player_placeholder, {
 			height: "390",
@@ -108,17 +105,16 @@ var start_movie = function () {
 				onStateChange: onPlayerStateChange,
 			},
 		});
-		rotologo = create_rotologo();
 	};
 
-	// 4. The API will call this function when the video player is ready.
+	// The API will call this function when the video player is ready.
 	function onPlayerReady(event) {
 		player.playVideo();
 		// TODO: unmute if muted?
 		player.unMute();
 	}
 
-	// 5. The API calls this function when the player's state changes.
+	// The API calls this function when the player's state changes.
 	function onPlayerStateChange(event) {
 		if (event.data == YT.PlayerState.ENDED) {
 			player.destroy();
@@ -128,6 +124,7 @@ var start_movie = function () {
 			// or we might switch to using soundcloud for the audio and so trigger it with that, with a separate video of just clouds
 			// also fade out the rotologo earlier
 			$(rotologo).css({opacity: 0});
+			// TODO: destroy rotologo once faded out
 		}
 	}
 	function stopVideo() {
@@ -137,6 +134,7 @@ var start_movie = function () {
 	var is_theoretically_playing = true;
 	var space_phase_key_handler = function (e) {
 		if (e.which === 32) {
+			// TODO: record player SFX
 			if (is_theoretically_playing) {
 				player.pauseVideo();
 				is_theoretically_playing = false;
@@ -157,5 +155,4 @@ var start_movie = function () {
 	addEventListener("keydown", space_phase_key_handler);
 };
 
-var start_moving_picture_feature_film_documentary_album = start_movie;
-addEventListener("keydown", Konami.code(start_moving_picture_feature_film_documentary_album));
+addEventListener("keydown", Konami.code(start_movie));

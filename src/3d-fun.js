@@ -43,6 +43,7 @@
 					}turn)`,
 					transformOrigin: "50% 50%",
 					transformStyle: "preserve-3d",
+					// FIXME: interactivity problems (with order elements are considered to have), I think introduced with preserve-3d
 				});
 			});
 		};
