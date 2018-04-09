@@ -435,6 +435,7 @@
         "$Window.js": null,
         "app.js": null,
         "canvas-change.js": null,
+        "extra-tools.js": null,
         "functions.js": null,
         "help.js": null,
         "helpers.js": null,
