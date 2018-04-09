@@ -248,6 +248,13 @@
   "package-lock.json": null,
   "package.json": null,
   "programs": {
+    "explorer": {
+      "explorer.css": null,
+      "explorer.js": null,
+      "index.html": null,
+      "menus.js": null,
+      "README.md": null
+    },
     "jspaint": {
       "chrome-app.js": null,
       "CNAME": null,
@@ -560,6 +567,8 @@
   "site.webmanifest": null,
   "src": {
     "$desktop.js": null,
+    "$FolderView.js": null,
+    "$FolderViewIcon.js": null,
     "$IframeWindow.js": null,
     "$MenuBar.js": null,
     "$start-menu.js": null,

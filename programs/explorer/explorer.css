@@ -1,0 +1,24 @@
+body {
+	display: flex;
+	flex-direction: column;
+}
+#address-bar {
+	flex: 0 0 auto;
+	display: flex;
+	flex-direction: row;
+	padding: 5px;
+}
+#address {
+	flex: 1;
+}
+#content {
+	flex: 1;
+	display: flex;
+	background: white;
+	overflow: auto; /* TODO: should the folder-view have overflow: auto instead? */
+}
+/* TODO
+.desktop-icon .title {
+	background: white;
+	color: black;
+} plus color: white for selected */

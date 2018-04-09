@@ -9,6 +9,7 @@ Includes:
 * ![](images/icons/paint-16x16.png) Paint ([separate repository](https://github.com/1j01/jspaint))
 * ![](images/icons/minesweeper-16x16.png) Minesweeper ([separate README](programs/minesweeper/README.md); [original repository](https://github.com/ziebelje/minesweeper)) by [Jon Ziebell](https://github.com/ziebelje/)
 * ![](images/icons/winamp2-16x16.png) Winamp 2.9 ([separate README](programs/winamp/README.md); [original repository](https://github.com/captbaritone/winamp2-js)) by [Jordan Eldredge](https://jordaneldredge.com/)
+* ![](images/icons/folder-open-16x16.png) A work-in-progress file explorer ([separate README](programs/explorer/README.md))
 
 ## Try it out
 

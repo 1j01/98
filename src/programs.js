@@ -90,6 +90,26 @@ function SoundRecorder(file_path){
 }
 SoundRecorder.acceptsFilePaths = true;
 
+function Explorer(file_path){
+	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in $IframeWindow)
+	var document_title = file_path ? file_name_from_path(file_path) : "Homepage";
+	var win_title = document_title;
+	// TODO: focus existing window if folder is currently open
+	// TODO: display file path fancy like (C:) if it's at the root of a drive
+	// also we should probably have drives
+	// as a thing
+	// \also
+	var $win = new $IframeWindow({
+		src: "programs/explorer/index.html" + (file_path ? ("?path=" + file_path) : ""),
+		icon: "folder-open",
+		title: win_title,
+		innerWidth: 500,
+		innerHeight: 500,
+	});
+	return new Task($win);
+}
+SoundRecorder.acceptsFilePaths = true;
+
 var winamp_bundle_loaded = false;
 var load_winamp_bundle_if_not_loaded = function(callback){
 	if(winamp_bundle_loaded){
@@ -179,27 +199,6 @@ function Links(){
 }
 */
 
-// TODO: this should go in $desktop.js
-withFilesystem(function(){
-	var fs = BrowserFS.BFSRequire('fs');
-	fs.readdir(desktop_folder_path, function (error, contents) {
-		if(error){
-			alert("Failed to read desktop directory contents!");
-			throw error;
-		}
-		
-		for(var i = 0; i < contents.length; i++){
-			var fname = contents[i];
-			var path = desktop_folder_path + fname;
-			var x = Math.random() * innerWidth;
-			var y = Math.random() * innerHeight;
-			// add_icon_for_bfs_file(path, x, y);
-			add_icon_for_bfs_file(fname, x, y);
-		}
-		arrange_icons();
-	});
-});
-
 /*
 function saveAsDialog(){
 	var $win = new $Window();
@@ -235,48 +234,12 @@ var file_extension_associations = {
 	mp3: openWinamp,
 };
 
-// TODO: what's the "right" way to do this sort of thing? (file associations and icons)
-
-// var file_type_icons_by_program = new Map;
-// file_type_icons_by_program.set(Notepad, "notepad-file");
-// file_type_icons_by_program.set(Paint, "");
-// file_type_icons_by_program.set(SoundRecorder, "");
-
-var file_extension_icons = {
-	txt: "notepad-file",
-	md: "notepad-file",
-	json: "notepad-file",
-	js: "notepad-file",
-	css: "notepad-file",
-	html: "notepad-file",
-	gitattributes: "notepad-file",
-	gitignore: "notepad-file",
-	// TODO: get more icons; can extract from shell32.dll, moricons.dll, and other files from a VM
-	// also get more file extensions; can file a mime types listing data dump
-	png: "image-gif", // "image-png"? nope... (but should it be image-gif or image-wmf?)
-	jpg: "image-jpeg",
-	jpeg: "image-jpeg",
-	gif: "image-gif",
-	webp: "image-other",
-	bmp: "paint-file",
-	tif: "kodak-imaging-file",
-	tiff: "kodak-imaging-file",
-	// wmf: "image-wmf"? nope (https://en.wikipedia.org/wiki/Windows_Metafile)
-	// emf: "image-wmf"? nope
-	// wmz: "image-wmf"? nope
-	// emz: "image-wmf"? nope
-	wav: "sound",
-	mp3: "sound", // TODO: show blue video icon, as it's a container format that can contain video
-	ogg: "sound", // TODO: probably ditto
-	wma: "sound",
-	// "doc": "doc"?
-	"exe": "task", // TODO: look inside exe for icons
-};
-
 function executeFile(file_path){
 	// execute file with default handler
 	// like the START command in CMD.EXE
-	// TODO: check if it's a folder
+	// TODO: check if it's a folder, if so open windows computer exe explorer exedll win32
+//exe
+//.
 	var file_extension = file_extension_from_path(file_path);
 	var program = file_extension_associations[file_extension];
 	if(program){
@@ -291,70 +254,79 @@ function executeFile(file_path){
 }
 
 // TODO: base all the desktop icons off of the filesystem
-new $DesktopIcon({
+var add_icon_not_via_filesystem = function(options){
+	new $FolderViewIcon(options).appendTo($folder_view);
+};
+add_icon_not_via_filesystem({
 	title: "My Computer",
 	icon: "my-computer",
 	open: function(){ window.open("https://copy.sh/v86/?profile=windows98"); }
 });
-new $DesktopIcon({
+add_icon_not_via_filesystem({
 	title: "My Documents",
 	icon: "my-documents-folder",
 	open: function(){ window.open("https://docs.google.com/"); }
 });
-new $DesktopIcon({
+add_icon_not_via_filesystem({
 	title: "Network Neighborhood",
 	icon: "network",
 	open: function(){ window.open("https://nextdoor.com/"); }
 });
-new $DesktopIcon({
+add_icon_not_via_filesystem({
 	title: "Recycle Bin",
 	icon: "recycle-bin",
 	open: function(){ window.open("https://www.epa.gov/recycle/"); }
 });
-new $DesktopIcon({
+add_icon_not_via_filesystem({
 	title: "My Pictures",
 	icon: "folder",
 	open: function(){ window.open("https://photos.google.com/"); }
 });
-new $DesktopIcon({
+add_icon_not_via_filesystem({
 	title: "Internet Explorer",
 	icon: "internet-explorer",
 	open: function(){ window.open("http://modern.ie/"); }
 });
-new $DesktopIcon({
+add_icon_not_via_filesystem({
 	title: "Paint",
 	icon: "paint",
 	open: Paint,
 	shortcut: true
 });
-new $DesktopIcon({
+add_icon_not_via_filesystem({
 	title: "Minesweeper",
 	icon: "minesweeper",
 	open: Minesweeper,
 	shortcut: true
 });
-new $DesktopIcon({
+add_icon_not_via_filesystem({
 	title: "Sound Recorder",
 	icon: "speaker",
 	open: SoundRecorder,
 	shortcut: true
 });
-new $DesktopIcon({
+add_icon_not_via_filesystem({
 	title: "Notepad",
 	icon: "notepad",
 	open: Notepad,
 	shortcut: true
 });
-new $DesktopIcon({
+add_icon_not_via_filesystem({
 	title: "Winamp",
 	icon: "winamp2",
 	open: openWinamp,
 	shortcut: true
 });
-// new $DesktopIcon({
+add_icon_not_via_filesystem({
+	title: "(C:)",
+	icon: "folder",
+	open: Explorer,
+	shortcut: true,
+});
+// add_icon_not_via_filesystem({
 // 	title: "Links",
 // 	icon: "internet-folder",
 // 	open: Links
 // });
 
-arrange_icons();
+$folder_view.arrange_icons();

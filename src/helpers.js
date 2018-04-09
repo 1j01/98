@@ -38,7 +38,7 @@ var TASKBAR_ICON_SIZE = 16;
 var TITLEBAR_ICON_SIZE = 16;
 
 function getIconPath(name, size){
-	return "images/icons/" + name + "-" + size + "x" + size + ".png";
+	return "/images/icons/" + name + "-" + size + "x" + size + ".png";
 }
 
 function $Icon(name, size){

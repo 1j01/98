@@ -71,18 +71,18 @@ button {
 	color: white;
 	border: 1px dotted transparent;
 }
-.desktop.focused .desktop-icon.selected .title {
+.folder-view.focused .desktop-icon.selected .title {
 	background: #000080;
 }
-.desktop.focused .desktop-icon.focused .title {
-	border: 1px dotted #FF7F7F;
+.folder-view.focused .desktop-icon.focused .title {
+	border: 1px dotted #FF7F7F; /* TODO: probably use mix-blend-mode like the marquee */
 	border: 1px dotted invert;
 	outline: 1px dotted invert;
 }
 .desktop-icon .selection-effect {
 	display: none;
 }
-.desktop.focused .desktop-icon.selected .selection-effect {
+.folder-view.focused .desktop-icon.selected .selection-effect {
 	display: block;
 	position: absolute;
 	left: 0;
@@ -101,9 +101,11 @@ button {
 	left: 0;
 	vertical-align: bottom;
 }
-.desktop > .marquee {
-	/* TODO: invert the underlying colors (the wallpaper can now be set) */
-	border: 1px dotted #FF7F7F;
+.folder-view .marquee {
+	border: 1px dotted #ffffff;
+	mix-blend-mode: exclusion;
+	/* TODO: fallback for browsers that don't support mix-blend-mode (something like #FF7F7F)... Edge doesn't support @supports either :/ */
+	z-index: 1;
 }
 
 .menus *,

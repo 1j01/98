@@ -34,7 +34,11 @@ html, body {
 }
 .desktop {
 	height: 100%;
+	display: flex;
+}
+.folder-view {
 	position: relative;
+	flex: 1;
 }
 .taskbar {
 	position: absolute;
@@ -112,6 +116,7 @@ html, body {
 	padding-right: 4px;
 }
 .desktop,
+.folder-view,
 .taskbar,
 .start-button,
 .tasks,
