@@ -253,20 +253,24 @@ var file_extension_icons = {
 	gitignore: "notepad-file",
 	// TODO: get more icons; can extract from shell32.dll, moricons.dll, and other files from a VM
 	// also get more file extensions; can file a mime types listing data dump
-	png: "paint-file",
-	jpg: "paint-file",
-	jpeg: "paint-file",
-	gif: "paint-file", // TODO: painting directly onto a picture in a picture frame image (or is it a stamp?)
-	webp: "paint-file",
+	png: "image-gif", // "image-png"? nope... (but should it be image-gif or image-wmf?)
+	jpg: "image-jpeg",
+	jpeg: "image-jpeg",
+	gif: "image-gif",
+	webp: "image-other",
 	bmp: "paint-file",
-	tif: "paint-file",
-	tiff: "paint-file",
+	tif: "kodak-imaging-file",
+	tiff: "kodak-imaging-file",
+	// wmf: "image-wmf"? nope (https://en.wikipedia.org/wiki/Windows_Metafile)
+	// emf: "image-wmf"? nope
+	// wmz: "image-wmf"? nope
+	// emz: "image-wmf"? nope
 	wav: "sound",
 	mp3: "sound", // TODO: show blue video icon, as it's a container format that can contain video
 	ogg: "sound", // TODO: probably ditto
 	wma: "sound",
 	// "doc": "doc"?
-	"exe": "task",
+	"exe": "task", // TODO: look inside exe for icons
 };
 
 function executeFile(file_path){
