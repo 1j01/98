@@ -17,8 +17,7 @@ body {
 	background: white;
 	overflow: auto; /* TODO: should the folder-view have overflow: auto instead? */
 }
-/* TODO
 .desktop-icon .title {
 	background: white;
 	color: black;
-} plus color: white for selected */
+}

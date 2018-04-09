@@ -73,6 +73,7 @@ button {
 }
 .folder-view.focused .desktop-icon.selected .title {
 	background: #000080;
+	color: white;
 }
 .folder-view.focused .desktop-icon.focused .title {
 	border: 1px dotted #FF7F7F; /* TODO: probably use mix-blend-mode like the marquee */
