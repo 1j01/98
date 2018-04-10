@@ -69,16 +69,21 @@ button {
 	font-size: 8pt;
 	background: #008080;
 	color: white;
-	border: 1px dotted transparent;
+	position: relative;
 }
 .folder-view.focused .desktop-icon.selected .title {
 	background: #000080;
 	color: white;
 }
-.folder-view.focused .desktop-icon.focused .title {
-	border: 1px dotted #FF7F7F; /* TODO: probably use mix-blend-mode like the marquee */
-	border: 1px dotted invert;
-	outline: 1px dotted invert;
+.folder-view.focused .desktop-icon.focused .title::after {
+	content: "";
+	position: absolute;
+	left: 0;
+	top: 0;
+	bottom: 0;
+	right: 0;
+	border: 1px dotted #ffffff;
+	mix-blend-mode: exclusion;
 }
 .desktop-icon .selection-effect {
 	display: none;
