@@ -205,7 +205,7 @@ function $FolderView(folder_path) {
 					return reject(err);
 				}
 				if(stats.isDirectory()){
-					resolve("folder");
+					return resolve("folder");
 				}
 				var file_extension = file_extension_from_path(file_path);
 				var icon_name = file_extension_icons[file_extension];
