@@ -162,7 +162,7 @@ function $Window(options){
 		return $b;
 	};
 	$w.title = function(title){
-		if(title){
+		if(title !== undefined){
 			$w.$title.text(title);
 			$w.triggerHandler("title-change");
 			return $w;
