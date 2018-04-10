@@ -11,6 +11,14 @@ Includes:
 * ![](images/icons/winamp2-16x16.png) Winamp 2.9 ([separate README](programs/winamp/README.md); [original repository](https://github.com/captbaritone/winamp2-js)) by [Jordan Eldredge](https://jordaneldredge.com/)
 * ![](images/icons/folder-open-16x16.png) A work-in-progress file explorer ([separate README](programs/explorer/README.md))
 
+Features:
+* Drop files onto the desktop, and they'll be stored in a virtual filesystem
+* Secrets ;)
+* A clock that shows the *actual time*, woo
+* Currently, an extremely illegitimate start menu
+* Meticulous detail in many areas (altho there's obviously lots "missing")
+* Icons for various browsers, for home screens, for the Windows 10 start menu, even a *Safari pinned tab icon*, theoretically
+
 ## Try it out
 
 [ ＥＮＴＥＲ　![](images/icons/windows-update-16x16.png)　ＷＩＮＤＯＷＳ　９８　体験へようこそ](https://98.js.org/)
