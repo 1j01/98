@@ -122,6 +122,7 @@ function $FolderView(folder_path) {
 				// like things are not considered the same heights (or positions?) based on the size of their names
 				// var rect = folder_view_icon.getBoundingClientRect();
 				var icon_offset = $(folder_view_icon).offset();
+				// console.log(icon_offset.top, min_y, max_y);
 				if(
 					// rect.left < max_x &&
 					// rect.top < max_y &&
@@ -194,17 +195,31 @@ function $FolderView(folder_path) {
 		}
 	});
 
-	var get_icon_name_for_file_path = function (file_path){
-		var file_extension = file_extension_from_path(file_path);
-		var icon_name = file_extension_icons[file_extension];
-		return icon_name || "file";
+	var get_icon_for_file_path = function (file_path){
+		// fs should be guaranteed available at this point
+		// as this function is currently used
+		var fs = BrowserFS.BFSRequire('fs');
+		return new Promise(function(resolve, reject){
+			fs.stat(file_path, function(err, stats){
+				if(err){
+					return reject(err);
+				}
+				if(stats.isDirectory()){
+					resolve("folder");
+				}
+				var file_extension = file_extension_from_path(file_path);
+				var icon_name = file_extension_icons[file_extension];
+				resolve(icon_name || "file");
+			});
+		});
 	};
 	// var add_icon_for_bfs_file = function(file_path, x, y){
 	var add_icon_for_bfs_file = function(file_name, x, y){
 		var file_path = folder_path + file_name;
 		return $FolderViewIcon({
 			title: file_name,
-			icon: get_icon_name_for_file_path(file_path),
+			// icon: $IconByPathPromise(get_icon_for_file_path(file_path), DESKTOP_ICON_SIZE),
+			icon: $IconByIDPromise(get_icon_for_file_path(file_path), DESKTOP_ICON_SIZE),
 			open: function(){ executeFile(file_path); }
 		}).appendTo($folder_view).css({
 			left: x,

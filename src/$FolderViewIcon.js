@@ -3,12 +3,24 @@ function $FolderViewIcon(options){
 	// TODO: rename element class to folder-view-icon, or find a better name (maybe desktop-icon and $DesktopIcon are still okay?)
 	var $container = $("<div class='desktop-icon' draggable='true'/>");
 	var $icon_wrapper = $("<div class='icon-wrapper'/>").appendTo($container).width(DESKTOP_ICON_SIZE).height(DESKTOP_ICON_SIZE);
-	var $icon = $Icon(options.icon || "task", DESKTOP_ICON_SIZE).width(DESKTOP_ICON_SIZE).height(DESKTOP_ICON_SIZE);
+	var $icon = options.icon; //$Icon(options.icon || "task", DESKTOP_ICON_SIZE).width(DESKTOP_ICON_SIZE).height(DESKTOP_ICON_SIZE);
 	var $selection_effect = $icon.clone().addClass("selection-effect");
-	
+	// var $selection_effect = $("<div class='selection-effect'>");
+
 	var $title = $("<div class='title'/>").text(options.title);
 	$container.append($icon_wrapper, $title);
 	$icon_wrapper.append($icon, $selection_effect);
+	// $icon_wrapper.append($icon, $selection_effect);
+
+	var src = $icon.attr("src");
+	$icon.on("load", function(){
+		if($icon.attr("src") !== src){
+			src = $icon.attr("src");
+			$selection_effect.attr("src", src);
+		}
+	});
+	// TODO: simplify selection effect; don't use a clone, maybe use a canvas; make it work in Edge
+	// TODO: handle the loading state display consciously (in a deliberate and intentional way)
 
 	// TODO: or if set to "web" mode, single click
 	// also Enter is currently implemented by triggering dblclick which is awkward

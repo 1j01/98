@@ -256,6 +256,7 @@ function executeFile(file_path){
 
 // TODO: base all the desktop icons off of the filesystem
 var add_icon_not_via_filesystem = function(options){
+	options.icon = $Icon(options.icon, DESKTOP_ICON_SIZE);
 	new $FolderViewIcon(options).appendTo($folder_view);
 };
 add_icon_not_via_filesystem({

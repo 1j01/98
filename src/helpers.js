@@ -52,6 +52,25 @@ function $Icon(name, size){
 	return $img;
 }
 
+// function $IconByPathPromise(path_promise, size){
+function $IconByIDPromise(id_promise, size){
+	
+	var $img = $("<img class='icon'/>");
+	$img.attr({
+		draggable: false,
+		width: size,
+		height: size,
+	});
+	// path_promise.then(function(path){
+	id_promise.then(function(name){
+		$img.attr({
+			// src: path,
+			src: getIconPath(name, size),
+		});
+	});
+	return $img;
+}
+
 function Canvas(width, height){
 	var new_canvas = E("canvas");
 	var new_ctx = new_canvas.getContext("2d");
