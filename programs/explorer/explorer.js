@@ -36,7 +36,8 @@ $FolderView(folder_path).appendTo("#content");
 // called from $FolderView
 function executeFile(){
 	// TODO: navigate to folders
-	if(parent){
+	// Note: can either check frameElement or parent !== window
+	if(frameElement){
 		parent.executeFile.apply(parent, arguments);
 	}else{
 		alert("Can't open files in standalone mode. Explorer must be run in a desktop.");

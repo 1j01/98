@@ -10,6 +10,7 @@ I don't know.
 ### TODO
 
 - Fix functional rectangle for marquee selection (needs to account for address bar)
+- Prevent text selection
 - Make folders open with explorer (externally)
 - Navigate to folders within explorer
 - Open webpages

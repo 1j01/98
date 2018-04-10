@@ -41,6 +41,7 @@ var file_extension_icons = {
 };
 
 function $FolderView(folder_path) {
+	// TODO: ensure a trailing slash / use path.join where appropriate
 
 	// TODO: different view options, etc.
 	
@@ -116,6 +117,9 @@ function $FolderView(folder_path) {
 				height: max_y - min_y,
 			});
 			$folder_view.find(".desktop-icon").removeClass("selected").each(function(i, folder_view_icon){
+				// TODO/FIXME: account for address bar
+				// also this is considerably more complicated in Windows 98
+				// like things are not considered the same heights (or positions?) based on the size of their names
 				// var rect = folder_view_icon.getBoundingClientRect();
 				var icon_offset = $(folder_view_icon).offset();
 				if(

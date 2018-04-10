@@ -108,7 +108,7 @@ function Explorer(file_path){
 	});
 	return new Task($win);
 }
-SoundRecorder.acceptsFilePaths = true;
+Explorer.acceptsFilePaths = true;
 
 var winamp_bundle_loaded = false;
 var load_winamp_bundle_if_not_loaded = function(callback){
@@ -234,6 +234,7 @@ var file_extension_associations = {
 	mp3: openWinamp,
 };
 
+// Note: global executeFile called by explorer
 function executeFile(file_path){
 	// execute file with default handler
 	// like the START command in CMD.EXE
