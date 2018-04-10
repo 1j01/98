@@ -160,6 +160,8 @@ function $FolderView(folder_path) {
 				}
 			}
 		});
+		// TODO: also if clicking in iframes
+		// (can we not use real focus and detect focus loss?)
 		$(window).on("pointerdown", function(e){
 			if($(e.target).closest(".folder-view").length == 0){
 				$folder_view.removeClass("focused");

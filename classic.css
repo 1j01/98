@@ -85,18 +85,10 @@ button {
 	border: 1px dotted #ffffff;
 	mix-blend-mode: exclusion;
 }
-.desktop-icon .selection-effect {
-	display: none;
-}
-.folder-view.focused .desktop-icon.selected .selection-effect {
-	display: block;
-	position: absolute;
-	left: 0;
-	top: 0;
-	filter: drop-shadow(32px 0 0 #000080);
-	transform: translateX(-32px);
-	clip-path: polygon(100% 0, 200% 0, 200% 100%, 100% 100%);
-	opacity: 0.5;
+/* chrome doesn't like applying filters to foreignObject */
+/* edge doesn't like applying filters to the root svg */
+.folder-view.focused .desktop-icon.selected .not-root-svg-or-foreignObject {
+	filter: url(#blueify);
 }
 .desktop-icon.shortcut .icon-wrapper {
 	position: relative;

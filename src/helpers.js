@@ -52,21 +52,28 @@ function $Icon(name, size){
 	return $img;
 }
 
-// function $IconByPathPromise(path_promise, size){
 function $IconByIDPromise(id_promise, size){
-	
+	// var canvas = document.createElement("canvas");
+	// canvas.width = size;
+	// canvas.height = size;
+	// var ctx = canvas.getContext("2d");
 	var $img = $("<img class='icon'/>");
+	// var backing_img = new Image;
 	$img.attr({
 		draggable: false,
 		width: size,
 		height: size,
 	});
-	// path_promise.then(function(path){
 	id_promise.then(function(name){
+		// $(backing_img).on("load", function(){
+		// ctx.drawImage(backing_img, 0, 0, size, size);
 		$img.attr({
-			// src: path,
-			src: getIconPath(name, size),
+			src: getIconPath(name, size), //canvas.toDataURL(),
 		});
+		// XXX: "refreshing" the SVG because the img has to have its src at the time its appended to the svg apparently
+		$img.parent().parent().html($img.parent().parent().html())
+		// });
+		// backing_img.src = getIconPath(name, size);
 	});
 	return $img;
 }
