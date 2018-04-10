@@ -9,29 +9,49 @@ function parse_query_string(queryString) {
     return query;
 }
 
-var query = parse_query_string(location.search);
-if(query.path){
-	var folder_path = query.path;
-	var folder_name = folder_name_from_path(folder_path);
-}else{
-	var folder_path = "/";
-	var folder_name = "";
+function folder_display_name_from_path(folder_path) {
+	if(folder_path === "/"){
+		return "(C:)";
+	}else{
+		return file_name_from_path(folder_path.replace(/[\/\\]$/, ""));
+	}
 }
 
-$("#address").val(folder_path);
-// TODO: allow navigating to other directories
+var $folder_view;
+var go_to = function(folder_path){
+	if($folder_view){
+		$folder_view.remove();
+		$folder_view = null;
+	}
+	
+	folder_path = folder_path || "/";
+	if(folder_path[folder_path.length - 1] !== "/"){
+		folder_path += "/";
+	}
+	
+	$("#address").val(folder_path);
+	
+	var folder_name = folder_display_name_from_path(folder_path);
+	set_title(folder_name);
 
-function update_title(){
-	document.title = folder_name || "(C:)"
+	$folder_view = $FolderView(folder_path).appendTo("#content");
+};
+
+var query = parse_query_string(location.search);
+if(query.path){
+	go_to(query.path);
+}else{
+	go_to("/");
+}
+
+function set_title(title){
+	console.log(title);
+	document.title = title;
 
 	if(frameElement){
 		frameElement.$window.title(document.title);
 	}
 }
-
-update_title();
-
-$FolderView(folder_path).appendTo("#content");
 
 // called from $FolderView
 function executeFile(file_path){
@@ -43,7 +63,7 @@ function executeFile(file_path){
 				return alert("Failed to get info about " + file_path + "\n\n" + err);
 			}
 			if(stats.isDirectory()){
-				alert("Navigation is not yet implemented");
+				go_to(file_path);
 			}else{
 				// TODO: navigate to folders
 				// Note: can either check frameElement or parent !== window
