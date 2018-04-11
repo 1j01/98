@@ -1,7 +1,7 @@
 
 # ![](../../images/icons/folder-open-32x32.png) Explorer
 
-Try it [as part of 98](http://98.js.org/) <!--or [standalone](http://98.js.org/programs/explorer/)-->
+Try it [as part of 98](https://98.js.org/) <!--or [standalone](https://98.js.org/programs/explorer/)-->
 
 I'm planning on having this be (or serve as) both Internet Explorer and Windows Explorer,
 which seems to be like *basically / essentially* the vision behind Windows 98, just not fully realized.

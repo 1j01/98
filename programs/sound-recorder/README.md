@@ -1,7 +1,7 @@
 
 # ![](../../images/icons/speaker-32x32.png) Sound Recorder
 
-Try it [as part of 98](http://98.js.org/) or [standalone](http://98.js.org/programs/sound-recorder/)
+Try it [as part of 98](https://98.js.org/) or [standalone](https://98.js.org/programs/sound-recorder/)
 
 
 ### TODO

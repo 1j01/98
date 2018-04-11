@@ -316,7 +316,7 @@ add_icon_not_via_filesystem({
 add_icon_not_via_filesystem({
 	title: "Internet Explorer",
 	icon: "internet-explorer",
-	open: function(){ Explorer("http://web.archive.org/web/19981202230410/http://www.google.com:80/"); }
+	open: function(){ Explorer("https://www.google.com/"); }
 });
 add_icon_not_via_filesystem({
 	title: "Paint",
