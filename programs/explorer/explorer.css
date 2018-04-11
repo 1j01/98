@@ -17,6 +17,9 @@ body {
 	background: white;
 	overflow: auto; /* TODO: should the folder-view have overflow: auto instead? */
 }
+#content iframe {
+	flex: 1;
+}
 .desktop-icon .title {
 	background: white;
 	color: black;

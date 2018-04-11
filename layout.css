@@ -114,6 +114,7 @@ html, body {
 }
 .task img {
 	padding-right: 4px;
+	flex: 0 0 auto;
 }
 .desktop,
 .folder-view,

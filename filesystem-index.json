@@ -76,9 +76,21 @@
       "fonts-folder-16x16.png": null,
       "fonts-folder-32x32.png": null,
       "fonts-folder-48x48.png": null,
+      "hard-disk-drive-16x16-higher-color.png": null,
+      "hard-disk-drive-16x16.png": null,
+      "hard-disk-drive-32x32-higher-color.png": null,
+      "hard-disk-drive-32x32.png": null,
+      "hard-disk-drive-48x48-higher-color.png": null,
+      "hard-disk-drive-48x48.png": null,
       "help-16x16.png": null,
       "help-32x32.png": null,
       "help-48x48.png": null,
+      "html-16x16-higher-color.png": null,
+      "html-16x16.png": null,
+      "html-32x32-higher-color.png": null,
+      "html-32x32.png": null,
+      "html-48x48-higher-color.png": null,
+      "html-48x48.png": null,
       "image-gif-16x16.png": null,
       "image-gif-32x32.png": null,
       "image-jpeg-16x16.png": null,
@@ -210,6 +222,7 @@
       "video-16x16.png": null,
       "video-32x32.png": null,
       "warning-32x32.png": null,
+      "win98_icons - Shortcut.lnk": null,
       "winamp2-16x16.png": null,
       "winamp2-32x32.png": null,
       "windows-93-16x16.png": null,
@@ -244,6 +257,20 @@
     "pep.js": null
   },
   "mstile-150x150.png": null,
+  "my-documents": {
+    "Dropbox.url": null,
+    "Google Docs.url": null
+  },
+  "my-pictures": {
+    "Dropbox.url": null,
+    "Flickr.url": null,
+    "Google Photos.url": null,
+    "Instagram.url": null
+  },
+  "network-neighborhood": {
+    "Windows 93.url": null,
+    "Windows 98 (Virtual x86).url": null
+  },
   "npm-debug.log.1388102379": null,
   "package-lock.json": null,
   "package.json": null,

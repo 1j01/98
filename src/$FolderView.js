@@ -38,6 +38,9 @@ var file_extension_icons = {
 	wma: "sound",
 	// "doc": "doc"?
 	"exe": "task", // TODO: look inside exe for icons
+	htm: "html",
+	html: "html",
+	url: "html",
 };
 
 function $FolderView(folder_path) {
@@ -220,7 +223,8 @@ function $FolderView(folder_path) {
 			title: file_name,
 			// icon: $IconByPathPromise(get_icon_for_file_path(file_path), DESKTOP_ICON_SIZE),
 			icon: $IconByIDPromise(get_icon_for_file_path(file_path), DESKTOP_ICON_SIZE),
-			open: function(){ executeFile(file_path); }
+			open: function(){ executeFile(file_path); },
+			shortcut: file_path.match(/\.url$/)
 		}).appendTo($folder_view).css({
 			left: x,
 			top: y,

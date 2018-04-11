@@ -170,6 +170,14 @@ function $Window(options){
 			return $w.$title.text();
 		}
 	};
+	$w.setIconByID = function(icon_name){
+		// $w.$icon.attr("src", getIconPath(icon_name));
+		var old_$icon = $w.$icon;
+		$w.$icon = $Icon(icon_name, TITLEBAR_ICON_SIZE);
+		old_$icon.replaceWith($w.$icon);
+		$w.triggerHandler("icon-change");
+		return $w;
+	};
 	$w.close = function(force){
 		if(!force){
 			var e = $.Event("close");

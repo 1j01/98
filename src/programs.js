@@ -90,17 +90,13 @@ function SoundRecorder(file_path){
 }
 SoundRecorder.acceptsFilePaths = true;
 
-function Explorer(file_path){
+function Explorer(address){
 	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in $IframeWindow)
-	var document_title = file_path ? file_name_from_path(file_path) : "Homepage";
+	var document_title = address;
 	var win_title = document_title;
 	// TODO: focus existing window if folder is currently open
-	// TODO: display file path fancy like (C:) if it's at the root of a drive
-	// also we should probably have drives
-	// as a thing
-	// \also
 	var $win = new $IframeWindow({
-		src: "programs/explorer/index.html" + (file_path ? ("?path=" + file_path) : ""),
+		src: "programs/explorer/index.html" + (address ? ("?address=" + address) : ""),
 		icon: "folder-open",
 		title: win_title,
 		innerWidth: 500,
@@ -188,13 +184,15 @@ function openWinamp(){
 }
 
 /*
-function Links(){
+function NetworkNeighborhood(){
 	var $win = new $Window({
 		icon: "internet-folder",
-		title: "Links",
+		title: "Network Neighborhood",
 		innerWidth: 640,
 		innerHeight: 480
 	});
+	$folder_view = new $FolderView("/hfgjfgjh");
+	$win.$content.append($folder_view);
 	return new Task($win);
 }
 */
@@ -211,6 +209,24 @@ function openFileDialog(){
 	return $win;
 }
 */
+
+function openURLFile(file_path){
+	withFilesystem(function(){
+		var fs = BrowserFS.BFSRequire("fs");
+		fs.readFile(file_path, "utf8", function(err, content){
+			if(err){
+				return alert(err);
+			}
+			// it's an ini-style file, generally
+			var match = content.match(/URL\s*=\s*([^\n\r]+)/i);
+			var url = match ? match[1] : content;
+			// executeURL(url);
+			// window.open(url);
+			Explorer(url);
+		});
+	});
+}
+openURLFile.acceptsFilePaths = true;
 
 var file_extension_associations = {
 	"": Notepad,
@@ -232,26 +248,39 @@ var file_extension_associations = {
 	tiff: Paint,
 	wav: SoundRecorder,
 	mp3: openWinamp,
+	htm: Explorer,
+	html: Explorer,
+	url: openURLFile,
 };
 
 // Note: global executeFile called by explorer
 function executeFile(file_path){
 	// execute file with default handler
 	// like the START command in CMD.EXE
-	// TODO: check if it's a folder, if so open windows computer exe explorer exedll win32
-//exe
-//.
-	var file_extension = file_extension_from_path(file_path);
-	var program = file_extension_associations[file_extension];
-	if(program){
-		if(!program.acceptsFilePaths){
-			alert(program.name + " does not support opening files via the virtual filesystem yet");
-			return;
-		}
-		program(file_path);
-	}else{
-		alert("No program is associated with "+file_extension+" files");
-	}
+	
+	withFilesystem(function(){
+		var fs = BrowserFS.BFSRequire("fs");
+		fs.stat(file_path, function(err, stats){
+			if(err){
+				return alert("Failed to get info about " + file_path + "\n\n" + err);
+			}
+			if(stats.isDirectory()){
+				Explorer(file_path);
+			}else{
+				var file_extension = file_extension_from_path(file_path);
+				var program = file_extension_associations[file_extension];
+				if(program){
+					if(!program.acceptsFilePaths){
+						alert(program.name + " does not support opening files via the virtual filesystem yet");
+						return;
+					}
+					program(file_path);
+				}else{
+					alert("No program is associated with "+file_extension+" files");
+				}
+			}
+		});
+	});
 }
 
 // TODO: base all the desktop icons off of the filesystem
@@ -262,32 +291,32 @@ var add_icon_not_via_filesystem = function(options){
 add_icon_not_via_filesystem({
 	title: "My Computer",
 	icon: "my-computer",
-	open: function(){ window.open("https://copy.sh/v86/?profile=windows98"); }
+	open: function(){ executeFile("/"); },
 });
 add_icon_not_via_filesystem({
 	title: "My Documents",
 	icon: "my-documents-folder",
-	open: function(){ window.open("https://docs.google.com/"); }
+	open: function(){ executeFile("/my-documents"); },
 });
 add_icon_not_via_filesystem({
 	title: "Network Neighborhood",
 	icon: "network",
-	open: function(){ window.open("https://nextdoor.com/"); }
+	open: function(){ executeFile("/network-neighborhood"); },
 });
 add_icon_not_via_filesystem({
 	title: "Recycle Bin",
 	icon: "recycle-bin",
-	open: function(){ window.open("https://www.epa.gov/recycle/"); }
+	open: function(){ Explorer("https://www.epa.gov/recycle/"); }
 });
 add_icon_not_via_filesystem({
 	title: "My Pictures",
 	icon: "folder",
-	open: function(){ window.open("https://photos.google.com/"); }
+	open: function(){ executeFile("/my-pictures"); },
 });
 add_icon_not_via_filesystem({
 	title: "Internet Explorer",
 	icon: "internet-explorer",
-	open: function(){ window.open("http://modern.ie/"); }
+	open: function(){ Explorer("http://web.archive.org/web/19981202230410/http://www.google.com:80/"); }
 });
 add_icon_not_via_filesystem({
 	title: "Paint",
@@ -318,12 +347,6 @@ add_icon_not_via_filesystem({
 	icon: "winamp2",
 	open: openWinamp,
 	shortcut: true
-});
-add_icon_not_via_filesystem({
-	title: "(C:)",
-	icon: "folder",
-	open: Explorer,
-	shortcut: true,
 });
 // add_icon_not_via_filesystem({
 // 	title: "Links",

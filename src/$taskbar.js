@@ -6,6 +6,10 @@ function Task($win){
 	$win.on("title-change", function(e){
 		$title.text($win.title());
 	});
+	$win.on("icon-change", function(e){
+		// $icon = ... needed so changing works multiple times
+		$icon.replaceWith($icon = $win.$icon.clone()); // XXX: assuming TITLEBAR_ICON_SIZE === TASKBAR_ICON_SIZE
+	});
 	$task.append($icon, $title);
 	$task.on("click", function(){
 		$task.toggleClass("selected");
