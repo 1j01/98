@@ -22,11 +22,35 @@
 	</head>
 	<body>
 		<div id="address-bar">
-			<!-- TODO: compound input with icon and dropdown -->
+			<!-- TODO: compound input with an icon representing the resource, and a dropdown -->
 			<input type="text" id="address"/>
+			<!-- TODO: Go button -->
 		</div>
-		<!-- TODO: back forwards up cut copy paste undo delete properties view -->
+		<div class="toolbar windows-explorer-toolbar">
+			<button disabled id="back">Back</button>
+			<button disabled id="forward">Forward</button>
+			<button id="up">Up</button>
+			<button disabled id="cut">Cut</button>
+			<button disabled id="copy">Copy</button>
+			<button disabled id="paste">Paste</button>
+			<button disabled id="undo">Undo</button>
+			<button disabled id="delete">Delete</button>
+			<button disabled id="properties">Properties</button>
+			<button disabled id="view">View<button disabled id="view-menu-button">&#x25BE;</button></button>
+		</div>
+		<!-- <div class="toolbar ie-toolbar">
+			<button disabled id="back">Back</button>
+			<button disabled id="forward">Forward</button>
+			<button disabled id="stop">Stop</button>
+			<button disabled id="refresh">Refresh</button>
+			<button disabled id="home">Home</button>
+			<button disabled id="search">Search</button>
+			<button disabled id="favorites">Favorites</button>
+			<button disabled id="history">History</button>
+			<button disabled id="mail">Mail<button disabled id="mail-menu-button">&#x25BE;</button></button>
+			<button disabled id="print">Print</button>
+		</div> -->
 		<div id="content"></div>
-		<!-- TODO: status bar including thing that says "Internet" or  -->
+		<!-- TODO: status bar including thing that says "Internet" or "My Computer" -->
 	</body>
 </html>

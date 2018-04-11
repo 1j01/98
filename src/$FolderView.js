@@ -2,7 +2,7 @@
 var grid_size_x = 75;
 var grid_size_y = 75;
 
-// TODO: what's the "right" way to do this sort of thing? (file associations and icons)
+// TODO: what's the "right" way to do file type / program associations for icons?
 
 // var file_type_icons_by_program = new Map;
 // file_type_icons_by_program.set(Notepad, "notepad-file");
@@ -46,7 +46,7 @@ var file_extension_icons = {
 function $FolderView(folder_path) {
 	// TODO: ensure a trailing slash / use path.join where appropriate
 
-	// TODO: different view options, etc.
+	// TODO: different view options, e.g. list view, details view, large icons view (arranged towards the top primarily instead of the left), desktop view
 	
 	var $folder_view = $("<div class='folder-view'>");
 	
@@ -120,21 +120,20 @@ function $FolderView(folder_path) {
 				height: max_y - min_y,
 			});
 			$folder_view.find(".desktop-icon").removeClass("selected").each(function(i, folder_view_icon){
-				// TODO/FIXME: account for address bar
-				// also this is considerably more complicated in Windows 98
-				// like things are not considered the same heights (or positions?) based on the size of their names
-				// var rect = folder_view_icon.getBoundingClientRect();
+				// Note: this is apparently considerably more complex in Windows 98
+				// like things are not considered the same heights and/or positions based on the size of their names
 				var icon_offset = $(folder_view_icon).offset();
-				// console.log(icon_offset.top, min_y, max_y);
+				var icon_left = parseFloat($(folder_view_icon).css("left"));
+				var icon_top = parseFloat($(folder_view_icon).css("top"));
+				// var icon_left =  $(folder_view_icon).offset().left;
+				// var icon_top =  $(folder_view_icon).offset().top;
+				var icon_width = $(folder_view_icon).width();
+				var icon_height = $(folder_view_icon).height();
 				if(
-					// rect.left < max_x &&
-					// rect.top < max_y &&
-					// rect.right > min_x &&
-					// rect.bottom > min_y
-					icon_offset.left < max_x &&
-					icon_offset.top < max_y &&
-					icon_offset.left + $(folder_view_icon).width() > min_x &&
-					icon_offset.top + $(folder_view_icon).height() > min_y
+					icon_left < max_x &&
+					icon_top < max_y &&
+					icon_left + icon_width > min_x &&
+					icon_top + icon_height > min_y
 				){
 					$(folder_view_icon).addClass("selected");
 				}

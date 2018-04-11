@@ -164,4 +164,17 @@ $(function(){
 			}
 		});
 	});
+	$("#back").on("click", function(){
+		$iframe[0].contentWindow.history.back();
+	});
+	$("#forward").on("click", function(){
+		$iframe[0].contentWindow.history.forward();
+	});
+	$("#up").on("click", function(){
+		// $iframe[0].contentWindow.location;
+		// var src = $iframe.attr("src");
+		// console.log(src);
+		// go_to(src.replace(/\/[^\/]*/));
+		go_to($("#address").val().replace(/[^\/]*\/$/, ""));
+	});
 });

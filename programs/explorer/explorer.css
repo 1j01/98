@@ -2,7 +2,8 @@ body {
 	display: flex;
 	flex-direction: column;
 }
-#address-bar {
+#address-bar,
+.toolbar {
 	flex: 0 0 auto;
 	display: flex;
 	flex-direction: row;
@@ -10,6 +11,18 @@ body {
 }
 #address {
 	flex: 1;
+}
+.toolbar button {
+	padding: 5px;
+}
+/* TODO: simpler button style, same as for menu buttons (also needed for tasks, start button, etc.) */
+.toolbar button:not(:hover),
+.toolbar button:disabled {
+	border-color: transparent;
+}
+.toolbar button:not(:hover)::after,
+.toolbar button:disabled::after {
+	display: none;
 }
 #content {
 	flex: 1;
