@@ -82,7 +82,7 @@ var go_to = function(address){
 	address = address || "/";
 	var is_url = !!address.match(/\w+:\/\//);
 	if(is_url){
-		if(!address.match(/^https?:\/\/web.archive.org\/web\//)){
+		if(!address.match(/^https?:\/\/web.archive.org\//)){
 			// TODO: maybe only do this if the page fails to load?
 			// or at least don't force it
 			// maybe do it the other way around, if the archive URL fails to load, try to show an up to date version
@@ -121,6 +121,11 @@ var go_to = function(address){
 
 		// We also can't inject a user agent stylesheet, for things like scrollbars
 		// Too bad :/
+
+		// We also can't get the title; it's kinda hard to make a web browser like this!
+		// $iframe.on("load", function(){
+		// 	set_title($iframe[0].contentDocument.title + " - Explorer"); // " - Microsoft Internet Explorer"
+		// });
 	}else{
 		$folder_view = $FolderView(address).appendTo("#content");
 	}
@@ -172,9 +177,6 @@ $(function(){
 	});
 	$("#up").on("click", function(){
 		// $iframe[0].contentWindow.location;
-		// var src = $iframe.attr("src");
-		// console.log(src);
-		// go_to(src.replace(/\/[^\/]*/));
-		go_to($("#address").val().replace(/[^\/]*\/$/, ""));
+		go_to($("#address").val().replace(/[^\/]*\/?$/, "").replace(/(https?|ftps?|sftp|file):\/\/\/?$/, ""));
 	});
 });
