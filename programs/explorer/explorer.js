@@ -156,18 +156,22 @@ function executeFile(file_path){
 
 $(function(){
 	var query = parse_query_string(location.search);
-	// prevent our (potentially existing) iframe from blocking the iframe we're *inside* from blocking the *window* we're inside from showing up until the page loads 
+	// try to prevent our (potentially existing) iframe from blocking the iframe we're *inside* from blocking the *window* we're inside from showing up until the page loads 
+	// TODO: do so consistently
 	setTimeout(function(){
 		if(query.address){
 			go_to(query.address);
 		}else{
 			go_to("/");
 		}
-		$("#address").on("keydown", function(e){
-			if(e.which === 13){
-				go_to($("#address").val());
-			}
-		});
+	});
+	$("#address").on("keydown", function(e){
+		if(e.which === 13){
+			go_to($("#address").val());
+		}
+	});
+	$("#go").on("click", function(){
+		go_to($("#address").val());
 	});
 	$("#back").on("click", function(){
 		$iframe[0].contentWindow.history.back();

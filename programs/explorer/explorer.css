@@ -12,7 +12,7 @@ body {
 #address {
 	flex: 1;
 }
-.toolbar button {
+button {
 	padding: 5px;
 }
 /* TODO: simpler button style, same as for menu buttons (also needed for tasks, start button, etc.) */
