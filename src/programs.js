@@ -152,12 +152,17 @@ function openWinamp(){
 			}
 		};
 		$win_for_Task.icon_name = "winamp2";
-		new Task($win_for_Task);
+		var task = new Task($win_for_Task);
 		webamp.onClose(function(){
+			// simulating $Window.close() except not allowing canceling close event (generally used *by* an application (for "Save changes?"), not outside of it)
 			$win_for_Task.triggerHandler("close");
+			$win_for_Task.triggerHandler("closed");
 			$(container).remove();
 		});
-		// TODO: handle minimize!
+		webamp.onMinimize(function(){
+			// TODO: refactor
+			task.$task.trigger("click");
+		});
 		
 		// Bring window to front, initially and when clicked
 		// copied from $Window.js, with `left: 0, top: 0` added
