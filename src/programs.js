@@ -153,16 +153,11 @@ function openWinamp(){
 		};
 		$win_for_Task.icon_name = "winamp2";
 		new Task($win_for_Task);
-		// TODO: use close event :)
-		renderPromise.then(function(){
-			var iid = setInterval(function(){
-				if($win_for_Task.find("[role=application]").length === 0){
-					clearInterval(iid);
-					$win_for_Task.triggerHandler("close");
-				}
-			}, 50);
+		webamp.onClose(function(){
+			$win_for_Task.triggerHandler("close");
+			$(container).remove();
 		});
-		// TODO: handle minimize event as well!
+		// TODO: handle minimize!
 		
 		// Bring window to front, initially and when clicked
 		// copied from $Window.js, with `left: 0, top: 0` added
