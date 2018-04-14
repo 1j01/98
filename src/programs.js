@@ -106,18 +106,20 @@ function Explorer(address){
 }
 Explorer.acceptsFilePaths = true;
 
-var winamp_bundle_loaded = false;
+var webamp_bundle_loaded = false;
 var load_winamp_bundle_if_not_loaded = function(callback){
-	if(winamp_bundle_loaded){
+	// FIXME: webamp_bundle_loaded not actually set to true when loaded
+	// TODO: also maybe handle already-loading-but-not-done
+	if(webamp_bundle_loaded){
 		callback();
 	}else{
-		// $.getScript("winamp/lib/winamp.bundle.js", callback);
-		$.getScript("programs/winamp/lib/winamp.bundle.min.js", callback);
+		// $.getScript("winamp/lib/webamp.bundle.js", callback);
+		$.getScript("programs/winamp/lib/webamp.bundle.min.js", callback);
 	}
 }
 function openWinamp(){
 	load_winamp_bundle_if_not_loaded(function(){
-		const winamp = new winamp2js({
+		const webamp = new Webamp({
 			initialTracks: [{
 				metaData: {
 					artist: "DJ Mike Llama",
@@ -132,10 +134,10 @@ function openWinamp(){
 		});
 		
 		var container = document.createElement("div");
-		container.classList.add("winamp-container");
+		container.classList.add("webamp-container");
 		document.body.appendChild(container);
 		// Render after the skin has loaded.
-		var renderPromise = winamp.renderWhenReady(container);
+		var renderPromise = webamp.renderWhenReady(container);
 
 		// TODO: handle blurring (currently one of the winamp windows is always selected)
 		// (but I don't really handle blurring for regular windows yet, so maybe I should do that first!)
@@ -151,7 +153,7 @@ function openWinamp(){
 		};
 		$win_for_Task.icon_name = "winamp2";
 		new Task($win_for_Task);
-		// a close event would be nice ;)
+		// TODO: use close event :)
 		renderPromise.then(function(){
 			var iid = setInterval(function(){
 				if($win_for_Task.find("[role=application]").length === 0){
@@ -160,6 +162,7 @@ function openWinamp(){
 				}
 			}, 50);
 		});
+		// TODO: handle minimize event as well!
 		
 		// Bring window to front, initially and when clicked
 		// copied from $Window.js, with `left: 0, top: 0` added

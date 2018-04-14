@@ -577,8 +577,8 @@
     },
     "winamp": {
       "lib": {
-        "winamp.bundle.js": null,
-        "winamp.bundle.min.js": null
+        "webamp.bundle.js": null,
+        "webamp.bundle.min.js": null
       },
       "mp3": {
         "llama-2.91.mp3": null

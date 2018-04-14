@@ -35,7 +35,7 @@
 		"browserfs": "^1.4.3",
 		"json": "^9.0.6",
 		"live-server": "^1.2.0",
-		"winamp2-js": "0.0.6"
+		"webamp": "^1.0.0"
 	},
 	"scripts": {
 		"start": "live-server",
@@ -43,6 +43,6 @@
 		"make-fs-index @NOTE": "browserfs is currently assumed to be npm linked at around 2.0.0-beta",
 		"make-fs-index @TODO": "Create a pre-commit hook, or keep this file out of repo, either have it as part of a webserver, or just generated on deploy (in which case it could still be a static site). Ignore gitignored files, including globally gitignored lnk files... altho this is the one repo where lnk files might make sense; I'm sure there's a way to base it off of what things are checked in to git. git ls-files, or git ls-tree, ideally with the contents after staged changes would be applied (is there a 'tree-ish' for that?)",
 		"pull-libs @TODO": "# make it into a script so it's not all crammed onto one line in this package.json; include jquery and stuff; maybe even update script tags in html, with CDN URLs, integrity checksums, and fallbacks",
-		"pull-libs": "cp node_modules/winamp2-js/built/winamp.bundle.js programs/winamp/lib/winamp.bundle.js && cp node_modules/winamp2-js/built/winamp.bundle.min.js programs/winamp/lib/winamp.bundle.min.js && cp node_modules/browserfs/dist/browserfs.js lib/browserfs.js && cp node_modules/browserfs/dist/browserfs.min.js lib/browserfs.min.js"
+		"pull-libs": "cp node_modules/webamp/built/webamp.bundle.js programs/winamp/lib/webamp.bundle.js && cp node_modules/webamp/built/webamp.bundle.min.js programs/winamp/lib/webamp.bundle.min.js && cp node_modules/browserfs/dist/browserfs.js lib/browserfs.js && cp node_modules/browserfs/dist/browserfs.min.js lib/browserfs.min.js"
 	}
 }

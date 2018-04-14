@@ -8,8 +8,8 @@ Apps
 Minesweeper by Jon Ziebell
 	https://github.com/ziebelje/minesweeper
 
-Winamp2-js by Jordan Eldredge
-	https://github.com/captbaritone/winamp2-js
+Webamp by Jordan Eldredge
+	https://github.com/captbaritone/webamp
 
 Paint, Sound Recorder, Notepad, and the 98.js desktop by Isaiah Odhner
 	https://github.com/1j01/98

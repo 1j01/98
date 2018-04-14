@@ -1,7 +1,7 @@
 
 # ![](../../images/icons/winamp2-32x32.png) Winamp 2.9
 
-[Winamp2-js](https://github.com/captbaritone/winamp2-js) by [Jordan Eldredge](https://jordaneldredge.com/)
+[Webamp](https://github.com/captbaritone/webamp) by [Jordan Eldredge](https://jordaneldredge.com/)
 
 Try it [on 98.js.org](https://98.js.org/) or [standalone at webamp.org](https://webamp.org/)
 
