@@ -599,12 +599,13 @@
     "$IframeWindow.js": null,
     "$MenuBar.js": null,
     "$start-menu.js": null,
-    "$taskbar.js": null,
+    "$taskbar-time.js": null,
     "$Window.js": null,
     "3d-fun.js": null,
     "filesystem-setup.js": null,
     "helpers.js": null,
-    "programs.js": null
+    "programs.js": null,
+    "Task.js": null
   },
   "TODO.md": null,
   "~ Pictures and stuff -  Shortcut ~.lnk": null

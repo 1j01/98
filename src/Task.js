@@ -1,4 +1,3 @@
-
 function Task($win){
 	var $task = this.$task = $("<button class='task'/>").appendTo($(".tasks"));
 	var $icon = $Icon($win.icon_name || "task", TASKBAR_ICON_SIZE);
@@ -32,13 +31,3 @@ function Task($win){
 		$task.remove();
 	});
 }
-
-(function(){
-	var $time = $(".taskbar-time");
-	var update_time = function(){
-		$time.text(new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}));
-		$time.attr("title", new Date().toLocaleString([], {weekday: 'long', month: 'long', day: '2-digit', minute: '2-digit', hour: '2-digit'}));
-		setTimeout(update_time, 1000);
-	};
-	update_time();
-}());
