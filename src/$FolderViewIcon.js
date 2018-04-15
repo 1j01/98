@@ -2,15 +2,13 @@
 function $FolderViewIcon(options){
 	// TODO: rename element class to folder-view-icon, or find a better name (maybe desktop-icon and $DesktopIcon are still okay?)
 	var $container = $("<div class='desktop-icon' draggable='true'/>");
-	var $icon_wrapper = $("<div class='icon-wrapper'/>").appendTo($container).width(DESKTOP_ICON_SIZE).height(DESKTOP_ICON_SIZE);
-	var $icon = options.icon; //$Icon(options.icon || "task", DESKTOP_ICON_SIZE).width(DESKTOP_ICON_SIZE).height(DESKTOP_ICON_SIZE);
+	var $icon_wrapper = $("<div class='icon-wrapper'/>").appendTo($container);
+	var $icon = options.icon;
 	var $selection_effect = $icon.clone().addClass("selection-effect");
-	// var $selection_effect = $("<div class='selection-effect'>");
 
 	var $title = $("<div class='title'/>").text(options.title);
 	$container.append($icon_wrapper, $title);
 	$icon_wrapper.append($icon, $selection_effect);
-	// $icon_wrapper.append($icon, $selection_effect);
 
 	var src = $icon.attr("src");
 	$icon.on("load", function(){

@@ -130,7 +130,7 @@ function openWinamp(){
 			initialSkin: {
 				url: "programs/winamp/skins/base-2.91.wsz"
 			},
-			enableHotkeys: true // Enable hotkeys
+			enableHotkeys: true
 		});
 		
 		var container = document.createElement("div");
@@ -187,20 +187,6 @@ function openWinamp(){
 }
 
 /*
-function NetworkNeighborhood(){
-	var $win = new $Window({
-		icon: "internet-folder",
-		title: "Network Neighborhood",
-		innerWidth: 640,
-		innerHeight: 480
-	});
-	$folder_view = new $FolderView("/hfgjfgjh");
-	$win.$content.append($folder_view);
-	return new Task($win);
-}
-*/
-
-/*
 function saveAsDialog(){
 	var $win = new $Window();
 	$win.title("Save As");
@@ -220,11 +206,9 @@ function openURLFile(file_path){
 			if(err){
 				return alert(err);
 			}
-			// it's an ini-style file, generally
+			// it's supposed to be an ini-style file, but lets handle files that are literally just a URL as well, just in case
 			var match = content.match(/URL\s*=\s*([^\n\r]+)/i);
 			var url = match ? match[1] : content;
-			// executeURL(url);
-			// window.open(url);
 			Explorer(url);
 		});
 	});
@@ -287,6 +271,9 @@ function executeFile(file_path){
 }
 
 // TODO: base all the desktop icons off of the filesystem
+// Note: `C:\Windows\Desktop` doesn't contain My Computer, My Documents, Network Neighborhood, Recycle Bin, or Internet Explorer,
+// or Connect to the Internet, or Setup MSN Internet Access,
+// whereas `Desktop` does (that's the full address it shows; it's one of them "special locations")
 var add_icon_not_via_filesystem = function(options){
 	options.icon = $Icon(options.icon, DESKTOP_ICON_SIZE);
 	new $FolderViewIcon(options).appendTo($folder_view);
@@ -351,10 +338,5 @@ add_icon_not_via_filesystem({
 	open: openWinamp,
 	shortcut: true
 });
-// add_icon_not_via_filesystem({
-// 	title: "Links",
-// 	icon: "internet-folder",
-// 	open: Links
-// });
 
 $folder_view.arrange_icons();

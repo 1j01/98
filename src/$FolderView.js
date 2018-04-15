@@ -4,11 +4,9 @@ var grid_size_y = 75;
 
 // TODO: what's the "right" way to do file type / program associations for icons?
 
-// var file_type_icons_by_program = new Map;
-// file_type_icons_by_program.set(Notepad, "notepad-file");
-// file_type_icons_by_program.set(Paint, "");
-// file_type_icons_by_program.set(SoundRecorder, "");
-
+// TODO: get more icons; can extract from shell32.dll, moricons.dll, and other files from a VM
+// also get more file extensions; can find a mime types listing data dump
+// https://github.com/1j01/retrores
 var file_extension_icons = {
 	txt: "notepad-file",
 	md: "notepad-file",
@@ -18,8 +16,6 @@ var file_extension_icons = {
 	html: "notepad-file",
 	gitattributes: "notepad-file",
 	gitignore: "notepad-file",
-	// TODO: get more icons; can extract from shell32.dll, moricons.dll, and other files from a VM
-	// also get more file extensions; can file a mime types listing data dump
 	png: "image-gif", // "image-png"? nope... (but should it be image-gif or image-wmf?)
 	jpg: "image-jpeg",
 	jpeg: "image-jpeg",
@@ -37,7 +33,7 @@ var file_extension_icons = {
 	ogg: "sound", // TODO: probably ditto
 	wma: "sound",
 	// "doc": "doc"?
-	"exe": "task", // TODO: look inside exe for icons
+	"exe": "task",
 	htm: "html",
 	html: "html",
 	url: "html",
@@ -125,8 +121,6 @@ function $FolderView(folder_path) {
 				var icon_offset = $(folder_view_icon).offset();
 				var icon_left = parseFloat($(folder_view_icon).css("left"));
 				var icon_top = parseFloat($(folder_view_icon).css("top"));
-				// var icon_left =  $(folder_view_icon).offset().left;
-				// var icon_top =  $(folder_view_icon).offset().top;
 				var icon_width = $(folder_view_icon).width();
 				var icon_height = $(folder_view_icon).height();
 				if(
@@ -156,7 +150,9 @@ function $FolderView(folder_path) {
 				$marquee.hide();
 			}else{
 				dragging = true;
-				// don't deselect right away unless the desktop was focused
+				// don't deselect right away unless the 
+				// TODO: deselect on pointerUP, if the desktop was focused
+				// or when starting selecting (re: TODO: allow a margin of movement before starting selecting)
 				if(view_was_focused){
 					drag_update();
 				}
@@ -174,7 +170,7 @@ function $FolderView(folder_path) {
 			// (The marquee border should always show up, against the edge of the screen,
 			// it shouldn't overlap the address bar,
 			// and it shouldn't cause a scrollbar)
-			// TODO: handle scroll position
+			// also scroll the view by dragging
 			if(dragging){
 				drag_update();
 			}
@@ -186,6 +182,9 @@ function $FolderView(folder_path) {
 	})();
 
 	// TODO: select icons with the keyboard
+	// I wonder how this works, since it allows navigating icons not aligned to the grid.
+	// I can imagine a few ways of doing it, like scanning for the nearest icon with a sweeping line or perhaps a "cone" (triangle) (changing width line)
+	// but it'd be nice to know for sure
 
 	$(window).on("keydown", function(e){
 		if($folder_view.is(".focused")){
@@ -210,6 +209,7 @@ function $FolderView(folder_path) {
 					return resolve("folder");
 				}
 				var file_extension = file_extension_from_path(file_path);
+				// TODO: look inside exe for icons
 				var icon_name = file_extension_icons[file_extension];
 				resolve(icon_name || "file");
 			});
@@ -235,9 +235,6 @@ function $FolderView(folder_path) {
 		var fs = BrowserFS.BFSRequire('fs');
 
 		var file_path = folder_path + file.name;
-		// TODO: investigate maximum callstack size exceeded when there's an accidental trailing slash
-		// file_path = "sdfsdfsdf/sdf/";
-		// I guess it's probably that it splits it and the last component is "" and "" = "."
 		
 		var reader = new FileReader;
 		reader.onerror = function(error){
@@ -277,7 +274,7 @@ function $FolderView(folder_path) {
 			var files = e.originalEvent.dataTransfer.files;
 			$.map(files, function(file){
 				// TODO: stagger positions, don't just put everything on top of each other
-				// also center
+				// also center on the mouse position; currently it's placed via the top left
 				drop_file(file, x, y);
 			});
 		});

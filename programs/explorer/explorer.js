@@ -26,7 +26,7 @@ function set_icon(icon_id) {
 }
 
 function get_display_name_for_address(address) {
-	// TODO: maintain less of a fake naming association list / whatever
+	// TODO: maintain less fake naming abstraction
 	// base it more on the actual filesystem
 	if(address === "/"){
 		return "(C:)";
@@ -48,18 +48,17 @@ function get_display_name_for_address(address) {
 }
 
 function get_icon_for_address(address) {
-	// TODO: maintain less of a fake association list thing / whatever
+	// TODO: maintain less fake naming abstraction
 	// base it more on the actual filesystem
-	if(address === "/"){
-		// return "my-computer";
+	if(address === "/"){ // currently / is our C:\ analog (or C:\Windows\)
 		return "hard-disk-drive";
-	// }else if(address === "/my-pictures/"){
-	// 	return "my-pictures";
+	// }else if(address === "/my-computer/"){ // we don't have an actual My Computer location yet, it just opens (C:)
+	// 	return "my-computer";
 	}else if(address === "/my-documents/"){
 		return "my-documents";
 	}else if(address === "/network-neighborhood/"){
 		return "network";
-	}else if(address === "/desktop/"){
+	}else if(address === "/desktop/"){ // i.e. C:\Windows\Desktop
 		return "desktop";
 	}else if(address.match(/^\w+:\/\//) || address.match(/\.html?$/)){
 		return "html";
@@ -158,6 +157,7 @@ $(function(){
 	var query = parse_query_string(location.search);
 	// try to prevent our (potentially existing) iframe from blocking the iframe we're *inside* from blocking the *window* we're inside from showing up until the page loads 
 	// TODO: do so consistently
+	// wait wouldn't the iframe we're in have loaded by now? or no
 	setTimeout(function(){
 		if(query.address){
 			go_to(query.address);
@@ -173,14 +173,19 @@ $(function(){
 	$("#go").on("click", function(){
 		go_to($("#address").val());
 	});
+	// $("#refresh").on("click", function(){
+	// 	go_to(address); // whatever the address was before (i.e. ignore changes to the address since navigation)
+	// });
 	$("#back").on("click", function(){
+		// TODO: show message about why it doesn't work
+		// if it doesn't work - I mean, might as well have it try it!
 		$iframe[0].contentWindow.history.back();
 	});
 	$("#forward").on("click", function(){
 		$iframe[0].contentWindow.history.forward();
 	});
 	$("#up").on("click", function(){
-		// $iframe[0].contentWindow.location;
+		// can't use $iframe[0].contentWindow.location (unless page is on the same domain)
 		go_to($("#address").val().replace(/[^\/]*\/?$/, "").replace(/(https?|ftps?|sftp|file):\/\/\/?$/, ""));
 	});
 });
