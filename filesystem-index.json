@@ -366,8 +366,7 @@
           "pencil.png": null,
           "precise-dotted.png": null,
           "precise.png": null,
-          "precise2.png": null,
-          "Thumbs.db": null
+          "precise2.png": null
         },
         "help-icons.png": null,
         "icons": {
@@ -375,7 +374,6 @@
           "16.png": null,
           "32.png": null,
           "48.png": null,
-          "Thumbs.db": null,
           "windows.ico": null
         },
         "modern": {
@@ -428,15 +426,13 @@
           "mobipaint.png": null
         },
         "text-tools.png": null,
-        "Thumbs.db": null,
         "toolbar-icons.png": null,
         "tools-and-stuff.png": null,
         "transforms": {
           "skew-x.png": null,
           "skew-y.png": null,
           "stretch-x.png": null,
-          "stretch-y.png": null,
-          "Thumbs.db": null
+          "stretch-y.png": null
         }
       },
       "index.html": null,
@@ -606,7 +602,8 @@
     "filesystem-setup.js": null,
     "helpers.js": null,
     "programs.js": null,
-    "Task.js": null
+    "Task.js": null,
+    "update-jspaint.js": null
   },
   "TODO.md": null,
   "~ Pictures and stuff -  Shortcut ~.lnk": null
