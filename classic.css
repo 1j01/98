@@ -286,6 +286,9 @@ button:hover:active:before {
 * {
 	image-rendering: crisp-edges;
 	image-rendering: pixelated;
+	/* only works on Mac, and not on a standards track: */
+	font-smooth: none;
+	-webkit-font-smoothing: none;
 }
 
 ::selection {
