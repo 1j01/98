@@ -1,7 +1,7 @@
 
 # ![](../../images/icons/notepad-32x32.png) Notepad
 
-Try it [as part of 98](http://98.js.org/) or [standalone](http://98.js.org/programs/notepad/)
+Try it [as part of 98](https://98.js.org/) or [standalone](https://98.js.org/programs/notepad/)
 
 
 ### TODO

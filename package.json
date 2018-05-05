@@ -4,10 +4,10 @@
 	"version": "0.1.3",
 	"repository": {
 		"type": "git",
-		"url": "http://github.com/1j01/98.git"
+		"url": "https://github.com/1j01/98.git"
 	},
 	"bugs": {
-		"url": "http://github.com/1j01/98/issues"
+		"url": "https://github.com/1j01/98/issues"
 	},
 	"license": "UNLICENSED",
 	"private": true,
