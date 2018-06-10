@@ -17,7 +17,7 @@
 	image-rendering: crisp-edges;
 	image-rendering: pixelated;
 	image-rendering: -moz-crisp-edges;
-	/* only works on Mac, and not on a standards track: */
+	/* only works on macOS, and not on a standards track: */
 	font-smooth: none;
 	-webkit-font-smoothing: none;
 }

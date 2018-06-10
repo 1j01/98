@@ -52,12 +52,12 @@ I want to bring good old paint into the modern era.
   Accessible from the Extras menu or with <kbd>Ctrl+Shift+G</kbd>.
   It's pretty nifty, you should try it out!
   You might want to limit the size of the image though.
-* You can shoot at it [Asteroids style](http://kickassapp.com/)
+* You can shoot at it [Asteroids style](https://kickassapp.com/)
 * When you do Edit > Paste From... you can select transparent images and GIFs.
   ~~You can even paste a transparent animated GIF and then
   hold <kbd>Shift</kbd> while dragging the selection to
   smear it across the canvas *while it animates*!~~
-  Update: This was [due to not-to-spec behavior in Chrome.](http://christianheilmann.com/2014/04/16/browser-inconsistencies-animated-gif-and-drawimage/)
+  Update: This was [due to not-to-spec behavior in Chrome.](https://christianheilmann.com/2014/04/16/browser-inconsistencies-animated-gif-and-drawimage/)
   I may reimplement this in the future as I really liked this feature.
 * You can open SVG files (because browsers support SVG).
   It's still a completely raster image editor though.
@@ -68,7 +68,7 @@ I want to bring good old paint into the modern era.
 * Replace a color in the entire image by holding <kbd>Shift</kbd> and using the fill tool (AKA non-contiguous fill)
 * Rudimentary **multi-user** support.
   Start up a session at
-  [jspaint.ml/#session:multi-user-test](http://1j01.github.io/jspaint/#session:multi-user-test)
+  [jspaint.app/#session:multi-user-test](https://jspaint.app/#session:multi-user-test)
   and send the link to your friends!
   It isn't seamless; actions by other users interrupt what you're doing, and visa versa.
   Sessions are not private, and you may lose your work at any time.
@@ -137,13 +137,13 @@ I want to make JS Paint to be able to edit...
   that might be a pipe dream, but [then again...](https://github.com/1j01/pipes)
 
 
-[PNG]: http://en.wikipedia.org/wiki/Portable_Network_Graphics "Portable Network Graphics"
-[GIF]: http://en.wikipedia.org/wiki/Graphics_Interchange_Format "Graphics Interchange Format"
-[APNG]: http://en.wikipedia.org/wiki/APNG "Animated Portable Network Graphics"
-[ICO]: http://en.wikipedia.org/wiki/ICO_(file_format) "Microsoft Icon Image format"
-[ICNS]: http://en.wikipedia.org/wiki/Apple_Icon_Image_format "Apple Icon Image format"
-[SVG]: http://en.wikipedia.org/wiki/Scalable_Vector_Graphics "Scalable Vector Graphics"
-[TXT]: http://en.wikipedia.org/wiki/Text_file "Text file"
+[PNG]: https://en.wikipedia.org/wiki/Portable_Network_Graphics "Portable Network Graphics"
+[GIF]: https://en.wikipedia.org/wiki/Graphics_Interchange_Format "Graphics Interchange Format"
+[APNG]: https://en.wikipedia.org/wiki/APNG "Animated Portable Network Graphics"
+[ICO]: https://en.wikipedia.org/wiki/ICO_(file_format) "Microsoft Icon Image format"
+[ICNS]: https://en.wikipedia.org/wiki/Apple_Icon_Image_format "Apple Icon Image format"
+[SVG]: https://en.wikipedia.org/wiki/Scalable_Vector_Graphics "Scalable Vector Graphics"
+[TXT]: https://en.wikipedia.org/wiki/Text_file "Text file"
 
 
 ## Did you know?
@@ -161,7 +161,7 @@ I want to make JS Paint to be able to edit...
 * You can apply image transformations like Flip/Rotate, Stretch/Skew or Invert (in the Image menu) either to the whole image or to a selection.
   If you make a selection with the Select or Free-Form Select tool, the transformations apply to the selection.
 
-* These Tips and Tricks from [a tutorial for MS Paint](http://www.albinoblacksheep.com/tutorial/mspaint)
+* These Tips and Tricks from [a tutorial for MS Paint](https://www.albinoblacksheep.com/tutorial/mspaint)
   also work in JS Paint if they have a checkmark:
 
 	* [x] Brush Scaling (<kbd>+</kbd> & <kbd>-</kbd> on the Numpad to adjust brush size)
@@ -174,7 +174,21 @@ I want to make JS Paint to be able to edit...
 	      I also made it redoable, in case you do it by accident! But [it broke at some point in Chrome.](https://github.com/1j01/jspaint/issues/9))
 	* [ ] Scroll Wheel Bug (Hmm, let's maybe not recreate this?)
 
+## Development Setup
+
+[Clone the repo.](https://help.github.com/articles/cloning-a-repository/)
+
+There's currently no build step of any kind.
+You just need an HTTP server.
+
+[Live Server][] is nice (it auto reloads when you save changes),
+and it's included in `package.json` so if you want you can do
+`npm i` to install dependencies and `npm run dev` to run it.
+
+Alternatively you can install it globally with `npm i -g live-server`
+and run it with `live-server`.
+
+[Live Server]: https://github.com/tapio/live-server
 
 [jspaint chrome app]: https://chrome.google.com/webstore/detail/dgfedgcofbjmeohonbpcoagiabgnddjh
-[jspaint web app]: http://jspaint.ml
-
+[jspaint web app]: https://jspaint.app
