@@ -3,7 +3,8 @@ var rimraf = require('rimraf');
 var child_process = require('child_process');
 
 // TODO: don't assume jspaint exists at ../jspaint
-// TODO: use git subtree or something
+// TODO: check that branch is default (master)
+// TODO: use git subtree or something instead
 
 // TODO: --force option or something
 // (you can comment this part out to work on this script)
@@ -18,7 +19,7 @@ if (output.length) {
 	console.error("Working directory of ../jspaint must be clean!");
 	return;
 }
-console.log("Pulling in ../jspaint");
+console.log("Running `git pull` in ../jspaint");
 // TODO: capture and indent stderr output (could use indent-stream / wrapline)
 var output = child_process.execSync("cd ../jspaint && git pull");
 console.log(("\n" + output.toString()).replace(/\n/g, "\n  "));
