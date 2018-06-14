@@ -3,7 +3,6 @@ var rimraf = require('rimraf');
 var child_process = require('child_process');
 
 // TODO: don't assume jspaint exists at ../jspaint
-// TODO: check that branch is default (master)
 // TODO: use git subtree or something instead
 
 // TODO: --force option or something
@@ -19,6 +18,15 @@ if (output.length) {
 	console.error("Working directory of ../jspaint must be clean!");
 	return;
 }
+
+var current_branch = child_process.execSync("cd ../jspaint && git rev-parse --abbrev-ref HEAD").toString().trim();
+if (current_branch !== "master") {
+	console.error("Git repository at ../jspaint must be on branch master! (currently " + current_branch + ")");
+	return;
+}
+// TODO: could automatically switch branches and back
+// TODO: make sure repo doesn't have commits to push
+
 console.log("Running `git pull` in ../jspaint");
 // TODO: capture and indent stderr output (could use indent-stream / wrapline)
 var output = child_process.execSync("cd ../jspaint && git pull");
