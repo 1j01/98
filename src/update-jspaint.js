@@ -54,6 +54,12 @@ rimraf('programs/jspaint', function (err) {
 			} else {
 				console.info('Copied ' + results.length + ' files');
 
+				// This fixes leaving a file (with a large diff? is that related?) behind (somehow)
+				// It seems likely to be a race condition, and a bit of a Heisenbug in that I tried to add this for debug info
+				// Likely other things would work, like a setTimeout
+				var git_status_output = child_process.execSync("git status");
+				// console.log(git_status_output.toString());
+				
 				// TODO: capture and indent stderr output (could use indent-stream / wrapline)
 				var output = child_process.execSync(
 					`git add --all programs/jspaint && git commit --message "Update jspaint" --message "To https://github.com/1j01/jspaint/tree/${commit_hash}"`
