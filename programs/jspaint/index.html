@@ -1,5 +1,5 @@
 <!doctype html>
-<html>
+<html lang="en">
 	<head>
 		<meta charset="utf-8">
 		<title>Paint</title>
@@ -10,7 +10,22 @@
 		<link rel="icon" href="images/icons/32.png" sizes="32x32" type="image/png">
 		<link rel="icon" href="images/icons/48.png" sizes="48x48" type="image/png">
 		<link rel="icon" href="images/icons/128.png" sizes="128x128" type="image/png">
-		<link rel="icon" href="images/icons/windows.ico" sizes="16x16,32x32,48x48" type="image/icon">
+		<link rel="icon" href="images/icons/windows.ico" sizes="16x16 32x32 48x48" type="image/icon">
+		<meta name="viewport" content="width=device-width, user-scalable=no">
+		<meta name="description" content="MS Paint recreated in JavaScript, with extra features" />
+		<meta property="og:title" content="JS Paint" />
+		<meta property="og:description" content="MS Paint recreated in JavaScript, with extra features" />
+		<meta property="og:type" content="website" />
+		<meta property="og:url" content="https://jspaint.app" />
+		<meta property="og:locale" content="en_US" />
+		<meta property="og:image" content="https://jspaint.app/images/meta/facebook-card.png" />
+		<meta name="twitter:title" content="JS Paint">
+		<meta name="twitter:description" content="MS Paint recreated in JavaScript, with extra features">
+		<meta name="twitter:image" content="https://jspaint.app/images/meta/twitter-card.png">
+		<meta name="twitter:card" content="summary_large_image">
+		<meta name="twitter:site" content="@isaiahodhner">
+		<meta name="twitter:creator" content="@isaiahodhner">
+
 		<script type="text/javascript">
 			// Partial support for IE with a general polyfill
 			if(/MSIE \d|Trident.*rv:/.test(navigator.userAgent)){
@@ -34,7 +49,6 @@
 			}
 		</script>
 		<script src="src/theme.js"></script>
-		<meta name="viewport" content="width=device-width, user-scalable=no">
 	</head>
 	<body>
 		<script src="lib/jquery.min.js"></script>
