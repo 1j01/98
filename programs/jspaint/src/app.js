@@ -194,66 +194,6 @@ $G.on("keydown", function(e){
 	// also, ideally check that modifiers *aren't* pressed
 	// probably best to use a library at this point!
 	
-	// TODO: probably get rid of this silly feature
-	// it's kinda fun, but it's a lot of code for something I've virtually never used
-	// (and it's not based on any version of mspaint, it was just a fun idea I had)
-	var brush_shapes = {
-		circle: [
-			0, 1, 0,
-			1, 0, 1,
-			0, 1, 0
-		],
-		diagonal: [
-			1, 0, 0,
-			0, 0, 0,
-			0, 0, 1
-		],
-		reverse_diagonal: [
-			0, 0, 1,
-			0, 0, 0,
-			1, 0, 0
-		],
-		horizontal: [
-			0, 0, 0,
-			1, 0, 1,
-			0, 0, 0
-		],
-		vertical: [
-			0, 1, 0,
-			0, 0, 0,
-			0, 1, 0
-		],
-		square: [
-			0, 0, 0,
-			0, 1, 0,
-			0, 0, 0
-		]
-	};
-	keys[e.keyCode] = true;
-	for(var k in brush_shapes){
-		var bs = brush_shapes[k];
-		var fits_shape = true;
-		for(var i=0; i<9; i++){
-			var keyCode = [103, 104, 105, 100, 101, 102, 97, 98, 99][i];
-			if(bs[i] && !keys[keyCode]){
-				fits_shape = false;
-			}
-		}
-		if(fits_shape){
-			brush_shape = k;
-			$G.trigger("option-changed");
-			break;
-		}
-	}
-	if(e.keyCode === 96){
-		brush_shape = "circle";
-		$G.trigger("option-changed");
-	}
-	if(e.keyCode === 111){
-		brush_shape = "diagonal";
-		$G.trigger("option-changed");
-	}
-
 	if(e.altKey){
 		//find key codes
 		window.console && console.log(e.keyCode);
@@ -299,10 +239,10 @@ $G.on("keydown", function(e){
 		redo();
 	}else if(e.keyCode === 46){ //Delete
 		delete_selection();
-	}else if(e.keyCode === 107 || e.keyCode === 109){
+	}else if(e.keyCode === 107 || e.keyCode === 109){ // Numpad Plus and Minus
 		var plus = e.keyCode === 107;
 		var minus = e.keyCode === 109;
-		var delta = plus - minus; // +plus++ -minus--; // Δ = ±±±±
+		var delta = plus - minus; // var delta = +plus++ -minus--; // Δ = ±±±±
 
 		if(selection){
 			selection.scale(Math.pow(2, delta));
@@ -320,6 +260,9 @@ $G.on("keydown", function(e){
 			}
 
 			$G.trigger("option-changed");
+			if(button !== undefined){
+				tool_go();
+			}
 		}
 		e.preventDefault();
 		return;
@@ -433,6 +376,7 @@ $G.on("cut copy paste", function(e){
 					// TODO: check that it's actually a URI,
 					// and if text/plain maybe silently ignore the paste
 					// but definitely generally show a better error than show_resource_load_error_message()
+					// some strings from mspaint:
 					// "The information on the Clipboard can't be inserted into Paint."
 					// also
 					// "Downloading picture"
@@ -469,16 +413,17 @@ function tool_go(event_name){
 
 	ctx.lineWidth = stroke_size;
 
+	var reverse_because_fill_only = selected_tool.$options && selected_tool.$options.fill && !selected_tool.$options.stroke;
 	ctx.fillStyle = fill_color =
 	ctx.strokeStyle = stroke_color =
 		colors[
 			(ctrl && colors.ternary) ? "ternary" :
-			(reverse ? "background" : "foreground")
+			((reverse ^ reverse_because_fill_only) ? "background" : "foreground")
 		];
 
 	fill_color_k =
 	stroke_color_k =
-		ctrl ? "ternary" : (reverse ? "background" : "foreground");
+		ctrl ? "ternary" : ((reverse ^ reverse_because_fill_only) ? "background" : "foreground");
 
 	if(selected_tool.shape){
 		var previous_canvas = undos[undos.length-1];
@@ -489,7 +434,7 @@ function tool_go(event_name){
 	}
 	if(selected_tool.shape || selected_tool.shape_colors){
 		if(!selected_tool.stroke_only){
-			if(reverse){
+			if((reverse ^ reverse_because_fill_only)){
 				fill_color_k = "foreground";
 				stroke_color_k = "background";
 			}else{

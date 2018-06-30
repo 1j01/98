@@ -158,10 +158,6 @@ might be a pointer events spec interpretation issue, and it could easily be that
 	* Choose and preview viewport with rectangular cursor
 
 
-* Pencil
-	* Adjust size (with numpad)
-
-
 * Text
 	* Underline
 	* Expand box to make room for new lines
@@ -172,27 +168,14 @@ might be a pointer events spec interpretation issue, and it could easily be that
 	SVG (or HTML?) with invisible selectable transformed text elements?
 
 
-* Curve
-	* Aliasing
-
-
-* Rectangle
-	* The stroke should go within the rectangle
-
-
 * Polygon
-	* Aliasing
-	* Handle self-intersecting shapes like MS Paint, with an `"evenodd"` [winding rule](https://blogs.adobe.com/webplatform/2013/01/30/winding-rules-in-canvas/)
 	* Issue with extra undoables
 	* Close and finalize the polygon when switching to a different tool
-
-
-* Ellipse
-	* See Shape Styles and Strokes below
-
-
-* Rounded Rectangle
-	* See Shape Styles and Strokes below
+	* Don't start making the polygon until you click and drag more than the auto-finalization distance
+	* Cancel the polygon if you end up within the auto-finalization distance on the first gesture
+	* Preview invertily (like Free-Form Select) when fill-only is selected for the shape style option
+	* Investigate bug: jumping to 0, 0 (only saw it happen once so far; could it have had to do with the dialog box?)
+	* Investigate bug: unclosed polygon (last segment of stroke) (only saw it happen once so far)
 
 
 * **Options**
@@ -201,10 +184,10 @@ might be a pointer events spec interpretation issue, and it could easily be that
 
 * **Shape Styles and Strokes**
 	* Shapes: respond to Ctrl (It's complicated)
-	* Rounded Rectangle & Ellipse:
-		* Support stroke size and shape styles!
-	* Rectangle, Rounded Rectangle & Ellipse:
-		* Stroke should be entirely inside the dragged region
+	* Handle patterns (black and white mode)
+		* Still needed for brush and fill and right click with the eraser tool (i.e. replace color)
+		* Check to make sure patterns are aligned properly for all the tools
+		* There's supposed to be a mapping between color values and pattern fills, used by the text tool and for the palette when switching between modes (colors should be kept between going to black and white mode and back)
 
 
 ### On-Canvas Objects
@@ -221,21 +204,11 @@ might be a pointer events spec interpretation issue, and it could easily be that
 	* See Text tool
 
 
-### Chrome App
-
-I started making a packaged, windowed app, but a hosted app would be simpler.
-
-I implemented theoretical support for changing the wallpaper on Chrome OS, but I don't know if it works.
-
-
-* [Analytics](https://developer.chrome.com/apps/analytics)
-
-
-* Publish to the Chrome Web Store!
-
-
 ### Native App
 
+* Switch from NW.js to Electron
+* Use a boilerplate for autoupdating and such
+* File association support
 * Proper clipboard support; Electron has an API for copying images
 * A dialogue when closing
 * Subwindows outside the main window
@@ -274,9 +247,3 @@ I implemented theoretical support for changing the wallpaper on Chrome OS, but I
 
 * Images
 	* Use a shared sprite sheet per theme (and optimize it I guess)
-
-
-* Load the About Paint content from an element on the page that gets hidden by code
-in order to hopefully show up nicer in search engines.
-Currently shows up in Google with some text from the menus as the description.
-

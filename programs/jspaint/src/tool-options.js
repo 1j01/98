@@ -2,46 +2,12 @@
 var brush_canvas = new Canvas();
 var brush_ctx = brush_canvas.ctx;
 var brush_shape = "circle";
-var brush_size = 5;
+var brush_size = 4;
 var eraser_size = 8;
 var airbrush_size = 9;
 var pencil_size = 1;
 var stroke_size = 1; // lines, curves, shape outlines
 var transparent_opaque = "opaque"; // TODO: make this a boolean (and think of a good name)
-
-
-var $shape_styles_warning_window;
-var dont_show_shape_styles_warning_again = false;
-try{
-	dont_show_shape_styles_warning_again = localStorage["don't show shape styles not implemented warning again"];
-}catch(e){}
-var show_shape_styles_warning = function(){
-	if($shape_styles_warning_window || dont_show_shape_styles_warning_again){
-		return;
-	}
-	var $w = $shape_styles_warning_window = $FormWindow().title("Warning").addClass("dialogue-window");
-	$w.$main.html(
-		"<p>Shape styles and line widths are not implemented for all tools.</p>" +
-		"<p>See issue <a href='https://github.com/1j01/jspaint/issues/7'>#7</a></p>" +
-		"<label><input type='checkbox' class='dont-tell-me-again'> Don't tell me again</label>"
-	);
-	$w.$main.find(".dont-tell-me-again").on("change", function(){
-		dont_show_shape_styles_warning_again = $(this).is(":checked");
-		try{
-			if(dont_show_shape_styles_warning_again){
-				localStorage["don't show shape styles not implemented warning again"] = "yeah, shush";
-			}else{
-				delete localStorage["don't show shape styles not implemented warning again"];
-			}
-		}catch(e){}
-	});
-	$w.$Button("OK", function(){
-		$w.close();
-		$shape_styles_warning_window = null;
-	});
-	$w.center();
-};
-
 
 var ChooserCanvas = function(
 	url, invert,
@@ -153,7 +119,6 @@ var $ChooseShapeStyle = function(){
 		function(a){
 			$chooser.stroke = a.stroke;
 			$chooser.fill = a.fill;
-			show_shape_styles_warning();
 		},
 		function(a){
 			return $chooser.stroke === a.stroke && $chooser.fill === a.fill;
@@ -169,16 +134,18 @@ var $ChooseShapeStyle = function(){
 var $choose_brush = $Choose(
 	(function(){
 		var brush_shapes = ["circle", "square", "reverse_diagonal", "diagonal"];
+		var circular_brush_sizes = [7, 4, 1];
 		var brush_sizes = [8, 5, 2];
 		var things = [];
-		for(var brush_shape_i in brush_shapes){
-			for(var brush_size_i in brush_sizes){
+		brush_shapes.forEach((brush_shape)=> {
+			var sizes = brush_shape === "circle" ? circular_brush_sizes : brush_sizes;
+			sizes.forEach((brush_size)=> {
 				things.push({
-					shape: brush_shapes[brush_shape_i],
-					size: brush_sizes[brush_size_i],
+					shape: brush_shape,
+					size: brush_size,
 				});
-			}
-		}
+			});
+		});
 		return things;
 	})(),
 	function(o, is_chosen){
@@ -186,9 +153,6 @@ var $choose_brush = $Choose(
 		
 		var shape = o.shape;
 		var size = o.size;
-		if(shape === "circle"){
-			size -= 1;
-		}
 		
 		cbcanvas.ctx.fillStyle =
 		cbcanvas.ctx.strokeStyle =
@@ -237,7 +201,6 @@ var $choose_stroke_size = $Choose(
 	},
 	function(size){
 		stroke_size = size;
-		show_shape_styles_warning();
 	},
 	function(size){
 		return stroke_size === size;

@@ -1,9 +1,9 @@
-/* Cascading Style Sheet for IE4.01 last updated 1-28-98 */
+/* Originally: Cascading Style Sheet for IE4.01 last updated 1-28-98 */
 
 body {
 	background: #FFFFFF;
 	font-size: 70%;
-	font-family: Verdana, Arial, Helvetica, MS Sans Serif;
+	font-family: Verdana, Arial, Helvetica, "MS Sans Serif";
 	/* Chrome apps have text selection disabled by default */
 	-webkit-user-select: text;
 	cursor: auto;

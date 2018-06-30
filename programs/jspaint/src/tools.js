@@ -89,8 +89,8 @@ tools = [{
 		// Revert the inverty brush paint
 		ctx.copy(undos[undos.length-1]);
 		
-		// Cut out the polygon
-		var cutout = cut_polygon(
+		var contents_within_polygon = copy_contents_within_polygon(
+			canvas,
 			this.points,
 			this.x_min,
 			this.y_min,
@@ -98,14 +98,13 @@ tools = [{
 			this.y_max
 		);
 		
-		// Make the selection
 		selection = new Selection(
 			this.x_min,
 			this.y_min,
 			this.x_max - this.x_min,
 			this.y_max - this.y_min
 		);
-		selection.instantiate(cutout);
+		selection.instantiate(contents_within_polygon);
 		selection.cut_out_background();
 	},
 	$options: $choose_transparency
@@ -294,8 +293,28 @@ tools = [{
 	cursor: ["pencil", [13, 23], "crosshair"],
 	continuous: "space",
 	stroke_only: true,
+	pencil_canvas: Canvas(),
 	paint: function(ctx, x, y){
-		ctx.fillRect(x, y, 1, 1);
+		// XXX: WET (Write Everything Twice) / DAMP (Duplicate Anything Moderately Pastable) (I'm coining that)
+		// TODO: DRY (Don't Repeat Yourself) / DEHYDRATE (Delete Everything Hindering Yourself Drastically Reducing Aqueous Text Evil) (I'm coining that too)
+		var csz = pencil_size * 2.1;
+		if(
+			this.rendered_shape !== "circle" ||
+			this.rendered_color !== stroke_color ||
+			this.rendered_size !== pencil_size
+		){
+			this.pencil_canvas.width = csz;
+			this.pencil_canvas.height = csz;
+			// don't need to do this.pencil_canvas.ctx.disable_image_smoothing() currently because images aren't drawn to the brush
+
+			this.pencil_canvas.ctx.fillStyle = this.pencil_canvas.ctx.strokeStyle = stroke_color;
+			render_brush(this.pencil_canvas.ctx, "circle", pencil_size);
+			
+			this.rendered_color = stroke_color;
+			this.rendered_size = pencil_size;
+			this.rendered_shape = "circle";
+		}
+		ctx.drawImage(this.pencil_canvas, ~~(x-csz/2), ~~(y-csz/2));
 	}
 }, {
 	name: "Brush",
@@ -401,6 +420,7 @@ tools = [{
 	cursor: ["precise", [16, 16], "crosshair"],
 	stroke_only: true,
 	shape: function(ctx, x, y, w, h){
+		update_brush_for_drawing_lines(stroke_size);
 		draw_line(ctx, x, y, x+w, y+h, stroke_size);
 	},
 	$options: $choose_stroke_size
@@ -440,27 +460,33 @@ tools = [{
 		this.points[i].x = x;
 		this.points[i].y = y;
 		
-		ctx.beginPath();
-		ctx.moveTo(this.points[0].x, this.points[0].y);
+		update_brush_for_drawing_lines(stroke_size);
+		
 		if(this.points.length === 4){
-			ctx.bezierCurveTo(
+			draw_bezier_curve(
+				ctx,
+				this.points[0].x, this.points[0].y,
 				this.points[2].x, this.points[2].y,
 				this.points[3].x, this.points[3].y,
-				this.points[1].x, this.points[1].y
+				this.points[1].x, this.points[1].y,
+				stroke_size
 			);
 		}else if(this.points.length === 3){
-			ctx.quadraticCurveTo(
+			draw_quadratic_curve(
+				ctx,
+				this.points[0].x, this.points[0].y,
 				this.points[2].x, this.points[2].y,
-				this.points[1].x, this.points[1].y
+				this.points[1].x, this.points[1].y,
+				stroke_size
 			);
 		}else{
-			ctx.lineTo(
-				this.points[1].x, this.points[1].y
+			draw_line(
+				ctx,
+				this.points[0].x, this.points[0].y,
+				this.points[1].x, this.points[1].y,
+				stroke_size
 			);
 		}
-		ctx.lineCap = "round";
-		ctx.stroke();
-		ctx.lineCap = "butt";
 	},
 	cancel: function(){
 		this.points = [];
@@ -475,18 +501,21 @@ tools = [{
 	description: "Draws a rectangle with the selected fill style.",
 	cursor: ["precise", [16, 16], "crosshair"],
 	shape: function(ctx, x, y, w, h){
+		if(w < 0){ x += w; w = -w; }
+		if(h < 0){ y += h; h = -h; }
+		
 		if(this.$options.fill){
 			ctx.fillRect(x, y, w, h);
 		}
 		if(this.$options.stroke){
-			// FIXME: can draw 1x2 or 2x1 pixels of a rectangle with a stroke of 1px (the default)
-			// which doesn't get drawn at full opacity
-			// or more generally, a 0-width or 0-height rectangle gives
-			// non-full-opacity pixels at either side of the resulting line drawn
-			if((stroke_size % 2) === 1){
-				ctx.strokeRect(x-0.5, y-0.5, w, h);
+			if(w < stroke_size * 2 || h < stroke_size * 2){
+				ctx.save();
+				ctx.fillStyle = ctx.strokeStyle;
+				ctx.fillRect(x, y, w, h);
+				ctx.restore();
 			}else{
-				ctx.strokeRect(x, y, w, h);
+				// TODO: shouldn't that be ~~(stroke_size / 2)?
+				ctx.strokeRect(x + stroke_size / 2, y + stroke_size / 2, w - stroke_size, h - stroke_size);
 			}
 		}
 	},
@@ -505,12 +534,6 @@ tools = [{
 	// The vertices of the polygon
 	points: [],
 	
-	// The boundaries of the polygon
-	x_min: +Infinity,
-	x_max: -Infinity,
-	y_min: +Infinity,
-	y_max: -Infinity,
-	
 	passive: function(){
 		// actions are passive if you've already started using the tool
 		// but the first action should be undoable
@@ -526,7 +549,7 @@ tools = [{
 		var dx = this.points[i].x - this.points[0].x;
 		var dy = this.points[i].y - this.points[0].y;
 		var d = Math.sqrt(dx*dx + dy*dy);
-		if(d < stroke_size * 5.1010101){ // arbitrary 101
+		if(d < stroke_size * 5.1010101){ // arbitrary 101 (TODO: find correct value (or formula))
 			this.complete(ctx, x, y);
 		}
 		
@@ -536,12 +559,6 @@ tools = [{
 		var tool = this;
 		
 		if(tool.points.length < 1){
-			tool.x_min = x;
-			tool.x_max = x+1;
-			tool.y_min = y;
-			tool.y_max = y+1;
-			tool.points = [];
-			
 			// @TODO: stop needing this:
 			tool.canvas_base = canvas;
 			
@@ -562,7 +579,7 @@ tools = [{
 			var dy = y - ly;
 			var dt = +(new Date) - lt;
 			var d = Math.sqrt(dx*dx + dy*dy);
-			if(d < 4.1010101 && dt < 250){ // arbitrary 101
+			if(d < 4.1010101 && dt < 250){ // arbitrary 101 (TODO: find correct value (or formula))
 				tool.complete(ctx, x, y);
 				// Release the pointer to prevent tool.paint()
 				// being called and clearing the canvas
@@ -570,12 +587,6 @@ tools = [{
 			}else{
 				// Add the point
 				tool.points.push({x: x, y: y});
-				// Update the boundaries of the polygon
-				// @TODO: this boundary stuff in less places (DRY)
-				tool.x_min = Math.min(x, tool.x_min);
-				tool.x_max = Math.max(x, tool.x_max);
-				tool.y_min = Math.min(y, tool.y_min);
-				tool.y_max = Math.max(y, tool.y_max);
 			}
 		}
 		tool.last_click_pointerdown = {x: x, y: y, time: +new Date};
@@ -592,14 +603,11 @@ tools = [{
 		this.points[i].x = x;
 		this.points[i].y = y;
 		
-		ctx.fillStyle = stroke_color;
-		for(var i=0, j=1; j<this.points.length; i++, j++){
-			draw_line(ctx,
-				this.points[i].x, this.points[i].y,
-				this.points[j].x, this.points[j].y,
-				stroke_size
-			);
-		}
+		ctx.strokeStyle = stroke_color;
+		draw_line_strip(
+			ctx,
+			this.points
+		);
 	},
 	complete: function(ctx, x, y){
 		if(this.points.length < 1){ return; }
@@ -609,75 +617,15 @@ tools = [{
 		// @TODO: stop needing this
 		ctx.copy(this.canvas_base);
 		
-		// Draw an antialiased polygon
-		ctx.beginPath();
-		ctx.moveTo(this.points[0].x, this.points[0].y);
-		for(var i=1; i<this.points.length; i++){
-			ctx.lineTo(this.points[i].x, this.points[i].y);
-		}
-		ctx.lineTo(this.points[0].x, this.points[0].y);
-		ctx.closePath();
-		
-		ctx.lineWidth = stroke_size;
-		ctx.lineJoin = "bevel";
-		if(this.$options.fill){
-			ctx.fillStyle = fill_color;
-			ctx.fill();
-		}
-		if(this.$options.stroke){
-			ctx.strokeStyle = stroke_color;
-			ctx.stroke();
-		}
-		
-		/*
-		if(this.$options.fill){
-			// Make a solid-colored canvas
-			var colored_canvas = new Canvas(canvas.width, canvas.height);
-			colored_canvas.ctx.fillStyle = fill_color;
-			colored_canvas.ctx.fillRect(0, 0, canvas.width, canvas.height);
-			
-			for(var i=0; i<this.points.length; i++){
-				// Update the boundaries of the polygon
-				// @TODO: this boundary stuff in less places (DRY)
-				this.x_min = Math.min(this.points[i].x, this.x_min);
-				this.x_max = Math.max(this.points[i].x, this.x_max);
-				this.y_min = Math.min(this.points[i].y, this.y_min);
-				this.y_max = Math.max(this.points[i].y, this.y_max);
-			}
-			
-			// Cut a colored polygon out of the solid-colored canvas
-			var colored_polygon = cut_polygon(
-				this.points,
-				this.x_min,
-				this.y_min,
-				this.x_max,
-				this.y_max,
-				colored_canvas,
-				0.25
-			);
-			
-			// Draw the colored polygon to the canvas
-			ctx.drawImage(colored_polygon, this.x_min, this.y_min);
-			
-		}
-		if(this.$options.stroke){
-			ctx.fillStyle = stroke_color;
-			for(var i=0, j=1; j<this.points.length; i++, j++){
-				draw_line(ctx,
-					this.points[i].x, this.points[i].y,
-					this.points[j].x, this.points[j].y,
-					stroke_size
-				);
-			}
-			j = 0;
-			i = this.points.length - 1;
-			draw_line(ctx,
-				this.points[i].x, this.points[i].y,
-				this.points[j].x, this.points[j].y,
-				stroke_size
-			);
-		}
-		*/
+		ctx.fillStyle = fill_color;
+		ctx.strokeStyle = stroke_color;
+
+		draw_polygon(
+			ctx,
+			this.points,
+			this.$options.stroke,
+			this.$options.fill
+		);
 		
 		this.reset();
 	},
@@ -699,7 +647,23 @@ tools = [{
 	description: "Draws an ellipse with the selected fill style.",
 	cursor: ["precise", [16, 16], "crosshair"],
 	shape: function(ctx, x, y, w, h){
-		draw_ellipse(ctx, x, y, w, h, this.$options.stroke, this.$options.fill);
+		if(w < 0){ x += w; w = -w; }
+		if(h < 0){ y += h; h = -h; }
+
+		if(w < stroke_size || h < stroke_size){
+			ctx.fillStyle = ctx.strokeStyle;
+			draw_ellipse(ctx, x, y, w, h, false, true);
+		}else{
+			draw_ellipse(
+				ctx,
+				x + ~~(stroke_size / 2),
+				y + ~~(stroke_size / 2),
+				w - stroke_size,
+				h - stroke_size,
+				this.$options.stroke,
+				this.$options.fill
+			);
+		}
 	},
 	$options: $ChooseShapeStyle()
 }, {
@@ -709,9 +673,36 @@ tools = [{
 	shape: function(ctx, x, y, w, h){
 		if(w < 0){ x += w; w = -w; }
 		if(h < 0){ y += h; h = -h; }
-		var radius = Math.min(7, w/2, h/2);
-		
-		draw_rounded_rectangle(ctx, x, y, w, h, radius);
+
+		if(w < stroke_size || h < stroke_size){
+			ctx.fillStyle = ctx.strokeStyle;
+			var radius = Math.min(8, w/2, h/2);
+			// var radius_x = Math.min(8, w/2);
+			// var radius_y = Math.min(8, h/2);
+			draw_rounded_rectangle(
+				ctx,
+				x, y, w, h,
+				radius, radius,
+				// radius_x, radius_y,
+				false,
+				true
+			);
+		}else{
+			var radius = Math.min(8, (w - stroke_size)/2, (h - stroke_size)/2);
+			// var radius_x = Math.min(8, (w - stroke_size)/2);
+			// var radius_y = Math.min(8, (h - stroke_size)/2);
+			draw_rounded_rectangle(
+				ctx,
+				x + ~~(stroke_size / 2),
+				y + ~~(stroke_size / 2),
+				w - stroke_size,
+				h - stroke_size,
+				radius, radius,
+				// radius_x, radius_y,
+				this.$options.stroke,
+				this.$options.fill
+			);
+		}
 	},
 	$options: $ChooseShapeStyle()
 }];
