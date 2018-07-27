@@ -69,8 +69,8 @@ function withFilesystem(callback){
 		__fs_waiting_callbacks.push(callback);
 	}
 }
-// TODO: never use alert(); use thematic, non-blocking dialog windows,preferably with warning and error icons
-// I have a show_error_message in jspaint, but no warning or error icons
+// TODO: never use alert(); use thematic, non-blocking dialog windows, preferably with warning and error icons
+// I have a show_error_message in jspaint, but with no warning or error icons - as of writing; see https://github.com/1j01/jspaint/issues/84
 
 function file_name_from_path(file_path){
 	return file_path.split("\\").pop().split("/").pop();
