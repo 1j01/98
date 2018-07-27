@@ -371,7 +371,9 @@ var menus = {
 			item: "&Save Colors",
 			action: function(){
 				var blob = new Blob([JSON.stringify(palette)], {type: "application/json"});
-				saveAs(blob, "colors.json");
+				sanity_check_blob(blob, function(){
+					saveAs(blob, "colors.json");
+				});
 			},
 			description: "Saves the current palette of colors to a file.",
 		}
@@ -385,12 +387,7 @@ var menus = {
 		$MenuBar.DIVIDER,
 		{
 			item: "&About Paint",
-			action: function(){
-				var $msgbox = new $Window();
-				$msgbox.title("About Paint");
-				$msgbox.$content.append($("#about-paint").show()).css({padding: "15px"});
-				$msgbox.center();
-			},
+			action: show_about_paint,
 			description: "Displays information about this application.",
 			//description: "Displays program information, version number, and copyright.",
 		}

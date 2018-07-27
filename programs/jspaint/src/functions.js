@@ -270,11 +270,13 @@ function file_save_as(){
 		});
 	}else{
 		canvas.toBlob(function(blob){
-			var file_saver = saveAs(blob, file_name.replace(/\.(bmp|png|gif|jpe?g|tiff|webp)$/, "") + ".png");
-			file_saver.onwriteend = function(){
-				// this won't fire in chrome
-				saved = true;
-			};
+			sanity_check_blob(blob, function(){
+				var file_saver = saveAs(blob, file_name.replace(/\.(bmp|png|gif|jpe?g|tiff|webp)$/, "") + ".png");
+				file_saver.onwriteend = function(){
+					// this won't fire in chrome
+					saved = true;
+				};
+			});
 		});
 	}
 }
@@ -348,6 +350,17 @@ function show_resource_load_error_message(){
 		$w.close();
 	});
 	$w.center();
+}
+
+var $about_paint_window;
+var $about_paint_content = $("#about-paint");
+function show_about_paint(){
+	if($about_paint_window){
+		$about_paint_window.close();
+	}
+	$about_paint_window = $Window().title("About Paint");
+	$about_paint_window.$content.append($about_paint_content.show()).css({padding: "15px"});
+	$about_paint_window.center();
 }
 
 // TODO: DRY between these functions and open_from_* functions further?
@@ -475,7 +488,9 @@ function render_history_as_gif(){
 			);
 			$win.$Button("Save", function(){
 				$win.close();
-				saveAs(blob, file_name.replace(/\.(bmp|png|gif|jpe?g|tiff|webp)$/, "") + " history.gif");
+				sanity_check_blob(blob, function(){
+					saveAs(blob, file_name.replace(/\.(bmp|png|gif|jpe?g|tiff|webp)$/, "") + " history.gif");
+				});
 			});
 			$cancel.appendTo($win.$buttons);
 			$win.center();
@@ -540,7 +555,9 @@ function render_history_as_apng(){
 			);
 			$win.$Button("Save", function(){
 				$win.close();
-				saveAs(blob, file_name + " history.png");
+				sanity_check_blob(blob, function(){
+					saveAs(blob, file_name + " history.png");
+				});
 			});
 			$cancel.appendTo($win.$buttons);
 			$win.center();
@@ -1085,7 +1102,9 @@ function set_as_wallpaper_centered(c){
 		});
 	}else{
 		c.toBlob(function(blob){
-			saveAs(blob, file_name.replace(/\.(bmp|png|gif|jpe?g|tiff|webp)$/, "") + " wallpaper.png");
+			sanity_check_blob(blob, function(){
+				saveAs(blob, file_name.replace(/\.(bmp|png|gif|jpe?g|tiff|webp)$/, "") + " wallpaper.png");
+			});
 		});
 	}
 }
@@ -1143,8 +1162,28 @@ function save_selection_to_file(){
 			});
 		}else{
 			selection.canvas.toBlob(function(blob){
-				saveAs(blob, "selection.png");
+				sanity_check_blob(blob, function(){
+					saveAs(blob, "selection.png");
+				});
 			});
 		}
+	}
+}
+
+function sanity_check_blob(blob, okay_callback){
+	if(blob.size > 0){
+		okay_callback();
+	}else{
+		var $w = $FormWindow().title("Warning").addClass("dialogue-window");
+		$w.$main.html(
+			"<p>Tried to save file, but file was empty.</p>" +
+			"<p>Try again, or if the problem persists, report here: " +
+			"<a href='https://github.com/1j01/jspaint/issues/118'>https://github.com/1j01/jspaint/issues/118</a>"
+		);
+		$w.$main.css({maxWidth: "500px"});
+		$w.$Button("OK", function(){
+			$w.close();
+		});
+		$w.center();
 	}
 }
