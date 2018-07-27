@@ -118,6 +118,10 @@ var load_winamp_bundle_if_not_loaded = function(callback){
 	}
 }
 function openWinamp(){
+	if($("#webamp").length){
+		// TODO: show & focus existing instance of webamp
+		return;
+	}
 	load_winamp_bundle_if_not_loaded(function(){
 		const webamp = new Webamp({
 			initialTracks: [{
@@ -130,59 +134,74 @@ function openWinamp(){
 			initialSkin: {
 				url: "programs/winamp/skins/base-2.91.wsz"
 			},
-			enableHotkeys: true
+			enableHotkeys: true,
+			// TODO: filePickers
 		});
 		
-		var container = document.createElement("div");
-		container.classList.add("webamp-container");
-		document.body.appendChild(container);
+		var visual_container = document.createElement("div");
+		visual_container.classList.add("webamp-visual-container");
+		visual_container.style.position = "absolute";
+		visual_container.style.left = "0";
+		visual_container.style.right = "0";
+		visual_container.style.top = "0";
+		visual_container.style.bottom = "0";
+		visual_container.style.pointerEvents = "none";
+		document.body.appendChild(visual_container);
 		// Render after the skin has loaded.
-		var renderPromise = webamp.renderWhenReady(container);
-
-		// TODO: handle blurring (currently one of the winamp windows is always selected)
-		// (but I don't really handle blurring for regular windows yet, so maybe I should do that first!)
-		
-		// TODO: refactor for less hackiness
-		var $win_for_Task = $(container);
-		$win_for_Task.title = function(title){
-			if(title !== undefined){
-				// this probably shouldn't ever happen
-			}else{
-				return "Winamp";
-			}
-		};
-		$win_for_Task.icon_name = "winamp2";
-		var task = new Task($win_for_Task);
-		webamp.onClose(function(){
-			// simulating $Window.close() except not allowing canceling close event (generally used *by* an application (for "Save changes?"), not outside of it)
-			$win_for_Task.triggerHandler("close");
-			$win_for_Task.triggerHandler("closed");
-			$(container).remove();
-		});
-		webamp.onMinimize(function(){
-			// TODO: refactor
-			task.$task.trigger("click");
-		});
-		
-		// Bring window to front, initially and when clicked
-		// copied from $Window.js, with `left: 0, top: 0` added
-		// (because it's a container rather than a window,
-		// and needs the left top origin for positioning the window)
-		$win_for_Task.css({
-			position: "absolute",
-			left: 0,
-			top: 0,
-			zIndex: $Window.Z_INDEX++
-		});
-		$win_for_Task.bringToFront = function(){
+		webamp.renderWhenReady(visual_container)
+		.then(function(){
+			console.log("Webamp rendered");
+			// TODO: handle blurring (currently one of the winamp windows is always selected)
+			// (but I don't really handle blurring for regular windows yet, so maybe I should do that first!)
+			
+			// TODO: refactor for less hackiness
+			var $win_for_Task = $("#webamp");
+			$win_for_Task.title = function(title){
+				if(title !== undefined){
+					// this probably shouldn't ever happen
+				}else{
+					return "Winamp";
+				}
+			};
+			$win_for_Task.icon_name = "winamp2";
+			var task = new Task($win_for_Task);
+			webamp.onClose(function(){
+				// simulating $Window.close() but not allowing canceling close event in this case (generally used *by* an application (for "Save changes?"), not outside of it)
+				$win_for_Task.triggerHandler("close");
+				$win_for_Task.triggerHandler("closed");
+				// alternatively: task.$task.remove();
+				// TODO: probably something like task.close()
+				$win_for_Task.remove(); // TODO: a better way to destroy Webamp?
+			});
+			webamp.onMinimize(function(){
+				// TODO: refactor
+				task.$task.trigger("click");
+			});
+			
+			// Bring window to front, initially and when clicked
+			// copied from $Window.js, with `left: 0, top: 0` added
+			// (because it's a container rather than a window,
+			// and needs the left top origin for positioning the window)
 			$win_for_Task.css({
+				position: "absolute",
+				left: 0,
+				top: 0,
 				zIndex: $Window.Z_INDEX++
 			});
-		};
-		$win_for_Task.on("pointerdown", function(){
-			$win_for_Task.bringToFront();
+			task.$task.trigger("click"); // TODO: don't click a toggle button, set/assert the state in a clean way
+			$win_for_Task.bringToFront = function(){
+				$win_for_Task.css({
+					zIndex: $Window.Z_INDEX++
+				});
+			};
+			$win_for_Task.on("pointerdown", function(){
+				$win_for_Task.bringToFront();
+			});
+		}, function(error){
+			// TODO: show_error_message("Failed to load Webamp:", error);
+			alert("Failed to render Webamp:\n\n" + error);
+			console.error(error);
 		});
-
 	});
 }
 
