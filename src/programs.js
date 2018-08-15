@@ -50,12 +50,15 @@ function Paint(){
 				backgroundImage: "url(" + canvas.toDataURL() + ")",
 				backgroundRepeat: "no-repeat",
 				backgroundPosition: "center",
+				backgroundSize: "auto",
 			});
 		};
 		contentWindow.systemSetAsWallpaperTiled = function(canvas){
 			$desktop.css({
 				backgroundImage: "url(" + canvas.toDataURL() + ")",
 				backgroundRepeat: "repeat",
+				backgroundPosition: "0 0",
+				backgroundSize: "auto",
 			});
 		};
 	});
