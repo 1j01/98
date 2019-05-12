@@ -13,11 +13,11 @@ Includes:
 
 Features:
 * Drop files onto the desktop, and they'll be stored in a virtual filesystem
-* Cheat codes ;)
-* A clock that shows the *actual time*, woo
+* Easter eggs (cheat codes) 😉
+* A clock that shows the *actual time*, wooooo
 * Currently, an extremely illegitimate start menu
 * Meticulous detail in many areas (altho there's obviously lots "missing")
-* Icons for various browsers, for home screens, for the Windows 10 start menu, even a *Safari pinned tab icon*, theoretically
+* You can add it to your homescreen on mobile
 
 ## Try it out
 
@@ -36,6 +36,7 @@ Apps that it would be nice to integrate:
 * [![](images/icons/pipes-16x16.png) Pipes](https://github.com/1j01/pipes)
 * [![](images/icons/solitaire-16x16.png) JavaScript Solitaire Game](https://github.com/uzi88/js-solitaire)
 * [![](images/icons/settings-16x16.png) Windows Classic theme designer](https://github.com/tpenguinltg/winclassic)
+* [![](images/icons/media-player-16x16.png) Win95 Media Player](https://benwiley4000.github.io/win95-media-player/)
 
 Other online operating systems / web desktops:
 
@@ -45,21 +46,27 @@ Other online operating systems / web desktops:
 | [![](images/icons/windows-93-16x16.png)&nbsp;Windows&nbsp;93](https://www.windows93.net/)             | a "fictional version of Windows" | (not open source currently)                                                                                                                            | [Discord](https://discord.gg/vAmMu7q)   |
 | [🏡 ZineOS](https://whimsy.space/)                                                                     | emojis everywhere                | [repo here](https://github.com/STRd6/zine) - MIT license                                                                                               | [Discord](https://discord.gg/tUj4zYA)   |
 | [![](images/icons/emuos-16x16.png)&nbsp;EmuOS](https://emupedia.net/beta/emuos/)                      | emulator-focused Win9X desktop   | [repo here](https://github.com/Emupedia/emupedia.github.io) - shared source                                                                            | [Discord](https://discord.gg/5u4VR9v)   |
-| [![](images/icons/os-js-16x16.png)&nbsp;OS.js](https://www.os-js.org/)                                | a more "legit" web desktop       | [repo here](https://github.com/os-js/OS.js) - simplified BSD license                                                                                   | [Gitter](https://gitter.im/os-js/OS.js) |
+| [![](images/icons/os-js-16x16.png)&nbsp;OS.js](https://www.os-js.org/)                                | a more serious web desktop       | [repo here](https://github.com/os-js/OS.js) - simplified BSD license                                                                                   | [Gitter](https://gitter.im/os-js/OS.js) |
 | [![](images/icons/friend-16x16.png)&nbsp;Friend](https://friendup.cloud/)                             | another serious one              | [repo here](https://github.com/FriendUPCloud/friendup) - different licenses for different [parts](https://github.com/FriendUPCloud/friendup#licensing) |                                         |
 | [![](images/icons/clouddesk-16x16.png)&nbsp;CloudDesk](http://altaica.altervista.org/)                | another serious one              | (explicitly not open source)                                                                                                                           |                                         |
-| [![](images/icons/aaronos-16x16.png)&nbsp;AaronOS](https://aaron-os-mineandcraft12.c9.io/aosBeta.php) | interesting aesthetic            | [repo here](https://github.com/MineAndCraft12/AaronOS) - shared source                                                                                 | [Discord](https://discord.gg/eWDac7E)   |
+| [![](images/icons/aaronos-16x16.png)&nbsp;AaronOS](https://aaronos.dev/AaronOS/aosBeta.php)           | interesting aesthetic            | [repo here](https://github.com/MineAndCraft12/AaronOS) - shared source                                                                                 | [Discord](https://discord.gg/eWDac7E)   |
 | [![](images/icons/webdesktop-16x16.png)&nbsp;Web&nbsp;Desktop](https://webdesktop.net/)               | Windows 10 like "startpage"      |                                                                                                                                                        |                                         |
 | [![](images/icons/system-16x16.png)&nbsp;System](https://system-developer-beta.000webhostapp.com/)    | Windows 10 like thing            |                                                                                                                                                        |                                         |
 | [![](images/icons/winxp-doge-16x16.png)&nbsp;WinXP](https://winxp.now.sh/)                            | Windows XP                       | [repo here](https://github.com/ShizukuIchi/winXP/) - MIT license                                                                                       |                                         |
 | [Windows 98 - Packard Belle](https://packard-belle.netlify.com/)                                      | Windows 98                       | [repo here](https://github.com/padraigfl/packard-belle-desktop) - shared source                                                                        |                                         |
 | [X-WebDesktop-Vue](http://47.93.49.248/X-WebDesktop-Vue/)                                             | Windows 7                        | [repo here](https://github.com/OXOYO/X-WebDesktop-Vue) - MIT license                                                                                   |                                         |
+| [![](images/icons/vue-win3.1-16x16.png)&nbsp;vue win3.1](https://disjfa.github.io/vue-win-3.1/)       | Windows 3.1                      | [repo here](https://github.com/disjfa/vue-win-3.1) - shared source                                                                                     |                                         |
+| [![](images/icons/virtualdesktop.org-16x16.png)&nbsp;VirtualDesktop](http://virtualdesktop.org/)      | Screenshot flows, several OSes   |                                                                                                                                                        |                                         |
+| [GUIdebook](https://guidebookgallery.org/guis/windows/)                                               | Screenshots, several OSes        |                                                                                                                                                        |                                         |
+
 
 Plus some other ones [on Wikipedia](https://en.wikipedia.org/wiki/Web_desktop)
 
 Libraries:
 * [![](images/icons/task-16x16.png) OS GUI](https://github.com/1j01/os-gui), which is in the process of being extracted from this project
-    * [![](images/icons/task-16x16.png) Packard Belle](https://github.com/padraigfl/packard-belle/) and [![](images/icons/task-16x16.png) React 95](https://github.com/React95/React95/), with similar goals!
+    * [Packard Belle](https://github.com/padraigfl/packard-belle/),
+      [React95](https://github.com/React95/React95/),
+      and another one called [React95](https://github.com/arturbien/React95), with similar goals!
 * [![](images/icons/folder-16x16.png) BrowserFS](https://github.com/jvilk/BrowserFS), a filesystem abstraction library powering 98.js
 
 Also:
