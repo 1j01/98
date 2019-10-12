@@ -45,7 +45,8 @@ rimraf('programs/jspaint', function (err) {
 		filter: [
 			'**',
 			'!node_modules/**',
-			'!.git/**'
+			'!.git/**',
+			'!out/**'
 		]
 	},
 		function (error, results) {
