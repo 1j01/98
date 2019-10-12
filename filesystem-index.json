@@ -28,6 +28,7 @@
   "images": {
     "3d.jpg": null,
     "arrows.png": null,
+    "clouds.jpg": null,
     "favicon-src": {
       "favicon-16x16.png": null,
       "favicon-32x32.png": null,
@@ -41,9 +42,12 @@
     },
     "icons": {
       "3d-mode-32x32.png": null,
-      "3rd-party": {},
+      "aaronos-16x16.png": null,
+      "aaronos-32x32.png": null,
+      "aaronos-48x48.png": null,
       "audio-nope-16x16.png": null,
       "audio-okay-16x16.png": null,
+      "clouddesk-16x16.png": null,
       "convert-audio-16x16.png": null,
       "convert-audio-32x32.png": null,
       "convert-video-16x16.png": null,
@@ -53,6 +57,9 @@
       "desktop-48x48.png": null,
       "doc-16x16.png": null,
       "doc-32x32.png": null,
+      "emuos-16x16.png": null,
+      "emuos-32x32.png": null,
+      "emuos-48x48.png": null,
       "favorites-16x16.png": null,
       "favorites-32x32.png": null,
       "favorites-48x48.png": null,
@@ -77,6 +84,7 @@
       "fonts-folder-16x16.png": null,
       "fonts-folder-32x32.png": null,
       "fonts-folder-48x48.png": null,
+      "friend-16x16.png": null,
       "hard-disk-drive-16x16-higher-color.png": null,
       "hard-disk-drive-16x16.png": null,
       "hard-disk-drive-32x32-higher-color.png": null,
@@ -124,6 +132,8 @@
       "logoff-48x48.png": null,
       "mail-16x16.png": null,
       "mail-32x32.png": null,
+      "media-player-16x16.png": null,
+      "media-player-32x32.png": null,
       "microphone-16x16.png": null,
       "microphone-32x32.png": null,
       "microphone-volume-control-32x32.png": null,
@@ -210,6 +220,7 @@
       "start-menu-programs-32x32.png": null,
       "start-settings-16x16.png": null,
       "start-settings-32x32.png": null,
+      "system-16x16.png": null,
       "task-16x16.png": null,
       "task-32x32.png": null,
       "task-scheduler-16x16.png": null,
@@ -222,7 +233,11 @@
       "unknown-printer-48x48.png": null,
       "video-16x16.png": null,
       "video-32x32.png": null,
+      "virtualdesktop.org-16x16.png": null,
+      "vue-win3.1-16x16.png": null,
+      "vue-win3.1-32x32.png": null,
       "warning-32x32.png": null,
+      "webdesktop-16x16.png": null,
       "win98_icons - Shortcut.lnk": null,
       "winamp2-16x16.png": null,
       "winamp2-32x32.png": null,
@@ -231,7 +246,8 @@
       "windows-93-48x48.png": null,
       "windows-update-16x16.png": null,
       "windows-update-32x32.png": null,
-      "windows-update-48x48.png": null
+      "windows-update-48x48.png": null,
+      "winxp-doge-16x16.png": null
     },
     "logo": {
       "98.js.org.svg": null,
@@ -284,10 +300,12 @@
       "README.md": null
     },
     "jspaint": {
-      "chrome-app.js": null,
-      "CNAME": null,
+      "browserconfig.xml": null,
       "CONTRIBUTING.md": null,
+      "favicon.ico": null,
       "help": {
+        "cloud-mask.png": null,
+        "clouds.jpg": null,
         "coUA.css": null,
         "default.html": null,
         "flag&clouds.gif": null,
@@ -331,6 +349,7 @@
         "paint_undo.html": null,
         "paint_wallpaper.html": null,
         "paint_zoom.html": null,
+        "prettify-html.ahk": null,
         "p_airb.gif": null,
         "p_brush.gif": null,
         "p_curve.gif": null,
@@ -347,7 +366,8 @@
         "p_rrect.gif": null,
         "p_sel.gif": null,
         "p_trans.gif": null,
-        "p_txt.gif": null
+        "p_txt.gif": null,
+        "vaporwave.js": null
       },
       "images": {
         "98.js.org.svg": null,
@@ -370,11 +390,33 @@
         },
         "help-icons.png": null,
         "icons": {
-          "128.png": null,
-          "16.png": null,
-          "32.png": null,
-          "48.png": null,
+          "128x128.png": null,
+          "144x144.png": null,
+          "16x16.png": null,
+          "192x192.png": null,
+          "32x32.png": null,
+          "36x36.png": null,
+          "48x48.png": null,
+          "512x512.png": null,
+          "72x72.png": null,
+          "96x96.png": null,
+          "apple-icon-180x180.png": null,
+          "jspaint.svg": null,
+          "mac.icns": null,
+          "ms-icon-144x144.png": null,
+          "ms-icon-150x150.png": null,
+          "ms-icon-310x310.png": null,
+          "ms-icon-70x70.png": null,
+          "og-image-279x279.jpg": null,
+          "safari-pinned-tab-source.svg": null,
+          "safari-pinned-tab.svg": null,
+          "silhouette-48x48.svg": null,
           "windows.ico": null
+        },
+        "meta": {
+          "main-screenshot.png": null,
+          "mobipaint.png": null,
+          "twitter-card-plz-no-crop.png": null
         },
         "modern": {
           "cursors": {
@@ -421,10 +463,6 @@
         "options-airbrush-size.png": null,
         "options-magnification.png": null,
         "options-transparency.png": null,
-        "readme": {
-          "main-screenshot.png": null,
-          "mobipaint.png": null
-        },
         "text-tools.png": null,
         "toolbar-icons.png": null,
         "tools-and-stuff.png": null,
@@ -448,13 +486,15 @@
           "gif.worker.js": null,
           "gif.worker.js.map": null
         },
-        "jquery.min.js": null,
+        "jquery-3.4.1.min.js": null,
         "konami.js": null,
+        "libtess.min.js": null,
         "palette.js": null,
         "pep.js": null
       },
-      "manifest.json": null,
-      "manifest.webapp": null,
+      "manifest.webmanifest": null,
+      "netlify.toml": null,
+      "out": {},
       "package-lock.json": null,
       "package.json": null,
       "README.md": null,
@@ -486,6 +526,8 @@
         "$Window.js": null,
         "app.js": null,
         "canvas-change.js": null,
+        "electron-injected.js": null,
+        "electron-main.js": null,
         "extra-tools.js": null,
         "functions.js": null,
         "help.js": null,
@@ -494,11 +536,13 @@
         "imgur.js": null,
         "manage-storage.js": null,
         "menus.js": null,
+        "OnCanvasHelperLayer.js": null,
         "OnCanvasObject.js": null,
-        "Selection.js": null,
+        "OnCanvasSelection.js": null,
+        "OnCanvasTextBox.js": null,
         "sessions.js": null,
+        "simulate-random-gestures.js": null,
         "storage.js": null,
-        "TextBox.js": null,
         "theme.js": null,
         "tool-options.js": null,
         "tools.js": null,
@@ -513,6 +557,7 @@
           "modern.css": null
         }
       },
+      "test-news-newer.html": null,
       "test.js": null,
       "TODO.md": null
     },
@@ -605,6 +650,5 @@
     "Task.js": null,
     "update-jspaint.js": null
   },
-  "TODO.md": null,
-  "~ Pictures and stuff -  Shortcut ~.lnk": null
+  "TODO.md": null
 }
