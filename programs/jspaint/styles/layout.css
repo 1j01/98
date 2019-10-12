@@ -13,7 +13,7 @@ html, body, .jspaint {
 .choose-eraser,
 .choose-magnification,
 .choose-stroke-size,
-.choose-transparency {
+.choose-transparent-mode {
 	flex-flow: column;
 	align-items: center;
 	justify-content: space-around;
@@ -51,7 +51,7 @@ html, body, .jspaint {
 .jspaint > .vertical {
 	height: 100%;
 }
-@media (max-width: 300px) {
+@media (max-width: 200px) {
 	.horizontal > .component-area {
 		display: none;
 	}
@@ -61,7 +61,7 @@ html, body, .jspaint {
 		display: none;
 	}
 }
-@media (max-height: 370px) {
+@media (max-height: 359px) {
 	.vertical > .status-area {
 		display: none !important;
 	}
@@ -99,7 +99,8 @@ html, body, .jspaint {
 	-moz-box-sizing: border-box;
 }
 .selection > img,
-.selection > canvas {
+.selection > canvas,
+.helper-layer > canvas {
 	width: 100%;
 	height: 100%;
 }
@@ -265,7 +266,7 @@ html, body, .jspaint {
 	cursor: default;
 }
 .window-close-button {
-	display: inline-block !important;
+	display: block !important;
 	float: right;
 }
 .window-close-button:before {
@@ -296,12 +297,6 @@ html, body, .jspaint {
 }
 .dialogue-window .window-content > form > div:first-child {
 	padding: 5px;
-}
-
-.version-number {
-	/* TODO: separate into a shared.css? (not really layout!) */
-	font-size: 0.6em;
-	color: #7b7b7b;
 }
 
 .help-window .window-content {
@@ -386,4 +381,41 @@ html, body, .jspaint {
 
 .cursor-bully * {
 	cursor: inherit !important;
+}
+
+#about-paint-header {
+	display: flex;
+	flex-direction: row;
+	margin: 0;
+	margin-top: 30px;
+	margin-bottom: 10px;
+}
+#jspaint-project-name {
+	margin-left: 10px;
+	margin-right: 8px;
+}
+#jspaint-version {
+	/* TODO: separate into a shared.css? (not really layout!) */
+	font-size: 0.6em;
+	color: #7b7b7b;
+}
+#maybe-outdated-line {
+	font-style: italic;
+	height: 2em;
+}
+#view-project-news {
+	margin: auto;
+	margin-right: 40px;
+	width: 150px;
+	height: 2.2em;
+}
+
+#news {
+	max-height: 500px;
+	overflow: auto;
+}
+@media (max-height: 550px) {
+	#news {
+		max-height: calc(100vh - 50px);
+	}
 }

@@ -1,8 +1,4 @@
 
-// make jQuery play well with PEP
-$.event.props.push("button", "buttons", "clientX", "clientY", "offsetX", "offsetY", "pageX", "pageY", "screenX", "screenY", "toElement");
-$.event.props.push("pointerType", "pointerId", "width", "height", "pressure", "tiltX", "tiltY", "hwTimestamp", "isPrimary");
-
 // configure Font Detective
 FontDetective.swf = "./lib/FontList.swf";
 
@@ -80,7 +76,11 @@ function Canvas(width, height){
 		// setting width/height resets image smoothing (along with everything)
 		new_ctx.disable_image_smoothing();
 		
-		new_ctx.drawImage(image, 0, 0);
+		if (image instanceof ImageData) {
+			new_ctx.putImageData(image, 0, 0);
+		} else {
+			new_ctx.drawImage(image, 0, 0);
+		}
 	};
 	
 	if(width && height){

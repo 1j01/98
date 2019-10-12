@@ -1,9 +1,9 @@
 
-# [![](images/icons/32.png) JS Paint](https://jspaint.app)
+# [![](images/icons/32x32.png) JS Paint](https://jspaint.app)
 
 A nice web-based MS Paint remake and more... [Try it out!](https://jspaint.app)
 
-<!-- You can also run it as a desktop app... -->
+<!-- TODO: You can also run it as a [desktop app...](#desktop-app) -->
 
 
 The goal is to remake MS Paint
@@ -40,12 +40,11 @@ I want to bring good old paint into the modern era.
 * Cross-platform
 * Unlimited undos/redos (as opposed to a measly 3 in Windows XP,
   or a measly 50 in Windows 7)
-* Autosaves if you allow local storage.
-  (Try refreshing the page to make sure this works, and to check it out)
+* Autosaves a backup of your image. Only one backup tho, which is apparently not enough, because the browser may clear the canvas to free up memory, and you're likely to lose the backup when this happens because it gets overwritten. If this happens (canvas becomes a checkerboard), try to undo (a few times), and if that doesn't work, try to refresh the page. Remember to save with File > Save!
 * Edit transparent images! To create a transparent image,
   go to **Image > Attributes...** and select Transparent,
   then Okay, and then **Image > Clear Image** or use the Eraser tool.
-  Images with *any* transparent pixels will open in Transparent mode.
+  Images with *any* translucent pixels will open in Transparent mode.
 * Go to **View > Extras Menu** to enable access to additional features not available in MS Paint
 * Switch themes from the Extras menu
 * Create an animated GIF from the current document history.
@@ -53,7 +52,7 @@ I want to bring good old paint into the modern era.
   It's pretty nifty, you should try it out!
   You might want to limit the size of the image though.
 * You can shoot at it [Asteroids style](https://kickassapp.com/)
-* When you do **Edit > Paste From...** you can select transparent images and GIFs.
+* When you do **Edit > Paste From...** you can select transparent images.
   ~~You can even paste a transparent animated GIF and then
   hold <kbd>Shift</kbd> while dragging the selection to
   smear it across the canvas *while it animates*!~~
@@ -61,11 +60,13 @@ I want to bring good old paint into the modern era.
   I may reimplement this in the future as I really liked this feature.
 * You can open SVG files (because browsers support SVG).
   It's still a completely raster image editor though.
+  (And you can't choose a size to render the SVG at. It may open super large, or tiny.)
 * You can crop the image by making a selection while holding <kbd>Ctrl</kbd>
 * Keyboard shortcuts for rotation: <kbd>Ctrl+.</kbd> and <kbd>Ctrl+,</kbd> (<kbd><</kbd> and <kbd>></kbd>)
 * Rotate by any arbitrary angle in **Image > Flip/Rotate**
 * In **Image > Stretch/Skew**, you can stretch more than 500% at once
-* Replace a color in the entire image by holding <kbd>Shift</kbd> and using the fill tool (AKA non-contiguous fill)
+* Zoom to an arbitrary scale in **View > Zoom > Custom...**
+* Non-contiguous fill: Replace a color in the entire image by holding <kbd>Shift</kbd> when using the fill tool
 * Rudimentary **multi-user** support.
   Start up a session at
   [jspaint.app/#session:multi-user-test](https://jspaint.app/#session:multi-user-test)
@@ -75,7 +76,7 @@ I want to bring good old paint into the modern era.
   If you want better collaboration support, follow the development of [Mopaint](https://github.com/1j01/mopaint).
 * Load many different palette formats with **Colors > Get Colors**.
   (I made a [library](https://github.com/1j01/palette.js/) for this.)
-* Mobile support
+* Mobile support (altho fairly lacking in some areas. it'd be nice if you could pan and zoom with two fingers)
 * Click/tap the selected colors area to swap the foreground and background colors
 
 ![JS Paint drawing of JS Paint on a phone](images/meta/mobipaint.png)
@@ -96,13 +97,14 @@ I want to bring good old paint into the modern era.
 A lot of stuff isn't done yet.
 See: [the big long todo list.](TODO.md)
 
-Clipboard support is somewhat limited.
-You can copy with <kbd>Ctrl+C</kbd>, cut with <kbd>Ctrl+X</kbd>, and paste with <kbd>Ctrl+V</kbd>,
+Full clipboard support in the web app requires a browser supporting the [Async Clipboard API w/ Images](https://developers.google.com/web/updates/2019/07/image-support-for-async-clipboard), namely Chrome 76+ at the time of writing.
+
+In other browsers you can still can copy with <kbd>Ctrl+C</kbd>, cut with <kbd>Ctrl+X</kbd>, and paste with <kbd>Ctrl+V</kbd>,
 but data copied from JS Paint can only be pasted into other instances of JS Paint.
-There's apparently no way for web apps to properly copy image data to the clipboard.
-"[Support programmatical copying of images to clipboard](https://bugs.chromium.org/p/chromium/issues/detail?id=150835)"
-is currently the top starred issue of chromium.
-<!-- TODO: To use the clipboard menu items, you need to install the native app. -->
+External images can be pasted in.
+
+There's also a [desktop app](#desktop-app) version you can install that has full clipboard support,  
+which also lets you set the wallpaper.
 
 
 ## Extended Editing
@@ -128,7 +130,7 @@ I want to make JS Paint to be able to edit...
   and I've made it try not to save over the original SVG.
   That's pretty decent SVG support for a 100% raster image editor.
 * [Text files][TXT] (definitely just kidding maybe)
-* Tesselating patterns, and textures on 3D models;
+* Tessellating patterns, and textures on 3D models;
   that might be a pipe dream, but [then again...](https://github.com/1j01/pipes) [hm...](https://github.com/1j01/mopaint)
 
 
@@ -167,23 +169,51 @@ I want to make JS Paint to be able to edit...
 	* [x] The 'Stamp' "Tool" (hold <kbd>Shift</kbd> and click the selection to stamp it)
 	* [x] Image Scaling (<kbd>+</kbd> & <kbd>-</kbd> on the Numpad to scale the selection by factors of 2)
 	* [x] Color Replacement (right mouse button with Eraser to selectively replace the foreground color with the background color)
-	* [ ] The Grid (<kbd>Ctrl+G</kbd> & Zoom to 6x+)
-	* [ ] Quick Undo (Pressing a second mouse button cancels the action you were performing.
-	      I also made it redoable, in case you do it by accident! But [it broke at some point in Chrome.](https://github.com/1j01/jspaint/issues/9))
+	* [x] The Grid (<kbd>Ctrl+G</kbd> & Zoom to 4x+)
+	* [x] Quick Undo (Pressing a second mouse button cancels the action you were performing.
+	      I also made it redoable, in case you do it by accident!)
 	* [ ] Scroll Wheel Bug (Hmm, let's maybe not recreate this?)
+
+
+## Desktop App
+
+I've started work on a desktop app, built with [Electron][] and [Electron Forge][].
+
+There are no releases yet, but the groundwork has been laid, and several features implemented. 
+
+If you want to help out, see Development Setup below, and comment on [this issue](https://github.com/1j01/jspaint/issues/2) to show your interest.
+
+[Electron]: https://electronjs.org/
+[Electron Forge]: https://electronforge.io/
+
 
 ## Development Setup
 
 [Clone the repo.](https://help.github.com/articles/cloning-a-repository/)
 
-There's currently no build step of any kind.
+Install [Node.js][] if you don't have it, then open up a command prompt / terminal in the project directory.
+
+### Web App (https://jspaint.app)
+
 You just need an HTTP server.
 
-[Live Server][] is nice (it auto reloads when you save changes),
-and it's included in `package.json` so if you want you can do
-`npm i` to install dependencies and `npm run dev` to run it.
+[Live Server][] is great; it auto reloads when you save changes.
 
-Alternatively you can install it globally with `npm i -g live-server`
-and run it with `live-server`.
+You can install it globally with `npm i -g live-server`
+and run it with `live-server`
+
+It's also included in `package.json` so if you've already installed dependencies (`npm i`) you can use `npm run dev` to run it.
+
+### Desktop App (Electron)
+
+- Install dependencies with `npm i`
+- Start the electron app with `npm start`
+
+[electron-debug][] and [devtron][] are included, so you can use <kbd>Ctrl+R</kbd> to reload and <kbd>F12</kbd>/<kbd>Ctrl+Shift+I</kbd> to open the devtools, and there's a Devtron tab with tools specific to Electron like an IPC message inspector.
+
+You can build for production with `npm run make`
 
 [Live Server]: https://github.com/tapio/live-server
+[Node.js]: https://nodejs.org/
+[electron-debug]: https://github.com/sindresorhus/electron-debug
+[devtron]: https://electronjs.org/devtron

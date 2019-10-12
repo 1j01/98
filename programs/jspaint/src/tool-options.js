@@ -7,7 +7,7 @@ var eraser_size = 8;
 var airbrush_size = 9;
 var pencil_size = 1;
 var stroke_size = 1; // lines, curves, shape outlines
-var transparent_opaque = "opaque"; // TODO: make this a boolean (and think of a good name)
+var tool_transparent_mode = false;
 
 var ChooserCanvas = function(
 	url, invert,
@@ -37,7 +37,7 @@ var ChooserCanvas = function(
 			c.ctx.putImageData(id, 0, 0);
 		}
 	};
-	$(img).load(render);
+	$(img).on("load", render);
 	render();
 	return c;
 };
@@ -227,9 +227,6 @@ var $choose_magnification = $Choose(
 	},
 	function(scale){
 		set_magnification(scale);
-		if(scale > 1){
-			$choose_magnification.enlarged_magnification = scale;
-		}
 	},
 	function(scale){
 		return scale === magnification;
@@ -243,11 +240,6 @@ $choose_magnification.on("update", function(){
 		.parent()
 		.css({position: "absolute", bottom: "-2px", left: 0, opacity: 0});
 });
-
-// The default enlarged (>1) magnification for when you use the tool
-// is 4x, which isn't an option you can get to from the tool options.
-$choose_magnification.enlarged_magnification = 4;
-
 
 var airbrush_sizes = [9, 16, 24];
 var $choose_airbrush_size = $Choose(
@@ -280,24 +272,24 @@ var $choose_airbrush_size = $Choose(
 	}
 ).addClass("choose-airbrush-size");
 
-var $choose_transparency = $Choose(
-	["opaque", "transparent"],
-	function(t_o, is_chosen){
+var $choose_transparent_mode = $Choose(
+	[false, true],
+	function(_tool_transparent_mode, is_chosen){
 		var sw = 35, sh = 23; // width, height from source image
 		var b = 2; // margin by which the source image is inset on the destination
 		return ChooserCanvas(
 			"images/options-transparency.png",
 			false, // never invert it
 			b+sw+b, b+sh+b, // width, height of created destination canvas
-			0, (t_o === "opaque" ? 0 : 22), sw, sh, // x, y, width, height from source image
+			0, _tool_transparent_mode ? 22 : 0, sw, sh, // x, y, width, height from source image
 			b, b, sw, sh // x, y, width, height on created destination canvas
 		);
 	},
-	function(t_o){
-		transparent_opaque = t_o;
+	function(_tool_transparent_mode){
+		tool_transparent_mode = _tool_transparent_mode;
 	},
-	function(t_o){
-		return t_o === transparent_opaque;
+	function(_tool_transparent_mode){
+		return _tool_transparent_mode === tool_transparent_mode;
 	}
-).addClass("choose-transparency");
+).addClass("choose-transparent-mode");
 

@@ -1,3 +1,6 @@
+:root {
+	--theme-loaded: "modern.css";
+}
 
 body {
 	font-family: Roboto, sans-serif;
@@ -11,9 +14,17 @@ body {
 	background-size: 8px;
 }
 
-.canvas-area canvas,
-.selection canvas,
-.selection img {
+@media (resolution: 1x), (resolution: 2x), (min-resolution: 3x) {
+	.canvas-area canvas,
+	.selection canvas,
+	.selection img {
+		image-rendering: crisp-edges;
+		image-rendering: pixelated;
+		image-rendering: -moz-crisp-edges;
+	}
+}
+.disable-aa-for-things-at-main-canvas-scale .main-canvas,
+.disable-aa-for-things-at-main-canvas-scale .selection canvas {
 	image-rendering: crisp-edges;
 	image-rendering: pixelated;
 	image-rendering: -moz-crisp-edges;

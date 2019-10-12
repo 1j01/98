@@ -32,9 +32,13 @@ function $ToolBox(tools, is_extras){
 			backgroundPosition: bx + "px " + -by + "px",
 		});
 		
-		$b.on("click", function(){
+		$b.on("click", function(e){
+			if (e.shiftKey || e.ctrlKey) {
+				select_tool(tool, true);
+				return;
+			}
 			if(selected_tool === tool && tool.deselect){
-				select_tool(previous_tool);
+				select_tools(return_to_tools);
 			}else{
 				select_tool(tool);
 			}
@@ -61,7 +65,9 @@ function $ToolBox(tools, is_extras){
 	var $c = $Component(is_extras ? "Extra Tools" : "Tools", "tall", $tools.add($tool_options));
 	$c.update_selected_tool = function(){
 		$buttons.removeClass("selected");
-		selected_tool.$button.addClass("selected");
+		selected_tools.forEach((selected_tool)=> {
+			selected_tool.$button.addClass("selected");
+		});
 		$tool_options.children().detach();
 		$tool_options.append(selected_tool.$options);
 		$tool_options.children().trigger("update");

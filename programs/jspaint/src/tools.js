@@ -1,9 +1,13 @@
 
 tools = [{
+	// @#: polygonal selection, polygon selection, shape selection, freeform selection
 	name: "Free-Form Select",
 	description: "Selects a free-form part of the picture to move, copy, or edit.",
 	cursor: ["precise", [16, 16], "crosshair"],
-	// passive: @TODO,
+	passive: true,
+
+	// A canvas for rendering a preview of the shape
+	preview_canvas: null,
 	
 	// The vertices of the polygon
 	points: [],
@@ -21,13 +25,10 @@ tools = [{
 		tool.y_min = pointer.y;
 		tool.y_max = pointer.y+1;
 		tool.points = [];
-		
+		tool.preview_canvas = new Canvas(canvas.width, canvas.height);
+
 		// End prior selection, drawing it to the canvas
 		deselect();
-		// Checkpoint so we can roll back inverty brush
-		// XXX: Shouldn't use the undo stack for this at all!
-		// TODO: Create an OnCanvasObject for the inverty brush, and make selection a passive action
-		undoable();
 
 		// The inverty brush is continuous in space which means
 		// paint(ctx, x, y) will be called for each pixel the pointer moves
@@ -68,11 +69,9 @@ tools = [{
 		var rect_w = inverty_size;
 		var rect_h = inverty_size;
 		
-		var ctx_src = undos[undos.length-1].getContext("2d");//psh
-		
-		// Make two tiny ImageData objects,
-		var id_dest = ctx.getImageData(rect_x, rect_y, rect_w, rect_h);
-		var id_src = ctx_src.getImageData(rect_x, rect_y, rect_w, rect_h);
+		var ctx_dest = this.preview_canvas.ctx;
+		var id_src = ctx.getImageData(rect_x, rect_y, rect_w, rect_h);
+		var id_dest = ctx_dest.getImageData(rect_x, rect_y, rect_w, rect_h);
 		
 		for(var i=0, l=id_dest.data.length; i<l; i+=4){
 			id_dest.data[i+0] = 255 - id_src.data[i+0];
@@ -82,13 +81,12 @@ tools = [{
 			// @TODO maybe: invert based on id_src.data[i+3] and the background
 		}
 		
-		ctx.putImageData(id_dest, rect_x, rect_y);
-		
+		ctx_dest.putImageData(id_dest, rect_x, rect_y);
 	},
 	pointerup: function(){
-		// Revert the inverty brush paint
-		ctx.copy(undos[undos.length-1]);
-		
+		this.preview_canvas.width = 1;
+		this.preview_canvas.height = 1;
+
 		var contents_within_polygon = copy_contents_within_polygon(
 			canvas,
 			this.points,
@@ -98,7 +96,14 @@ tools = [{
 			this.y_max
 		);
 		
-		selection = new Selection(
+		if(selection){
+			// for silly multitools feature
+			// TODO: select a rectangle minus the polygon, or xor the polygon
+			selection.draw();
+			selection.destroy();
+			selection = null;
+		}
+		selection = new OnCanvasSelection(
 			this.x_min,
 			this.y_min,
 			this.x_max - this.x_min,
@@ -107,8 +112,19 @@ tools = [{
 		selection.instantiate(contents_within_polygon);
 		selection.cut_out_background();
 	},
-	$options: $choose_transparency
+	cancel: function(){
+		if(!this.preview_canvas){return;}
+		this.preview_canvas.width = 1;
+		this.preview_canvas.height = 1;
+	},
+	drawPreviewUnderGrid: function(ctx, x, y, scaled_by_amount, grid_visible) {
+		if(!pointer_active && !pointer_over_canvas){return;}
+		if(!this.preview_canvas){return;}
+		ctx.drawImage(this.preview_canvas, 0, 0);
+	},
+	$options: $choose_transparent_mode
 }, {
+	// @#: rectangle selection, rectangular selection
 	name: "Select",
 	description: "Selects a rectangular part of the picture to move, copy, or edit.",
 	cursor: ["precise", [16, 16], "crosshair"],
@@ -134,7 +150,7 @@ tools = [{
 				selection = null;
 			}
 		});
-		selection = new Selection(pointer.x, pointer.y, 1, 1);
+		selection = new OnCanvasSelection(pointer.x, pointer.y, 1, 1);
 	},
 	paint: function(){
 		if(!selection){ return; }
@@ -164,13 +180,40 @@ tools = [{
 		selection.destroy();
 		selection = null;
 	},
-	$options: $choose_transparency
+	$options: $choose_transparent_mode
 }, {
+	// @#: eraser but also color replacer
 	name: "Eraser/Color Eraser",
 	description: "Erases a portion of the picture, using the selected eraser shape.",
 	cursor: ["precise", [16, 16], "crosshair"],
-	// @TODO: draw square on canvas as cursor
 	continuous: "space",
+	drawPreviewUnderGrid: function(ctx, x, y, scaled_by_amount, grid_visible) {
+		if(!pointer_active && !pointer_over_canvas){return;}
+		var rect_x = ~~(x - eraser_size/2);
+		var rect_y = ~~(y - eraser_size/2);
+		var rect_w = eraser_size;
+		var rect_h = eraser_size;
+		
+		ctx.fillStyle = colors.background;
+		ctx.fillRect(rect_x, rect_y, rect_w, rect_h);
+	},
+	drawPreviewAboveGrid: function(ctx, x, y, scaled_by_amount, grid_visible) {
+		if(!pointer_active && !pointer_over_canvas){return;}
+		var hairline_width = 1/scaled_by_amount;
+
+		var rect_x = ~~(x - eraser_size/2);
+		var rect_y = ~~(y - eraser_size/2);
+		var rect_w = eraser_size;
+		var rect_h = eraser_size;
+		
+		ctx.strokeStyle = "black";
+		ctx.lineWidth = hairline_width;
+		if (grid_visible) {
+			ctx.strokeRect(rect_x+ctx.lineWidth/2, rect_y+ctx.lineWidth/2, rect_w, rect_h);
+		} else {
+			ctx.strokeRect(rect_x+ctx.lineWidth/2, rect_y+ctx.lineWidth/2, rect_w-ctx.lineWidth, rect_h-ctx.lineWidth);
+		}
+	},
 	paint: function(ctx, x, y){
 		
 		var rect_x = ~~(x - eraser_size/2);
@@ -215,6 +258,7 @@ tools = [{
 	},
 	$options: $choose_eraser_size
 }, {
+	// @#: fill bucket, flood fill
 	name: "Fill With Color",
 	description: "Fills an area with the selected drawing color.",
 	cursor: ["fill-bucket", [8, 22], "crosshair"],
@@ -232,6 +276,7 @@ tools = [{
 		}
 	}
 }, {
+	// @#: eyedropper, eye dropper, Pasteur pipette, select colors, pick colors
 	name: "Pick Color",
 	description: "Picks up a color from the picture for drawing.",
 	cursor: ["eye-dropper", [9, 22], "crosshair"],
@@ -271,6 +316,7 @@ tools = [{
 	},
 	$options: $(E("div"))
 }, {
+	// @#: magnifying glass, zoom
 	name: "Magnifier",
 	description: "Changes the magnification.",
 	cursor: ["magnifier", [16, 16], "zoom-in"],
@@ -280,10 +326,10 @@ tools = [{
 	passive: true,
 	// @TODO: choose and preview viewport with rectangular cursor
 	pointerdown: function(){
-		if(magnification > 1){
+		if(magnification !== 1){
 			reset_magnification();
 		}else{
-			set_magnification(this.$options.enlarged_magnification);
+			set_magnification(return_to_magnification);
 		}
 	},
 	$options: $choose_magnification
@@ -344,8 +390,13 @@ tools = [{
 		}
 		ctx.drawImage(brush_canvas, Math.ceil(x-csz/2), Math.ceil(y-csz/2));
 	},
+	drawPreviewUnderGrid: function(ctx, x, y, scaled_by_amount, grid_visible) {
+		if(!pointer_active && !pointer_over_canvas){return;}
+		this.paint(ctx, x, y);
+	},
 	$options: $choose_brush
 }, {
+	// @#: spray paint
 	name: "Airbrush",
 	description: "Draws using an airbrush of the selected size.",
 	cursor: ["airbrush", [7, 22], "crosshair"],
@@ -367,7 +418,7 @@ tools = [{
 	description: "Inserts text into the picture.",
 	cursor: ["precise", [16, 16], "crosshair"],
 	passive: true,
-	activate: function(){
+	preload: function(){
 		setTimeout(FontDetective.preload, 10);
 	},
 	drag_start_x: 0,
@@ -390,7 +441,7 @@ tools = [{
 				textbox = null;
 			}
 		});
-		textbox = new TextBox(pointer.x, pointer.y, 1, 1);
+		textbox = new OnCanvasTextBox(pointer.x, pointer.y, 1, 1);
 	},
 	paint: function(){
 		if(!textbox){ return; }
@@ -413,7 +464,7 @@ tools = [{
 		textbox.destroy();
 		textbox = null;
 	},
-	$options: $choose_transparency
+	$options: $choose_transparent_mode
 }, {
 	name: "Line",
 	description: "Draws a straight line with the selected line width.",
@@ -442,12 +493,10 @@ tools = [{
 	},
 	pointerdown: function(ctx, x, y){
 		if(this.points.length < 1){
-			// This would be so much better in CoffeeScript
-			var thine = this;
-			undoable(function(){
-				thine.points.push({x: x, y: y});
+			undoable(()=> {
+				this.points.push({x: x, y: y});
 				// second point so first action draws a line
-				thine.points.push({x: x, y: y});
+				this.points.push({x: x, y: y});
 			});
 		}else{
 			this.points.push({x: x, y: y});
@@ -497,6 +546,7 @@ tools = [{
 	shape: function(){true},
 	$options: $choose_stroke_size
 }, {
+	// @#: square
 	name: "Rectangle",
 	description: "Draws a rectangle with the selected fill style.",
 	cursor: ["precise", [16, 16], "crosshair"],
@@ -643,6 +693,7 @@ tools = [{
 	shape_colors: true,
 	$options: $ChooseShapeStyle()
 }, {
+	// @#: circle
 	name: "Ellipse",
 	description: "Draws an ellipse with the selected fill style.",
 	cursor: ["precise", [16, 16], "crosshair"],
@@ -667,6 +718,7 @@ tools = [{
 	},
 	$options: $ChooseShapeStyle()
 }, {
+	// @#: rounded square
 	name: "Rounded Rectangle",
 	description: "Draws a rounded rectangle with the selected fill style.",
 	cursor: ["precise", [16, 16], "crosshair"],
@@ -674,9 +726,10 @@ tools = [{
 		if(w < 0){ x += w; w = -w; }
 		if(h < 0){ y += h; h = -h; }
 
+		var radius;
 		if(w < stroke_size || h < stroke_size){
 			ctx.fillStyle = ctx.strokeStyle;
-			var radius = Math.min(8, w/2, h/2);
+			radius = Math.min(8, w/2, h/2);
 			// var radius_x = Math.min(8, w/2);
 			// var radius_y = Math.min(8, h/2);
 			draw_rounded_rectangle(
@@ -688,7 +741,7 @@ tools = [{
 				true
 			);
 		}else{
-			var radius = Math.min(8, (w - stroke_size)/2, (h - stroke_size)/2);
+			radius = Math.min(8, (w - stroke_size)/2, (h - stroke_size)/2);
 			// var radius_x = Math.min(8, (w - stroke_size)/2);
 			// var radius_y = Math.min(8, (h - stroke_size)/2);
 			draw_rounded_rectangle(

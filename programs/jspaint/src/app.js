@@ -4,6 +4,7 @@ var transparency = false;
 var monochrome = false;
 
 var magnification = 1;
+var return_to_magnification = 4;
 
 var default_canvas_width = 683;
 var default_canvas_height = 384;
@@ -11,6 +12,7 @@ var my_canvas_width = default_canvas_width;
 var my_canvas_height = default_canvas_height;
 
 var canvas = new Canvas();
+canvas.classList.add("main-canvas");
 var ctx = canvas.ctx;
 
 var palette = [
@@ -27,26 +29,30 @@ var stroke_color_k = 0;
 var fill_color_k = 0;
 
 var selected_tool = tools[6];
-var previous_tool = selected_tool;
+var selected_tools = [selected_tool];
+var return_to_tools = [selected_tool];
 var colors = {
 	foreground: "",
 	background: "",
 	ternary: "",
 };
 
-var selection; //the one and only Selection
-var textbox; //the one and only TextBox
+var selection; //the one and only OnCanvasSelection
+var textbox; //the one and only OnCanvasTextBox
+var helper_layer; //the OnCanvasHelperLayer for the grid and tool previews
+var show_grid = false;
 var font = {
 	family: "Arial",
 	size: 12,
 	line_scale: 20 / 12
 };
 
-var undos = []; //array of <canvas>
-var redos = []; //array of <canvas>
-//var frames = []; //array of {delay: N, undos: [<canvas>], redos: [<canvas>], canvas: <canvas>}? array of Frames?
+var undos = []; //array of ImageData
+var redos = []; //array of ImageData
+//var frames = []; //array of {delay: N, undos: [ImageData], redos: [ImageData], image: ImageData}? array of Frames?
 
 var file_name;
+var document_file_path;
 var saved = true;
 
 
@@ -92,14 +98,18 @@ var $toolbox = $ToolBox(tools);
 // so it can display names of the tools, and maybe authors and previews (and not necessarily icons)
 var $colorbox = $ColorBox();
 
-if(window.file_entry){
-	open_from_FileEntry(window.file_entry);
-}
-
 reset_file();
 reset_colors();
 reset_canvas(); // (with newly reset colors)
 reset_magnification();
+
+if(window.document_file_path_to_open){
+	open_from_file_path(document_file_path_to_open, function(err){
+		if(err){
+			return show_error_message("Failed to open file " + document_file_path_to_open, err);
+		}
+	});
+}
 
 $canvas.on("user-resized", function(e, _x, _y, width, height){
 	undoable(0, function(){
@@ -112,9 +122,10 @@ $canvas.on("user-resized", function(e, _x, _y, width, height){
 			ctx.fillRect(0, 0, canvas.width, canvas.height);
 		}
 
-		var previous_canvas = undos[undos.length-1];
-		if(previous_canvas){
-			ctx.drawImage(previous_canvas, 0, 0);
+		var previous_imagedata = undos[undos.length-1];
+		if(previous_imagedata){
+			var temp_canvas = new Canvas(previous_imagedata);
+			ctx.drawImage(temp_canvas, 0, 0);
 		}
 
 		$canvas_area.trigger("resize");
@@ -149,6 +160,13 @@ storage.get({
 	$canvas_area.trigger("resize");
 });
 
+$G.on("resize", function(){ // for browser zoom, and in-app zoom of the canvas
+	update_helper_layer();
+	update_disable_aa();
+});
+$canvas_area.on("scroll", function() {
+	update_helper_layer();
+});
 
 $("body").on("dragover dragenter", function(e){
 	var dt = e.originalEvent.dataTransfer;
@@ -231,6 +249,7 @@ $G.on("keydown", function(e){
 		}else{
 			cancel();
 		}
+		stopSimulatingGestures();
 	}else if(e.keyCode === 13){ //Enter
 		if(selection){
 			deselect();
@@ -261,7 +280,9 @@ $G.on("keydown", function(e){
 
 			$G.trigger("option-changed");
 			if(button !== undefined){
-				tool_go();
+				selected_tools.forEach((selected_tool)=> {
+					tool_go(selected_tool);
+				});
 			}
 		}
 		e.preventDefault();
@@ -348,45 +369,42 @@ $G.on("cut copy paste", function(e){
 
 	if(e.type === "copy" || e.type === "cut"){
 		if(selection && selection.canvas){
-			var data_url = selection.canvas.toDataURL();
-			cd.setData("text/x-data-uri; type=image/png", data_url);
-			cd.setData("text/uri-list", data_url);
-			cd.setData("URL", data_url);
-			// var svg = `
-			// 	<svg
-			// 		xmlns="http://www.w3.org/2000/svg" version="1.1"
-			// 		viewBox="0 0 ${selection.canvas.width} ${selection.canvas.height}" preserveAspectRatio="xMidYMid slice">
-			// 		<image xlink:href="${data_url}" x="0" y="0" height="${selection.canvas.height}" width="${selection.canvas.width}"/>
-			// 	</svg>
-			// `;
-			// cd.setData("image/svg+xml", svg);
-			// cd.setData("text/html", svg);
-
-			if(e.type === "cut"){
-				selection.destroy();
-				selection = null;
+			var do_sync_clipboard_copy_or_cut = function() {
+				// works only for pasting within a jspaint instance
+				var data_url = selection.canvas.toDataURL();
+				cd.setData("text/x-data-uri; type=image/png", data_url);
+				cd.setData("text/uri-list", data_url);
+				cd.setData("URL", data_url);
+				if(e.type === "cut"){
+					delete_selection();
+				}
+			};
+			if (!navigator.clipboard || !navigator.clipboard.write) {
+				return do_sync_clipboard_copy_or_cut();
+			}
+			try {
+				if (e.type === "cut") {
+					edit_cut();
+				} else {
+					edit_copy();
+				}
+			} catch(e) {
+				do_sync_clipboard_copy_or_cut();
 			}
 		}
 	}else if(e.type === "paste"){
 		$.each(cd.items, function(i, item){
 			if(item.type.match(/^text\/(?:x-data-uri|uri-list|plain)|URL$/)){
 				item.getAsString(function(text){
-					// parse text/uri-list (might as well do it properly)
-					var uris = text.split(/[\n\r]+/).filter(function(line){return line[0] !== "#" && line});
-					// TODO: check that it's actually a URI,
-					// and if text/plain maybe silently ignore the paste
-					// but definitely generally show a better error than show_resource_load_error_message()
-					// some strings from mspaint:
-					// "The information on the Clipboard can't be inserted into Paint."
-					// also
-					// "Downloading picture"
-					// "Reading data from the device (%1!ld!%% complete)"
-					// "Processing data (%1!ld!%% complete)"
-					// "Transferring data (%1!ld!%% complete)"
-					load_image_from_URI(uris[0], function(err, img){
-						if(err){ return show_resource_load_error_message(); }
-						paste(img);
-					});
+					var uris = get_URIs(text);
+					if (uris.length > 0) {
+						load_image_from_URI(uris[0], function(err, img){
+							if(err){ return show_resource_load_error_message(); }
+							paste(img);
+						});
+					} else {
+						show_error_message("The information on the Clipboard can't be inserted into Paint.");
+					}
 				});
 				return false; // break out of $.each loop
 			}else if(item.type.match(/^image\//)){
@@ -397,7 +415,7 @@ $G.on("cut copy paste", function(e){
 	}
 });
 
-var pointer, pointer_start, pointer_previous;
+var pointer, pointer_start, pointer_previous, pointer_type, pointer_buttons;
 var reverse, ctrl, button;
 function e2c(e){
 	var rect = canvas.getBoundingClientRect();
@@ -409,29 +427,21 @@ function e2c(e){
 	};
 }
 
-function tool_go(event_name){
-
+function update_fill_and_stroke_colors_and_lineWidth(selected_tool) {
 	ctx.lineWidth = stroke_size;
 
 	var reverse_because_fill_only = selected_tool.$options && selected_tool.$options.fill && !selected_tool.$options.stroke;
 	ctx.fillStyle = fill_color =
 	ctx.strokeStyle = stroke_color =
 		colors[
-			(ctrl && colors.ternary) ? "ternary" :
+			(ctrl && colors.ternary && pointer_active) ? "ternary" :
 			((reverse ^ reverse_because_fill_only) ? "background" : "foreground")
 		];
-
+		
 	fill_color_k =
 	stroke_color_k =
 		ctrl ? "ternary" : ((reverse ^ reverse_because_fill_only) ? "background" : "foreground");
-
-	if(selected_tool.shape){
-		var previous_canvas = undos[undos.length-1];
-		if(previous_canvas){
-			ctx.clearRect(0, 0, canvas.width, canvas.height);
-			ctx.drawImage(previous_canvas, 0, 0);
-		}
-	}
+		
 	if(selected_tool.shape || selected_tool.shape_colors){
 		if(!selected_tool.stroke_only){
 			if((reverse ^ reverse_because_fill_only)){
@@ -444,6 +454,20 @@ function tool_go(event_name){
 		}
 		ctx.fillStyle = fill_color = colors[fill_color_k];
 		ctx.strokeStyle = stroke_color = colors[stroke_color_k];
+	}
+}
+
+function tool_go(selected_tool, event_name){
+	update_fill_and_stroke_colors_and_lineWidth(selected_tool);
+
+	if(selected_tools.length <= 1){
+		if(selected_tool.shape){
+			var previous_imagedata = undos[undos.length-1];
+			if(previous_imagedata){
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+				ctx.putImageData(previous_imagedata, 0, 0);
+			}
+		}
 	}
 	if(selected_tool.shape){
 		selected_tool.shape(ctx, pointer_start.x, pointer_start.y, pointer.x-pointer_start.x, pointer.y-pointer_start.y);
@@ -467,6 +491,20 @@ function canvas_pointer_move(e){
 	ctrl = e.ctrlKey;
 	shift = e.shiftKey;
 	pointer = e2c(e);
+	
+	// Quick Undo
+	// (Note: pointermove also occurs when the set of buttons pressed changes,
+	// except when another event would fire like pointerdown)
+	if(pointer_active && e.button != -1){
+		// compare buttons other than middle mouse button by using bitwise OR to make that bit of the number the same
+		const MMB = 4;
+		if(e.pointerType != pointer_type || (e.buttons | MMB) != (pointer_buttons | MMB)){
+			pointer_active = false;
+			cancel();
+			return;
+		}
+	}
+
 	if(e.shiftKey){
 		if(selected_tool.name.match(/Line|Curve/)){
 			// snap to eight directions
@@ -498,29 +536,63 @@ function canvas_pointer_move(e){
 			}
 		}
 	}
-	tool_go();
+	selected_tools.forEach((selected_tool)=> {
+		tool_go(selected_tool);
+	});
 	pointer_previous = pointer;
 }
 $canvas.on("pointermove", function(e){
 	pointer = e2c(e);
 	$status_position.text(pointer.x + "," + pointer.y);
 });
+$canvas.on("pointerenter", function(e){
+	pointer_over_canvas = true;
+
+	update_helper_layer();
+
+	if (!update_helper_layer_on_pointermove_active) {
+		$G.on("pointermove", update_helper_layer);
+		update_helper_layer_on_pointermove_active = true;
+	}
+});
 $canvas.on("pointerleave", function(e){
+	pointer_over_canvas = false;
+
 	$status_position.text("");
+
+	update_helper_layer();
+	
+	if (!pointer_active && update_helper_layer_on_pointermove_active) {
+		$G.off("pointermove", update_helper_layer);
+		update_helper_layer_on_pointermove_active = false;
+	}
 });
 
-var pointer_was_pressed = false;
+var pointer_active = false;
+var pointer_over_canvas = false;
+var update_helper_layer_on_pointermove_active = false;
 $canvas.on("pointerdown", function(e){
-	if(pointer_was_pressed && (reverse ? (button === 2) : (button === 0))){
-		pointer_was_pressed = false;
+	// Quick Undo when there are multiple pointers (i.e. for touch)
+	// see pointermove for other pointer types
+	if(pointer_active && (reverse ? (button === 2) : (button === 0))){
+		pointer_active = false;
 		cancel();
 		return;
 	}
-	pointer_was_pressed = true;
+	
+	pointer_active = true;
+	pointer_type = e.pointerType;
+	pointer_buttons = e.buttons;
 	$G.one("pointerup", function(e){
-		pointer_was_pressed = false;
+		pointer_active = false;
+		update_helper_layer();
+		
+		if (!pointer_over_canvas && update_helper_layer_on_pointermove_active) {
+			$G.off("pointermove", update_helper_layer);
+			update_helper_layer_on_pointermove_active = false;
+		}
 	});
-
+	
 	if(e.button === 0){
 		reverse = false;
 	}else if(e.button === 2){
@@ -528,43 +600,53 @@ $canvas.on("pointerdown", function(e){
 	}else{
 		return;
 	}
+
 	button = e.button;
 	ctrl = e.ctrlKey;
 	shift = e.shiftKey;
 	pointer_start = pointer_previous = pointer = e2c(e);
 
 	var pointerdown_action = function(){
+	// TODO for multitools: don't register event listeners for each tool
+	selected_tools.forEach((selected_tool)=> {
+
 		if(selected_tool.paint || selected_tool.pointerdown){
-			tool_go("pointerdown");
+			tool_go(selected_tool, "pointerdown");
 		}
 
 		$G.on("pointermove", canvas_pointer_move);
 		if(selected_tool.continuous === "time"){
-			var iid = setInterval(tool_go, 5);
+			var iid = setInterval(()=> { tool_go(selected_tool); }, 5);
 		}
 		$G.one("pointerup", function(e, canceling){
 			button = undefined;
+			reverse = false;
 			if(canceling){
 				selected_tool.cancel && selected_tool.cancel();
 			}else{
 				pointer = e2c(e);
 				selected_tool.pointerup && selected_tool.pointerup(ctx, pointer.x, pointer.y);
 			}
-			if(selected_tool.deselect){
-				select_tool(previous_tool);
+			if (selected_tools.length === 1) {
+				if (selected_tool.deselect) {
+					select_tools(return_to_tools);
+				}
 			}
 			$G.off("pointermove", canvas_pointer_move);
 			if(iid){
 				clearInterval(iid);
 			}
 		});
+	});
 	};
 
-	if((typeof selected_tool.passive === "function") ? selected_tool.passive() : selected_tool.passive){
+	if(isPassive(selected_tools)){
 		pointerdown_action();
 	}else{
 		undoable(pointerdown_action);
 	}
+	
+	update_helper_layer();
 });
 
 $canvas_area.on("pointerdown", function(e){

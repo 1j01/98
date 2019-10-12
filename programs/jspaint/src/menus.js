@@ -35,7 +35,16 @@ var menus = {
 		},
 		{
 			item: "&Upload To Imgur",
-			action: upload_to_imgur,
+			action: function(){
+				// include the selection in the saved image
+				deselect();
+
+				canvas.toBlob(function(blob){
+					sanity_check_blob(blob, function(){
+						show_imgur_uploader(blob);
+					});
+				});
+			},
 			description: "Uploads the active document to Imgur",
 		},
 		$MenuBar.DIVIDER,
@@ -83,7 +92,7 @@ var menus = {
 		$MenuBar.DIVIDER,
 		{
 			item: "Recent File",
-			enabled: false, // @TODO for chrome app / desktop app
+			enabled: false, // @TODO for desktop app
 			description: "",
 		},
 		$MenuBar.DIVIDER,
@@ -120,11 +129,11 @@ var menus = {
 			item: "Cu&t",
 			shortcut: "Ctrl+X",
 			enabled: function(){
-				// @TODO disable if no selection (image or text)
-				return (typeof chrome !== "undefined") && chrome.permissions;
+				// support cutting selected text with this menu item as well (e.g. in the text tool text box)
+				return !!selection;
 			},
 			action: function(){
-				document.execCommand("cut");
+				edit_cut(true);
 			},
 			description: "Cuts the selection and puts it on the Clipboard.",
 		},
@@ -132,11 +141,11 @@ var menus = {
 			item: "&Copy",
 			shortcut: "Ctrl+C",
 			enabled: function(){
-				// @TODO disable if no selection (image or text)
-				return (typeof chrome !== "undefined") && chrome.permissions;
+				// support copying selected text with this menu item as well (e.g. in the text tool text box)
+				return !!selection;
 			},
 			action: function(){
-				document.execCommand("copy");
+				edit_copy(true);
 			},
 			description: "Copies the selection and puts it on the Clipboard.",
 		},
@@ -144,10 +153,11 @@ var menus = {
 			item: "&Paste",
 			shortcut: "Ctrl+V",
 			enabled: function(){
-				return (typeof chrome !== "undefined") && chrome.permissions;
+				// TODO: disable if nothing in clipboard or wrong type (if we can access that)
+				return true;
 			},
 			action: function(){
-				document.execCommand("paste");
+				edit_paste(true);
 			},
 			description: "Inserts the contents of the Clipboard.",
 		},
@@ -228,8 +238,10 @@ var menus = {
 			checkbox: {
 				toggle: function(){
 					$extras_menu_button.toggle();
+					var checked = this.check();
 					try{
-						localStorage["jspaint extras menu visible"] = this.check();
+						localStorage["jspaint extras menu visible"] = checked;
+					// eslint-disable-next-line no-empty
 					}catch(e){}
 				},
 				check: function(){
@@ -266,15 +278,22 @@ var menus = {
 				},
 				{
 					item: "C&ustom...",
-					enabled: false, // @TODO
 					description: "Zooms the picture.",
+					action: show_custom_zoom_window,
 				},
 				$MenuBar.DIVIDER,
 				{
 					item: "Show &Grid",
 					shorcut: "Ctrl+G",
-					enabled: false, // @TODO
-					checkbox: {},
+					enabled: function() {
+						return magnification >= 4;
+					},
+					checkbox: {
+						toggle: toggle_grid,
+						check: function(){
+							return show_grid;
+						},
+					},
 					description: "Shows or hides the grid.",
 				},
 				{
@@ -301,7 +320,7 @@ var menus = {
 		},
 		{
 			item: "&Stretch/Skew",
-			shortcut: "Ctrl+W",
+			// shortcut: "Ctrl+W", // closes browser tab
 			action: image_stretch_and_skew,
 			description: "Stretches or skews the picture or a selection.",
 		},
@@ -328,15 +347,11 @@ var menus = {
 			item: "&Draw Opaque",
 			checkbox: {
 				toggle: function(){
-					transparent_opaque = {
-						"opaque": "transparent",
-						"transparent": "opaque",
-					}[transparent_opaque];
-
+					tool_transparent_mode = !tool_transparent_mode;
 					$G.trigger("option-changed");
 				},
 				check: function(){
-					return transparent_opaque === "opaque";
+					return !tool_transparent_mode;
 				},
 			},
 			description: "Makes the current selection either opaque or transparent.",
@@ -426,6 +441,22 @@ var menus = {
 		// 	},
 		// 	description: "Configures JS Paint.",
 		// }
+		/*{
+			item: "&Draw Randomly",
+			checkbox: {
+				toggle: function(){
+					if (window.simulatingGestures) {
+						stopSimulatingGestures();
+					} else {
+						simulateRandomGesturesPeriodically();
+					}
+				},
+				check: function(){
+					return window.simulatingGestures;
+				},
+			},
+			description: "Draws randomly with different tools.",
+		},*/
 		{
 			item: "&Multi-User",
 			submenu: [
@@ -437,7 +468,7 @@ var menus = {
 							name = name.trim();
 							if(name == ""){
 								show_error_message("The session name cannot be empty.");
-							}else if(name.match(/[.\/\[\]#$]/)){
+							}else if(name.match(/[./[\]#$]/)){
 								show_error_message("The session name cannot contain any of ./[]#$");
 							}else{
 								location.hash = "session:" + name;
@@ -491,6 +522,7 @@ if(frameElement){
 			$MenuBar = parent.$MenuBar;
 			go_outside_frame = true;
 		}
+	// eslint-disable-next-line no-empty
 	}catch(e){}
 }
 var $menu_bar = $MenuBar(menus);
@@ -508,9 +540,15 @@ $menu_bar.on("default-info", function(e){
 });
 
 var $extras_menu_button = $menu_bar.get(0).ownerDocument.defaultView.$(".extras-menu-button");
+// TODO: DRY with $MenuBar
+// if localStorage is not available, the default setting is visible
+var extras_menu_should_start_visible = true;
 try{
+	// if localStorage is available, the default setting is invisible (for now)
 	// TODO: refactor shared key string
-	if(localStorage["jspaint extras menu visible"] != "true"){
-		$extras_menu_button.hide();
-	}
+	extras_menu_should_start_visible = localStorage["jspaint extras menu visible"] == "true"
+// eslint-disable-next-line no-empty
 }catch(e){}
+if(!extras_menu_should_start_visible){
+	$extras_menu_button.hide();
+}

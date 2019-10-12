@@ -1,4 +1,6 @@
-
+:root {
+	--theme-loaded: "classic.css";
+}
 
 .jspaint {
 	background: #c0c0c0;
@@ -13,14 +15,21 @@
 	/*background-size: 16px;*/
 	background-size: 8px;
 }
-* {
+
+@media (resolution: 1x), (resolution: 2x), (min-resolution: 3x) {
+	* {
+		image-rendering: crisp-edges;
+		image-rendering: pixelated;
+		image-rendering: -moz-crisp-edges;
+	}
+}
+.disable-aa-for-things-at-main-canvas-scale .main-canvas,
+.disable-aa-for-things-at-main-canvas-scale .selection canvas {
 	image-rendering: crisp-edges;
 	image-rendering: pixelated;
 	image-rendering: -moz-crisp-edges;
-	/* only works on macOS, and not on a standards track: */
-	font-smooth: none;
-	-webkit-font-smoothing: none;
 }
+
 .selection:after,
 .textbox:after {
 	content: '';

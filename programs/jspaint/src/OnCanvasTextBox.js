@@ -1,18 +1,15 @@
 
-function TextBox(x, y, width, height){
+function OnCanvasTextBox(x, y, width, height){
 	var tb = this;
 	
-	OnCanvasObject.call(tb, x, y, width, height);
+	OnCanvasObject.call(tb, x, y, width, height, true);
 	
 	tb.$el.addClass("textbox");
 	tb.$editor = $(E("textarea")).addClass("textbox-editor");
 	
 	var update = function(){
 		font.color = colors.foreground;
-		font.background = ({
-			transparent: "transparent",
-			opaque: colors.background,
-		}[transparent_opaque]);
+		font.background = tool_transparent_mode ? "transparent" : colors.background;
 		
 		tb.$editor.css({
 			fontFamily: font.family,
@@ -39,9 +36,13 @@ function TextBox(x, y, width, height){
 	$G.on("option-changed", this._on_option_changed = update);
 }
 
-TextBox.prototype = Object.create(OnCanvasObject.prototype);
+OnCanvasTextBox.prototype = Object.create(OnCanvasObject.prototype);
 
-TextBox.prototype.instantiate = function(){
+OnCanvasTextBox.prototype.position = function(){
+	OnCanvasObject.prototype.position.call(this, true);
+}
+
+OnCanvasTextBox.prototype.instantiate = function(){
 	var tb = this;
 	
 	tb.$el.addClass("instantiated").css({
@@ -53,12 +54,12 @@ TextBox.prototype.instantiate = function(){
 	
 	instantiate();
 	
-	if(TextBox.$fontbox && TextBox.$fontbox.closed){
-		TextBox.$fontbox = null;
+	if(OnCanvasTextBox.$fontbox && OnCanvasTextBox.$fontbox.closed){
+		OnCanvasTextBox.$fontbox = null;
 	}
-	var $fb = TextBox.$fontbox = TextBox.$fontbox || new $FontBox();
+	var $fb = OnCanvasTextBox.$fontbox = OnCanvasTextBox.$fontbox || new $FontBox();
 	
-	// move the font box out of the way if it's overlapping the TextBox
+	// move the font box out of the way if it's overlapping the OnCanvasTextBox
 	var $tb = tb.$el;
 	var fb_rect = $fb[0].getBoundingClientRect();
 	var tb_rect = $tb[0].getBoundingClientRect();
@@ -82,7 +83,7 @@ TextBox.prototype.instantiate = function(){
 		// this doesn't need to be a seperate function
 		
 		tb.$el.append(tb.$editor);
-		tb.$editor.focus();
+		tb.$editor[0].focus();
 		
 		tb.$handles = $Handles(tb.$el, tb.$editor[0], {outset: 2});
 		
@@ -172,7 +173,7 @@ function draw_text_wrapped(ctx, text, x, y, maxWidth, lineHeight) {
 	}
 }
 
-TextBox.prototype.draw = function(){
+OnCanvasTextBox.prototype.draw = function(){
 	var tb = this;
 	var text = tb.$editor.val();
 	if(text){
@@ -191,12 +192,12 @@ TextBox.prototype.draw = function(){
 	}
 };
 
-TextBox.prototype.destroy = function(){
+OnCanvasTextBox.prototype.destroy = function(){
 	OnCanvasObject.prototype.destroy.call(this);
 	
-	if(TextBox.$fontbox && !TextBox.$fontbox.closed){
-		TextBox.$fontbox.close();
+	if(OnCanvasTextBox.$fontbox && !OnCanvasTextBox.$fontbox.closed){
+		OnCanvasTextBox.$fontbox.close();
 	}
-	TextBox.$fontbox = null;
+	OnCanvasTextBox.$fontbox = null;
 	$G.off("option-changed", this._on_option_changed);
 };

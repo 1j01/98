@@ -1,5 +1,5 @@
 
-# ![](images/icons/32.png) JS Paint Todo
+# ![](images/icons/32x32.png) JS Paint Todo
 
 ### Help
 
@@ -8,14 +8,12 @@
 * Link-esque things
 	* Popups (I'd probably make the text within the popups selectable)
 	* Related topics (I'd probably make this a heading with links instead of the weird context menu thing)
-* Note unsupported features (or just implement these)
-	* "To use black and white instead of color" (partially implemented)
-	* "To display gridlines"
 * Update topics
+	* "To use black and white instead of color" ("If you change back to color, only new work will be in color." only applies if converting to black and white when switching to black and white mode)
 	* "To use a picture as the desktop background":
 	add a third step? It's not quite that easy (at least in the browser)
 	* "To create custom colors": way too OS-specific
-	(unless I'm gonna emulate the color selection dialogue)
+	(unless I'm gonna emulate the color selection dialog)
 	* "To enlarge the size of the viewing area" (`paint_enlarge_area.htm`):
 	jspaint currently allows you to draw while "Viewing the Bitmap"
 	* "To zoom in or out of a picture", "To type and format text":
@@ -32,8 +30,8 @@
 
 ### Visual
 
-* Warning sign for "Save changes to X?" dialogue
-* Error symbol for error message dialogues
+* Warning sign for "Save changes to X?" dialog
+* Error symbol for error message dialogs
 * 3D inset border for inputs - SVG `image-border`?
 * The window close button uses text; font rendering is not consistent
 * The progress bar (Rendering GIF) is left native
@@ -42,14 +40,12 @@
 * I want to give most things a revisit later on for Pixel Perfection
 * Dynamic cursors
 	* Inverty fill bucket and airbrush cursors
-	* Previewy brush and eraser cursors
 * Custom cursors in Edge; apparently they require `.cur` files? ugh
 * The canvas-area's border is different in Firefox and Edge from Chrome
 
 
 ### Issues
 
-* ["Quick Undo" stopped working in Chrome](https://github.com/1j01/jspaint/issues/9)
 * [Resizing the canvas or selection is broken when magnified](https://github.com/1j01/jspaint/issues/13)
 * If you open an image it resets the zoom but if you're on the magnification tool it doesn't update the options
 * If you zoom in with the magnifier without previously changing the magnification on the toolbar,
@@ -80,8 +76,8 @@ might be a pointer events spec interpretation issue, and it could easily be that
 
 * Transparency
 	* Color opacity slider
-	* Toggle between blend and copy modes
-	* Maybe equivalise any rgba(X, X, X, 0) in fill algorithm?
+	* Toggle between blend and copy (overwrite) modes
+	* Maybe equivalize any rgba(X, X, X, 0) in fill algorithm?
 	There'd still be the possibility of 1/255th opacity pixels,
 	but if you're creating colors from the combination of a color picker and an opacity slider,
 	you might naturally introduce differing zero-opacity color values a lot.
@@ -111,9 +107,6 @@ might be a pointer events spec interpretation issue, and it could easily be that
 	* Issues
 		* You get interrupted if you try to make a selection when there's a selection
 		* You get interrupted if you try to draw at the same time as another person (you basically have to take turns - lame!)
-		* Free-form select can leave behind inverty brush
-		(this should be fixed by improving how the selection tools work;
-		the inverty-ness shouldn't be drawn to the main canvas in the first place)
 		* Cursors from other users that go outside the parent can cause the page to be scrollable
 
 
@@ -163,7 +156,7 @@ might be a pointer events spec interpretation issue, and it could easily be that
 	* Expand box to make room for new lines
 	* Minimum size of 3em x 1em
 	* Store position of FontBox
-	* Keep an old TextBox while drawing a new one
+	* Keep an old OnCanvasTextBox while drawing a new one
 	* Save text and record transformations so the image can be saved as
 	SVG (or HTML?) with invisible selectable transformed text elements?
 
@@ -192,7 +185,7 @@ might be a pointer events spec interpretation issue, and it could easily be that
 
 ### On-Canvas Objects
 
-* Selection
+* `OnCanvasSelection`
 	* Proportionally resize selection while holding Shift
 	(or maybe by default? I feel like it should be the default, tbh.)
 	* Don't cut until you drag or do something else
@@ -200,20 +193,33 @@ might be a pointer events spec interpretation issue, and it could easily be that
 	and drag it, leaving the new background color behind.)
 
 
-* TextBox
+* `OnCanvasTextBox`
 	* See Text tool
 
 
-### Native App
+### Desktop App (Electron)
 
-* Switch from NW.js to Electron
-* Use a boilerplate for autoupdating and such
-* File association support
-* Proper clipboard support; Electron has an API for copying images
-* A dialogue when closing
-* Subwindows outside the main window
-* A different way of handling always-saved documents
-(recovery?)
+Electron boilerplate stuff:
+
+* [Set up Content-Security-Policy](https://electronjs.org/docs/tutorial/security)
+* Remember window position/state
+* Add icon to built executable
+* Set up autoupdating
+* Keep window hidden until loaded (`show: false`, [`ready-to-show`](https://electronjs.org/docs/api/browser-window#event-ready-to-show))
+* Ideally name the executable `jspaint.exe` instead of `JS Paint.exe`
+
+Functionality:
+
+* A dialog when closing
+* Subwindows as separate windows
+* Document recovery without having to know about File > Manage Storage - pop up contextually with a dialog when you need it
+* Show link URLs when you hover over them, in the status bar (because we have a status bar! haha) (there's this API: [event: update-target-url](https://github.com/electron/electron/blob/master/docs/api/web-contents.md#event-update-target-url), which gave me the idea, or it could be implemented with mouse events)
+* Recent files (could also be implemented for 98.js.org in the future)
+* Create a landing page / home page for the desktop app (similar to https://desktop.webamp.org/ or https://desktop.github.com/) - (perhaps https://desktop.jspaint.app/) - and/or for JS Paint in general (perhaps https://jspaint.app/about/)
+* Remove usage of `prompt` (and ideally `alert`/`confirm` too! shouldn't be using these anyways!)
+* macOS: `open-file` event, `setRepresentedFilename`, `setDocumentEdited` etc.
+* Windows: maybe handle `session-end` event and ask to save?
+* Detect if file changes on disk, ask if you want to reload it?
 
 
 ### Also

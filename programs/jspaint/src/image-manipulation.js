@@ -178,7 +178,8 @@ function bresenham_line(x1, y1, x2, y2, callback){
 	var sy = (y1 < y2) ? 1 : -1;
 	var err = dx - dy;
 	
-	while(1){
+	// eslint-disable-next-line no-constant-condition
+	while(true){
 		callback(x1, y1);
 		
 		if(x1===x2 && y1===y2) break;
@@ -198,7 +199,8 @@ function brosandham_line(x1, y1, x2, y2, callback){
 	var sy = (y1 < y2) ? 1 : -1;
 	var err = dx - dy;
 	
-	while(1){
+	// eslint-disable-next-line no-constant-condition
+	while(true){
 		callback(x1, y1);
 		
 		if(x1===x2 && y1===y2) break;
@@ -209,7 +211,7 @@ function brosandham_line(x1, y1, x2, y2, callback){
 	}
 }
 
-function draw_fill(ctx, x, y, fill_r, fill_g, fill_b, fill_a){
+function draw_fill(ctx, start_x, start_y, fill_r, fill_g, fill_b, fill_a){
 	
 	// TODO: split up processing in case it takes too long?
 	// progress bar and abort button (outside of image-manipulation.js)
@@ -220,11 +222,11 @@ function draw_fill(ctx, x, y, fill_r, fill_g, fill_b, fill_a){
 	// maybe do something fancier like special-casing large chunks of single-color image
 	// (octree? or just have a higher level stack of chunks to fill and check at if a chunk is homogeneous)
 
-	var stack = [[x, y]];
+	var stack = [[start_x, start_y]];
 	var c_width = canvas.width;
 	var c_height = canvas.height;
 	var id = ctx.getImageData(0, 0, c_width, c_height);
-	pixel_pos = (y*c_width + x) * 4;
+	pixel_pos = (start_y*c_width + start_x) * 4;
 	var start_r = id.data[pixel_pos+0];
 	var start_g = id.data[pixel_pos+1];
 	var start_b = id.data[pixel_pos+2];
@@ -252,6 +254,7 @@ function draw_fill(ctx, x, y, fill_r, fill_g, fill_b, fill_a){
 		}
 		reach_left = false;
 		reach_right = false;
+		// eslint-disable-next-line no-constant-condition
 		while(true){
 			y++;
 			pixel_pos = (y*c_width + x) * 4;
@@ -553,10 +556,10 @@ function draw_bezier_curve_without_pattern_support(ctx, start_x, start_y, contro
 		draw_line_without_pattern_support(ctx, point_a.x, point_a.y, point_b.x, point_b.y, stroke_size);
 		point_a = point_b;
 	}
-};
+}
 function draw_quadratic_curve(ctx, start_x, start_y, control_x, control_y, end_x, end_y, stroke_size) {
 	draw_bezier_curve(ctx, start_x, start_y, control_x, control_y, control_x, control_y, end_x, end_y, stroke_size);
-};
+}
 
 function draw_bezier_curve(ctx, start_x, start_y, control_1_x, control_1_y, control_2_x, control_2_y, end_x, end_y, stroke_size) {
 	// could calculate bounds of Bezier curve with something like bezier-js
@@ -579,6 +582,27 @@ function draw_line(ctx, x1, y1, x2, y2, stroke_size){
 	});
 	// also works:
 	// draw_line_strip(ctx, [{x: x1, y: y1}, {x: x2, y: y2}]);
+}
+
+var grid_pattern;
+function draw_grid(ctx, wanted_size) {
+	if (!grid_pattern || grid_pattern.width !== wanted_size || grid_pattern.height !== wanted_size) {
+		var grid_pattern_canvas = new Canvas(wanted_size, wanted_size);
+		var dark_gray = "#808080";
+		var light_gray = "#c0c0c0";
+		grid_pattern_canvas.ctx.fillStyle = dark_gray;
+		grid_pattern_canvas.ctx.fillRect(0, 0, 1, wanted_size);
+		grid_pattern_canvas.ctx.fillStyle = dark_gray;
+		grid_pattern_canvas.ctx.fillRect(0, 0, wanted_size, 1);
+		grid_pattern_canvas.ctx.fillStyle = light_gray;
+		for (let i=1; i<wanted_size; i+=2) {
+			grid_pattern_canvas.ctx.fillRect(i, 0, 1, 1);
+			grid_pattern_canvas.ctx.fillRect(0, i, 1, 1);
+		}
+		grid_pattern = ctx.createPattern(grid_pattern_canvas, "repeat");
+	}
+	ctx.fillStyle = grid_pattern;
+	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
 }
 
 (function(){
@@ -772,7 +796,7 @@ function draw_line(ctx, x1, y1, x2, y2, stroke_size){
 		gl.viewport(0, 0, op_canvas_webgl.width, op_canvas_webgl.height);
 
 		var coords = new Float32Array(numCoords);
-		for (var i = 0; i < numPoints; i++) {
+		for (let i = 0; i < numPoints; i++) {
 			coords[i*2+0] = (points[i].x - x_min) / op_canvas_webgl.width * 2 - 1;
 			coords[i*2+1] = 1 - (points[i].y - y_min) / op_canvas_webgl.height * 2;
 			// TODO: investigate: does this cause resolution/information loss? can we change the coordinate system?
@@ -781,7 +805,7 @@ function draw_line(ctx, x1, y1, x2, y2, stroke_size){
 		if(fill){
 			var contours = [coords];
 			var polyTriangles = triangulate(contours);
-			var numVertices = initArrayBuffer(polyTriangles);
+			let numVertices = initArrayBuffer(polyTriangles);
 			gl.clear(gl.COLOR_BUFFER_BIT);
 			gl.drawArrays(gl.TRIANGLES, 0, numVertices);
 
@@ -796,29 +820,29 @@ function draw_line(ctx, x1, y1, x2, y2, stroke_size){
 			if(stroke_size > 1){
 				var stroke_margin = ~~(stroke_size * 1.1);
 
-				var x = x_min - stroke_margin;
-				var y = y_min - stroke_margin;
+				var op_canvas_x = x_min - stroke_margin;
+				var op_canvas_y = y_min - stroke_margin;
 
 				op_canvas_2d.width = x_max - x_min + stroke_margin * 2;
 				op_canvas_2d.height = y_max - y_min + stroke_margin * 2;
-				for (var i = 0; i < numPoints - (close_path ? 0 : 1); i++) {
+				for (let i = 0; i < numPoints - (close_path ? 0 : 1); i++) {
 					var point_a = points[i];
 					var point_b = points[(i + 1) % numPoints];
 					// Note: update_brush_for_drawing_lines way above
 					draw_line_without_pattern_support(
 						op_ctx_2d,
-						point_a.x - x,
-						point_a.y - y,
-						point_b.x - x,
-						point_b.y - y,
+						point_a.x - op_canvas_x,
+						point_a.y - op_canvas_y,
+						point_b.x - op_canvas_x,
+						point_b.y - op_canvas_y,
 						stroke_size
 					);
 				}
 
-				replace_colors_with_swatch(op_ctx_2d, stroke_color, x, y);
-				ctx.drawImage(op_canvas_2d, x, y);
+				replace_colors_with_swatch(op_ctx_2d, stroke_color, op_canvas_x, op_canvas_y);
+				ctx.drawImage(op_canvas_2d, op_canvas_x, op_canvas_y);
 			}else{
-				var numVertices = initArrayBuffer(coords);
+				let numVertices = initArrayBuffer(coords);
 				gl.clear(gl.COLOR_BUFFER_BIT);
 				gl.drawArrays(close_path ? gl.LINE_LOOP : gl.LINE_STRIP, 0, numVertices);
 
@@ -830,7 +854,7 @@ function draw_line(ctx, x1, y1, x2, y2, stroke_size){
 				ctx.drawImage(op_canvas_2d, x_min, y_min);
 			}
 		}
-	};
+	}
 
 	window.copy_contents_within_polygon = function(canvas, points, x_min, y_min, x_max, y_max){
 		// Copy the contents of the given canvas within the polygon given by points bounded by x/y_min/max
