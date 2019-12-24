@@ -8,14 +8,14 @@ A nice web-based MS Paint remake and more... [Try it out!](https://jspaint.app)
 
 The goal is to remake MS Paint
 (including its [little-known features](#did-you-know)),
-improve on it, and to [extend](#extended-editing) the types of images it can edit.
+improve on it, and to extend the types of images it can edit.
 So far, it does this pretty well.
 
 ![Screenshot](images/meta/main-screenshot.png)
 
 Ah yes, good old paint. Not the one with the [ribbons][]
 or the [new skeuomorphic one][Fresh Paint] with the interface that can take up nearly half the screen.
-And sorry, not the even newer [Paint 3D][].
+(And not the even newer [Paint 3D][].)
 
 [ribbons]: https://www.google.com/search?tbm=isch&q=MS+Paint+Windows+7+ribbons "Google Search: MS Paint Windows 7 ribbons"
 [Fresh Paint]: https://www.google.com/search?tbm=isch&q=MS+Fresh+Paint "Google Search: MS Fresh Paint"
@@ -40,12 +40,12 @@ I want to bring good old paint into the modern era.
 * Cross-platform
 * Unlimited undos/redos (as opposed to a measly 3 in Windows XP,
   or a measly 50 in Windows 7)
-* Autosaves a backup of your image. Only one backup tho, which is apparently not enough, because the browser may clear the canvas to free up memory, and you're likely to lose the backup when this happens because it gets overwritten. If this happens (canvas becomes a checkerboard), try to undo (a few times), and if that doesn't work, try to refresh the page. Remember to save with File > Save!
+* Undo history is *nonlinear*, which means if you undo and do something other than redo, the redos aren't destroyed. Instead, a new branch in the history tree is created. Jump to any point in history with <kbd>Ctrl+Shift+Y</kbd>
+* Automatically keeps a backup of your image. Only one backup per image tho, which doesn't give you a lot of safety. Remember to save with **File > Save** or <kbd>Ctrl+S</kbd>! Manage backups with **File > Manage Storage**.
 * Edit transparent images! To create a transparent image,
   go to **Image > Attributes...** and select Transparent,
   then Okay, and then **Image > Clear Image** or use the Eraser tool.
   Images with *any* translucent pixels will open in Transparent mode.
-* Go to **View > Extras Menu** to enable access to additional features not available in MS Paint
 * Switch themes from the Extras menu
 * Create an animated GIF from the current document history.
   Accessible from the Extras menu or with <kbd>Ctrl+Shift+G</kbd>.
@@ -58,15 +58,16 @@ I want to bring good old paint into the modern era.
   smear it across the canvas *while it animates*!~~
   Update: This was [due to not-to-spec behavior in Chrome.](https://christianheilmann.com/2014/04/16/browser-inconsistencies-animated-gif-and-drawimage/)
   I may reimplement this in the future as I really liked this feature.
-* You can open SVG files (because browsers support SVG).
-  It's still a completely raster image editor though.
-  (And you can't choose a size to render the SVG at. It may open super large, or tiny.)
+* You can open SVG files, though only as a bitmap.
+  (And you can't choose a size for the bitmap when opening an SVG. It may open super large, or tiny.)
 * You can crop the image by making a selection while holding <kbd>Ctrl</kbd>
 * Keyboard shortcuts for rotation: <kbd>Ctrl+.</kbd> and <kbd>Ctrl+,</kbd> (<kbd><</kbd> and <kbd>></kbd>)
 * Rotate by any arbitrary angle in **Image > Flip/Rotate**
 * In **Image > Stretch/Skew**, you can stretch more than 500% at once
 * Zoom to an arbitrary scale in **View > Zoom > Custom...**
 * Non-contiguous fill: Replace a color in the entire image by holding <kbd>Shift</kbd> when using the fill tool
+* You can use the Text tool at any zoom level, and it previews the exact pixels that will end up on the canvas.
+* Spellcheck is available in the textbox if your browser supports it.
 * Rudimentary **multi-user** support.
   Start up a session at
   [jspaint.app/#session:multi-user-test](https://jspaint.app/#session:multi-user-test)
@@ -76,26 +77,16 @@ I want to bring good old paint into the modern era.
   If you want better collaboration support, follow the development of [Mopaint](https://github.com/1j01/mopaint).
 * Load many different palette formats with **Colors > Get Colors**.
   (I made a [library](https://github.com/1j01/palette.js/) for this.)
-* Mobile support (altho fairly lacking in some areas. it'd be nice if you could pan and zoom with two fingers)
+* Mobile support (altho fairly lacking in some areas). Use two fingers to pan the view.
 * Click/tap the selected colors area to swap the foreground and background colors
 
 ![JS Paint drawing of JS Paint on a phone](images/meta/mobipaint.png)
 
 
-#### Possible future improvements:
-
-* [Extended Editing](#extended-editing)
-* Proportionally resize the selection or canvas by holding <kbd>Shift</kbd>
-  (or maybe that should be the default, really!)
-* <kbd>Alt</kbd> as a shortcut for the eyedropper, as long as it doesn't conflict with keyboard navigation of menus
-* Optional fill tolerance (slider that you enable from a settings menu?)
-* Interactive tutorial(s)?
-
-
 #### Limitations:
 
-A lot of stuff isn't done yet.
-See: [the big long todo list.](TODO.md)
+A few things with the tools aren't done yet.
+See [TODO.md](TODO.md#Tools)
 
 Full clipboard support in the web app requires a browser supporting the [Async Clipboard API w/ Images](https://developers.google.com/web/updates/2019/07/image-support-for-async-clipboard), namely Chrome 76+ at the time of writing.
 
@@ -103,44 +94,7 @@ In other browsers you can still can copy with <kbd>Ctrl+C</kbd>, cut with <kbd>C
 but data copied from JS Paint can only be pasted into other instances of JS Paint.
 External images can be pasted in.
 
-There's also a [desktop app](#desktop-app) version you can install that has full clipboard support,  
-which also lets you set the wallpaper.
-
-
-## Extended Editing
-
-I want to make JS Paint to be able to edit...
-
-* Transparent [PNG][]s - Done!
-  Images that are partially transparent will automatically open in Transparent mode.
-  To enable transparency for an image, go to **Image > Attributes...** or press <kbd>Ctrl+E</kbd>,
-  select Transparent, and hit Okay.
-  Then you'll want to remove some of the background.
-  You can use the Eraser tool a bit, then use the Color Picker to
-  pick up where you erased and then use the Fill tool to remove bigger areas.
-* Animated [GIF][]s
-  (yes, that entails a fully featured (but simple) animation editor). -
-  Currently you can only make GIFs of the document *history*,
-  with <kbd>Ctrl+Shift+G</kbd> or from the Extras menu.
-* Animated Transparent [APNG][]s
-  (better than GIFs, but with less support)
-* Multi-size Icons ([ICO][] for windows and [ICNS][] for mac)
-* [Scalable Vector Graphics][SVG] (kidding) -
-  Actually, it could always open SVG files in browsers that can handle SVGs,
-  and I've made it try not to save over the original SVG.
-  That's pretty decent SVG support for a 100% raster image editor.
-* [Text files][TXT] (definitely just kidding maybe)
-* Tessellating patterns, and textures on 3D models;
-  that might be a pipe dream, but [then again...](https://github.com/1j01/pipes) [hm...](https://github.com/1j01/mopaint)
-
-
-[PNG]: https://en.wikipedia.org/wiki/Portable_Network_Graphics "Portable Network Graphics"
-[GIF]: https://en.wikipedia.org/wiki/Graphics_Interchange_Format "Graphics Interchange Format"
-[APNG]: https://en.wikipedia.org/wiki/APNG "Animated Portable Network Graphics"
-[ICO]: https://en.wikipedia.org/wiki/ICO_(file_format) "Microsoft Icon Image format"
-[ICNS]: https://en.wikipedia.org/wiki/Apple_Icon_Image_format "Apple Icon Image format"
-[SVG]: https://en.wikipedia.org/wiki/Scalable_Vector_Graphics "Scalable Vector Graphics"
-[TXT]: https://en.wikipedia.org/wiki/Text_file "Text file"
+(There's also a partially-built [desktop app](#desktop-app) version you can install that has full clipboard support, and also lets you set the wallpaper.)
 
 
 ## Did you know?
@@ -156,13 +110,13 @@ I want to make JS Paint to be able to edit...
   there's a third color you can access by holding <kbd>Ctrl</kbd> while you draw.
   It starts out with no color so you'll need to hold <kbd>Ctrl</kbd> and select a color first.
   The fancy thing about this color slot is you can
-  press and release <kbd>Ctrl</kbd> to switch colors while drawing.
+  press and release <kbd>Ctrl</kbd> to switch colors *while drawing*.
 
 * You can apply image transformations like Flip/Rotate, Stretch/Skew or Invert (in the Image menu) either to the whole image or to a selection.
-  Try scribbling with the Free-Form Select tool and the doing **Image > Invert**
+  Try scribbling with the Free-Form Select tool and then doing **Image > Invert**
 
 * These Tips and Tricks from [a tutorial for MS Paint](https://www.albinoblacksheep.com/tutorial/mspaint)
-  also work in JS Paint if they have a checkmark:
+  also work in JS Paint:
 
 	* [x] Brush Scaling (<kbd>+</kbd> & <kbd>-</kbd> on the Numpad to adjust brush size)
 	* [x] "Custom Brushes" (hold <kbd>Shift</kbd> and drag the selection to smear it)
@@ -179,9 +133,12 @@ I want to make JS Paint to be able to edit...
 
 I've started work on a desktop app, built with [Electron][] and [Electron Forge][].
 
-There are no releases yet, but the groundwork has been laid, and several features implemented. 
+There are no releases yet, but much of the groundwork has been laid, and several features implemented.
 
-If you want to help out, see Development Setup below, and comment on [this issue](https://github.com/1j01/jspaint/issues/2) to show your interest.
+Why did I do this.
+I hate electron apps. They're so slow and bulky...
+
+If you're interested, comment on [this issue](https://github.com/1j01/jspaint/issues/2).
 
 [Electron]: https://electronjs.org/
 [Electron Forge]: https://electronforge.io/
@@ -193,23 +150,33 @@ If you want to help out, see Development Setup below, and comment on [this issue
 
 Install [Node.js][] if you don't have it, then open up a command prompt / terminal in the project directory.
 
+### Testing
+
+Run `npm run lint` to check for code problems.
+
+Run `npm test` to run browser-based tests with Cypress. (It's slow to start up and run tests, unfortunately.)
+
+Run `npm run accept` to accept any visual changes.
+This unfortunately re-runs all the tests, rather than accepting results of the previous test, so you could end up with different results than the previous test.
+If you use [GitHub Desktop](https://desktop.github.com/), you can view diffs of images, in four different modes.
+
+To open the Cypress UI, first run `npm run test:start-server`, then concurrently `npm run cy:open`
+
+Tests are also run in continuous integration [with Travis CI](https://travis-ci.org/1j01/jspaint).
+
 ### Web App (https://jspaint.app)
 
-You just need an HTTP server.
+You just need an HTTP server, but [Live Server][] is recommended. It auto reloads when you save changes.
 
-[Live Server][] is great; it auto reloads when you save changes.
-
-You can install it globally with `npm i -g live-server`
-and run it with `live-server`
-
-It's also included in `package.json` so if you've already installed dependencies (`npm i`) you can use `npm run dev` to run it.
+It's included in `package.json` so if you've installed dependencies (`npm i`) you can use `npm run dev` to run it.
+(It's configured to ignore some files/directories for reloading.)
 
 ### Desktop App (Electron)
 
 - Install dependencies with `npm i`
 - Start the electron app with `npm start`
 
-[electron-debug][] and [devtron][] are included, so you can use <kbd>Ctrl+R</kbd> to reload and <kbd>F12</kbd>/<kbd>Ctrl+Shift+I</kbd> to open the devtools, and there's a Devtron tab with tools specific to Electron like an IPC message inspector.
+[electron-debug][] and [devtron][] are included, so you can use <kbd>Ctrl+R</kbd> to reload and <kbd>F12</kbd>/<kbd>Ctrl+Shift+I</kbd> to open the devtools, and there's a Devtron tab with tools specific to Electron.
 
 You can build for production with `npm run make`
 

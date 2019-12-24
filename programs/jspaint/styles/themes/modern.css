@@ -18,16 +18,16 @@ body {
 	.canvas-area canvas,
 	.selection canvas,
 	.selection img {
+		image-rendering: -moz-crisp-edges;
 		image-rendering: crisp-edges;
 		image-rendering: pixelated;
-		image-rendering: -moz-crisp-edges;
 	}
 }
 .disable-aa-for-things-at-main-canvas-scale .main-canvas,
 .disable-aa-for-things-at-main-canvas-scale .selection canvas {
+	image-rendering: -moz-crisp-edges;
 	image-rendering: crisp-edges;
 	image-rendering: pixelated;
-	image-rendering: -moz-crisp-edges;
 }
 
 .selection:after,
@@ -43,10 +43,6 @@ body {
 }
 .handle {
 	background: #000080;
-	/* TODO: enlarge handles for usability (need to update code to handle it though) */
-	/* or at least increase functional size */
-	/* width: 5px;
-	height: 5px; */
 }
 .useless-handle {
 	background: #fff;
@@ -54,8 +50,7 @@ body {
 }
 .resize-ghost {
 	outline: 1px dotted black;
-	/*outline: 1px dotted invert;*/
-	/* I want this to be inverty, but in chrome this makes it invisible */
+	/*outline: 1px dotted invert; I want this to be inverty, but in chrome this value makes it invisible */
 }
 
 .window,
@@ -168,26 +163,25 @@ body {
 }
 
 .color-selection {
-	/*border-radius: 50%; */
-	border: 1px solid rgba(0, 0, 0, 0.5);
-	/* border: 1px outset; */
 	width: 18px;
 	height: 18px;
 }
-.color-button {
-	border: 1px solid rgba(0, 0, 0, 0.5);
+.color-button canvas,
+.color-selection canvas,
+.color-button:after,
+.color-selection:after {
+	border-radius: 3px;
 }
-/*
-.swatch:hover:after {
+.color-button:after,
+.color-selection:after {
 	content: '';
 	position: absolute;
 	left: 0;
 	top: 0;
 	right: 0;
 	bottom: 0;
-	box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5) inset;
 }
-*/
 
 /* TODO: padding/margin on the top at least when in the sidebar */
 .tools {
@@ -208,14 +202,20 @@ body {
 	border: 1px solid rgba(0, 0, 0, 0.24);
 }
 
+.menus,
 .component-area,
 .status-area {
-	background: #f1f1f1;
+	background: #fff;
 }
+
+body,
 .canvas-area {
 	background: #7b7b7b;
 	/*background: #e9e9e9;*/
+}
+.canvas-area {
 	padding: 8px;
+	border: 1px solid gray;
 }
 
 /* NOTE: copy/pasted from classic.css */

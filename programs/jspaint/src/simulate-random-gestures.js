@@ -1,24 +1,33 @@
 (()=>{
 
+let seed = 4; // chosen later
+
+const seededRandom = (max = 1, min = 0) => {
+	seed = (seed * 9301 + 49297) % 233280;
+	const rnd = seed / 233280;
+
+	return min + rnd * (max - min);
+};
+
 window.stopSimulatingGestures && window.stopSimulatingGestures();
 window.simulatingGestures = false;
 
 let gestureTimeoutID;
 let periodicGesturesTimeoutID;
 
-let choose = (array)=> array[~~(Math.random() * array.length)];
+let choose = (array)=> array[~~(seededRandom() * array.length)];
 let isAnyMenuOpen = ()=> $(".menu-button.active").length > 0;
 
 let cursor_image = new Image();
 cursor_image.src = "images/cursors/default.png";
 
-var $cursor = $(cursor_image).addClass("user-cursor");
+const $cursor = $(cursor_image).addClass("user-cursor");
 $cursor.css({
 	position: "absolute",
 	left: 0,
 	top: 0,
 	opacity: 0,
-	zIndex: 500, // arbitrary; maybe too high
+	zIndex: 5, // @#: z-index
 	pointerEvents: "none",
 	transition: "opacity 0.5s",
 });
@@ -31,8 +40,8 @@ window.simulateRandomGesture = (callback, {shift, shiftToggleChance=0.01, second
 	let startMaxX = Math.min(startWithinRect.right, canvasAreaRect.right);
 	let startMinY = Math.max(startWithinRect.top, canvasAreaRect.top);
 	let startMaxY = Math.min(startWithinRect.bottom, canvasAreaRect.bottom);
-	let startPointX = startMinX + Math.random() * (startMaxX - startMinX);
-	let startPointY = startMinY + Math.random() * (startMaxY - startMinY);
+	let startPointX = startMinX + seededRandom() * (startMaxX - startMinX);
+	let startPointY = startMinY + seededRandom() * (startMaxY - startMinY);
 
 	$cursor.appendTo($app);
 	let triggerMouseEvent = (type, point) => {
@@ -41,10 +50,10 @@ window.simulateRandomGesture = (callback, {shift, shiftToggleChance=0.01, second
 			return;
 		}
 
-		var clientX = point.x;
-		var clientY = point.y;
-		var el_over = document.elementFromPoint(clientX, clientY);
-		var do_nothing = !type.match(/move/) && (!el_over || !el_over.closest(".canvas-area"));
+		const clientX = point.x;
+		const clientY = point.y;
+		const el_over = document.elementFromPoint(clientX, clientY);
+		const do_nothing = !type.match(/move/) && (!el_over || !el_over.closest(".canvas-area"));
 		$cursor.css({
 			display: "block",
 			position: "absolute",
@@ -60,8 +69,8 @@ window.simulateRandomGesture = (callback, {shift, shiftToggleChance=0.01, second
 			view: window,
 			bubbles: true,
 			cancelable: true,
-			clientX: clientX,
-			clientY: clientY,
+			clientX,
+			clientY,
 			screenX: clientX,
 			screenY: clientY,
 			offsetX: point.x,
@@ -79,15 +88,15 @@ window.simulateRandomGesture = (callback, {shift, shiftToggleChance=0.01, second
 	for (let i = 0; i < numberOfComponents; i += 1) {
 		gestureComponents.push({
 			rx:
-				(Math.random() * Math.min(canvasAreaRect.width, canvasAreaRect.height)) /
+				(seededRandom() * Math.min(canvasAreaRect.width, canvasAreaRect.height)) /
 				2 /
 				numberOfComponents,
 			ry:
-				(Math.random() * Math.min(canvasAreaRect.width, canvasAreaRect.height)) /
+				(seededRandom() * Math.min(canvasAreaRect.width, canvasAreaRect.height)) /
 				2 /
 				numberOfComponents,
-			angularFactor: Math.random() * 5 - Math.random(),
-			angularOffset: Math.random() * 5 - Math.random(),
+			angularFactor: seededRandom() * 5 - seededRandom(),
+			angularOffset: seededRandom() * 5 - seededRandom(),
 		});
 	}
 	const stepsInGesture = 50;
@@ -113,13 +122,15 @@ window.simulateRandomGesture = (callback, {shift, shiftToggleChance=0.01, second
 		point.y += startPointY;
 		return point;
 	};
+	
+	triggerMouseEvent("pointerenter", pointForTime(t)); // so dynamic cursors follow the simulation cursor
 	triggerMouseEvent("pointerdown", pointForTime(t));
 	let move = () => {
 		t += 1 / stepsInGesture;
-		if (Math.random() < shiftToggleChance) {
+		if (seededRandom() < shiftToggleChance) {
 			shift = !shift;
 		}
-		if (Math.random() < secondaryToggleChance) {
+		if (seededRandom() < secondaryToggleChance) {
 			secondary = !secondary;
 		}
 		if (t > 1) {
@@ -135,11 +146,29 @@ window.simulateRandomGesture = (callback, {shift, shiftToggleChance=0.01, second
 			gestureTimeoutID = setTimeout(move, 10);
 		}
 	};
+	triggerMouseEvent("pointerleave", pointForTime(t));
 	move();
 };
 
 window.simulateRandomGesturesPeriodically = () => {
 	window.simulatingGestures = true;
+
+	if (window.drawRandomlySeed != null) {
+		seed = window.drawRandomlySeed;
+	} else {
+		seed = ~~(Math.random() * 5000000);
+	}
+	window.console && console.log("Using seed:", seed);
+	window.console && console.log("Note: Seeds are not guaranteed to work with different versions of the app, but within the same version it should produce the same results given the same starting document & other state & NO interference... except for airbrush randomness");
+	window.console && console.log(`To use this seed:
+		
+		window.drawRandomlySeed = ${seed};
+		document.body.style.width = "${getComputedStyle(document.body).width}";
+		document.body.style.height = "${getComputedStyle(document.body).height}";
+		simulateRandomGesturesPeriodically();
+		delete window.drawRandomlySeed;
+		
+	`);
 
 	let delayBetweenGestures = 500;
 	let shiftStart = false;
@@ -149,11 +178,15 @@ window.simulateRandomGesturesPeriodically = () => {
 	let secondaryStartToggleChance = 0.1;
 	let secondaryToggleChance = 0.001;
 	let switchToolsChance = 0.5;
-	let multiToolsChance = 0.0;
+	let multiToolsChance = 0.8;
 	let pickColorChance = 0.5;
 	let pickToolOptionsChance = 0.8;
 	let scrollChance = 0.2;
 	let dragSelectionChance = 0.8;
+
+	// scroll randomly absolutely initially so the starting scroll doesn't play into whether a seed reproduces
+	$canvas_area.scrollTop($canvas_area.width() * seededRandom());
+	$canvas_area.scrollLeft($canvas_area.height() * seededRandom());
 	
 	let _simulateRandomGesture = (callback)=> {
 		window.simulateRandomGesture(callback, {
@@ -167,35 +200,35 @@ window.simulateRandomGesturesPeriodically = () => {
 		// TODO: a button to stop it as well (maybe make "stop drawing randomly" a link button?)
 		$status_text.text("Press Esc to stop drawing randomly.");
 		if (isAnyMenuOpen()) {
-			setTimeout(waitThenGo, 50);
+			periodicGesturesTimeoutID = setTimeout(waitThenGo, 50);
 			return;
 		}
 
-		if (Math.random() < shiftStartToggleChance) {
+		if (seededRandom() < shiftStartToggleChance) {
 			shiftStart = !shiftStart;
 		}
-		if (Math.random() < secondaryStartToggleChance) {
+		if (seededRandom() < secondaryStartToggleChance) {
 			secondaryStart = !secondaryStart;
 		}
-		if (Math.random() < switchToolsChance) {
-			let multiToolsPlz = Math.random() < multiToolsChance;
+		if (seededRandom() < switchToolsChance) {
+			let multiToolsPlz = seededRandom() < multiToolsChance;
 			$(choose($(".tool, tool-button"))).trigger($.Event("click", {shiftKey: multiToolsPlz}));
 		}
-		if (Math.random() < pickToolOptionsChance) {
+		if (seededRandom() < pickToolOptionsChance) {
 			$(choose($(".tool-options *"))).trigger("click");
 		}
-		if (Math.random() < pickColorChance) {
+		if (seededRandom() < pickColorChance) {
 			// TODO: maybe these should respond to a normal click?
-			let secondary = Math.random() < 0.5;
-			var colorButton = choose($(".swatch, .color-button"));
+			let secondary = seededRandom() < 0.5;
+			const colorButton = choose($(".swatch, .color-button"));
 			$(colorButton)
 				.trigger($.Event("pointerdown", {button: secondary ? 2 : 0}))
 				.trigger($.Event("click", {button: secondary ? 2 : 0}))
 				.trigger($.Event("pointerup", {button: secondary ? 2 : 0}));
 		}
-		if (Math.random() < scrollChance) {
-			let scrollAmount = (Math.random() * 2 - 1) * 700;
-			if (Math.random() < 0.5) {
+		if (seededRandom() < scrollChance) {
+			let scrollAmount = (seededRandom() * 2 - 1) * 700;
+			if (seededRandom() < 0.5) {
 				$canvas_area.scrollTop($canvas_area.scrollTop() + scrollAmount);
 			} else {
 				$canvas_area.scrollLeft($canvas_area.scrollLeft() + scrollAmount);
@@ -203,7 +236,7 @@ window.simulateRandomGesturesPeriodically = () => {
 		}
 		periodicGesturesTimeoutID = setTimeout(() => {
 			_simulateRandomGesture(()=> {
-				if (selection && Math.random() < dragSelectionChance) {
+				if (selection && seededRandom() < dragSelectionChance) {
 					window.simulateRandomGesture(waitThenGo, {
 						shift: shiftStart,
 						shiftToggleChance,
@@ -226,7 +259,11 @@ window.stopSimulatingGestures = () => {
 		clearTimeout(periodicGesturesTimeoutID);
 		window.simulatingGestures = false;
 		$status_text.default();
+		$cursor.remove();
+		cancel();
 	}
+	document.body.style.width = "";
+	document.body.style.height = "";
 };
 
 })();

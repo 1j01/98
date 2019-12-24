@@ -1,38 +1,42 @@
 
 function $ToolBox(tools, is_extras){
-	var $tb = $(E("div")).addClass("tool-box");
-	var $tools = $(E("div")).addClass("tools");
-	var $tool_options = $(E("div")).addClass("tool-options");
+	const $tb = $(E("div")).addClass("tool-box");
+	const $tools = $(E("div")).addClass("tools");
+	const $tool_options = $(E("div")).addClass("tool-options");
 	
-	var showing_tooltips = false;
-	$tools.on("pointerleave", function(){
+	let showing_tooltips = false;
+	$tools.on("pointerleave", () => {
 		showing_tooltips = false;
 		$status_text.default();
 	});
 	
-	var $buttons = $($.map(tools, function(tool, i){
-		var $b = $(E("div")).addClass("tool");
+	const $buttons = $($.map(tools, (tool, i) => {
+		const $b = $(E("div")).addClass("tool");
 		$b.appendTo($tools);
 		tool.$button = $b;
 		
 		$b.attr("title", tool.name);
 		
-		var $icon = $(E("span"));
+		const $icon = $(E("span"));
 		$icon.appendTo($b);
-		var bx = (i%2)*24;
-		var by = (~~(i/2))*25;
-		$icon.css({
-			display: "block",
-			position: "absolute",
-			left: 0,
-			top: 0,
-			width: 24,
-			height: 24,
-			backgroundImage: "url(images/toolbar-icons.png)",
-			backgroundPosition: bx + "px " + -by + "px",
-		});
+		const bx = -i*16;
+		const update_css = ()=> {
+			const theme_folder = `images/${get_theme().replace(/\.css/, "")}`;
+			$icon.css({
+				display: "block",
+				position: "absolute",
+				left: 4,
+				top: 4,
+				width: 16,
+				height: 16,
+				backgroundImage: `url(${theme_folder}/tools.png)`,
+				backgroundPosition: `${bx}px 0px`,
+			});
+		};
+		update_css();
+		$G.on("theme-load", update_css);
 		
-		$b.on("click", function(e){
+		$b.on("click", e => {
 			if (e.shiftKey || e.ctrlKey) {
 				select_tool(tool, true);
 				return;
@@ -44,16 +48,16 @@ function $ToolBox(tools, is_extras){
 			}
 		});
 		
-		$b.on("pointerenter", function(){
-			var show_tooltip = function(){
+		$b.on("pointerenter", () => {
+			const show_tooltip = () => {
 				showing_tooltips = true;
 				$status_text.text(tool.description);
 			};
 			if(showing_tooltips){
 				show_tooltip();
 			}else{
-				var tid = setTimeout(show_tooltip, 300);
-				$b.on("pointerleave", function(){
+				const tid = setTimeout(show_tooltip, 300);
+				$b.on("pointerleave", () => {
 					clearTimeout(tid);
 				});
 			}
@@ -62,8 +66,8 @@ function $ToolBox(tools, is_extras){
 		return $b[0];
 	}));
 	
-	var $c = $Component(is_extras ? "Extra Tools" : "Tools", "tall", $tools.add($tool_options));
-	$c.update_selected_tool = function(){
+	const $c = $Component(is_extras ? "Extra Tools" : "Tools", "tall", $tools.add($tool_options));
+	$c.update_selected_tool = () => {
 		$buttons.removeClass("selected");
 		selected_tools.forEach((selected_tool)=> {
 			selected_tool.$button.addClass("selected");
@@ -72,7 +76,7 @@ function $ToolBox(tools, is_extras){
 		$tool_options.append(selected_tool.$options);
 		$tool_options.children().trigger("update");
 		$canvas.css({
-			cursor: Cursor(selected_tool.cursor),
+			cursor: make_css_cursor(...selected_tool.cursor),
 		});
 	};
 	$c.update_selected_tool();

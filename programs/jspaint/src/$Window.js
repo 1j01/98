@@ -1,8 +1,8 @@
 
-$Window.Z_INDEX = 5;
+$Window.Z_INDEX = 50; // dynamically incrementing z-index
 
 function $Window($component){
-	var $w = $(E("div")).addClass("window").appendTo("body");
+	const $w = $(E("div")).addClass("window").appendTo("body");
 	$w.$titlebar = $(E("div")).addClass("window-titlebar").appendTo($w);
 	$w.$title = $(E("span")).addClass("window-title").appendTo($w.$titlebar);
 	$w.$x = $(E("button")).addClass("window-close-button").appendTo($w.$titlebar);
@@ -14,10 +14,10 @@ function $Window($component){
 	
 	$w.attr("touch-action", "none");
 	
-	$w.$x.on("click", function(){
+	$w.$x.on("click", () => {
 		$w.close();
 	});
-	$w.$x.on("mousedown selectstart", function(e){
+	$w.$x.on("mousedown selectstart", e => {
 		e.preventDefault();
 	});
 	
@@ -29,20 +29,19 @@ function $Window($component){
 		position: "absolute",
 		zIndex: $Window.Z_INDEX++
 	});
-	$w.on("pointerdown", function(){
+	$w.on("pointerdown", () => {
 		$w.css({
 			zIndex: $Window.Z_INDEX++
 		});
 	});
 	
-	$w.on("keydown", function(e){
-		if(e.ctrlKey || e.altKey || e.shiftKey){
+	$w.on("keydown", e => {
+		if(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey){
 			return;
 		}
-		var $buttons = $w.$content.find("button");
-		var $focused = $(document.activeElement);
-		var focused_index = $buttons.index($focused);
-		// console.log(e.keyCode);
+		const $buttons = $w.$content.find("button");
+		const $focused = $(document.activeElement);
+		const focused_index = $buttons.index($focused);
 		switch(e.keyCode){
 			case 40: // Down
 			case 39: // Right
@@ -66,12 +65,12 @@ function $Window($component){
 			case 13: // Enter (doesn't actually work in chrome because the button gets clicked immediately)
 				if($focused.is("button")){
 					$focused.addClass("pressed");
-					var release = function(){
+					const release = () => {
 						$focused.removeClass("pressed");
 						$focused.off("focusout", release);
 						$(window).off("keyup", keyup);
 					};
-					var keyup = function(e){
+					const keyup = e => {
 						if(e.keyCode === 32 || e.keyCode === 13){
 							release();
 						}
@@ -80,31 +79,33 @@ function $Window($component){
 					$(window).on("keyup", keyup);
 				}
 				break;
-			case 9: // Tab
+			case 9: { // Tab
+				
 				// TODO: handle shift+tab as well (note: early return at top of function)
 				// wrap around when tabbing through controls in a window
 				// TODO: other element types? also [tabIndex]
-				var $controls = $w.$content.find("input, textarea, select, button, a");
-				var focused_control_index = $controls.index($focused);
+				const $controls = $w.$content.find("input, textarea, select, button, a");
+				const focused_control_index = $controls.index($focused);
 				if(focused_control_index === $controls.length - 1){
 					e.preventDefault();
 					$controls[0].focus();
 				}
 				break;
+			}
 			case 27: // Esc
 				$w.close();
 				break;
 		}
 	});
 	
-	$w.applyBounds = function(){
+	$w.applyBounds = () => {
 		$w.css({
 			left: Math.max(0, Math.min(innerWidth - $w.width(), $w[0].getBoundingClientRect().left)),
 			top: Math.max(0, Math.min(innerHeight - $w.height(), $w[0].getBoundingClientRect().top)),
 		});
 	};
 	
-	$w.center = function(){
+	$w.center = () => {
 		$w.css({
 			left: (innerWidth - $w.width()) / 2,
 			top: (innerHeight - $w.height()) / 2,
@@ -115,18 +116,18 @@ function $Window($component){
 	
 	$G.on("resize", $w.applyBounds);
 	
-	var drag_offset_x, drag_offset_y;
-	var drag = function(e){
+	let drag_offset_x, drag_offset_y;
+	const drag = e => {
 		$w.css({
 			left: e.clientX - drag_offset_x,
 			top: e.clientY - drag_offset_y,
 		});
 	};
 	$w.$titlebar.attr("touch-action", "none");
-	$w.$titlebar.on("mousedown selectstart", function(e){
+	$w.$titlebar.on("mousedown selectstart", e => {
 		e.preventDefault();
 	});
-	$w.$titlebar.on("pointerdown", function(e){
+	$w.$titlebar.on("pointerdown", e => {
 		if($(e.target).is("button")){
 			return;
 		}
@@ -134,22 +135,25 @@ function $Window($component){
 		drag_offset_y = e.clientY - $w[0].getBoundingClientRect().top;
 		$G.on("pointermove", drag);
 		$("body").addClass("dragging");
+		const stop_drag = ()=> {
+			$w.applyBounds();
+			$G.off("pointermove", drag);
+			$G.off("pointerup pointercancel", stop_drag);
+			$("body").removeClass("dragging");
+		};
+		$G.on("pointerup pointercancel", stop_drag);
 	});
-	$G.on("pointerup", function(e){
-		$G.off("pointermove", drag);
-		$("body").removeClass("dragging");
-	});
-	$w.$titlebar.on("dblclick", function(e){
+	$w.$titlebar.on("dblclick", ()=> {
 		if($component){
 			$component.dock();
 		}
 	});
 	
-	$w.$Button = function(text, handler){
-		var $b = $(E("button"))
+	$w.$Button = (text, handler) => {
+		const $b = $(E("button"))
 			.appendTo($w.$content)
 			.text(text)
-			.on("click", function(){
+			.on("click", () => {
 				if(handler){
 					handler();
 				}
@@ -157,7 +161,7 @@ function $Window($component){
 			});
 		return $b;
 	};
-	$w.title = function(title){
+	$w.title = title => {
 		if(title){
 			$w.$title.text(title);
 			return $w;
@@ -165,8 +169,8 @@ function $Window($component){
 			return $w.$title.text();
 		}
 	};
-	$w.close = function(){
-		var e = $.Event("close");
+	$w.close = () => {
+		const e = $.Event("close");
 		$w.trigger(e);
 		if(e.isDefaultPrevented()){
 			return;
@@ -187,24 +191,24 @@ function $Window($component){
 }
 
 function $FormWindow(title){
-	var $w = new $Window();
+	const $w = new $Window();
 	
 	$w.title(title);
 	$w.$form = $(E("form")).appendTo($w.$content);
 	$w.$main = $(E("div")).appendTo($w.$form);
 	$w.$buttons = $(E("div")).appendTo($w.$form).addClass("button-group");
 	
-	$w.$Button = function(label, action){
-		var $b = $(E("button")).appendTo($w.$buttons).text(label);
-		$b.on("click", function(e){
+	$w.$Button = (label, action) => {
+		const $b = $(E("button")).appendTo($w.$buttons).text(label);
+		$b.on("click", e => {
 			// prevent the form from submitting
-			// @TODO: instead, prevent the form's submit event
+			// @TODO: instead prevent submit event
 			e.preventDefault();
 			
 			action();
 		});
 		
-		$b.on("pointerdown", function(){
+		$b.on("pointerdown", () => {
 			$b[0].focus();
 		});
 		

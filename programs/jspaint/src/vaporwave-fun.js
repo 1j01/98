@@ -1,6 +1,6 @@
-(function () {
-	var rAF_ID, rotologo, $window, space_phase_key_handler, player, player_placeholder;
-	var vaporwave_active = false;
+(() => {
+	let rAF_ID, rotologo, $window, space_phase_key_handler, player, player_placeholder;
+	let vaporwave_active = false;
 
 	if (parent && frameElement && parent.$) {
 		$window = parent.$(frameElement).closest(".window");
@@ -8,23 +8,23 @@
 		$window = $();
 	}
 
-	var wait_for_youtube_api = function (callback) {
+	const wait_for_youtube_api = callback => {
 		if (typeof YT !== "undefined") {
 			callback();
 		} else {
-			var tag = document.createElement('script');
+			const tag = document.createElement('script');
 			tag.src = "https://www.youtube.com/player_api";
-			var firstScriptTag = document.getElementsByTagName('script')[0];
+			const firstScriptTag = document.getElementsByTagName('script')[0];
 			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 			// The YouTube API will call this global function when loaded and ready.
-			window.onYouTubeIframeAPIReady = function () {
+			window.onYouTubeIframeAPIReady = () => {
 				callback();
 			};
 		}
 	};
 
-	var stop_vaporwave = function () {
+	const stop_vaporwave = () => {
 		vaporwave_active = false;
 
 		cancelAnimationFrame(rAF_ID);
@@ -43,7 +43,7 @@
 		// bepis pepsi isded pepsi isded
 	};
 
-	var start_vaporwave = function () {
+	const start_vaporwave = () => {
 		vaporwave_active = true;
 
 		rotologo = document.createElement("img");
@@ -66,7 +66,7 @@
 			opacity: "0",
 		});
 
-		var animate = function () {
+		const animate = () => {
 			rAF_ID = requestAnimationFrame(animate);
 
 			$(rotologo).css({
@@ -84,9 +84,9 @@
 			});
 			
 			if ($window.length) {
-				var el = $window[0];
-				var offsetLeft = 0;
-				var offsetTop = 0;
+				let el = $window[0];
+				let offsetLeft = 0;
+				let offsetTop = 0;
 				do {
 					offsetLeft += el.offsetLeft;
 					offsetTop += el.offsetTop;
@@ -123,7 +123,7 @@
 		// NOTE: placeholder not a container; the YT API replaces the element passed in the DOM
 		// but keeps inline styles apparently, and maybe other things, I don't know; it's weird
 
-		wait_for_youtube_api(function () {
+		wait_for_youtube_api(() => {
 			player = new YT.Player(player_placeholder, {
 				height: "390",
 				width: "640",
@@ -146,7 +146,7 @@
 		});
 
 		// The API will call this function when the video player is ready.
-		function onPlayerReady(event) {
+		function onPlayerReady(/*event*/) {
 			player.playVideo();
 			player.unMute();
 		}
@@ -155,7 +155,7 @@
 		function onPlayerStateChange(event) {
 			if (event.data == YT.PlayerState.PLAYING) {
 				// TODO: pause and resume this timer with the video
-				setTimeout(function(){
+				setTimeout(() => {
 					$(rotologo).css({opacity: 1});
 				}, 14150);
 			}
@@ -173,8 +173,8 @@
 			}
 		}
 
-		var is_theoretically_playing = true;
-		space_phase_key_handler = function (e) {
+		let is_theoretically_playing = true;
+		space_phase_key_handler = e => {
 			// press space to phase in and out of space phase スペース相 - windows 98 マイクロソフト 『ＷＩＮＴＲＡＰ』 X 将来のオペレーティングシステムサウンド 1998 VAPORWAVE
 			if (e.which === 32) {
 				// TODO: record player SFX
@@ -198,7 +198,7 @@
 		addEventListener("keydown", space_phase_key_handler);
 	};
 
-	var toggle_vaporwave = function () {
+	const toggle_vaporwave = () => {
 		if (vaporwave_active) {
 			stop_vaporwave();
 		} else {
@@ -207,5 +207,10 @@
 	};
 
 	addEventListener("keydown", Konami.code(toggle_vaporwave));
+	addEventListener("keydown", (event)=> {
+		if (event.keyCode === 27) { // Esc
+			stop_vaporwave();
+		}
+	});
 
-}());
+})();

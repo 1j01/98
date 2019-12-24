@@ -1,62 +1,68 @@
+(()=> {
 
-var menus = {
+const looksLikeChrome = !!(window.chrome && (chrome.loadTimes || chrome.csi));
+// NOTE: Microsoft Edge includes window.chrome.app
+// (also this browser detection logic could likely use some more nuance)
+
+window.menus = {
 	"&File": [
 		{
 			item: "&New",
-			shortcut: "Ctrl+N",
-			action: file_new,
+			shortcut: "Ctrl+Alt+N", // Ctrl+N opens a new browser window
+			action: ()=> { file_new(); },
 			description: "Creates a new document.",
 		},
 		{
 			item: "&Open",
 			shortcut: "Ctrl+O",
-			action: file_open,
+			action: ()=> { file_open(); },
 			description: "Opens an existing document.",
 		},
 		{
 			item: "&Save",
 			shortcut: "Ctrl+S",
-			action: file_save,
+			action: ()=> { file_save(); },
 			description: "Saves the active document.",
 		},
 		{
 			item: "Save &As",
 			shortcut: "Ctrl+Shift+S",
-			// in mspaint, no shortcut is listed, but it supports F12; it doesn't support Ctrl+Shift+S
-			action: file_save_as,
+			// in mspaint, no shortcut is listed; it supports F12 (but in a browser that opens the dev tools)
+			// it doesn't support Ctrl+Shift+S but that's a good & common modern shortcut
+			action: ()=> { file_save_as(); },
 			description: "Saves the active document with a new name.",
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "&Load From URL",
 			// shortcut: "Ctrl+L",
-			action: file_load_from_url,
+			action: ()=> { file_load_from_url(); },
 			description: "Opens an image from the web.",
 		},
 		{
 			item: "&Upload To Imgur",
-			action: function(){
+			action: ()=> {
 				// include the selection in the saved image
 				deselect();
 
-				canvas.toBlob(function(blob){
-					sanity_check_blob(blob, function(){
+				canvas.toBlob((blob)=> {
+					sanity_check_blob(blob, ()=> {
 						show_imgur_uploader(blob);
 					});
 				});
 			},
 			description: "Uploads the active document to Imgur",
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "Manage Storage",
-			action: manage_storage,
+			action: ()=> { manage_storage(); },
 			description: "Manages storage of previously created or opened pictures.",
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "Print Pre&view",
-			action: function(){
+			action: ()=> {
 				print();
 			},
 			description: "Prints the active document and sets printing options.",
@@ -64,7 +70,7 @@ var menus = {
 		},
 		{
 			item: "Page Se&tup",
-			action: function(){
+			action: ()=> {
 				print();
 			},
 			description: "Prints the active document and sets printing options.",
@@ -73,33 +79,33 @@ var menus = {
 		{
 			item: "&Print",
 			shortcut: "Ctrl+P",
-			action: function(){
+			action: ()=> {
 				print();
 			},
 			description: "Prints the active document and sets printing options.",
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "Set As &Wallpaper (Tiled)",
-			action: set_as_wallpaper_tiled,
+			action: ()=> { set_as_wallpaper_tiled(); },
 			description: "Tiles this bitmap as the desktop background.",
 		},
 		{
 			item: "Set As Wallpaper (&Centered)", // in mspaint it's Wa&llpaper
-			action: set_as_wallpaper_centered,
+			action: ()=> { set_as_wallpaper_centered(); },
 			description: "Centers this bitmap as the desktop background.",
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "Recent File",
 			enabled: false, // @TODO for desktop app
 			description: "",
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "E&xit",
-			shortcut: "Alt+F4",
-			action: function(){
+			// shortcut: "Alt+F4", // closes browser window
+			action: ()=> {
 				close();
 			},
 			description: "Quits Paint.",
@@ -109,30 +115,31 @@ var menus = {
 		{
 			item: "&Undo",
 			shortcut: "Ctrl+Z",
-			enabled: function(){
-				return undos.length >= 1;
-			},
-			action: undo,
+			enabled: () => undos.length >= 1,
+			action: ()=> { undo(); },
 			description: "Undoes the last action.",
 		},
 		{
 			item: "&Repeat",
 			shortcut: "F4",
-			enabled: function(){
-				return redos.length >= 1;
-			},
-			action: redo,
+			enabled: () => redos.length >= 1,
+			action: ()=> { redo(); },
 			description: "Redoes the previously undone action.",
 		},
-		$MenuBar.DIVIDER,
+		{
+			item: "&History",
+			shortcut: "Ctrl+Shift+Y",
+			action: ()=> { show_document_history(); },
+			description: "Shows the document history and lets you navigate to states not accessible with Undo or Repeat.",
+		},
+		MENU_DIVIDER,
 		{
 			item: "Cu&t",
 			shortcut: "Ctrl+X",
-			enabled: function(){
-				// support cutting selected text with this menu item as well (e.g. in the text tool text box)
-				return !!selection;
-			},
-			action: function(){
+			enabled: () =>
+				// TODO: support cutting text with this menu item as well (e.g. for the text tool)
+				!!selection,
+			action: ()=> {
 				edit_cut(true);
 			},
 			description: "Cuts the selection and puts it on the Clipboard.",
@@ -140,11 +147,10 @@ var menus = {
 		{
 			item: "&Copy",
 			shortcut: "Ctrl+C",
-			enabled: function(){
-				// support copying selected text with this menu item as well (e.g. in the text tool text box)
-				return !!selection;
-			},
-			action: function(){
+			enabled: () =>
+				// TODO: support copying text with this menu item as well (e.g. for the text tool)
+				!!selection,
+			action: ()=> {
 				edit_copy(true);
 			},
 			description: "Copies the selection and puts it on the Clipboard.",
@@ -152,11 +158,10 @@ var menus = {
 		{
 			item: "&Paste",
 			shortcut: "Ctrl+V",
-			enabled: function(){
+			enabled: () =>
 				// TODO: disable if nothing in clipboard or wrong type (if we can access that)
-				return true;
-			},
-			action: function(){
+				true,
+			action: ()=> {
 				edit_paste(true);
 			},
 			description: "Inserts the contents of the Clipboard.",
@@ -164,65 +169,59 @@ var menus = {
 		{
 			item: "C&lear Selection",
 			shortcut: "Del",
-			enabled: function(){ return !!selection; },
-			action: delete_selection,
+			enabled: () => !!selection,
+			action: ()=> { delete_selection(); },
 			description: "Deletes the selection.",
 		},
 		{
 			item: "Select &All",
 			shortcut: "Ctrl+A",
-			action: select_all,
+			action: ()=> { select_all(); },
 			description: "Selects everything.",
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "C&opy To...",
-			enabled: function(){ return !!selection; },
-			action: save_selection_to_file,
+			enabled: () => !!selection,
+			action: ()=> { save_selection_to_file(); },
 			description: "Copies the selection to a file.",
 		},
 		{
 			item: "Paste &From...",
-			action: paste_from_file_select_dialog,
+			action: ()=> { paste_from_file_select_dialog(); },
 			description: "Pastes a file into the selection.",
 		}
 	],
 	"&View": [
 		{
 			item: "&Tool Box",
-			shortcut: "Ctrl+T",
+			// shortcut: "Ctrl+T", // opens a new browser tab
 			checkbox: {
-				toggle: function(){
+				toggle: ()=> {
 					$toolbox.toggle();
 				},
-				check: function(){
-					return $toolbox.is(":visible");
-				},
+				check: () => $toolbox.is(":visible"),
 			},
 			description: "Shows or hides the tool box.",
 		},
 		{
 			item: "&Color Box",
-			shortcut: "Ctrl+L",
+			// shortcut: "Ctrl+L", // focuses browser address bar
 			checkbox: {
-				toggle: function(){
+				toggle: ()=> {
 					$colorbox.toggle();
 				},
-				check: function(){
-					return $colorbox.is(":visible");
-				},
+				check: () => $colorbox.is(":visible"),
 			},
 			description: "Shows or hides the color box.",
 		},
 		{
 			item: "&Status Bar",
 			checkbox: {
-				toggle: function(){
+				toggle: ()=> {
 					$status_area.toggle();
 				},
-				check: function(){
-					return $status_area.is(":visible");
-				},
+				check: () => $status_area.is(":visible"),
 			},
 			description: "Shows or hides the status bar.",
 		},
@@ -232,67 +231,41 @@ var menus = {
 			checkbox: {},
 			description: "Shows or hides the text toolbar.",
 		},
-		$MenuBar.DIVIDER,
-		{
-			item: "E&xtras Menu",
-			checkbox: {
-				toggle: function(){
-					$extras_menu_button.toggle();
-					var checked = this.check();
-					try{
-						localStorage["jspaint extras menu visible"] = checked;
-					// eslint-disable-next-line no-empty
-					}catch(e){}
-				},
-				check: function(){
-					return $extras_menu_button.is(":visible");
-				}
-			},
-			description: "Shows or hides the Extras menu.",
-		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "&Zoom",
 			submenu: [
 				{
 					item: "&Normal Size",
-					shorcut: "Ctrl+PgUp",
+					// shortcut: "Ctrl+PgUp", // cycles thru browser tabs
 					description: "Zooms the picture to 100%.",
-					enabled: function(){
-						return magnification !== 1;
-					},
-					action: function(){
+					enabled: () => magnification !== 1,
+					action: ()=> {
 						set_magnification(1);
 					},
 				},
 				{
 					item: "&Large Size",
-					shorcut: "Ctrl+PgDn",
+					// shortcut: "Ctrl+PgDn", // cycles thru browser tabs
 					description: "Zooms the picture to 400%.",
-					enabled: function(){
-						return magnification !== 4;
-					},
-					action: function(){
+					enabled: () => magnification !== 4,
+					action: ()=> {
 						set_magnification(4);
 					},
 				},
 				{
 					item: "C&ustom...",
 					description: "Zooms the picture.",
-					action: show_custom_zoom_window,
+					action: ()=> { show_custom_zoom_window(); },
 				},
-				$MenuBar.DIVIDER,
+				MENU_DIVIDER,
 				{
 					item: "Show &Grid",
-					shorcut: "Ctrl+G",
-					enabled: function() {
-						return magnification >= 4;
-					},
+					shortcut: "Ctrl+G",
+					enabled: () => magnification >= 4,
 					checkbox: {
 						toggle: toggle_grid,
-						check: function(){
-							return show_grid;
-						},
+						check: () => show_grid,
 					},
 					description: "Shows or hides the grid.",
 				},
@@ -307,52 +280,52 @@ var menus = {
 		{
 			item: "&View Bitmap",
 			shortcut: "Ctrl+F",
-			action: view_bitmap,
+			action: ()=> { view_bitmap(); },
 			description: "Displays the entire picture.",
 		}
 	],
 	"&Image": [
 		{
 			item: "&Flip/Rotate",
-			shortcut: "Ctrl+R",
-			action: image_flip_and_rotate,
+			// shortcut: "Ctrl+R", // reloads browser tab
+			action: ()=> { image_flip_and_rotate(); },
 			description: "Flips or rotates the picture or a selection.",
 		},
 		{
 			item: "&Stretch/Skew",
 			// shortcut: "Ctrl+W", // closes browser tab
-			action: image_stretch_and_skew,
+			action: ()=> { image_stretch_and_skew(); },
 			description: "Stretches or skews the picture or a selection.",
 		},
 		{
 			item: "&Invert Colors",
 			shortcut: "Ctrl+I",
-			action: image_invert,
+			action: ()=> { image_invert(); },
 			description: "Inverts the colors of the picture or a selection.",
 		},
 		{
 			item: "&Attributes...",
 			shortcut: "Ctrl+E",
-			action: image_attributes,
+			action: ()=> { image_attributes(); },
 			description: "Changes the attributes of the picture.",
 		},
 		{
 			item: "&Clear Image",
-			shortcut: "Ctrl+Shift+N",
+			shortcut: looksLikeChrome ? undefined : "Ctrl+Shift+N", // opens incognito window in chrome
 			//shortcut: "Ctrl+Shft+N", [sic]
-			action: clear,
-			description: "Clears the picture or selection.",
+			action: ()=> { clear(); },
+			description: "Clears the picture.",
+			// TODO: do as mspaint does here!
+			// description: "Clears the picture or selection.",
 		},
 		{
 			item: "&Draw Opaque",
 			checkbox: {
-				toggle: function(){
+				toggle: ()=> {
 					tool_transparent_mode = !tool_transparent_mode;
 					$G.trigger("option-changed");
 				},
-				check: function(){
-					return !tool_transparent_mode;
-				},
+				check: () => !tool_transparent_mode,
 			},
 			description: "Makes the current selection either opaque or transparent.",
 		}
@@ -360,17 +333,17 @@ var menus = {
 	"&Colors": [
 		{
 			item: "&Edit Colors...",
-			action: function(){
+			action: ()=> {
 				$colorbox.edit_last_color();
 			},
 			description: "Creates a new color.",
 		},
 		{
 			item: "&Get Colors",
-			action: function(){
-				get_FileList_from_file_select_dialog(function(files){
-					var file = files[0];
-					Palette.load(file, function(err, new_palette){
+			action: ()=> {
+				get_FileList_from_file_select_dialog((files)=> {
+					const file = files[0];
+					Palette.load(file, (err, new_palette)=> {
 						if(err){
 							show_error_message("This file is not in a format that paint recognizes, or no colors were found.");
 						}else{
@@ -384,9 +357,9 @@ var menus = {
 		},
 		{
 			item: "&Save Colors",
-			action: function(){
-				var blob = new Blob([JSON.stringify(palette)], {type: "application/json"});
-				sanity_check_blob(blob, function(){
+			action: ()=> {
+				const blob = new Blob([JSON.stringify(palette)], {type: "application/json"});
+				sanity_check_blob(blob, ()=> {
 					saveAs(blob, "colors.json");
 				});
 			},
@@ -396,39 +369,46 @@ var menus = {
 	"&Help": [
 		{
 			item: "&Help Topics",
-			action: show_help,
+			action: ()=> { show_help(); },
 			description: "Displays Help for the current task or command.",
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "&About Paint",
-			action: show_about_paint,
+			action: ()=> { show_about_paint(); },
 			description: "Displays information about this application.",
 			//description: "Displays program information, version number, and copyright.",
 		}
 	],
 	"E&xtras": [
 		{
+			item: "&History",
+			shortcut: "Ctrl+Shift+Y",
+			action: ()=> { show_document_history(); },
+			description: "Shows the document history and lets you navigate to states not accessible with Undo or Repeat.",
+		},
+		{
 			item: "&Render History As GIF",
-			// shortcut: "Ctrl+Shift+G",
-			action: render_history_as_gif,
+			shortcut: "Ctrl+Shift+G",
+			action: ()=> { render_history_as_gif(); },
 			description: "Creates an animation from the document history.",
 		},
 		// {
 		// 	item: "Render History as &APNG",
 		// 	// shortcut: "Ctrl+Shift+A",
-		// 	action: render_history_as_apng,
+		// 	action: ()=> { render_history_as_apng(); },
 		// 	description: "Creates an animation from the document history.",
 		// },
+		MENU_DIVIDER,
 		// {
 		// 	item: "Extra T&ool Box",
 		// 	checkbox: {
-		// 		toggle: function(){
+		// 		toggle: ()=> {
 		// 			// this doesn't really work well at all to have two toolboxes
 		// 			// (this was not the original plan either)
 		// 			$toolbox2.toggle();
 		// 		},
-		// 		check: function(){
+		// 		check: ()=> {
 		// 			return $toolbox2.is(":visible");
 		// 		},
 		// 	},
@@ -436,7 +416,7 @@ var menus = {
 		// },
 		// {
 		// 	item: "&Preferences",
-		// 	action: function(){
+		// 	action: ()=> {
 		// 		// :)
 		// 	},
 		// 	description: "Configures JS Paint.",
@@ -444,14 +424,14 @@ var menus = {
 		/*{
 			item: "&Draw Randomly",
 			checkbox: {
-				toggle: function(){
+				toggle: ()=> {
 					if (window.simulatingGestures) {
 						stopSimulatingGestures();
 					} else {
 						simulateRandomGesturesPeriodically();
 					}
 				},
-				check: function(){
+				check: ()=> {
 					return window.simulatingGestures;
 				},
 			},
@@ -462,8 +442,8 @@ var menus = {
 			submenu: [
 				{
 					item: "&New Session From Document",
-					action: function(){
-						var name = prompt("Enter the session name that will be used in the URL for sharing.");
+					action: ()=> {
+						let name = prompt("Enter the session name that will be used in the URL for sharing.");
 						if(typeof name == "string"){
 							name = name.trim();
 							if(name == ""){
@@ -471,7 +451,7 @@ var menus = {
 							}else if(name.match(/[./[\]#$]/)){
 								show_error_message("The session name cannot contain any of ./[]#$");
 							}else{
-								location.hash = "session:" + name;
+								location.hash = `session:${name}`;
 							}
 						}
 					},
@@ -479,10 +459,20 @@ var menus = {
 				},
 				{
 					item: "New &Blank Session",
-					action: function(){
-						show_error_message("Not supported yet");
+					action: ()=> {
+						// TODO: load new empty session in the same browser tab
+						let name = prompt("Enter the session name that will be used in the URL for sharing.");
+						if(typeof name == "string"){
+							name = name.trim();
+							if(name == ""){
+								show_error_message("The session name cannot be empty.");
+							}else if(name.match(/[./[\]#$]/)){
+								show_error_message("The session name cannot contain any of ./[]#$");
+							}else{
+								window.open(`${location.origin}${location.pathname}#session:${name}`);
+							}
+						}
 					},
-					enabled: false,
 					description: "Starts a new multi-user session from an empty document.",
 				},
 			]
@@ -492,63 +482,53 @@ var menus = {
 			submenu: [
 				{
 					item: "&Classic",
-					action: function(){
+					action: ()=> {
 						set_theme("classic.css");
 					},
-					enabled: function(){
-						return get_theme() != "classic.css"
-					},
+					enabled: () => get_theme() != "classic.css",
 					description: "Makes JS Paint look like MS Paint from Windows 98.",
 				},
 				{
-					item: "&Modern (WIP)",
-					action: function(){
+					item: "&Modern",
+					action: ()=> {
 						set_theme("modern.css");
 					},
-					enabled: function(){
-						return get_theme() != "modern.css"
-					},
+					enabled: () => get_theme() != "modern.css",
 					description: "Makes JS Paint look a bit more modern.",
 				},
+				{
+					item: "&Winter",
+					action: ()=> {
+						set_theme("winter.css");
+					},
+					enabled: () => get_theme() != "winter.css",
+					description: "Makes JS Paint look festive for the holidays.",
+				},
 			]
+		},
+		MENU_DIVIDER,
+		{
+			item: "Manage Storage",
+			action: ()=> { manage_storage(); },
+			description: "Manages storage of previously created or opened pictures.",
+		},
+		MENU_DIVIDER,
+		{
+			item: "Project News",
+			action: ()=> { show_news(); },
+			description: "Shows news about JS Paint.",
+		},
+		{
+			item: "GitHub",
+			action: ()=> { window.open("https://github.com/1j01/jspaint"); },
+			description: "Shows the project on GitHub.",
+		},
+		{
+			item: "Donate",
+			action: ()=> { window.open("https://www.paypal.me/IsaiahOdhner"); },
+			description: "Supports the project.",
 		},
 	],
 };
 
-var go_outside_frame = false;
-if(frameElement){
-	try{
-		if(parent.$MenuBar){
-			$MenuBar = parent.$MenuBar;
-			go_outside_frame = true;
-		}
-	// eslint-disable-next-line no-empty
-	}catch(e){}
-}
-var $menu_bar = $MenuBar(menus);
-if(go_outside_frame){
-	$menu_bar.insertBefore(frameElement);
-}else{
-	$menu_bar.prependTo($V);
-}
-
-$menu_bar.on("info", function(e, info){
-	$status_text.text(info);
-});
-$menu_bar.on("default-info", function(e){
-	$status_text.default();
-});
-
-var $extras_menu_button = $menu_bar.get(0).ownerDocument.defaultView.$(".extras-menu-button");
-// TODO: DRY with $MenuBar
-// if localStorage is not available, the default setting is visible
-var extras_menu_should_start_visible = true;
-try{
-	// if localStorage is available, the default setting is invisible (for now)
-	// TODO: refactor shared key string
-	extras_menu_should_start_visible = localStorage["jspaint extras menu visible"] == "true"
-// eslint-disable-next-line no-empty
-}catch(e){}
-if(!extras_menu_should_start_visible){
-	$extras_menu_button.hide();
-}
+})();

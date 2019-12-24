@@ -66,15 +66,9 @@ html, body, .jspaint {
 		display: none !important;
 	}
 }
-.menus {
-	z-index: 5000; /*
-		really high so the menu popups go over subwindows (which dynamically increase z-index)
-		and also over other-user cursors in multi-user mode
-		also at least 2 so popups go over the canvas handles,
-		and at least 1 so that the modern theme's menubar can have a shadow
-	*/
-	/* TODO: put the menu popups in their own container, separate from the menubar */
-	/* FIXME: ..especially since now the text of the buttons goes over windows */
+.window,
+.window-content {
+	max-width: calc(100vw - 4px);
 }
 .component-area,
 .menus *,
@@ -93,10 +87,25 @@ html, body, .jspaint {
 .menus {
 	flex: 0 0 auto;
 }
+
+.selection,
+.textbox,
+.helper-layer {
+	z-index: 3;
+}
 .selection,
 .textbox {
+	display: block !important; /* TODO: reduce overzealous display: flex; */
 	box-sizing: border-box;
 	-moz-box-sizing: border-box;
+}
+
+.textbox > img,
+.textbox > canvas,
+.selection > img,
+.selection > canvas {
+	/* TODO: maybe don't include the canvas in the DOM (is it helpful to inspect it tho? it's not critical...) */
+	opacity: 0;
 }
 .selection > img,
 .selection > canvas,
@@ -105,21 +114,26 @@ html, body, .jspaint {
 	height: 100%;
 }
 .resize-ghost,
-.selection:not(.instantiated),
 .component-ghost {
 	pointer-events: none;
 }
+.resize-ghost {
+	z-index: 4;
+}
 .component-ghost {
-	z-index: 500;
+	z-index: 5001; /* 50-5000 reserved for subwindows, which dynamically increase z-index */
 }
 .textbox-editor {
-	width: 100%;
-	height: 100%;
-	padding: 0;
-	margin: 0;
-	border: 0;
-	resize: none;
+	color: transparent !important;
+	background: transparent !important;
+	caret-color: black;
+	z-index: 4; /* go above handles and .main-canvas */
+	outline: none;
 }
+/* debug */
+/*.textbox-editor:hover {
+	color: rgba(255, 0, 255, 0.5) !important;
+}*/
 
 .menu-container {
 	position: relative;
@@ -128,7 +142,7 @@ html, body, .jspaint {
 	position: absolute;
 	top: 100%;
 	left: 0;
-	z-index: 4;
+	z-index: 5002; /* 50-5000 reserved for subwindows, which dynamically increase z-index */
 	box-sizing: border-box;
 }
 .menu-popup-table {
@@ -251,11 +265,46 @@ html, body, .jspaint {
 	overflow: auto;
 	padding: 3px;
 }
+.main-canvas {
+	position: absolute;
+	z-index: 2;
+}
 .handle {
 	position: absolute;
 	width: 3px;
 	height: 3px;
 	z-index: 1;
+}
+.handle::after {
+	/* make handles way easier to grab */
+	content: "";
+	pointer-events: all; /* TODO: maybe don't have a blanket pointer-events: none; on pseudo elements */
+	display: block;
+	position: absolute;
+	left: 50%;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: 32px;
+	height: 32px;
+	max-width: inherit;
+	max-height: inherit;
+	/*background: rgba(255, 255, 0, 0.5);*/ /* debug */
+}
+.textbox::before {
+	/* allow dragging textbox */
+	/* In mspaint the border drawn around selections and textboxes extends out from them,
+	centered on the pixels bordering the contents,
+	which makes it more reasonable to have the border be a draggable thing.
+	I'm making the draggable area outside the border for now. */
+	content: "";
+	pointer-events: all; /* TODO: maybe don't have a blanket pointer-events: none; on pseudo elements */
+	display: block;
+	position: absolute;
+	left: -10px;
+	right: -10px;
+	top: -10px;
+	bottom: -10px;
+	/*background: orange;*/ /* debug */
 }
 
 
@@ -297,6 +346,10 @@ html, body, .jspaint {
 }
 .dialogue-window .window-content > form > div:first-child {
 	padding: 5px;
+}
+
+.flip-and-rotate fieldset {
+	width: 200px;
 }
 
 .help-window .window-content {
@@ -375,6 +428,36 @@ html, body, .jspaint {
 	margin-left: 15px;
 }
 
+.history-view {
+	width: 500px;
+	height: 500px;
+	max-width: calc(100vw - 10px);
+	max-height: calc(100vh - 100px);
+	overflow: auto;
+	background: white;
+	color: black;
+}
+.history-entry {
+	cursor: pointer;
+	padding: 5px;
+	display: flex;
+}
+.history-entry-icon-area {
+	width: 16px;
+	height: 16px;
+	margin-right: 6px;
+}
+.history-entry.current {
+	font-weight: bold;
+}
+.history-entry:not(.current):not(.ancestor-of-current) {
+	color: gray;
+}
+.history-entry:hover:hover:hover { /* specificity hack vs :not()s */
+	color: #0000ff;
+	text-decoration: underline;
+}
+
 ::before, ::after {
 	pointer-events: none;
 }
@@ -418,4 +501,25 @@ html, body, .jspaint {
 	#news {
 		max-height: calc(100vh - 50px);
 	}
+}
+
+.news-indicator {
+	font-family: sans-serif;
+}
+.news-indicator > img {
+	margin-right: 5px;
+}
+@media (max-width: 500px) {
+	.news-indicator > img {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+	}
+	.news-indicator .not-the-icon {
+		display: none;
+	}
+}
+
+[touch-action="none"] {
+	touch-action: none;
 }

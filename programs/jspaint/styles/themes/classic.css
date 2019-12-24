@@ -5,8 +5,11 @@
 .jspaint {
 	background: #c0c0c0;
 }
+body,
 .canvas-area {
 	background: #7b7b7b;
+}
+.canvas-area {
 	border: 1px inset;
 }
 .canvas-area > canvas {
@@ -18,16 +21,16 @@
 
 @media (resolution: 1x), (resolution: 2x), (min-resolution: 3x) {
 	* {
+		image-rendering: -moz-crisp-edges;
 		image-rendering: crisp-edges;
 		image-rendering: pixelated;
-		image-rendering: -moz-crisp-edges;
 	}
 }
 .disable-aa-for-things-at-main-canvas-scale .main-canvas,
 .disable-aa-for-things-at-main-canvas-scale .selection canvas {
+	image-rendering: -moz-crisp-edges;
 	image-rendering: crisp-edges;
 	image-rendering: pixelated;
-	image-rendering: -moz-crisp-edges;
 }
 
 .selection:after,
@@ -91,6 +94,7 @@
 	margin: 2px;
 }
 .menu-item[disabled] {
+	color: #808080;
 	text-shadow: 0.8px 0.8px 0px #fff;
 }
 .menu-item:focus,
@@ -100,8 +104,8 @@
 	text-shadow: none;
 	outline: 0;
 }
-.menu-item[disabled] {
-	color: #808080;
+.menu-item .menu-item-shortcut {
+	padding-left: 10px;
 }
 .menu-hr {
 	border: 0;
@@ -148,7 +152,7 @@
 	border-right: 1px solid #7b7b7b;
 	border-bottom: 1px solid #7b7b7b;
 }
-.window-content button:hover:active,
+.window-content button:hover:active:not([disabled]),
 .window-content button.pressed,
 .tool:hover:active,
 .tool.selected {
@@ -162,7 +166,7 @@
 	border-right: 1px solid white;
 	border-bottom: 1px solid white;
 }
-.window-content button:hover:active:before,
+.window-content button:hover:active:not([disabled]):before,
 .window-content button.pressed:before,
 .tool:hover:active:before,
 .tool.selected:before {
@@ -174,6 +178,13 @@
 	border-left: 1px solid #7b7b7b;
 	border-right: 1px solid #bdbdbd;
 	border-bottom: 1px solid #bdbdbd;
+}
+
+.text-toolbar-button-group button:not(:first-child) {
+	margin-left: 0;
+}
+.text-toolbar-button-group button:not(:last-child) {
+	margin-right: 0;
 }
 
 .tool-options {
@@ -348,6 +359,7 @@ button.selected,
 	color: white;
 	font-family: 'Segoe UI', sans-serif;
 	font-size: 12px;
+	height: 15px;
 }
 .window-title {
 	padding-left: 2px;
@@ -388,7 +400,7 @@ button:after {
 	border-right: 1px solid #808080;
 	border-bottom: 1px solid #808080;
 }
-button:hover:active,
+button:hover:active:not([disabled]),
 button.pressed,
 button.selected {
 	border-top: 1px solid #000;
@@ -396,7 +408,7 @@ button.selected {
 	border-right: 1px solid #fff;
 	border-bottom: 1px solid #fff;
 }
-button:hover:active:after,
+button:hover:active:not([disabled]):after,
 button.pressed:after,
 button.selected:after {
 	border-top: 1px solid #808080;
@@ -408,7 +420,7 @@ button:before {
 	right: 0px;
 	top: -3px;
 }
-button:hover:active:before,
+button:hover:active:not([disabled]):before,
 button.pressed:before {
 	right: -1px;
 	top: -2px;

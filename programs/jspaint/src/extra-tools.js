@@ -7,10 +7,10 @@ extra_tools = [{
 	rendered_color: "",
 	rendered_size: 0,
 	rendered_shape: "",
-	paint: function(ctx, x, y){
+	paint(ctx, x, y) {
 		// XXX: copy pasted all this brush caching/rendering code!
 		// TODO: DRY!
-		var csz = get_brush_canvas_size(brush_size, brush_shape);
+		const csz = get_brush_canvas_size(brush_size, brush_shape);
 		if(
 			this.rendered_shape !== brush_shape ||
 			this.rendered_color !== stroke_color ||
@@ -27,14 +27,14 @@ extra_tools = [{
 			this.rendered_size = brush_size;
 			this.rendered_shape = brush_shape;
 		}
-		var draw_brush = function(x, y){
+		const draw_brush = (x, y) => {
 			ctx.drawImage(brush_canvas, Math.ceil(x-csz/2), Math.ceil(y-csz/2));
 		};
-		var r = airbrush_size * 2;
-		for(var i = 0; i < 6 + r/5; i++){
-			var rx = (Math.random()*2-1) * r;
-			var ry = (Math.random()*2-1) * r;
-			var d = rx*rx + ry*ry;
+		const r = airbrush_size * 2;
+		for(let i = 0; i < 6 + r/5; i++){
+			const rx = (Math.random()*2-1) * r;
+			const ry = (Math.random()*2-1) * r;
+			const d = rx*rx + ry*ry;
 			if(d <= r * r){
 				draw_brush(x + ~~rx, y + ~~ry);
 			}
@@ -57,16 +57,16 @@ extra_tools = [{
 		x: 0,
 		y: 0,
 	},
-	pointerdown: function(ctx, x, y){
+	pointerdown(ctx, x, y) {
 		this.position.x = x;
 		this.position.y = y;
 		this.velocity.x = 0;
 		this.velocity.y = 0;
 	},
-	paint: function(ctx, x, y){
+	paint(ctx, x, y) {
 		// XXX: copy pasted all this brush caching/rendering code!
 		// TODO: DRY!
-		var csz = get_brush_canvas_size(brush_size, brush_shape);
+		const csz = get_brush_canvas_size(brush_size, brush_shape);
 		if(
 			this.rendered_shape !== brush_shape ||
 			this.rendered_color !== stroke_color ||
@@ -83,16 +83,16 @@ extra_tools = [{
 			this.rendered_size = brush_size;
 			this.rendered_shape = brush_shape;
 		}
-		var draw_brush = function(x, y){
+		const draw_brush = (x, y) => {
 			ctx.drawImage(brush_canvas, Math.ceil(x-csz/2), Math.ceil(y-csz/2));
 		};
-		for(var i = 0; i < 60; i++){
-			var x_diff = x - this.position.x;
-			var y_diff = y - this.position.y;
-			var dist = Math.hypot(x_diff, y_diff);
-			var divisor = Math.max(1, dist);
-			var force_x = x_diff / divisor;
-			var force_y = y_diff / divisor;
+		for(let i = 0; i < 60; i++){
+			const x_diff = x - this.position.x;
+			const y_diff = y - this.position.y;
+			const dist = Math.hypot(x_diff, y_diff);
+			const divisor = Math.max(1, dist);
+			const force_x = x_diff / divisor;
+			const force_y = y_diff / divisor;
 			this.velocity.x += force_x;
 			this.velocity.y += force_y;
 			this.position.x += this.velocity.x;
@@ -106,7 +106,7 @@ extra_tools = [{
 	description: "Lets you configure the Airbrushbrush. It uses this type of tool option as well.",
 	cursor: ["airbrush", [7, 22], "crosshair"],
 	continuous: "time",
-	paint: function(ctx, x, y){
+	paint(ctx, x, y) {
 		
 	},
 	$options: $choose_airbrush_size

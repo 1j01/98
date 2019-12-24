@@ -1,185 +1,211 @@
 
-var aliasing = true;
-var transparency = false;
-var monochrome = false;
+const default_magnification = 1;
+const default_tool = get_tool_by_name("Pencil");
 
-var magnification = 1;
-var return_to_magnification = 4;
+const default_canvas_width = 683;
+const default_canvas_height = 384;
+let my_canvas_width = default_canvas_width;
+let my_canvas_height = default_canvas_height;
 
-var default_canvas_width = 683;
-var default_canvas_height = 384;
-var my_canvas_width = default_canvas_width;
-var my_canvas_height = default_canvas_height;
+let aliasing = true;
+let transparency = false;
+let monochrome = false;
 
-var canvas = new Canvas();
+let magnification = default_magnification;
+let return_to_magnification = 4;
+
+const canvas = make_canvas();
 canvas.classList.add("main-canvas");
-var ctx = canvas.ctx;
+const ctx = canvas.ctx;
 
-var palette = [
+const default_palette = [
 	"#000000","#787878","#790300","#757A01","#007902","#007778","#0A0078","#7B0077","#767A38","#003637","#286FFE","#083178","#4C00FE","#783B00",
 	"#FFFFFF","#BBBBBB","#FF0E00","#FAFF08","#00FF0B","#00FEFF","#3400FE","#FF00FE","#FBFF7A","#00FF7B","#76FEFF","#8270FE","#FF0677","#FF7D36",
 ];
-var polychrome_palette = palette;
-var monochrome_palette = make_monochrome_palette();
+let palette = default_palette;
+let polychrome_palette = palette;
+let monochrome_palette = make_monochrome_palette();
 
+let brush_shape = "circle";
+let brush_size = 4;
+let eraser_size = 8;
+let airbrush_size = 9;
+let pencil_size = 1;
+let stroke_size = 1; // lines, curves, shape outlines
+let tool_transparent_mode = false;
 
-var stroke_color;
-var fill_color;
-var stroke_color_k = 0;
-var fill_color_k = 0;
+let stroke_color;
+let fill_color;
+let stroke_color_k = "foreground"; // enum of "foreground", "background", "ternary"
+let fill_color_k = "background"; // enum of "foreground", "background", "ternary"
 
-var selected_tool = tools[6];
-var selected_tools = [selected_tool];
-var return_to_tools = [selected_tool];
-var colors = {
+let selected_tool = default_tool;
+let selected_tools = [selected_tool];
+let return_to_tools = [selected_tool];
+let colors = {
 	foreground: "",
 	background: "",
 	ternary: "",
 };
 
-var selection; //the one and only OnCanvasSelection
-var textbox; //the one and only OnCanvasTextBox
-var helper_layer; //the OnCanvasHelperLayer for the grid and tool previews
-var show_grid = false;
-var font = {
-	family: "Arial",
+let selection; //the one and only OnCanvasSelection
+let textbox; //the one and only OnCanvasTextBox
+let helper_layer; //the OnCanvasHelperLayer for the grid and tool previews
+let show_grid = false;
+let text_tool_font = {
+	family: '"Arial"', // should be an exact value detected by Font Detective
 	size: 12,
-	line_scale: 20 / 12
+	line_scale: 20 / 12,
+	bold: false,
+	italic: false,
+	underline: false,
+	vertical: false,
+	color: "",
+	background: "",
 };
 
-var undos = []; //array of ImageData
-var redos = []; //array of ImageData
-//var frames = []; //array of {delay: N, undos: [ImageData], redos: [ImageData], image: ImageData}? array of Frames?
+let root_history_node = make_history_node({name: "App Not Loaded Properly - Please send a bug report."}); // will be replaced
+let current_history_node = root_history_node;
+let history_node_to_cancel_to = null;
+/** array of history nodes */
+let undos = [];
+/** array of history nodes */
+let redos = [];
 
-var file_name;
-var document_file_path;
-var saved = true;
+let file_name;
+let document_file_path;
+let saved = true;
 
+/** canvas coords */
+let pointer, pointer_start, pointer_previous;
 
+let pointer_active = false;
+let pointer_type, pointer_buttons;
+let reverse;
+let ctrl;
+let button;
+let pointer_over_canvas = false;
+let update_helper_layer_on_pointermove_active = false;
 
-var $app = $(E("div")).addClass("jspaint").appendTo("body");
+/** client coords */
+let pointers = [];
 
-var $V = $(E("div")).addClass("vertical").appendTo($app);
-var $H = $(E("div")).addClass("horizontal").appendTo($V);
+const $app = $(E("div")).addClass("jspaint").appendTo("body");
 
-var $canvas_area = $(E("div")).addClass("canvas-area").appendTo($H);
-$canvas_area.attr("touch-action", "pan-x pan-y");
+const $V = $(E("div")).addClass("vertical").appendTo($app);
+const $H = $(E("div")).addClass("horizontal").appendTo($V);
 
-var $canvas = $(canvas).appendTo($canvas_area);
+const $canvas_area = $(E("div")).addClass("canvas-area").appendTo($H);
+
+const $canvas = $(canvas).appendTo($canvas_area);
 $canvas.attr("touch-action", "none");
-
-var $canvas_handles = $Handles($canvas_area, canvas, {
+let canvas_bounding_client_rect = canvas.getBoundingClientRect(); // cached for performance, updated later
+const getRect = ()=> ({left: 0, top: 0, width: canvas.width, height: canvas.height, right: canvas.width, bottom: canvas.height})
+const $canvas_handles = $Handles($canvas_area, getRect, {
 	outset: 4,
-	get_offset_left: function(){ return parseFloat($canvas_area.css("padding-left")) + 1; },
-	get_offset_top: function(){ return parseFloat($canvas_area.css("padding-top")) + 1; },
-	size_only: true
+	get_offset_left: ()=> parseFloat($canvas_area.css("padding-left")) + 1,
+	get_offset_top: ()=> parseFloat($canvas_area.css("padding-top")) + 1,
+	size_only: true,
 });
+// hack: fix canvas handles causing document to scroll when selecting/deselecting
+// by overriding these methods
+$canvas_handles.hide = ()=> { $canvas_handles.css({opacity: 0, pointerEvents: "none"}); };
+$canvas_handles.show = ()=> { $canvas_handles.css({opacity: "", pointerEvents: ""}); };
 
-var $top = $(E("div")).addClass("component-area").prependTo($V);
-var $bottom = $(E("div")).addClass("component-area").appendTo($V);
-var $left = $(E("div")).addClass("component-area").prependTo($H);
-var $right = $(E("div")).addClass("component-area").appendTo($H);
+const $top = $(E("div")).addClass("component-area").prependTo($V);
+const $bottom = $(E("div")).addClass("component-area").appendTo($V);
+const $left = $(E("div")).addClass("component-area").prependTo($H);
+const $right = $(E("div")).addClass("component-area").appendTo($H);
 
-var $status_area = $(E("div")).addClass("status-area").appendTo($V);
-var $status_text = $(E("div")).addClass("status-text").appendTo($status_area);
-var $status_position = $(E("div")).addClass("status-coordinates").appendTo($status_area);
-var $status_size = $(E("div")).addClass("status-coordinates").appendTo($status_area);
+const $status_area = $(E("div")).addClass("status-area").appendTo($V);
+const $status_text = $(E("div")).addClass("status-text").appendTo($status_area);
+const $status_position = $(E("div")).addClass("status-coordinates").appendTo($status_area);
+const $status_size = $(E("div")).addClass("status-coordinates").appendTo($status_area);
 
-$status_text.default = function(){
+const $news_indicator = $(`
+	<a class='news-indicator' href='#project-news'>
+		<img src='images/winter/present.png' width='24' height='22' alt=''/>
+		<span class='not-the-icon'>
+			<strong>New!</strong>&nbsp;Holiday theme, multitouch panning, and revamped history
+		</span>
+	</a>
+`);
+$news_indicator.on("click auxclick", (event)=> {
+	event.preventDefault();
+	show_news();
+});
+// TODO: use localstorage to show until clicked, if available
+// and show for a longer period of time after the update, if available
+if (Date.now() < Date.parse("Jan 5 2020 23:42:42 GMT-0500")) {
+	$status_area.append($news_indicator);
+}
+
+$status_text.default = () => {
 	$status_text.text("For Help, click Help Topics on the Help Menu.");
 };
 $status_text.default();
 
-var $toolbox = $ToolBox(tools);
-// var $toolbox2 = $ToolBox(extra_tools, true);//.hide();
+// menu bar
+let menu_bar_outside_frame = false;
+if(frameElement){
+	try{
+		if(parent.$MenuBar){
+			$MenuBar = parent.$MenuBar;
+			menu_bar_outside_frame = true;
+		}
+	// eslint-disable-next-line no-empty
+	}catch(e){}
+}
+const $menu_bar = $MenuBar(menus);
+if(menu_bar_outside_frame){
+	$menu_bar.insertBefore(frameElement);
+}else{
+	$menu_bar.prependTo($V);
+}
+
+$menu_bar.on("info", (_event, info) => {
+	$status_text.text(info);
+});
+$menu_bar.on("default-info", ()=> {
+	$status_text.default();
+});
+// </menu bar>
+
+const $toolbox = $ToolBox(tools);
+// const $toolbox2 = $ToolBox(extra_tools, true);//.hide();
 // Note: a second $ToolBox doesn't work because they use the same tool options (which could be remedied)
 // and also the UI isn't designed for multiple vertical components (or horizontal ones)
 // If there's to be extra tools, they should probably get a window, with different UI
 // so it can display names of the tools, and maybe authors and previews (and not necessarily icons)
-var $colorbox = $ColorBox();
+const $colorbox = $ColorBox();
 
-reset_file();
-reset_colors();
-reset_canvas(); // (with newly reset colors)
-reset_magnification();
-
-if(window.document_file_path_to_open){
-	open_from_file_path(document_file_path_to_open, function(err){
-		if(err){
-			return show_error_message("Failed to open file " + document_file_path_to_open, err);
-		}
-	});
-}
-
-$canvas.on("user-resized", function(e, _x, _y, width, height){
-	undoable(0, function(){
-		canvas.width = Math.max(1, width);
-		canvas.height = Math.max(1, height);
-		ctx.disable_image_smoothing();
-		
-		if(!transparency){
-			ctx.fillStyle = colors.background;
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
-		}
-
-		var previous_imagedata = undos[undos.length-1];
-		if(previous_imagedata){
-			var temp_canvas = new Canvas(previous_imagedata);
-			ctx.drawImage(temp_canvas, 0, 0);
-		}
-
-		$canvas_area.trigger("resize");
-
-		storage.set({
-			width: canvas.width,
-			height: canvas.height,
-		}, function(err){
-			// oh well
-		})
-	});
+$canvas_area.on("user-resized", (_event, _x, _y, unclamped_width, unclamped_height) => {
+	resize_canvas_and_save_dimensions(unclamped_width, unclamped_height);
 });
 
-$canvas_area.on("resize", function(){
+$G.on("resize", () => { // for browser zoom, and in-app zoom of the canvas
+	update_canvas_rect();
+	update_disable_aa();
+});
+$canvas_area.on("scroll", () => {
+	update_canvas_rect();
+});
+$canvas_area.on("resize", () => {
 	update_magnified_canvas_size();
 });
 
-storage.get({
-	width: default_canvas_width,
-	height: default_canvas_height,
-}, function(err, values){
-	if(err){return;}
-	my_canvas_width = values.width;
-	my_canvas_height = values.height;
-	canvas.width = Math.max(1, my_canvas_width);
-	canvas.height = Math.max(1, my_canvas_height);
-	ctx.disable_image_smoothing();
-	if(!transparency){
-		ctx.fillStyle = colors.background;
-		ctx.fillRect(0, 0, canvas.width, canvas.height);
-	}
-	$canvas_area.trigger("resize");
-});
-
-$G.on("resize", function(){ // for browser zoom, and in-app zoom of the canvas
-	update_helper_layer();
-	update_disable_aa();
-});
-$canvas_area.on("scroll", function() {
-	update_helper_layer();
-});
-
-$("body").on("dragover dragenter", function(e){
-	var dt = e.originalEvent.dataTransfer;
-	var has_files = Array.from(dt.types).indexOf("Files") !== -1;
+$("body").on("dragover dragenter", e => {
+	const dt = e.originalEvent.dataTransfer;
+	const has_files = Array.from(dt.types).includes("Files");
 	if(has_files){
 		e.preventDefault();
 	}
-}).on("drop", function(e){
+}).on("drop", e => {
 	if(e.isDefaultPrevented()){
 		return;
 	}
-	var dt = e.originalEvent.dataTransfer;
-	var has_files = Array.from(dt.types).indexOf("Files") !== -1;
+	const dt = e.originalEvent.dataTransfer;
+	const has_files = Array.from(dt.types).includes("Files");
 	if(has_files){
 		e.preventDefault();
 		if(dt && dt.files && dt.files.length){
@@ -188,12 +214,22 @@ $("body").on("dragover dragenter", function(e){
 	}
 });
 
-var keys = {};
-$G.on("keyup", function(e){
-	delete keys[e.keyCode];
-});
-$G.on("keydown", function(e){
+$G.on("keydown", e => {
 	if(e.isDefaultPrevented()){
+		return;
+	}
+	if (e.keyCode === 27) { // Esc
+		if (textbox && textbox.$editor.is(e.target)) {
+			deselect();
+		}
+	}
+	if (
+		// Ctrl+Shift+Y
+		(e.ctrlKey || e.metaKey) && e.shiftKey && !e.altKey &&
+		String.fromCharCode(e.keyCode).toUpperCase() === "Y"
+	) {
+		show_document_history();
+		e.preventDefault();
 		return;
 	}
 	// TODO: return if menus/menubar focused or focus in dialog window
@@ -212,13 +248,8 @@ $G.on("keydown", function(e){
 	// also, ideally check that modifiers *aren't* pressed
 	// probably best to use a library at this point!
 	
-	if(e.altKey){
-		//find key codes
-		window.console && console.log(e.keyCode);
-	}
-	
 	if(selection){
-		var nudge_selection = function(delta_x, delta_y){
+		const nudge_selection = (delta_x, delta_y) => {
 			selection.x += delta_x;
 			selection.y += delta_y;
 			selection.position();
@@ -259,12 +290,12 @@ $G.on("keydown", function(e){
 	}else if(e.keyCode === 46){ //Delete
 		delete_selection();
 	}else if(e.keyCode === 107 || e.keyCode === 109){ // Numpad Plus and Minus
-		var plus = e.keyCode === 107;
-		var minus = e.keyCode === 109;
-		var delta = plus - minus; // var delta = +plus++ -minus--; // Δ = ±±±±
+		const plus = e.keyCode === 107;
+		const minus = e.keyCode === 109;
+		const delta = plus - minus; // const delta = +plus++ -minus--; // Δ = ±±±±
 
 		if(selection){
-			selection.scale(Math.pow(2, delta));
+			selection.scale(2 ** delta);
 		}else{
 			if(selected_tool.name === "Brush"){
 				brush_size = Math.max(1, Math.min(brush_size + delta, 500));
@@ -284,11 +315,12 @@ $G.on("keydown", function(e){
 					tool_go(selected_tool);
 				});
 			}
+			update_helper_layer();
 		}
 		e.preventDefault();
 		return;
-	}else if(e.ctrlKey){
-		var key = String.fromCharCode(e.keyCode).toUpperCase();
+	}else if(e.ctrlKey || e.metaKey){
+		const key = String.fromCharCode(e.keyCode).toUpperCase();
 		if(textbox){
 			switch(key){
 				case "A":
@@ -318,6 +350,7 @@ $G.on("keydown", function(e){
 				e.shiftKey ? redo() : undo();
 			break;
 			case "Y":
+				// Ctrl+Shift+Y handled above
 				redo();
 			break;
 			case "G":
@@ -350,7 +383,7 @@ $G.on("keydown", function(e){
 		e.preventDefault();
 	}
 });
-$G.on("cut copy paste", function(e){
+$G.on("cut copy paste", e => {
 	if(e.isDefaultPrevented()){
 		return;
 	}
@@ -364,19 +397,22 @@ $G.on("cut copy paste", function(e){
 	}
 
 	e.preventDefault();
-	var cd = e.originalEvent.clipboardData || window.clipboardData;
+	const cd = e.originalEvent.clipboardData || window.clipboardData;
 	if(!cd){ return; }
 
 	if(e.type === "copy" || e.type === "cut"){
 		if(selection && selection.canvas){
-			var do_sync_clipboard_copy_or_cut = function() {
+			const do_sync_clipboard_copy_or_cut = () => {
 				// works only for pasting within a jspaint instance
-				var data_url = selection.canvas.toDataURL();
+				const data_url = selection.canvas.toDataURL();
 				cd.setData("text/x-data-uri; type=image/png", data_url);
 				cd.setData("text/uri-list", data_url);
 				cd.setData("URL", data_url);
 				if(e.type === "cut"){
-					delete_selection();
+					delete_selection({
+						name: "Cut",
+						icon: get_help_folder_icon("p_cut.png"),
+					});
 				}
 			};
 			if (!navigator.clipboard || !navigator.clipboard.write) {
@@ -393,12 +429,12 @@ $G.on("cut copy paste", function(e){
 			}
 		}
 	}else if(e.type === "paste"){
-		$.each(cd.items, function(i, item){
+		for (const item of cd.items) {
 			if(item.type.match(/^text\/(?:x-data-uri|uri-list|plain)|URL$/)){
-				item.getAsString(function(text){
-					var uris = get_URIs(text);
+				item.getAsString(text => {
+					const uris = get_URIs(text);
 					if (uris.length > 0) {
-						load_image_from_URI(uris[0], function(err, img){
+						load_image_from_URI(uris[0], (err, img) => {
 							if(err){ return show_resource_load_error_message(); }
 							paste(img);
 						});
@@ -406,21 +442,159 @@ $G.on("cut copy paste", function(e){
 						show_error_message("The information on the Clipboard can't be inserted into Paint.");
 					}
 				});
-				return false; // break out of $.each loop
+				break;
 			}else if(item.type.match(/^image\//)){
 				paste_image_from_file(item.getAsFile());
-				return false; // break out of $.each loop
+				break;
 			}
-		});
+		}
 	}
 });
 
-var pointer, pointer_start, pointer_previous, pointer_type, pointer_buttons;
-var reverse, ctrl, button;
-function e2c(e){
-	var rect = canvas.getBoundingClientRect();
-	var cx = e.clientX - rect.left;
-	var cy = e.clientY - rect.top;
+reset_file();
+reset_colors();
+reset_canvas_and_history(); // (with newly reset colors)
+set_magnification(default_magnification);
+
+// this is synchronous for now, but TODO: handle possibility of loading a document before callback
+// when switching to asynchronous storage, e.g. with localforage
+storage.get({
+	width: default_canvas_width,
+	height: default_canvas_height,
+}, (err, stored_values) => {
+	if(err){return;}
+	my_canvas_width = stored_values.width;
+	my_canvas_height = stored_values.height;
+	
+	make_or_update_undoable({
+		match: (history_node)=> history_node.name === "New Document",
+		name: "Resize New Document Canvas",
+		icon: get_help_folder_icon("p_stretch_both.png"),
+	}, ()=> {
+		canvas.width = Math.max(1, my_canvas_width);
+		canvas.height = Math.max(1, my_canvas_height);
+		ctx.disable_image_smoothing();
+		if(!transparency){
+			ctx.fillStyle = colors.background;
+			ctx.fillRect(0, 0, canvas.width, canvas.height);
+		}
+		$canvas_area.trigger("resize");
+	});
+});
+
+if(window.document_file_path_to_open){
+	open_from_file_path(document_file_path_to_open, err => {
+		if(err){
+			return show_error_message(`Failed to open file ${document_file_path_to_open}`, err);
+		}
+	});
+}
+
+const lerp = (a, b, b_ness)=> a + (b - a) * b_ness;
+
+const color_ramp = (num_colors, start_hsla, end_hsla)=>
+	Array(num_colors).fill().map((_undefined, index, array)=>
+		`hsla(${
+			lerp(start_hsla[0], end_hsla[0], index/array.length)
+		}deg, ${
+			lerp(start_hsla[1], end_hsla[1], index/array.length)
+		}%, ${
+			lerp(start_hsla[2], end_hsla[2], index/array.length)
+		}%, ${
+			lerp(start_hsla[3], end_hsla[3], index/array.length)
+		}%)`
+	);
+
+const update_palette_from_theme = ()=> {
+	if (get_theme() === "winter.css") {
+		const make_stripe_patterns = (reverse)=> [
+			make_stripe_pattern(reverse, [
+				"hsl(166, 93%, 38%)",
+				"white",
+			]),
+			make_stripe_pattern(reverse, [
+				"white",
+				"hsl(355, 78%, 46%)",
+			]),
+			make_stripe_pattern(reverse, [
+				"hsl(355, 78%, 46%)",
+				"white",
+				"white",
+				"hsl(355, 78%, 46%)",
+				"hsl(355, 78%, 46%)",
+				"hsl(355, 78%, 46%)",
+				"white",
+				"white",
+				"hsl(355, 78%, 46%)",
+				"white",
+			], 2),
+			make_stripe_pattern(reverse, [
+				"hsl(166, 93%, 38%)",
+				"white",
+				"white",
+				"hsl(166, 93%, 38%)",
+				"hsl(166, 93%, 38%)",
+				"hsl(166, 93%, 38%)",
+				"white",
+				"white",
+				"hsl(166, 93%, 38%)",
+				"white",
+			], 2),
+			make_stripe_pattern(reverse, [
+				"hsl(166, 93%, 38%)",
+				"white",
+				"hsl(355, 78%, 46%)",
+				"white",
+			], 2),
+		];
+		palette = [
+			"black",
+			// green
+			"hsl(91, 55%, 81%)",
+			"hsl(142, 57%, 64%)",
+			"hsl(166, 93%, 38%)",
+			"#04ce1f", // elf green
+			"hsl(159, 93%, 16%)",
+			// red
+			"hsl(2, 77%, 27%)",
+			"hsl(350, 100%, 50%)",
+			"hsl(356, 97%, 64%)",
+			// brown
+			"#ad4632",
+			"#5b3b1d",
+			// stripes
+			...make_stripe_patterns(false),
+			// white to blue
+			...color_ramp(
+				6,
+				[200, 100, 100, 100],
+				[200, 100, 10, 100],
+			),
+			// pink
+			"#fcbaf8",
+			// silver
+			"hsl(0, 0%, 90%)",
+			"hsl(22, 5%, 71%)",
+			// gold
+			"hsl(48, 82%, 54%)",
+			"hsl(49, 82%, 72%)",
+			// stripes
+			...make_stripe_patterns(true),
+		];
+		$colorbox.rebuild_palette();
+	} else {
+		palette = default_palette;
+		$colorbox.rebuild_palette();
+	}
+};
+
+$G.on("theme-load", update_palette_from_theme);
+update_palette_from_theme();
+
+function to_canvas_coords({clientX, clientY}) {
+	const rect = canvas_bounding_client_rect;
+	const cx = clientX - rect.left;
+	const cy = clientY - rect.top;
 	return {
 		x: ~~(cx / rect.width * canvas.width),
 		y: ~~(cy / rect.height * canvas.height),
@@ -430,7 +604,7 @@ function e2c(e){
 function update_fill_and_stroke_colors_and_lineWidth(selected_tool) {
 	ctx.lineWidth = stroke_size;
 
-	var reverse_because_fill_only = selected_tool.$options && selected_tool.$options.fill && !selected_tool.$options.stroke;
+	const reverse_because_fill_only = selected_tool.$options && selected_tool.$options.fill && !selected_tool.$options.stroke;
 	ctx.fillStyle = fill_color =
 	ctx.strokeStyle = stroke_color =
 		colors[
@@ -460,47 +634,27 @@ function update_fill_and_stroke_colors_and_lineWidth(selected_tool) {
 function tool_go(selected_tool, event_name){
 	update_fill_and_stroke_colors_and_lineWidth(selected_tool);
 
-	if(selected_tools.length <= 1){
-		if(selected_tool.shape){
-			var previous_imagedata = undos[undos.length-1];
-			if(previous_imagedata){
-				ctx.clearRect(0, 0, canvas.width, canvas.height);
-				ctx.putImageData(previous_imagedata, 0, 0);
-			}
-		}
-	}
-	if(selected_tool.shape){
-		selected_tool.shape(ctx, pointer_start.x, pointer_start.y, pointer.x-pointer_start.x, pointer.y-pointer_start.y);
-	}
-
 	if(selected_tool[event_name]){
 		selected_tool[event_name](ctx, pointer.x, pointer.y);
 	}
 	if(selected_tool.paint){
-		if(selected_tool.continuous === "space"){
-			var ham = brush_shape.match(/diagonal/) ? brosandham_line : bresenham_line;
-			ham(pointer_previous.x, pointer_previous.y, pointer.x, pointer.y, function(x, y){
-				selected_tool.paint(ctx, x, y);
-			});
-		}else{
-			selected_tool.paint(ctx, pointer.x, pointer.y);
-		}
+		selected_tool.paint(ctx, pointer.x, pointer.y);
 	}
 }
 function canvas_pointer_move(e){
 	ctrl = e.ctrlKey;
 	shift = e.shiftKey;
-	pointer = e2c(e);
+	pointer = to_canvas_coords(e);
 	
 	// Quick Undo
 	// (Note: pointermove also occurs when the set of buttons pressed changes,
 	// except when another event would fire like pointerdown)
-	if(pointer_active && e.button != -1){
+	if(pointers.length && e.button != -1){
 		// compare buttons other than middle mouse button by using bitwise OR to make that bit of the number the same
 		const MMB = 4;
 		if(e.pointerType != pointer_type || (e.buttons | MMB) != (pointer_buttons | MMB)){
-			pointer_active = false;
 			cancel();
+			pointer_active = false; // NOTE: pointer_active used in cancel()
 			return;
 		}
 	}
@@ -508,19 +662,19 @@ function canvas_pointer_move(e){
 	if(e.shiftKey){
 		if(selected_tool.name.match(/Line|Curve/)){
 			// snap to eight directions
-			var dist = Math.sqrt(
+			const dist = Math.sqrt(
 				(pointer.y - pointer_start.y) * (pointer.y - pointer_start.y) +
 				(pointer.x - pointer_start.x) * (pointer.x - pointer_start.x)
 			);
-			var eighth_turn = TAU / 8;
-			var angle_0_to_8 = Math.atan2(pointer.y - pointer_start.y, pointer.x - pointer_start.x) / eighth_turn;
-			var angle = Math.round(angle_0_to_8) * eighth_turn;
+			const eighth_turn = TAU / 8;
+			const angle_0_to_8 = Math.atan2(pointer.y - pointer_start.y, pointer.x - pointer_start.x) / eighth_turn;
+			const angle = Math.round(angle_0_to_8) * eighth_turn;
 			pointer.x = Math.round(pointer_start.x + Math.cos(angle) * dist);
 			pointer.y = Math.round(pointer_start.y + Math.sin(angle) * dist);
 		}else if(selected_tool.shape){
 			// snap to four diagonals
-			var w = Math.abs(pointer.x - pointer_start.x);
-			var h = Math.abs(pointer.y - pointer_start.y);
+			const w = Math.abs(pointer.x - pointer_start.x);
+			const h = Math.abs(pointer.y - pointer_start.y);
 			if(w < h){
 				if(pointer.y > pointer_start.y){
 					pointer.y = pointer_start.y + w;
@@ -541,11 +695,11 @@ function canvas_pointer_move(e){
 	});
 	pointer_previous = pointer;
 }
-$canvas.on("pointermove", function(e){
-	pointer = e2c(e);
-	$status_position.text(pointer.x + "," + pointer.y);
+$canvas.on("pointermove", e => {
+	pointer = to_canvas_coords(e);
+	$status_position.text(`${pointer.x},${pointer.y}`);
 });
-$canvas.on("pointerenter", function(e){
+$canvas.on("pointerenter", ()=> {
 	pointer_over_canvas = true;
 
 	update_helper_layer();
@@ -555,7 +709,7 @@ $canvas.on("pointerenter", function(e){
 		update_helper_layer_on_pointermove_active = true;
 	}
 });
-$canvas.on("pointerleave", function(e){
+$canvas.on("pointerleave", ()=> {
 	pointer_over_canvas = false;
 
 	$status_position.text("");
@@ -568,22 +722,80 @@ $canvas.on("pointerleave", function(e){
 	}
 });
 
-var pointer_active = false;
-var pointer_over_canvas = false;
-var update_helper_layer_on_pointermove_active = false;
-$canvas.on("pointerdown", function(e){
+let pan_start_pos;
+let pan_start_scroll_top;
+let pan_start_scroll_left;
+function average_points(points) {
+	const average = {x: 0, y: 0};
+	for (const pointer of points) {
+		average.x += pointer.x;
+		average.y += pointer.y;
+	}
+	average.x /= points.length;
+	average.y /= points.length;
+	return average;
+}
+$canvas_area.on("pointerdown", (event)=> {
+	pointers.push({pointerId: event.pointerId, x: event.clientX, y: event.clientY});
+
+	if (pointers.length == 2) {
+		pan_start_pos = average_points(pointers);
+		pan_start_scroll_top = $canvas_area.scrollTop();
+		pan_start_scroll_left = $canvas_area.scrollLeft();
+	}
 	// Quick Undo when there are multiple pointers (i.e. for touch)
 	// see pointermove for other pointer types
-	if(pointer_active && (reverse ? (button === 2) : (button === 0))){
-		pointer_active = false;
+	if (pointers.length >= 2) {
 		cancel();
+		pointer_active = false; // NOTE: pointer_active used in cancel()
 		return;
 	}
+});
+$G.on("pointerup pointercancel", (event)=> {
+	pointers = pointers.filter((pointer)=> {
+		if (event.pointerId === pointer.pointerId) {
+			return false;
+		}
+		return true;
+	});
+});
+$G.on("pointermove", (event)=> {
+	for (const pointer of pointers) {
+		if (pointer.pointerId === event.pointerId) {
+			pointer.x = event.clientX;
+			pointer.y = event.clientY;
+		}
+	}
+	if (pointers.length >= 2) {
+		const current_pos = average_points(pointers);
+		const difference_in_x = current_pos.x - pan_start_pos.x;
+		const difference_in_y = current_pos.y - pan_start_pos.y;
+		$canvas_area.scrollLeft(pan_start_scroll_left - difference_in_x);
+		$canvas_area.scrollTop(pan_start_scroll_top - difference_in_y);
+	}
+});
+
+// window.onerror = show_error_message;
+
+$canvas.on("pointerdown", e => {
+	update_canvas_rect();
+
+	// Quick Undo when there are multiple pointers (i.e. for touch)
+	// see pointermove for other pointer types
+	// NOTE: this relies on event handler order for pointerdown
+	// pointer is not added to pointers yet
+	if(pointers.length >= 1){
+		cancel();
+		pointer_active = false; // NOTE: pointer_active used in cancel()
+		return;
+	}
+
+	history_node_to_cancel_to = current_history_node;
 	
-	pointer_active = true;
+	pointer_active = !!(e.buttons & (1 | 2)); // as far as tools are concerned
 	pointer_type = e.pointerType;
 	pointer_buttons = e.buttons;
-	$G.one("pointerup", function(e){
+	$G.one("pointerup", ()=> {
 		pointer_active = false;
 		update_helper_layer();
 		
@@ -604,52 +816,54 @@ $canvas.on("pointerdown", function(e){
 	button = e.button;
 	ctrl = e.ctrlKey;
 	shift = e.shiftKey;
-	pointer_start = pointer_previous = pointer = e2c(e);
+	pointer_start = pointer_previous = pointer = to_canvas_coords(e);
 
-	var pointerdown_action = function(){
-	// TODO for multitools: don't register event listeners for each tool
-	selected_tools.forEach((selected_tool)=> {
-
-		if(selected_tool.paint || selected_tool.pointerdown){
-			tool_go(selected_tool, "pointerdown");
-		}
+	const pointerdown_action = () => {
+		let interval_ids = [];
+		selected_tools.forEach((selected_tool)=> {
+			if(selected_tool.paint || selected_tool.pointerdown){
+				tool_go(selected_tool, "pointerdown");
+			}
+			if(selected_tool.paint_on_time_interval != null){
+				interval_ids.push(setInterval(()=> {
+					tool_go(selected_tool);
+				}, selected_tool.paint_on_time_interval));
+			}
+		});
 
 		$G.on("pointermove", canvas_pointer_move);
-		if(selected_tool.continuous === "time"){
-			var iid = setInterval(()=> { tool_go(selected_tool); }, 5);
-		}
-		$G.one("pointerup", function(e, canceling){
+
+		$G.one("pointerup", (e, canceling) => {
 			button = undefined;
 			reverse = false;
-			if(canceling){
-				selected_tool.cancel && selected_tool.cancel();
-			}else{
-				pointer = e2c(e);
+
+			pointer = to_canvas_coords(e);
+			selected_tools.forEach((selected_tool)=> {
 				selected_tool.pointerup && selected_tool.pointerup(ctx, pointer.x, pointer.y);
-			}
+			});
+
 			if (selected_tools.length === 1) {
 				if (selected_tool.deselect) {
 					select_tools(return_to_tools);
 				}
 			}
 			$G.off("pointermove", canvas_pointer_move);
-			if(iid){
-				clearInterval(iid);
+			for (const interval_id of interval_ids) {
+				clearInterval(interval_id);
+			}
+
+			if (!canceling) {
+				history_node_to_cancel_to = null;
 			}
 		});
-	});
 	};
 
-	if(isPassive(selected_tools)){
-		pointerdown_action();
-	}else{
-		undoable(pointerdown_action);
-	}
+	pointerdown_action();
 	
 	update_helper_layer();
 });
 
-$canvas_area.on("pointerdown", function(e){
+$canvas_area.on("pointerdown", e => {
 	if(e.button === 0){
 		if($canvas_area.is(e.target)){
 			if(selection){
@@ -663,7 +877,7 @@ $app
 .add($toolbox)
 // .add($toolbox2)
 .add($colorbox)
-.on("mousedown selectstart contextmenu", function(e){
+.on("mousedown selectstart contextmenu", e => {
 	if(e.isDefaultPrevented()){
 		return;
 	}
@@ -686,6 +900,6 @@ $app
 });
 
 // Stop drawing (or dragging or whatver) if you Alt+Tab or whatever
-$G.on("blur", function(e){
+$G.on("blur", () => {
 	$G.triggerHandler("pointerup");
 });

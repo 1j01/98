@@ -12,12 +12,12 @@ function render_brush(ctx, shape, size){
 		size -= 0.4;
 	}
 	
-	var mid_x = Math.round(ctx.canvas.width / 2);
-	var left = Math.round(mid_x - size/2);
-	var right = Math.round(mid_x + size/2);
-	var mid_y = Math.round(ctx.canvas.height / 2);
-	var top = Math.round(mid_y - size/2);
-	var bottom = Math.round(mid_y + size/2);
+	const mid_x = Math.round(ctx.canvas.width / 2);
+	const left = Math.round(mid_x - size/2);
+	const right = Math.round(mid_x + size/2);
+	const mid_y = Math.round(ctx.canvas.height / 2);
+	const top = Math.round(mid_y - size/2);
+	const bottom = Math.round(mid_y + size/2);
 	
 	if(shape === "circle"){
 		// TODO: ideally _without_pattern_support
@@ -39,13 +39,13 @@ function render_brush(ctx, shape, size){
 }
 
 function draw_ellipse(ctx, x, y, w, h, stroke, fill){
-	var center_x = x + w/2;
-	var center_y = y + h/2;
+	const center_x = x + w/2;
+	const center_y = y + h/2;
 	
 	if(aliasing){
-		var points = [];
-		var step = 0.05;
-		for(var theta = 0; theta < TAU; theta += step){
+		const points = [];
+		const step = 0.05;
+		for(let theta = 0; theta < TAU; theta += step){
 			points.push({
 				x: center_x + Math.cos(theta) * w/2,
 				y: center_y + Math.sin(theta) * h/2,
@@ -65,13 +65,13 @@ function draw_ellipse(ctx, x, y, w, h, stroke, fill){
 function draw_rounded_rectangle(ctx, x, y, width, height, radius_x, radius_y, stroke, fill){
 	
 	if(aliasing){
-		var points = [];
-		var lineTo = (x, y)=> {
+		const points = [];
+		const lineTo = (x, y)=> {
 			points.push({x, y});
 		};
-		var arc = (x, y, radius_x, radius_y, startAngle, endAngle)=> {
-			var step = 0.05;
-			for(var theta = startAngle; theta < endAngle; theta += step){
+		const arc = (x, y, radius_x, radius_y, startAngle, endAngle)=> {
+			const step = 0.05;
+			for(let theta = startAngle; theta < endAngle; theta += step){
 				points.push({
 					x: x + Math.cos(theta) * radius_x,
 					y: y + Math.sin(theta) * radius_y,
@@ -84,8 +84,8 @@ function draw_rounded_rectangle(ctx, x, y, width, height, radius_x, radius_y, st
 			});
 		};
 
-		var x2 = x + width;
-		var y2 = y + height;
+		const x2 = x + width;
+		const y2 = y + height;
 		arc(x2 - radius_x, y + radius_y, radius_x, radius_y, TAU*3/4, TAU, false);
 		lineTo(x2, y2 - radius_y);
 		arc(x2 - radius_x, y2 - radius_y, radius_x, radius_y, 0, TAU*1/4, false);
@@ -116,43 +116,88 @@ function draw_rounded_rectangle(ctx, x, y, width, height, radius_x, radius_y, st
 	}
 }
 
-var line_brush_canvas;
-var line_brush_canvas_rendered_shape;
-var line_brush_canvas_rendered_color;
-var line_brush_canvas_rendered_size;
-function update_brush_for_drawing_lines(stroke_size){
-	// USAGE NOTE: must be called outside of any other usage of op_canvas (because of render_brush)
-	if(aliasing && stroke_size > 1){
-		// TODO: DRY brush caching code
-		if(
-			line_brush_canvas_rendered_shape !== "circle" ||
-			line_brush_canvas_rendered_color !== stroke_color ||
-			line_brush_canvas_rendered_size !== stroke_size
-		){
-			// don't need to do brush_ctx.disable_image_smoothing() currently because images aren't drawn to the brush
-			var csz = get_brush_canvas_size(stroke_size, "circle");
-			line_brush_canvas = new Canvas(csz, csz);
-			line_brush_canvas.width = csz;
-			line_brush_canvas.height = csz;
-			line_brush_canvas.ctx.fillStyle = line_brush_canvas.ctx.strokeStyle = stroke_color;
-			render_brush(line_brush_canvas.ctx, "circle", stroke_size);
+// USAGE NOTE: must be called outside of any other usage of op_canvas (because of render_brush)
+// TODO: protect against browser clearing canvases, invalidate cache
+const get_brush_canvas = memoize_synchronous_function((brush_shape, brush_size)=> {
+	const canvas_size = get_brush_canvas_size(brush_size, brush_shape);
 
-			line_brush_canvas_rendered_shape = "circle";
-			line_brush_canvas_rendered_color = stroke_color;
-			line_brush_canvas_rendered_size = stroke_size;
+	const brush_canvas = make_canvas(canvas_size, canvas_size);
+
+	// brush_canvas.ctx.fillStyle = brush_canvas.ctx.strokeStyle = "black";
+	render_brush(brush_canvas.ctx, brush_shape, brush_size);
+
+	return brush_canvas;
+}, 20); // 12 brush tool options + current brush + current pencil + current eraser + current shape stroke + a few
+
+$G.on("invalidate-brush-canvases", ()=> {
+	get_brush_canvas.clear_memo_cache();
+});
+
+
+// USAGE NOTE: must be called outside of any other usage of op_canvas (because of render_brush)
+const stamp_brush_canvas = (ctx, x, y, brush_shape, brush_size)=> {
+	const brush_canvas = get_brush_canvas(brush_shape, brush_size);
+
+	const offset_x = -Math.ceil(brush_canvas.width / 2);
+	const offset_y = -Math.ceil(brush_canvas.height / 2);
+
+	ctx.drawImage(brush_canvas, x + offset_x, y + offset_y);
+};
+
+// USAGE NOTE: must be called outside of any other usage of op_canvas (because of render_brush)
+const get_circumference_points_for_brush = memoize_synchronous_function((brush_shape, brush_size)=> {
+
+	const brush_canvas = get_brush_canvas(brush_shape, brush_size);
+
+	const image_data = brush_canvas.ctx.getImageData(0, 0, brush_canvas.width, brush_canvas.height);
+
+	const at = (x, y)=> image_data.data[(y * image_data.width + x) * 4 + 3] > 0;
+
+	const offset_x = -Math.ceil(brush_canvas.width / 2);
+	const offset_y = -Math.ceil(brush_canvas.height / 2);
+
+	const points = [];
+
+	for (let x = 0; x < image_data.width; x += 1) {
+		for (let y = 0; y < image_data.height; y += 1) {
+			if (at(x, y) && (
+				!at(x, y - 1) ||
+				!at(x, y + 1) ||
+				!at(x - 1, y) ||
+				!at(x + 1, y)
+			)) {
+				points.push({
+					x: x + offset_x,
+					y: y + offset_y,
+				});
+			}
 		}
+	}
+
+	return points;
+});
+
+$G.on("invalidate-brush-canvases", ()=> {
+	get_circumference_points_for_brush.clear_memo_cache();
+});
+
+
+let line_brush_canvas;
+// USAGE NOTE: must be called outside of any other usage of op_canvas (because of render_brush)
+function update_brush_for_drawing_lines(stroke_size){
+	if(aliasing && stroke_size > 1){
+		line_brush_canvas = get_brush_canvas("circle", stroke_size);
 	}
 }
 
-function draw_line_without_pattern_support(ctx, x1, y1, x2, y2, stroke_size){
-	stroke_size = stroke_size || 1;
+function draw_line_without_pattern_support(ctx, x1, y1, x2, y2, stroke_size = 1) {
 	if(aliasing){
 		if(stroke_size > 1){
-			bresenham_line(x1, y1, x2, y2, function(x, y){
+			bresenham_line(x1, y1, x2, y2, (x, y) => {
 				ctx.drawImage(line_brush_canvas, ~~(x - line_brush_canvas.width/2), ~~(y - line_brush_canvas.height/2));
 			});
 		}else{
-			bresenham_line(x1, y1, x2, y2, function(x, y){
+			bresenham_line(x1, y1, x2, y2, (x, y) => {
 				ctx.fillRect(x, y, 1, 1);
 			});
 		}
@@ -172,18 +217,18 @@ function bresenham_line(x1, y1, x2, y2, callback){
 	// Bresenham's line algorithm
 	x1=~~x1, x2=~~x2, y1=~~y1, y2=~~y2;
 	
-	var dx = Math.abs(x2 - x1);
-	var dy = Math.abs(y2 - y1);
-	var sx = (x1 < x2) ? 1 : -1;
-	var sy = (y1 < y2) ? 1 : -1;
-	var err = dx - dy;
+	const dx = Math.abs(x2 - x1);
+	const dy = Math.abs(y2 - y1);
+	const sx = (x1 < x2) ? 1 : -1;
+	const sy = (y1 < y2) ? 1 : -1;
+	let err = dx - dy;
 	
 	// eslint-disable-next-line no-constant-condition
 	while(true){
 		callback(x1, y1);
 		
 		if(x1===x2 && y1===y2) break;
-		var e2 = err*2;
+		const e2 = err*2;
 		if(e2 >-dy){ err -= dy; x1 += sx; }
 		if(e2 < dx){ err += dx; y1 += sy; }
 	}
@@ -193,25 +238,25 @@ function brosandham_line(x1, y1, x2, y2, callback){
 	// Bresenham's line argorithm with a callback between going horizontal and vertical
 	x1=~~x1, x2=~~x2, y1=~~y1, y2=~~y2;
 	
-	var dx = Math.abs(x2 - x1);
-	var dy = Math.abs(y2 - y1);
-	var sx = (x1 < x2) ? 1 : -1;
-	var sy = (y1 < y2) ? 1 : -1;
-	var err = dx - dy;
+	const dx = Math.abs(x2 - x1);
+	const dy = Math.abs(y2 - y1);
+	const sx = (x1 < x2) ? 1 : -1;
+	const sy = (y1 < y2) ? 1 : -1;
+	let err = dx - dy;
 	
 	// eslint-disable-next-line no-constant-condition
 	while(true){
 		callback(x1, y1);
 		
 		if(x1===x2 && y1===y2) break;
-		var e2 = err*2;
+		const e2 = err*2;
 		if(e2 >-dy){ err -= dy; x1 += sx; }
 		callback(x1, y1);
 		if(e2 < dx){ err += dx; y1 += sy; }
 	}
 }
 
-function draw_fill(ctx, start_x, start_y, fill_r, fill_g, fill_b, fill_a){
+function draw_fill_without_pattern_support(ctx, start_x, start_y, fill_r, fill_g, fill_b, fill_a){
 	
 	// TODO: split up processing in case it takes too long?
 	// progress bar and abort button (outside of image-manipulation.js)
@@ -222,15 +267,15 @@ function draw_fill(ctx, start_x, start_y, fill_r, fill_g, fill_b, fill_a){
 	// maybe do something fancier like special-casing large chunks of single-color image
 	// (octree? or just have a higher level stack of chunks to fill and check at if a chunk is homogeneous)
 
-	var stack = [[start_x, start_y]];
-	var c_width = canvas.width;
-	var c_height = canvas.height;
-	var id = ctx.getImageData(0, 0, c_width, c_height);
-	pixel_pos = (start_y*c_width + start_x) * 4;
-	var start_r = id.data[pixel_pos+0];
-	var start_g = id.data[pixel_pos+1];
-	var start_b = id.data[pixel_pos+2];
-	var start_a = id.data[pixel_pos+3];
+	const stack = [[start_x, start_y]];
+	const c_width = canvas.width;
+	const c_height = canvas.height;
+	const id = ctx.getImageData(0, 0, c_width, c_height);
+	let pixel_pos = (start_y*c_width + start_x) * 4;
+	const start_r = id.data[pixel_pos+0];
+	const start_g = id.data[pixel_pos+1];
+	const start_b = id.data[pixel_pos+2];
+	const start_a = id.data[pixel_pos+3];
 	
 	if(
 		fill_r === start_r &&
@@ -242,7 +287,11 @@ function draw_fill(ctx, start_x, start_y, fill_r, fill_g, fill_b, fill_a){
 	}
 	
 	while(stack.length){
-		var new_pos, x, y, pixel_pos, reach_left, reach_right;
+		let new_pos;
+		let x;
+		let y;
+		let reach_left;
+		let reach_right;
 		new_pos = stack.pop();
 		x = new_pos[0];
 		y = new_pos[1];
@@ -309,67 +358,219 @@ function draw_fill(ctx, start_x, start_y, fill_r, fill_g, fill_b, fill_a){
 	}
 }
 
-function draw_noncontiguous_fill(ctx, x, y, fill_r, fill_g, fill_b, fill_a){
-	
-	var c_width = canvas.width;
-	var c_height = canvas.height;
-	var id = ctx.getImageData(0, 0, c_width, c_height);
-	pixel_pos = (y*c_width + x) * 4;
-	var start_r = id.data[pixel_pos+0];
-	var start_g = id.data[pixel_pos+1];
-	var start_b = id.data[pixel_pos+2];
-	var start_a = id.data[pixel_pos+3];
-	
-	if(
-		fill_r === start_r &&
-		fill_g === start_g &&
-		fill_b === start_b &&
-		fill_a === start_a
-	){
-		return;
+function draw_fill(ctx, start_x, start_y, swatch) {
+	if (typeof swatch === "string") {
+		const fill_rgba = get_rgba_from_color(swatch);
+		draw_fill_without_pattern_support(ctx, start_x, start_y, fill_rgba[0], fill_rgba[1], fill_rgba[2], fill_rgba[3]);
+	} else {
+		const source_canvas = ctx.canvas;
+		const fill_canvas = make_canvas(source_canvas.width, source_canvas.height);
+		draw_fill_separately(source_canvas.ctx, fill_canvas.ctx, start_x, start_y, 255, 255, 255, 255);
+		replace_colors_with_swatch(fill_canvas.ctx, swatch, 0, 0);
+		ctx.drawImage(fill_canvas, 0, 0);
 	}
+}
+
+function draw_fill_separately(source_ctx, dest_ctx, start_x, start_y, fill_r, fill_g, fill_b, fill_a){
+	const stack = [[start_x, start_y]];
+	const c_width = source_ctx.canvas.width;
+	const c_height = source_ctx.canvas.height;
+	const source_id = source_ctx.getImageData(0, 0, c_width, c_height);
+	const dest_id = dest_ctx.getImageData(0, 0, c_width, c_height);
+	let pixel_pos = (start_y*c_width + start_x) * 4;
+	const start_r = source_id.data[pixel_pos+0];
+	const start_g = source_id.data[pixel_pos+1];
+	const start_b = source_id.data[pixel_pos+2];
+	const start_a = source_id.data[pixel_pos+3];
 	
-	for(var i=0; i<id.data.length; i+=4){
-		if(matches_start_color(i)){
-			color_pixel(i);
+	while(stack.length){
+		let new_pos;
+		let x;
+		let y;
+		let reach_left;
+		let reach_right;
+		new_pos = stack.pop();
+		x = new_pos[0];
+		y = new_pos[1];
+
+		pixel_pos = (y*c_width + x) * 4;
+		while(matches_start_color(pixel_pos)){
+			y--;
+			pixel_pos = (y*c_width + x) * 4;
+		}
+		reach_left = false;
+		reach_right = false;
+		// eslint-disable-next-line no-constant-condition
+		while(true){
+			y++;
+			pixel_pos = (y*c_width + x) * 4;
+			
+			if(!(y < c_height && matches_start_color(pixel_pos))){
+				break;
+			}
+			
+			color_pixel(pixel_pos);
+
+			if(x > 0){
+				if(matches_start_color(pixel_pos - 4)){
+					if(!reach_left){
+						stack.push([x - 1, y]);
+						reach_left = true;
+					}
+				}else if(reach_left){
+					reach_left = false;
+				}
+			}
+
+			if(x < c_width-1){
+				if(matches_start_color(pixel_pos + 4)){
+					if(!reach_right){
+						stack.push([x + 1, y]);
+						reach_right = true;
+					}
+				}else if(reach_right){
+					reach_right = false;
+				}
+			}
+
+			pixel_pos += c_width * 4;
 		}
 	}
-	
-	ctx.putImageData(id, 0, 0);
+	dest_ctx.putImageData(dest_id, 0, 0);
 
+	// TODO: rename function
 	function matches_start_color(pixel_pos){
 		return (
-			id.data[pixel_pos+0] === start_r &&
-			id.data[pixel_pos+1] === start_g &&
-			id.data[pixel_pos+2] === start_b &&
-			id.data[pixel_pos+3] === start_a
+			// NOT REACHED YET
+			dest_id.data[pixel_pos+3] === 0 &&
+			// and matches start color (i.e. area to fill)
+			(
+				source_id.data[pixel_pos+0] === start_r &&
+				source_id.data[pixel_pos+1] === start_g &&
+				source_id.data[pixel_pos+2] === start_b &&
+				source_id.data[pixel_pos+3] === start_a
+			)
 		);
 	}
 
 	function color_pixel(pixel_pos){
-		id.data[pixel_pos+0] = fill_r;
-		id.data[pixel_pos+1] = fill_g;
-		id.data[pixel_pos+2] = fill_b;
-		id.data[pixel_pos+3] = fill_a;
+		dest_id.data[pixel_pos+0] = fill_r;
+		dest_id.data[pixel_pos+1] = fill_g;
+		dest_id.data[pixel_pos+2] = fill_b;
+		dest_id.data[pixel_pos+3] = fill_a;
 	}
 }
 
-function apply_image_transformation(fn){
-	// Apply an image transformation function to either the selection or the entire canvas
-	var original_canvas = selection ? selection.source_canvas: canvas;
-	
-	var new_canvas = new Canvas(original_canvas.width, original_canvas.height);
+function replace_color_globally(image_data, from_r, from_g, from_b, from_a, to_r, to_g, to_b, to_a) {
+	if(
+		from_r === to_r &&
+		from_g === to_g &&
+		from_b === to_b &&
+		from_a === to_a
+	){
+		return;
+	}
+	const {data} = image_data;
+	for(let i = 0; i < data.length; i += 4){
+		if(
+			data[i+0] === from_r &&
+			data[i+1] === from_g &&
+			data[i+2] === from_b &&
+			data[i+3] === from_a
+		){
+			data[i+0] = to_r;
+			data[i+1] = to_g;
+			data[i+2] = to_b;
+			data[i+3] = to_a;
+		}
+	}
+}
 
-	var original_ctx = original_canvas.getContext("2d");
-	var new_ctx = new_canvas.getContext("2d");
+function find_color_globally(source_image_data, dest_image_data, find_r, find_g, find_b, find_a) {
+	const source_data = source_image_data.data;
+	const dest_data = dest_image_data.data;
+	for(let i = 0; i < source_data.length; i += 4){
+		if(
+			source_data[i+0] === find_r &&
+			source_data[i+1] === find_g &&
+			source_data[i+2] === find_b &&
+			source_data[i+3] === find_a
+		){
+			dest_data[i+0] = 255;
+			dest_data[i+1] = 255;
+			dest_data[i+2] = 255;
+			dest_data[i+3] = 255;
+		}
+	}
+}
+
+function draw_noncontiguous_fill_without_pattern_support(ctx, x, y, fill_r, fill_g, fill_b, fill_a){
+	const image_data = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+	const start_index = (y*image_data.width + x) * 4;
+	const start_r = image_data.data[start_index+0];
+	const start_g = image_data.data[start_index+1];
+	const start_b = image_data.data[start_index+2];
+	const start_a = image_data.data[start_index+3];
+	
+	replace_color_globally(image_data, start_r, start_g, start_b, start_a, fill_r, fill_g, fill_b, fill_a);
+	
+	ctx.putImageData(image_data, 0, 0);
+}
+
+function draw_noncontiguous_fill(ctx, x, y, swatch){
+	if (typeof swatch === "string") {
+		const fill_rgba = get_rgba_from_color(swatch);
+		draw_noncontiguous_fill_without_pattern_support(ctx, x, y, fill_rgba[0], fill_rgba[1], fill_rgba[2], fill_rgba[3]);
+	} else {
+		const source_canvas = ctx.canvas;
+		const fill_canvas = make_canvas(source_canvas.width, source_canvas.height);
+		draw_noncontiguous_fill_separately(source_canvas.ctx, fill_canvas.ctx, x, y, 255, 255, 255, 255);
+		replace_colors_with_swatch(fill_canvas.ctx, swatch, 0, 0);
+		ctx.drawImage(fill_canvas, 0, 0);
+	}
+}
+
+function draw_noncontiguous_fill_separately(source_ctx, dest_ctx, x, y, fill_r, fill_g, fill_b, fill_a){
+	const source_image_data = source_ctx.getImageData(0, 0, source_ctx.canvas.width, source_ctx.canvas.height);
+	const dest_image_data = dest_ctx.getImageData(0, 0, dest_ctx.canvas.width, dest_ctx.canvas.height);
+	const start_index = (y*source_image_data.width + x) * 4;
+	const start_r = source_image_data.data[start_index+0];
+	const start_g = source_image_data.data[start_index+1];
+	const start_b = source_image_data.data[start_index+2];
+	const start_a = source_image_data.data[start_index+3];
+	
+	find_color_globally(source_image_data, dest_image_data, start_r, start_g, start_b, start_a);
+	
+	dest_ctx.putImageData(dest_image_data, 0, 0);
+}
+
+function apply_image_transformation(meta, fn){
+	// Apply an image transformation function to either the selection or the entire canvas
+	const original_canvas = selection ? selection.source_canvas: canvas;
+	
+	const new_canvas = make_canvas(original_canvas.width, original_canvas.height);
+
+	const original_ctx = original_canvas.getContext("2d");
+	const new_ctx = new_canvas.getContext("2d");
 
 	fn(original_canvas, original_ctx, new_canvas, new_ctx);
 	
 	if(selection){
-		selection.replace_source_canvas(new_canvas);
+		undoable({
+			name: `${meta.name} Selection`,
+			icon: meta.icon,
+			soft: true,
+		}, () => {
+			selection.replace_source_canvas(new_canvas);
+		});
 	}else{
-		undoable(0, function(){
-			this_ones_a_frame_changer();
+		deselect();
+		cancel();
+		undoable({
+			name: meta.name,
+			icon: meta.icon,
+		}, () => {
+			saved = false;
 			
 			ctx.copy(new_canvas);
 			
@@ -379,7 +580,10 @@ function apply_image_transformation(fn){
 }
 
 function flip_horizontal(){
-	apply_image_transformation(function(original_canvas, original_ctx, new_canvas, new_ctx){
+	apply_image_transformation({
+		name: "Flip Horizontal",
+		icon: get_help_folder_icon("p_fliph.png"),
+	}, (original_canvas, original_ctx, new_canvas, new_ctx) => {
 		new_ctx.translate(new_canvas.width, 0);
 		new_ctx.scale(-1, 1);
 		new_ctx.drawImage(original_canvas, 0, 0);
@@ -387,7 +591,10 @@ function flip_horizontal(){
 }
 
 function flip_vertical(){
-	apply_image_transformation(function(original_canvas, original_ctx, new_canvas, new_ctx){
+	apply_image_transformation({
+		name: "Flip Vertical",
+		icon: get_help_folder_icon("p_flipv.png"),
+	}, (original_canvas, original_ctx, new_canvas, new_ctx) => {
 		new_ctx.translate(0, new_canvas.height);
 		new_ctx.scale(1, -1);
 		new_ctx.drawImage(original_canvas, 0, 0);
@@ -395,7 +602,10 @@ function flip_vertical(){
 }
 
 function rotate(angle){
-	apply_image_transformation(function(original_canvas, original_ctx, new_canvas, new_ctx){
+	apply_image_transformation({
+		name: `Rotate ${angle / TAU * 360} degrees`,
+		icon: get_help_folder_icon(`p_rotate_${angle >= 0 ? "cw" : "ccw"}.png`),
+	}, (original_canvas, original_ctx, new_canvas, new_ctx) => {
 		new_ctx.save();
 		switch(angle){
 			case TAU / 4:
@@ -419,17 +629,17 @@ function rotate(angle){
 				new_ctx.translate(0, new_canvas.height);
 				new_ctx.rotate(TAU / -4);
 				break;
-			default:
-				var w = original_canvas.width;
-				var h = original_canvas.height;
+			default: {
+				const w = original_canvas.width;
+				const h = original_canvas.height;
 				
-				var bb_min_x = +Infinity;
-				var bb_max_x = -Infinity;
-				var bb_min_y = +Infinity;
-				var bb_max_y = -Infinity;
-				var corner = function(x01, y01){
-					var x = Math.sin(-angle)*h*x01 + Math.cos(+angle)*w*y01;
-					var y = Math.sin(+angle)*w*y01 + Math.cos(-angle)*h*x01;
+				let bb_min_x = +Infinity;
+				let bb_max_x = -Infinity;
+				let bb_min_y = +Infinity;
+				let bb_max_y = -Infinity;
+				const corner = (x01, y01) => {
+					const x = Math.sin(-angle)*h*x01 + Math.cos(+angle)*w*y01;
+					const y = Math.sin(+angle)*w*y01 + Math.cos(-angle)*h*x01;
 					bb_min_x = Math.min(bb_min_x, x);
 					bb_max_x = Math.max(bb_max_x, x);
 					bb_min_y = Math.min(bb_min_y, y);
@@ -441,10 +651,10 @@ function rotate(angle){
 				corner(1, 0);
 				corner(1, 1);
 				
-				var bb_x = bb_min_x;
-				var bb_y = bb_min_y;
-				var bb_w = bb_max_x - bb_min_x;
-				var bb_h = bb_max_y - bb_min_y;
+				const bb_x = bb_min_x;
+				const bb_y = bb_min_y;
+				const bb_w = bb_max_x - bb_min_x;
+				const bb_h = bb_max_y - bb_min_y;
 				
 				new_canvas.width = bb_w;
 				new_canvas.height = bb_h;
@@ -459,6 +669,7 @@ function rotate(angle){
 				new_ctx.rotate(angle);
 				new_ctx.drawImage(original_canvas, 0, 0, w, h);
 				break;
+			}
 		}
 		new_ctx.drawImage(original_canvas, 0, 0);
 		new_ctx.restore();
@@ -466,17 +677,29 @@ function rotate(angle){
 }
 
 function stretch_and_skew(xscale, yscale, hsa, vsa){
-	apply_image_transformation(function(original_canvas, original_ctx, new_canvas, new_ctx){
-		var w = original_canvas.width * xscale;
-		var h = original_canvas.height * yscale;
+	apply_image_transformation({
+		name:
+			(hsa !== 0 || vsa !== 0) ? (
+				(xscale !== 1 || yscale !== 1) ? "Stretch/Skew" : "Skew"
+			) : "Stretch",
+		icon: get_help_folder_icon(
+			(hsa !== 0) ? "p_skew_h.png" :
+			(vsa !== 0) ? "p_skew_v.png" :
+			(yscale !== 1) ? (
+				(xscale !== 1) ? "p_stretch_both.png" : "p_stretch_v.png"
+			) : "p_stretch_h.png"
+		),
+	}, (original_canvas, original_ctx, new_canvas, new_ctx) => {
+		const w = original_canvas.width * xscale;
+		const h = original_canvas.height * yscale;
 		
-		var bb_min_x = +Infinity;
-		var bb_max_x = -Infinity;
-		var bb_min_y = +Infinity;
-		var bb_max_y = -Infinity;
-		var corner = function(x01, y01){
-			var x = Math.tan(hsa)*h*x01 + w*y01;
-			var y = Math.tan(vsa)*w*y01 + h*x01;
+		let bb_min_x = +Infinity;
+		let bb_max_x = -Infinity;
+		let bb_min_y = +Infinity;
+		let bb_max_y = -Infinity;
+		const corner = (x01, y01) => {
+			const x = Math.tan(hsa)*h*x01 + w*y01;
+			const y = Math.tan(vsa)*w*y01 + h*x01;
 			bb_min_x = Math.min(bb_min_x, x);
 			bb_max_x = Math.max(bb_max_x, x);
 			bb_min_y = Math.min(bb_min_y, y);
@@ -488,13 +711,13 @@ function stretch_and_skew(xscale, yscale, hsa, vsa){
 		corner(1, 0);
 		corner(1, 1);
 		
-		var bb_x = bb_min_x;
-		var bb_y = bb_min_y;
-		var bb_w = bb_max_x - bb_min_x;
-		var bb_h = bb_max_y - bb_min_y;
+		const bb_x = bb_min_x;
+		const bb_y = bb_min_y;
+		const bb_w = bb_max_x - bb_min_x;
+		const bb_h = bb_max_y - bb_min_y;
 		
-		new_canvas.width = bb_w;
-		new_canvas.height = bb_h;
+		new_canvas.width = Math.max(1, bb_w);
+		new_canvas.height = Math.max(1, bb_h);
 		new_ctx.disable_image_smoothing();
 		
 		if(!transparency){
@@ -516,6 +739,16 @@ function stretch_and_skew(xscale, yscale, hsa, vsa){
 	});
 }
 
+function invert_rgb(source_ctx, dest_ctx=source_ctx) {
+	const image_data = source_ctx.getImageData(0, 0, source_ctx.canvas.width, source_ctx.canvas.height);
+	for(let i=0; i<image_data.data.length; i+=4){
+		image_data.data[i+0] = 255 - image_data.data[i+0];
+		image_data.data[i+1] = 255 - image_data.data[i+1];
+		image_data.data[i+2] = 255 - image_data.data[i+2];
+	}
+	dest_ctx.putImageData(image_data, 0, 0);
+}
+
 function replace_colors_with_swatch(ctx, swatch, x_offset_from_global_canvas, y_offset_from_global_canvas){
 	// USAGE NOTE: Context MUST be untranslated! (for the rectangle to cover the exact area of the canvas, and presumably for the pattern alignment as well)
 	// This function is mainly for patterns support (for black & white mode) but naturally handles solid colors as well.
@@ -531,10 +764,10 @@ function replace_colors_with_swatch(ctx, swatch, x_offset_from_global_canvas, y_
 
 // adapted from https://github.com/Pomax/bezierjs
 function compute_bezier(t, start_x, start_y, control_1_x, control_1_y, control_2_x, control_2_y, end_x, end_y){
-	var mt = 1-t;
-	var mt2 = mt*mt;
-	var t2 = t*t;
-	var a, b, c, d = 0;
+	const mt = 1-t;
+	const mt2 = mt*mt;
+	const t2 = t*t;
+	let a, b, c, d = 0;
 
 	a = mt2*mt;
 	b = mt2*t*3;
@@ -548,10 +781,10 @@ function compute_bezier(t, start_x, start_y, control_1_x, control_1_y, control_2
 }
 
 function draw_bezier_curve_without_pattern_support(ctx, start_x, start_y, control_1_x, control_1_y, control_2_x, control_2_y, end_x, end_y, stroke_size) {
-	var steps = 100;
-	var point_a = {x: start_x, y: start_y};
-	for(var t=0; t<1; t+=1/steps){
-		var point_b = compute_bezier(t, start_x, start_y, control_1_x, control_1_y, control_2_x, control_2_y, end_x, end_y);
+	const steps = 100;
+	let point_a = {x: start_x, y: start_y};
+	for(let t=0; t<1; t+=1/steps){
+		const point_b = compute_bezier(t, start_x, start_y, control_1_x, control_1_y, control_2_x, control_2_y, end_x, end_y);
 		// TODO: carry "error" from Bresenham line algorithm between iterations? and/or get a proper Bezier drawing algorithm
 		draw_line_without_pattern_support(ctx, point_a.x, point_a.y, point_b.x, point_b.y, stroke_size);
 		point_a = point_b;
@@ -564,76 +797,154 @@ function draw_quadratic_curve(ctx, start_x, start_y, control_x, control_y, end_x
 function draw_bezier_curve(ctx, start_x, start_y, control_1_x, control_1_y, control_2_x, control_2_y, end_x, end_y, stroke_size) {
 	// could calculate bounds of Bezier curve with something like bezier-js
 	// but just using the control points should be fine
-	var min_x = Math.min(start_x, control_1_x, control_2_x, end_x);
-	var min_y = Math.min(start_y, control_1_y, control_2_y, end_y);
-	var max_x = Math.max(start_x, control_1_x, control_2_x, end_x);
-	var max_y = Math.max(start_y, control_1_y, control_2_y, end_y);
-	draw_with_swatch(ctx, min_x, min_y, max_x, max_y, stroke_color, function(op_ctx_2d){
+	const min_x = Math.min(start_x, control_1_x, control_2_x, end_x);
+	const min_y = Math.min(start_y, control_1_y, control_2_y, end_y);
+	const max_x = Math.max(start_x, control_1_x, control_2_x, end_x);
+	const max_y = Math.max(start_y, control_1_y, control_2_y, end_y);
+	draw_with_swatch(ctx, min_x, min_y, max_x, max_y, stroke_color, op_ctx_2d => {
 		draw_bezier_curve_without_pattern_support(op_ctx_2d, start_x, start_y, control_1_x, control_1_y, control_2_x, control_2_y, end_x, end_y, stroke_size);
 	});
 }
 function draw_line(ctx, x1, y1, x2, y2, stroke_size){
-	var min_x = Math.min(x1, x2);
-	var min_y = Math.min(y1, y2);
-	var max_x = Math.max(x1, x2);
-	var max_y = Math.max(y1, y2);
-	draw_with_swatch(ctx, min_x, min_y, max_x, max_y, stroke_color, function(op_ctx_2d){
+	const min_x = Math.min(x1, x2);
+	const min_y = Math.min(y1, y2);
+	const max_x = Math.max(x1, x2);
+	const max_y = Math.max(y1, y2);
+	draw_with_swatch(ctx, min_x, min_y, max_x, max_y, stroke_color, op_ctx_2d => {
 		draw_line_without_pattern_support(op_ctx_2d, x1, y1, x2, y2, stroke_size);
 	});
 	// also works:
 	// draw_line_strip(ctx, [{x: x1, y: y1}, {x: x2, y: y2}]);
 }
 
-var grid_pattern;
-function draw_grid(ctx, wanted_size) {
-	if (!grid_pattern || grid_pattern.width !== wanted_size || grid_pattern.height !== wanted_size) {
-		var grid_pattern_canvas = new Canvas(wanted_size, wanted_size);
-		var dark_gray = "#808080";
-		var light_gray = "#c0c0c0";
+let grid_pattern;
+function draw_grid(ctx, scale) {
+	const pattern_size = Math.floor(scale); // TODO: try ceil too
+	if (!grid_pattern || grid_pattern.width !== pattern_size || grid_pattern.height !== pattern_size) {
+		const grid_pattern_canvas = make_canvas(pattern_size, pattern_size);
+		const dark_gray = "#808080";
+		const light_gray = "#c0c0c0";
 		grid_pattern_canvas.ctx.fillStyle = dark_gray;
-		grid_pattern_canvas.ctx.fillRect(0, 0, 1, wanted_size);
+		grid_pattern_canvas.ctx.fillRect(0, 0, 1, pattern_size);
 		grid_pattern_canvas.ctx.fillStyle = dark_gray;
-		grid_pattern_canvas.ctx.fillRect(0, 0, wanted_size, 1);
+		grid_pattern_canvas.ctx.fillRect(0, 0, pattern_size, 1);
 		grid_pattern_canvas.ctx.fillStyle = light_gray;
-		for (let i=1; i<wanted_size; i+=2) {
+		for (let i=1; i<pattern_size; i+=2) {
 			grid_pattern_canvas.ctx.fillRect(i, 0, 1, 1);
 			grid_pattern_canvas.ctx.fillRect(0, i, 1, 1);
 		}
 		grid_pattern = ctx.createPattern(grid_pattern_canvas, "repeat");
 	}
+	ctx.save();
+	ctx.rect(0, 0, ctx.canvas.width, ctx.canvas.height);
+	if (scale !== pattern_size) {
+		ctx.translate(-0.5, -0.75); // hand picked to look "good" at 110% in chrome
+		// might be better to just hide the grid in some more cases tho
+		// ...TODO: if I can get helper layer to be pixel aligned, I can probably remove this
+	}
+	ctx.scale(scale / pattern_size, scale / pattern_size);
+	ctx.enable_image_smoothing();
 	ctx.fillStyle = grid_pattern;
-	ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+	ctx.fill();
+	ctx.restore();
 }
 
-(function(){
+(() => {
 
-	var tessy = (function initTesselator() {
+	// the dashes of the border are sized such that at 4x zoom,
+	// they're squares equal to one canvas pixel
+	// they're offset by a screen pixel tho from the canvas pixel cells
+
+	const svg_for_creating_matrices = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+
+	const horizontal_pattern_canvas = make_canvas(8, 4);
+	const vertical_pattern_canvas = make_canvas(4, 8);
+	let horizontal_pattern;
+	let vertical_pattern;
+
+	function draw_dashes(ctx, x, y, go_x, go_y, scale, translate_x, translate_y) {
+		if (!vertical_pattern) {
+			horizontal_pattern_canvas.ctx.fillStyle = "white";
+			horizontal_pattern_canvas.ctx.fillRect(4, 0, 4, 4);
+			vertical_pattern_canvas.ctx.fillStyle = "white";
+			vertical_pattern_canvas.ctx.fillRect(0, 4, 4, 4);
+			horizontal_pattern = ctx.createPattern(horizontal_pattern_canvas, "repeat");
+			vertical_pattern = ctx.createPattern(vertical_pattern_canvas, "repeat");
+		}
+
+		const dash_width = 1;
+		const hairline_width = 1/scale; // size of a screen pixel
+
+		ctx.save();
+
+		ctx.scale(scale, scale);
+		ctx.translate(translate_x, translate_y);
+
+		ctx.translate(x, y);
+		ctx.globalCompositeOperation = "difference";
+		
+		
+		if (go_x > 0) {
+			const matrix = svg_for_creating_matrices.createSVGMatrix();
+			if (horizontal_pattern.setTransform) { // not supported by Edge as of 2019-12-04
+				horizontal_pattern.setTransform(matrix.translate(-x, -y).translate(hairline_width, 0).scale(1/scale));
+			}
+			ctx.fillStyle = horizontal_pattern;
+			ctx.fillRect(0, 0, go_x, dash_width);
+		} else if(go_y > 0) {
+			const matrix = svg_for_creating_matrices.createSVGMatrix();
+			if (vertical_pattern.setTransform) { // not supported by Edge as of 2019-12-04
+				vertical_pattern.setTransform(matrix.translate(-x, -y).translate(0, hairline_width).scale(1/scale));
+			}
+			ctx.fillStyle = vertical_pattern;
+			ctx.fillRect(0, 0, dash_width, go_y);
+		}
+		ctx.restore();
+	}
+
+	window.draw_selection_box = (ctx, rect_x, rect_y, rect_w, rect_h, scale, translate_x, translate_y)=> {
+		draw_dashes(ctx, rect_x             , rect_y            , rect_w - 1, 0         , scale, translate_x, translate_y); // top
+		if (rect_h === 1) {
+		draw_dashes(ctx, rect_x             , rect_y            , 0         , 1         , scale, translate_x, translate_y); // left
+		} else {
+		draw_dashes(ctx, rect_x             , rect_y + 1        , 0         , rect_h - 2, scale, translate_x, translate_y); // left
+		}
+		draw_dashes(ctx, rect_x + rect_w - 1, rect_y            , 0         , rect_h    , scale, translate_x, translate_y); // right
+		draw_dashes(ctx, rect_x             , rect_y + rect_h -1, rect_w - 1, 0         , scale, translate_x, translate_y); // bottom
+		draw_dashes(ctx, rect_x             , rect_y + 1        , 0         , 1         , scale, translate_x, translate_y); // top left dangling bit???
+	};
+
+})();
+
+(() => {
+
+	const tessy = (function initTesselator() {
 		// function called for each vertex of tesselator output
 		function vertexCallback(data, polyVertArray) {
-			// console.log(data[0], data[1]);
+			// window.console && console.log(data[0], data[1]);
 			polyVertArray[polyVertArray.length] = data[0];
 			polyVertArray[polyVertArray.length] = data[1];
 		}
 		function begincallback(type) {
 			if (type !== libtess.primitiveType.GL_TRIANGLES) {
-				console.log('expected TRIANGLES but got type: ' + type);
+				window.console && console.log(`Expected TRIANGLES but got type: ${type}`);
 			}
 		}
 		function errorcallback(errno) {
-			console.log('error callback');
-			console.log('error number: ' + errno);
+			window.console && console.log('error callback');
+			window.console && console.log(`error number: ${errno}`);
 		}
 		// callback for when segments intersect and must be split
-		function combinecallback(coords, data, weight) {
-			// console.log('combine callback');
+		function combinecallback(coords/*, data, weight*/) {
+			// window.console && console.log('combine callback');
 			return [coords[0], coords[1], coords[2]];
 		}
-		function edgeCallback(flag) {
+		function edgeCallback(/*flag*/) {
 			// don't really care about the flag, but need no-strip/no-fan behavior
-			// console.log('edge flag: ' + flag);
+			// window.console && console.log('edge flag: ' + flag);
 		}
 
-		var tessy = new libtess.GluTesselator();
+		const tessy = new libtess.GluTesselator();
 		// tessy.gluTessProperty(libtess.gluEnum.GLU_TESS_WINDING_RULE, libtess.windingRule.GLU_TESS_WINDING_POSITIVE);
 		tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_VERTEX_DATA, vertexCallback);
 		tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_BEGIN, begincallback);
@@ -650,14 +961,14 @@ function draw_grid(ctx, wanted_size) {
 		// iterating over verts only to get the same answer.
 		tessy.gluTessNormal(0, 0, 1);
 
-		var triangleVerts = [];
+		const triangleVerts = [];
 		tessy.gluTessBeginPolygon(triangleVerts);
 
-		for (var i = 0; i < contours.length; i++) {
+		for (let i = 0; i < contours.length; i++) {
 			tessy.gluTessBeginContour();
-			var contour = contours[i];
-			for (var j = 0; j < contour.length; j += 2) {
-				var coords = [contour[j], contour[j + 1], 0];
+			const contour = contours[i];
+			for (let j = 0; j < contour.length; j += 2) {
+				const coords = [contour[j], contour[j + 1], 0];
 				tessy.gluTessVertex(coords, coords);
 			}
 			tessy.gluTessEndContour();
@@ -669,13 +980,15 @@ function draw_grid(ctx, wanted_size) {
 	}
 
 
-	var gl;
-	var positionLoc;
+	let gl;
+	let positionLoc;
 
 	function initWebGL(canvas) {
 		gl = canvas.getContext('webgl', { antialias: false });
 
-		var program = createShaderProgram();
+		window.WEBGL_lose_context = gl.getExtension("WEBGL_lose_context");
+		
+		const program = createShaderProgram();
 		positionLoc = gl.getAttribLocation(program, 'position');
 		gl.enableVertexAttribArray(positionLoc);
 	}
@@ -683,8 +996,8 @@ function draw_grid(ctx, wanted_size) {
 	function initArrayBuffer(triangleVertexCoords) {
 		// put triangle coordinates into a WebGL ArrayBuffer and bind to
 		// shader's 'position' attribute variable
-		var rawData = new Float32Array(triangleVertexCoords);
-		var polygonArrayBuffer = gl.createBuffer();
+		const rawData = new Float32Array(triangleVertexCoords);
+		const polygonArrayBuffer = gl.createBuffer();
 		gl.bindBuffer(gl.ARRAY_BUFFER, polygonArrayBuffer);
 		gl.bufferData(gl.ARRAY_BUFFER, rawData, gl.STATIC_DRAW);
 		gl.vertexAttribPointer(positionLoc, 2, gl.FLOAT, false, 0, 0);
@@ -694,44 +1007,42 @@ function draw_grid(ctx, wanted_size) {
 
 	function createShaderProgram() {
 		// create vertex shader
-		var vertexSrc = [
+		const vertexSrc = [
 			'attribute vec4 position;',
 			'void main() {',
-			'    /* already in normalized coordinates, so just pass through */',
-			'    gl_Position = position;',
+			'	/* already in normalized coordinates, so just pass through */',
+			'	gl_Position = position;',
 			'}'
 		].join('');
-		var vertexShader = gl.createShader(gl.VERTEX_SHADER);
+		const vertexShader = gl.createShader(gl.VERTEX_SHADER);
 		gl.shaderSource(vertexShader, vertexSrc);
 		gl.compileShader(vertexShader);
 
 		if (!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)) {
-			console.log(
-				'Vertex shader failed to compile. Log: ' +
-				gl.getShaderInfoLog(vertexShader)
+			window.console && console.log(
+				`Vertex shader failed to compile. Log: ${gl.getShaderInfoLog(vertexShader)}`
 			);
 		}
 
 		// create fragment shader
-		var fragmentSrc = [
+		const fragmentSrc = [
 			'precision mediump float;',
 			'void main() {',
-			'    gl_FragColor = vec4(0, 0, 0, 1);',
+			'	gl_FragColor = vec4(0, 0, 0, 1);',
 			'}'
 		].join('');
-		var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
+		const fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 		gl.shaderSource(fragmentShader, fragmentSrc);
 		gl.compileShader(fragmentShader);
 
 		if (!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)) {
-			console.log(
-				'Fragment shader failed to compile. Log: ' +
-				gl.getShaderInfoLog(fragmentShader)
+			window.console && console.log(
+				`Fragment shader failed to compile. Log: ${gl.getShaderInfoLog(fragmentShader)}`
 			);
 		}
 
 		// link shaders to create our program
-		var program = gl.createProgram();
+		const program = gl.createProgram();
 		gl.attachShader(program, vertexShader);
 		gl.attachShader(program, fragmentShader);
 		gl.linkProgram(program);
@@ -742,16 +1053,56 @@ function draw_grid(ctx, wanted_size) {
 	}
 
 
-	var op_canvas_webgl = document.createElement('canvas');
-	var op_canvas_2d = document.createElement('canvas');
-	var op_ctx_2d = op_canvas_2d.getContext("2d");
+	const op_canvas_webgl = document.createElement('canvas');
+	const op_canvas_2d = document.createElement('canvas');
+	const op_ctx_2d = op_canvas_2d.getContext("2d");
 
 	initWebGL(op_canvas_webgl);
+	let warning_tid;
+	op_canvas_webgl.addEventListener("webglcontextlost", (e)=> {
+		e.preventDefault();
+		window.console && console.warn("WebGL context lost");
+		clamp_brush_sizes();
+		
+		warning_tid = setTimeout(()=> {
+			show_error_message("The WebGL context was lost. You may need to refresh the web page, or restart your computer.");
+		}, 3000);
+	}, false);
+	op_canvas_webgl.addEventListener("webglcontextrestored", ()=> {
+		initWebGL(op_canvas_webgl);
 
-	window.draw_line_strip = function(ctx, points){
+		window.console && console.warn("WebGL context restored");
+		clearTimeout(warning_tid);
+
+		clamp_brush_sizes();
+
+		// brushes rendered using WebGL may be invalid (i.e. invisible) since the context was lost
+		// invalidate the cache(s) so that brushes will be re-rendered now that WebGL is restored
+		$G.triggerHandler("invalidate-brush-canvases");
+
+		$G.triggerHandler("redraw-tool-options");
+	}, false);
+
+	function clamp_brush_sizes() {
+		const max_size = 100;
+		if (brush_size > max_size) {
+			brush_size = max_size;
+			show_error_message(`Brush size clamped to ${max_size}`);
+		}
+		if (pencil_size > max_size) {
+			pencil_size = max_size;
+			show_error_message(`Pencil size clamped to ${max_size}`);
+		}
+		if (stroke_size > max_size) {
+			stroke_size = max_size;
+			show_error_message(`Stroke size clamped to ${max_size}`);
+		}
+	}
+
+	window.draw_line_strip = (ctx, points) => {
 		draw_polygon_or_line_strip(ctx, points, true, false, false);
 	};
-	window.draw_polygon = function(ctx, points, stroke, fill){
+	window.draw_polygon = (ctx, points, stroke, fill) => {
 		draw_polygon_or_line_strip(ctx, points, stroke, fill, true);
 	};
 
@@ -765,22 +1116,21 @@ function draw_grid(ctx, wanted_size) {
 			update_brush_for_drawing_lines(stroke_size);
 		}
 
-		var stroke_color = ctx.strokeStyle;
-		var fill_color = ctx.fillStyle;
+		const stroke_color = ctx.strokeStyle;
+		const fill_color = ctx.fillStyle;
 
-		var numPoints = points.length;
-		var numCoords = numPoints * 2
+		const numPoints = points.length;
+		const numCoords = numPoints * 2;
 
 		if(numPoints === 0){
 			return;
 		}
 
-		var x_min = +Infinity;
-		var x_max = -Infinity;
-		var y_min = +Infinity;
-		var y_max = -Infinity;
-		for (var i = 0; i < numPoints; i++) {
-			var {x, y} = points[i];
+		let x_min = +Infinity;
+		let x_max = -Infinity;
+		let y_min = +Infinity;
+		let y_max = -Infinity;
+		for (const {x, y} of points) {
 			x_min = Math.min(x, x_min);
 			x_max = Math.max(x, x_max);
 			y_min = Math.min(y, y_min);
@@ -795,7 +1145,7 @@ function draw_grid(ctx, wanted_size) {
 		op_canvas_webgl.height = y_max - y_min;
 		gl.viewport(0, 0, op_canvas_webgl.width, op_canvas_webgl.height);
 
-		var coords = new Float32Array(numCoords);
+		const coords = new Float32Array(numCoords);
 		for (let i = 0; i < numPoints; i++) {
 			coords[i*2+0] = (points[i].x - x_min) / op_canvas_webgl.width * 2 - 1;
 			coords[i*2+1] = 1 - (points[i].y - y_min) / op_canvas_webgl.height * 2;
@@ -803,8 +1153,8 @@ function draw_grid(ctx, wanted_size) {
 		}
 
 		if(fill){
-			var contours = [coords];
-			var polyTriangles = triangulate(contours);
+			const contours = [coords];
+			const polyTriangles = triangulate(contours);
 			let numVertices = initArrayBuffer(polyTriangles);
 			gl.clear(gl.COLOR_BUFFER_BIT);
 			gl.drawArrays(gl.TRIANGLES, 0, numVertices);
@@ -818,16 +1168,16 @@ function draw_grid(ctx, wanted_size) {
 		}
 		if(stroke){
 			if(stroke_size > 1){
-				var stroke_margin = ~~(stroke_size * 1.1);
+				const stroke_margin = ~~(stroke_size * 1.1);
 
-				var op_canvas_x = x_min - stroke_margin;
-				var op_canvas_y = y_min - stroke_margin;
+				const op_canvas_x = x_min - stroke_margin;
+				const op_canvas_y = y_min - stroke_margin;
 
 				op_canvas_2d.width = x_max - x_min + stroke_margin * 2;
 				op_canvas_2d.height = y_max - y_min + stroke_margin * 2;
 				for (let i = 0; i < numPoints - (close_path ? 0 : 1); i++) {
-					var point_a = points[i];
-					var point_b = points[(i + 1) % numPoints];
+					const point_a = points[i];
+					const point_b = points[(i + 1) % numPoints];
 					// Note: update_brush_for_drawing_lines way above
 					draw_line_without_pattern_support(
 						op_ctx_2d,
@@ -856,39 +1206,39 @@ function draw_grid(ctx, wanted_size) {
 		}
 	}
 
-	window.copy_contents_within_polygon = function(canvas, points, x_min, y_min, x_max, y_max){
+	window.copy_contents_within_polygon = (canvas, points, x_min, y_min, x_max, y_max) => {
 		// Copy the contents of the given canvas within the polygon given by points bounded by x/y_min/max
 		x_max = Math.max(x_max, x_min + 1);
 		y_max = Math.max(y_max, y_min + 1);
-		var width = x_max - x_min;
-		var height = y_max - y_min;
+		const width = x_max - x_min;
+		const height = y_max - y_min;
 		
 		// TODO: maybe have the cutout only the width/height of the bounds
-		// var cutout = new Canvas(width, height);
-		var cutout = new Canvas(canvas);
+		// const cutout = make_canvas(width, height);
+		const cutout = make_canvas(canvas);
 
 		cutout.ctx.save();
 		cutout.ctx.globalCompositeOperation = "destination-in";
 		draw_polygon(cutout.ctx, points, false, true);
 		cutout.ctx.restore();
 		
-		var cutout_crop = new Canvas(width, height);
+		const cutout_crop = make_canvas(width, height);
 		cutout_crop.ctx.drawImage(cutout, x_min, y_min, width, height, 0, 0, width, height);
 
 		return cutout_crop;
 	}
 
 	// TODO: maybe shouldn't be external...
-	window.draw_with_swatch = function(ctx, x_min, y_min, x_max, y_max, swatch, callback) {
-		var stroke_margin = ~~(stroke_size * 1.1);
+	window.draw_with_swatch = (ctx, x_min, y_min, x_max, y_max, swatch, callback) => {
+		const stroke_margin = ~~(stroke_size * 1.1);
 		
 		x_max = Math.max(x_max, x_min + 1);
 		y_max = Math.max(y_max, y_min + 1);
 		op_canvas_2d.width = x_max - x_min + stroke_margin * 2;
 		op_canvas_2d.height = y_max - y_min + stroke_margin * 2;
 
-		var x = x_min - stroke_margin;
-		var y = y_min - stroke_margin;
+		const x = x_min - stroke_margin;
+		const y = y_min - stroke_margin;
 
 		op_ctx_2d.save();
 		op_ctx_2d.translate(-x, -y);
