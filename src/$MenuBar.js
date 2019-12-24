@@ -1,5 +1,5 @@
 
-$MenuBar.DIVIDER = "DIVIDER";
+$MenuBar.DIVIDER = "MENU_DIVIDER";
 
 function E(t){
 	return document.createElement(t);
@@ -180,14 +180,6 @@ function $MenuBar(menus){
 		
 		var menu_id = menus_key.replace("&", "").replace(/ /g, "-").toLowerCase();
 		$menu_button.addClass("" + menu_id + "-menu-button");
-		if(menu_id == "extras"){
-			// TODO: refactor shared key string, move to function
-			try{
-				if(localStorage["jspaint extras menu visible"] != "true"){
-					$menu_button.hide();
-				}
-			}catch(e){}
-		}
 		
 		$menu_popup.hide();
 		$menu_button.html(_html(menus_key));
