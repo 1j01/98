@@ -105,7 +105,7 @@ var go_to = function(address){
 		$iframe = $("<iframe>").attr({
 			src: address,
 			allowfullscreen: "allowfullscreen",
-			sandbox: "allow-same-origin allow-scripts allow-forms",
+			sandbox: "allow-same-origin allow-scripts allow-forms allow-pointer-lock",
 		}).appendTo("#content");
 
 		// If only we could access the contentDocument cross-origin
