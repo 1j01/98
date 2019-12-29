@@ -83,11 +83,17 @@ function $IframeWindow(options){
 			border: 0, // overrides user agent styling
 		});
 	
-	const width_from_frame = $win.width() - $win.$content.width();
-	const height_from_frame = $win.height() - $win.$content.height();
-	$win.css({
-		width: (options.innerWidth || 640) + width_from_frame,
-		height: (options.innerHeight || 380) + height_from_frame + 21,
+	$win.setInnerDimensions = ({width, height})=> {
+		const width_from_frame = $win.width() - $win.$content.width();
+		const height_from_frame = $win.height() - $win.$content.height();
+		$win.css({
+			width: width + width_from_frame,
+			height: height + height_from_frame + 21,
+		});
+	};
+	$win.setInnerDimensions({
+		width: (options.innerWidth || 640),
+		height: (options.innerHeight || 380),
 	});
 	$win.$content.css({
 		display: "flex",

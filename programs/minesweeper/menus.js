@@ -12,8 +12,10 @@ var set_difficulty = function(difficulty){
 		var tile_size = 16;
 		var extra_width = 24;
 		var extra_height = 64;
-		frameElement.style.width = extra_width + tile_size * difficulty[0] + "px";
-		frameElement.style.height = extra_height + tile_size * difficulty[1] + "px";
+		frameElement.$window.setInnerDimensions({
+			width: extra_width + tile_size * difficulty[0],
+			height: extra_height + tile_size * difficulty[1],
+		});
 	}
 };
 var is_at_difficulty = function(difficulty){
