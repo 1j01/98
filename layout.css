@@ -263,3 +263,7 @@ html, body {
 .loading-program * {
 	cursor: progress;
 }
+
+#webamp-context-menu {
+	z-index: 5000000 !important;
+}
