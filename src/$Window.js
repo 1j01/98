@@ -27,9 +27,31 @@ function $Window(options){
 	$w.$x.on("click", function(){
 		$w.close();
 	});
+	let before_maximize;
 	$w.$maximize.on("click", function(){
-		// TODO: do something legitimate
-		$w.css({"width": "100vw", "height": "100vh"});
+		// TODO: make programs update iframes
+		// TODO: account for taskbar
+		if ($w.hasClass("maximized")) {
+			$w.removeClass("maximized");
+			$w.css({width: "", height: ""});
+			if (before_maximize) {
+				$w.css({
+					left: before_maximize.left,
+					top: before_maximize.top,
+					width: before_maximize.width,
+					height: before_maximize.height,
+				});
+			}
+		} else {
+			before_maximize = {
+				left: $w.css("left"),
+				top: $w.css("top"),
+				width: $w.css("width"),
+				height: $w.css("height"),
+			};
+			$w.addClass("maximized");
+			$w.css({width: "100vw", height: "100vh"});
+		}
 		$w.applyBounds();
 		$w.css("transform", "");
 	});
@@ -37,11 +59,14 @@ function $Window(options){
 		// TODO: do something legitimate
 		const scale_match = $w[0].style.transform.match(/scale\(([\d\.]+)\)/);
 		const scale = scale_match ? scale_match[1] : 1;
-		console.log(scale_match, $w[0].style.transform, $w.css("transform"));
+		// console.log(scale_match, $w[0].style.transform, $w.css("transform"));
 		$w.css("transform", `scale(${scale*0.9})`);
 	});
 	$w.$title_area.on("mousedown selectstart", ".window-button", function(e){
 		e.preventDefault();
+	});
+	$w.$title_area.on("dblclick", ()=> {
+		$w.$maximize.triggerHandler("click");
 	});
 	
 	$w.css({

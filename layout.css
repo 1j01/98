@@ -237,8 +237,8 @@ html, body {
 .window-close-button {
 	display: block !important;
 	float: right;
-	width: 13px;
-	height: 11px;
+	/* width: 13px;
+	height: 11px; */
 }
 .window-close-button {
 	display: block !important;
@@ -250,7 +250,10 @@ html, body {
 }
 .window-maximize-button::before {
 	content: '🗖';
-	/* 🗖 🗗 */
+	position: relative;
+}
+.maximized .window-maximize-button::before {
+	content: '🗗';
 	position: relative;
 }
 .window-minimize-button::before {
