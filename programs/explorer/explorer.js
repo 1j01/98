@@ -82,10 +82,9 @@ var go_to = function(address){
 	var is_url = !!address.match(/\w+:\/\//);
 	if(is_url){
 		if(!address.match(/^https?:\/\/web.archive.org\//)){
-			// TODO: maybe only do this if the page fails to load?
-			// or at least don't force it
-			// maybe do it the other way around, if the archive URL fails to load, try to show an up to date version
-			if (!address.match(/^https?:\/\/(www\.)?(copy.sh)/)) {
+			if (address.match(/^https?:\/\/(www\.)?(windows93.net)/)) {
+				address = "https://web.archive.org/web/2015-05-05/" + address;
+			} else if (!address.match(/^https?:\/\/(www\.)?(copy.sh)/)) {
 				address = "https://web.archive.org/web/1998/" + address;
 			}
 		}
