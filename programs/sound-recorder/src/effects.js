@@ -2,6 +2,9 @@
 var applyEffect = function(file, effectFunction, timeScale){
 	var old_buffer = file.buffer;
 	var pos = file.position / file.length;
+	if (isNaN(pos)) {
+		pos = 0;
+	}
 	
 	file.length = file.availLength = file.availLength * Math.abs(timeScale || 1);
 	var new_buffer = file.newBuffer();
