@@ -83,6 +83,22 @@ function $IframeWindow(options){
 			verticalAlign: "bottom", // avoid unaccounted-for space on the bottom
 		});
 	
+	const width_from_frame = $win.width() - $win.$content.width();
+	const height_from_frame = $win.height() - $win.$content.height();
+	$win.css({
+		width: (options.innerWidth || 640) + width_from_frame,
+		height: (options.innerHeight || 380) + height_from_frame + 21,
+	});
+	$iframe.css({
+		width: "",
+		height: "",
+		flex: 1,
+	});
+	$win.$content.css({
+		display: "flex",
+		flexDirection: "column",
+	});
+	
 	// TODO: cascade windows
 	$win.center();
 	$win.hide();

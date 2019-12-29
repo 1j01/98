@@ -29,7 +29,6 @@ function $Window(options){
 	});
 	let before_maximize;
 	$w.$maximize.on("click", function(){
-		// TODO: make programs update iframes
 		// TODO: account for taskbar
 		if ($w.hasClass("maximized")) {
 			$w.removeClass("maximized");

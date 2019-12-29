@@ -132,12 +132,17 @@ html, body {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
+.window:not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window) {
+	display: flex;
+	flex-direction: column;
+}
 .window-titlebar .icon {
 	vertical-align: bottom;
 }
 .window-content {
 	margin: 0;
 	padding: 0;
+	flex: 1;
 }
 .desktop-icon {
 	display: inline-block;
