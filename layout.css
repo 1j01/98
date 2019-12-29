@@ -240,8 +240,21 @@ html, body {
 	width: 13px;
 	height: 11px;
 }
-.window-close-button:before {
-	content: '×';
+.window-close-button {
+	display: block !important;
+	float: right;
+}
+.window-close-button::before {
+	content: '🗙';
+	position: relative;
+}
+.window-maximize-button::before {
+	content: '🗖';
+	/* 🗖 🗗 */
+	position: relative;
+}
+.window-minimize-button::before {
+	content: '🗕';
 	position: relative;
 }
 

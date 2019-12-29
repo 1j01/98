@@ -8,6 +8,8 @@ function $Window(options){
 	$w.$titlebar = $(E("div")).addClass("window-titlebar").appendTo($w);
 	$w.$title_area = $(E("div")).addClass("window-title-area").appendTo($w.$titlebar);
 	$w.$title = $(E("span")).addClass("window-title").appendTo($w.$title_area);
+	$w.$minimize = $(E("button")).addClass("window-minimize-button window-button").appendTo($w.$titlebar);
+	$w.$maximize = $(E("button")).addClass("window-maximize-button window-button").appendTo($w.$titlebar);
 	$w.$x = $(E("button")).addClass("window-close-button window-button").appendTo($w.$titlebar);
 	$w.$content = $(E("div")).addClass("window-content").appendTo($w);
 	
@@ -25,7 +27,11 @@ function $Window(options){
 	$w.$x.on("click", function(){
 		$w.close();
 	});
-	$w.$x.on("mousedown selectstart", function(e){
+	$w.$maximize.on("click", function(){
+		$w.css({"width": "100vw", "height": "100vh"});
+		$w.applyBounds();
+	});
+	$w.$title_area.on("mousedown selectstart", ".window-button", function(e){
 		e.preventDefault();
 	});
 	
