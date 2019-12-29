@@ -32,6 +32,12 @@
 				do{
 					offsetLeft += el.offsetLeft;
 					offsetTop += el.offsetTop;
+					const translate_match = el.style.transform.match(/translate\((\d+)px, (\d+)px\)/);
+					if (translate_match) {
+						const [, translate_x, translate_y] = translate_match;
+						offsetLeft += parseFloat(translate_x);
+						offsetTop += parseFloat(translate_y);
+					}
 					el = el.offsetParent;
 				}while(el);
 
