@@ -81,7 +81,6 @@ function $IframeWindow(options){
 			minHeight: 0, // overrides user agent styling apparently, fixes Sound Recorder
 			flex: 1,
 			border: 0, // overrides user agent styling
-			verticalAlign: "bottom", // avoid unaccounted-for space on the bottom
 		});
 	
 	const width_from_frame = $win.width() - $win.$content.width();
