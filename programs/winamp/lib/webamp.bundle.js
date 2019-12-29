@@ -555,7 +555,6 @@ const WINDOW_SIZE_CHANGED = exports.WINDOW_SIZE_CHANGED = "WINDOW_SIZE_CHANGED";
 const TOGGLE_WINDOW_SHADE_MODE = exports.TOGGLE_WINDOW_SHADE_MODE = "TOGGLE_WINDOW_SHADE_MODE";
 const LOADED = exports.LOADED = "LOADED";
 const REGISTER_VISUALIZER = exports.REGISTER_VISUALIZER = "REGISTER_VISUALIZER";
-const SET_Z_INDEX = exports.SET_Z_INDEX = "SET_Z_INDEX";
 
 /***/ }),
 /* 4 */
@@ -1460,7 +1459,7 @@ module.exports = !__webpack_require__(25)(function () {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.Node = exports.LinkNode = exports.Parent = exports.Hr = undefined;
+exports.ContextMenu = exports.Node = exports.LinkNode = exports.Parent = exports.Hr = undefined;
 
 var _extends2 = __webpack_require__(4);
 
@@ -1475,8 +1474,6 @@ var _react = __webpack_require__(0);
 var _react2 = _interopRequireDefault(_react);
 
 var _reactDom = __webpack_require__(28);
-
-var _reactRedux = __webpack_require__(1);
 
 var _propTypes = __webpack_require__(12);
 
@@ -1493,11 +1490,9 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 class Portal extends _react2.default.Component {
   componentWillMount() {
     this._node = document.createElement("div");
-    this._node.id = "webamp-context-menu";
     this._node.style.position = "absolute";
     this._node.style.top = 0;
     this._node.style.left = 0;
-    this._node.style.zIndex = this.props.zIndex + 1;
     document.body.appendChild(this._node);
   }
 
@@ -1579,26 +1574,20 @@ class ContextMenu extends _react2.default.Component {
           offsetLeft = _props.offsetLeft,
           top = _props.top,
           bottom = _props.bottom,
-          selected = _props.selected,
-          zIndex = _props.zIndex;
+          selected = _props.selected;
 
     return selected && _react2.default.createElement(
       Portal,
-      { top: offsetTop, left: offsetLeft, zIndex: zIndex },
+      { top: offsetTop, left: offsetLeft },
       _react2.default.createElement(
         "ul",
-        { className: (0, _classnames2.default)("context-menu", { top, bottom }) },
+        { id: "context-menu", className: (0, _classnames2.default)({ top, bottom }) },
         children
       )
     );
   }
 }
-
-const mapStateToProps = state => ({
-  zIndex: state.display.zIndex
-});
-
-exports.default = (0, _reactRedux.connect)(mapStateToProps)(ContextMenu);
+exports.ContextMenu = ContextMenu;
 
 /***/ }),
 /* 21 */
@@ -2417,21 +2406,19 @@ var _Character2 = _interopRequireDefault(_Character);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-class CharacterString extends _react2.default.Component {
-  shouldComponentUpdate(nextProps) {
-    return nextProps.children !== this.props.children;
-  }
-
-  render() {
-    const text = `${this.props.children}` || "";
-    const chars = text.split("");
-    return chars.map((character, index) => _react2.default.createElement(
+const CharacterString = props => {
+  const text = `${props.children}` || "";
+  const chars = text.split("");
+  return _react2.default.createElement(
+    "div",
+    props,
+    chars.map((character, index) => _react2.default.createElement(
       _Character2.default,
       { key: index + character },
       character
-    ));
-  }
-}
+    ))
+  );
+};
 
 CharacterString.propsTypes = {
   children: _propTypes2.default.string
@@ -4020,8 +4007,6 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 
 var _ContextMenu = __webpack_require__(20);
 
-var _ContextMenu2 = _interopRequireDefault(_ContextMenu);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 class ContextMenuWraper extends _react2.default.Component {
@@ -4080,7 +4065,7 @@ class ContextMenuWraper extends _react2.default.Component {
         style: { width: "100%", height: "100%" }
       }, passThroughProps),
       _react2.default.createElement(
-        _ContextMenu2.default,
+        _ContextMenu.ContextMenu,
         {
           selected: this.state.selected,
           offsetTop: this.state.offsetTop,
@@ -4124,8 +4109,6 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 
 var _ContextMenu = __webpack_require__(20);
 
-var _ContextMenu2 = _interopRequireDefault(_ContextMenu);
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 class ContextMenuTarget extends _react2.default.Component {
@@ -4157,17 +4140,6 @@ class ContextMenuTarget extends _react2.default.Component {
     }
   }
 
-  _offset() {
-    if (!this.handleNode) {
-      return { top: 0, left: 0 };
-    }
-
-    const rect = this.handleNode.getBoundingClientRect();
-    const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
-    return { top: rect.top + scrollTop, left: rect.left + scrollLeft };
-  }
-
   render() {
     var _props = this.props;
     const handle = _props.handle,
@@ -4176,7 +4148,7 @@ class ContextMenuTarget extends _react2.default.Component {
           bottom = _props.bottom,
           passThroughProps = (0, _objectWithoutProperties3.default)(_props, ["handle", "children", "top", "bottom"]);
 
-    const offset = this._offset();
+    const rect = this.handleNode ? this.handleNode.getBoundingClientRect() : { top: 0, left: 0 };
     return _react2.default.createElement(
       "div",
       passThroughProps,
@@ -4191,11 +4163,11 @@ class ContextMenuTarget extends _react2.default.Component {
         handle
       ),
       _react2.default.createElement(
-        _ContextMenu2.default,
+        _ContextMenu.ContextMenu,
         {
           selected: this.state.selected,
-          offsetTop: offset.top,
-          offsetLeft: offset.left,
+          offsetTop: rect.top,
+          offsetLeft: rect.left,
           top: top,
           bottom: bottom
         },
@@ -5546,8 +5518,7 @@ const defaultDisplayState = {
   visualizerStyle: 0, // Index into VISUALIZER_ORDER
   playlistScrollPosition: 0,
   skinGenLetterWidths: null, // TODO: Get the default value for this?
-  additionalVisualizers: [],
-  zIndex: 0
+  additionalVisualizers: []
 };
 
 const display = (state = defaultDisplayState, action) => {
@@ -5586,8 +5557,6 @@ const display = (state = defaultDisplayState, action) => {
       });
     case _actionTypes.SET_PLAYLIST_SCROLL_POSITION:
       return (0, _extends3.default)({}, state, { playlistScrollPosition: action.position });
-    case _actionTypes.SET_Z_INDEX:
-      return (0, _extends3.default)({}, state, { zIndex: action.zIndex });
     default:
       return state;
   }
@@ -8235,7 +8204,6 @@ class Winamp {
           availableSkins = _options.availableSkins;
     var _options$enableHotkey = _options.enableHotkeys;
     const enableHotkeys = _options$enableHotkey === undefined ? false : _options$enableHotkey,
-          zIndex = _options.zIndex,
           __extraWindows = _options.__extraWindows;
 
 
@@ -8255,10 +8223,6 @@ class Winamp {
         this.store.dispatch((0, _actionCreators.loadFilesFromReferences)(e.target.files));
       });
       document.body.appendChild(fileInput);
-    }
-
-    if (zIndex != null) {
-      this.store.dispatch({ type: _actionTypes.SET_Z_INDEX, zIndex });
     }
 
     this.genWindows = [];
@@ -28392,18 +28356,6 @@ class App extends _react2.default.Component {
     this._bindings = {};
   }
 
-  componentWillMount() {
-    this._webampNode = document.createElement("div");
-    this._webampNode.id = "webamp";
-    this._webampNode.role = "application";
-    this._webampNode.style.zIndex = this.props.zIndex;
-    document.body.appendChild(this._webampNode);
-  }
-
-  componentWillUnmount() {
-    document.body.removeChild(this._webampNode);
-  }
-
   componentDidMount() {
     this._setFocus();
   }
@@ -28509,9 +28461,9 @@ class App extends _react2.default.Component {
     if (closed) {
       return null;
     }
-    return _reactDom2.default.createPortal(_react2.default.createElement(
-      _react2.default.Fragment,
-      null,
+    return _react2.default.createElement(
+      "div",
+      { role: "application", id: "webamp" },
       _react2.default.createElement(_Skin2.default, null),
       _react2.default.createElement(
         _ContextMenuWrapper2.default,
@@ -28523,7 +28475,7 @@ class App extends _react2.default.Component {
           container: container
         })
       )
-    ), this._webampNode);
+    );
   }
 }
 
@@ -28536,8 +28488,7 @@ const mapStateToProps = state => ({
   status: state.media.status,
   focused: state.windows.focused,
   closed: state.display.closed,
-  genWindowsInfo: state.windows.genWindows,
-  zIndex: state.display.zIndex
+  genWindowsInfo: state.windows.genWindows
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -28586,7 +28537,7 @@ exports = module.exports = __webpack_require__(23)(false);
 
 
 // module
-exports.push([module.i, "#webamp-context-menu .context-menu {\n    left: 0px;\n}\n\n#webamp-context-menu .context-menu.bottom {\n    top: 12px;\n}\n\n#webamp-context-menu .context-menu.top {\n    top: 0px;\n}\n\n#webamp-context-menu .context-menu,\n#webamp-context-menu .context-menu ul {\n    z-index: 50; /* Gross */\n    background-color: #ffffff;\n    position: absolute;\n    list-style: none;\n    padding: 0;\n    margin: 0;\n    border: 1px solid #a7a394;\n    cursor: default;\n    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);\n}\n\n#webamp-context-menu .context-menu li {\n    position: relative;\n    font-family: \"Tahoma\";\n    font-size: 11px;\n    color: black;\n    white-space: nowrap;\n    margin: 2px;\n    padding: 1px 18px 3px 18px;\n    display: block;\n}\n\n#webamp-context-menu .context-menu li.checked:before {\n    float: left;\n    /* TODO: Use an image */\n    content: \"\\2713\";\n    margin-left: -12px;\n}\n\n#webamp-context-menu .context-menu li.parent:after {\n    float: right;\n    content: \"\\25B8\";\n    margin-right: -12px;\n}\n#webamp-context-menu .context-menu li a {\n    text-decoration: none;\n    color: black;\n    cursor: default;\n}\n\n#webamp-context-menu .context-menu li:hover,\n#webamp-context-menu .context-menu li:hover a {\n    background-color: #224eb7;\n    color: #ffffff;\n}\n\n#webamp-context-menu .context-menu li.hr {\n    padding: 2px 0;\n}\n\n#webamp-context-menu .context-menu li.hr:hover {\n    background-color: #ffffff;\n}\n\n#webamp-context-menu .context-menu li.hr hr {\n    border: none;\n    height: 1px;\n    background-color: #a7a394;\n    margin: 0;\n    padding: 0;\n}\n\n#webamp-context-menu .context-menu ul {\n    display: none;\n    left: 100%;\n    margin-left: -3px;\n}\n\n#webamp-context-menu .context-menu li:hover ul {\n    display: block;\n}\n", ""]);
+exports.push([module.i, "#context-menu {\n    left: 0px;\n}\n\n#context-menu.bottom {\n    top: 12px;\n}\n\n#context-menu.top {\n    top: 0px;\n}\n\n#context-menu,\n#context-menu ul {\n    z-index: 50; /* Gross */\n    background-color: #ffffff;\n    position: absolute;\n    list-style: none;\n    padding: 0;\n    margin: 0;\n    border: 1px solid #a7a394;\n    cursor: default;\n    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);\n}\n\n#context-menu li {\n    position: relative;\n    font-family: \"Tahoma\";\n    font-size: 11px;\n    color: black;\n    white-space: nowrap;\n    margin: 2px;\n    padding: 1px 18px 3px 18px;\n    display: block;\n}\n\n#context-menu li.checked:before {\n    float: left;\n    /* TODO: Use an image */\n    content: \"\\2713\";\n    margin-left: -12px;\n}\n\n#context-menu li.parent:after {\n    float: right;\n    content: \"\\25B8\";\n    margin-right: -12px;\n}\n#context-menu li a {\n    text-decoration: none;\n    color: black;\n    cursor: default;\n}\n\n#context-menu li:hover,\n#context-menu li:hover a {\n    background-color: #224eb7;\n    color: #ffffff;\n}\n\n#context-menu li.hr {\n    padding: 2px 0;\n}\n\n#context-menu li.hr:hover {\n    background-color: #ffffff;\n}\n\n#context-menu li.hr hr {\n    border: none;\n    height: 1px;\n    background-color: #a7a394;\n    margin: 0;\n    padding: 0;\n}\n\n#context-menu ul {\n    display: none;\n    left: 100%;\n    margin-left: -3px;\n}\n\n#context-menu li:hover ul {\n    display: block;\n}\n", ""]);
 
 // exports
 
@@ -28865,8 +28816,6 @@ class WindowManager extends _react2.default.Component {
     const container = this.props.container;
 
 
-    const offsetLeft = container.offsetLeft;
-    const offsetTop = container.offsetTop;
     const width = container.scrollWidth;
     const height = container.scrollHeight;
 
@@ -28881,8 +28830,8 @@ class WindowManager extends _react2.default.Component {
       keys.forEach((key, i) => {
         const offset = _constants.WINDOW_HEIGHT * i;
         windowPositions[key] = {
-          x: Math.ceil(offsetLeft + globalOffsetLeft),
-          y: Math.ceil(offsetTop + (globalOffsetTop + offset))
+          x: Math.ceil(globalOffsetLeft),
+          y: Math.ceil(globalOffsetTop + offset)
         };
       });
       this.props.updateWindowPositions(windowPositions);
@@ -28897,8 +28846,8 @@ class WindowManager extends _react2.default.Component {
       const boxWidth = bounding.right - bounding.left;
 
       const move = {
-        x: offsetLeft + (width - boxWidth) / 2,
-        y: offsetTop + (height - boxHeight) / 2
+        x: (width - boxWidth) / 2,
+        y: (height - boxHeight) / 2
       };
 
       const newPositions = info.reduce((pos, w) => (0, _extends3.default)({}, pos, { [w.key]: { x: move.x + w.x, y: move.y + w.y } }), {});
@@ -29650,13 +29599,9 @@ var _CharacterString2 = _interopRequireDefault(_CharacterString);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const Kbps = props => _react2.default.createElement(
-  "div",
+  _CharacterString2.default,
   { id: "kbps" },
-  _react2.default.createElement(
-    _CharacterString2.default,
-    null,
-    props.kbps
-  )
+  props.kbps
 );
 
 exports.default = (0, _reactRedux.connect)(state => ({ kbps: state.media.kbps }))(Kbps);
@@ -29685,13 +29630,9 @@ var _CharacterString2 = _interopRequireDefault(_CharacterString);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const Khz = props => _react2.default.createElement(
-  "div",
+  _CharacterString2.default,
   { id: "khz" },
-  _react2.default.createElement(
-    _CharacterString2.default,
-    null,
-    props.khz
-  )
+  props.khz
 );
 
 exports.default = (0, _reactRedux.connect)(state => state.media)(Khz);
@@ -29847,13 +29788,9 @@ class Marquee extends _react2.default.Component {
         title: "Song Title"
       },
       _react2.default.createElement(
-        "div",
+        _CharacterString2.default,
         { style: { marginLeft } },
-        _react2.default.createElement(
-          _CharacterString2.default,
-          null,
-          loopText(text)
-        )
+        loopText(text)
       )
     );
   }
@@ -30818,22 +30755,14 @@ class PlaylistShade extends _react2.default.Component {
           "div",
           { className: "right draggable" },
           _react2.default.createElement(
-            "div",
+            _CharacterString2.default,
             { id: "playlist-shade-track-title" },
-            _react2.default.createElement(
-              _CharacterString2.default,
-              null,
-              this._trimmedName()
-            )
+            this._trimmedName()
           ),
           _react2.default.createElement(
-            "div",
+            _CharacterString2.default,
             { id: "playlist-shade-time" },
-            _react2.default.createElement(
-              _CharacterString2.default,
-              null,
-              this._time()
-            )
+            this._time()
           ),
           _react2.default.createElement(_PlaylistResizeTarget2.default, { widthOnly: true }),
           _react2.default.createElement("div", { id: "playlist-shade-button", onClick: toggleShade }),
@@ -31245,13 +31174,9 @@ const RunningTimeDisplay = props => _react2.default.createElement(
   "div",
   { className: "playlist-running-time-display draggable" },
   _react2.default.createElement(
-    "div",
+    _CharacterString2.default,
     null,
-    _react2.default.createElement(
-      _CharacterString2.default,
-      null,
-      rightPad(props.runningTimeMessage, 18, " ")
-    )
+    rightPad(props.runningTimeMessage, 18, " ")
   )
 );
 
@@ -35202,7 +35127,7 @@ exports = module.exports = __webpack_require__(23)(false);
 
 
 // module
-exports.push([module.i, "/* Rules used by all windows */\n\n#webamp {\n    position: absolute;\n    top: 0;\n    left: 0;\n}\n\n/* Prevent accidental highlighting */\n#webamp canvas {\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    user-select: none;\n}\n\n#webamp * {\n    /* Some environments globably change the box-sizing */\n    box-sizing: content-box;\n    -webkit-box-sizing: content-box;\n}\n\n#webamp *:focus {\n    outline: 0;\n}\n\n/* Range input css reset */\n#webamp input[type=\"range\"] {\n    -webkit-appearance: none;\n    margin: 0;\n    padding: 0;\n    background: none;\n    border: none;\n}\n#webamp input[type=\"range\"]::-webkit-slider-thumb {\n    -webkit-appearance: none;\n    border: none;\n    border-radius: 0;\n    background: none;\n}\n#webamp input[type=\"range\"]::-moz-range-thumb {\n    border: none;\n    border-radius: 0;\n    background: none;\n}\n#webamp input[type=\"range\"]::-moz-range-track {\n    border: none;\n    background: none;\n}\n#webamp input[type=\"range\"]:focus {\n    outline: none;\n}\n#webamp input[type=\"range\"]::-moz-focus-outer {\n    border: 0;\n}\n\n#webamp a:focus {\n    outline: none;\n}\n\n/* Animation */\n@keyframes blink {\n    0% {\n        opacity: 1;\n    }\n    50% {\n        opacity: 0;\n    }\n    100% {\n        opacity: 1;\n    }\n}\n@-webkit-keyframes blink {\n    0% {\n        opacity: 1;\n    }\n    50% {\n        opacity: 0;\n    }\n    100% {\n        opacity: 1;\n    }\n}\n\n#webamp .character {\n    display: inline-block;\n    vertical-align: top;\n    width: 5px;\n    height: 6px;\n    /* background-image: TEXT.BMP via Javascript */\n    text-indent: -9999px;\n}\n\n#webamp .window {\n    position: absolute;\n    /* Ask the browser to scale showing large pixels if possible */\n    image-rendering: -moz-crisp-edges; /* Firefox */\n    image-rendering: -o-crisp-edges; /* Opera */\n    image-rendering: -webkit-optimize-contrast; /* Safari */\n    image-rendering: pixelated; /* Only in Chrome > 40 */\n    -ms-interpolation-mode: nearest-neighbor; /* IE (non-standard property) */\n}\n\n#webamp .window {\n    /* Work around rendering bug with clip-path */\n    -webkit-transform: translateZ(0);\n}\n#webamp .window.doubled {\n    -moz-transform: translateZ(0) scale(2);\n    -moz-transform-origin: top left;\n    -webkit-transform: translateZ(0) scale(2);\n    -webkit-transform-origin: top left;\n}\n", ""]);
+exports.push([module.i, "/* Rules used by all windows */\n\n/* Prevent accidental highlighting */\n#webamp canvas {\n    -webkit-user-select: none;\n    -moz-user-select: none;\n    user-select: none;\n}\n\n#webamp * {\n    /* Some environments globably change the box-sizing */\n    box-sizing: content-box;\n    -webkit-box-sizing: content-box;\n}\n\n#webamp *:focus {\n    outline: 0;\n}\n\n/* Range input css reset */\n#webamp input[type=\"range\"] {\n    -webkit-appearance: none;\n    margin: 0;\n    padding: 0;\n    background: none;\n    border: none;\n}\n#webamp input[type=\"range\"]::-webkit-slider-thumb {\n    -webkit-appearance: none;\n    border: none;\n    border-radius: 0;\n    background: none;\n}\n#webamp input[type=\"range\"]::-moz-range-thumb {\n    border: none;\n    border-radius: 0;\n    background: none;\n}\n#webamp input[type=\"range\"]::-moz-range-track {\n    border: none;\n    background: none;\n}\n#webamp input[type=\"range\"]:focus {\n    outline: none;\n}\n#webamp input[type=\"range\"]::-moz-focus-outer {\n    border: 0;\n}\n\n#webamp a:focus {\n    outline: none;\n}\n\n/* Animation */\n@keyframes blink {\n    0% {\n        opacity: 1;\n    }\n    50% {\n        opacity: 0;\n    }\n    100% {\n        opacity: 1;\n    }\n}\n@-webkit-keyframes blink {\n    0% {\n        opacity: 1;\n    }\n    50% {\n        opacity: 0;\n    }\n    100% {\n        opacity: 1;\n    }\n}\n\n#webamp .character {\n    display: inline-block;\n    vertical-align: top;\n    width: 5px;\n    height: 6px;\n    /* background-image: TEXT.BMP via Javascript */\n    text-indent: -9999px;\n}\n\n#webamp .window {\n    position: absolute;\n    /* Ask the browser to scale showing large pixels if possible */\n    image-rendering: -moz-crisp-edges; /* Firefox */\n    image-rendering: -o-crisp-edges; /* Opera */\n    image-rendering: -webkit-optimize-contrast; /* Safari */\n    image-rendering: pixelated; /* Only in Chrome > 40 */\n    -ms-interpolation-mode: nearest-neighbor; /* IE (non-standard property) */\n}\n\n#webamp .window {\n    /* Work around rendering bug with clip-path */\n    -webkit-transform: translateZ(0);\n}\n#webamp .window.doubled {\n    -moz-transform: translateZ(0) scale(2);\n    -moz-transform-origin: top left;\n    -webkit-transform: translateZ(0) scale(2);\n    -webkit-transform-origin: top left;\n}\n", ""]);
 
 // exports
 
