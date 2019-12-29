@@ -76,10 +76,11 @@ function $IframeWindow(options){
 			
 		})
 		.attr({src: options.src})
-		.width(options.innerWidth || 640)
-		.height(options.innerHeight || 380)
 		.css({
-			border: 0,
+			minWidth: 0,
+			minHeight: 0, // overrides user agent styling apparently, fixes Sound Recorder
+			flex: 1,
+			border: 0, // overrides user agent styling
 			verticalAlign: "bottom", // avoid unaccounted-for space on the bottom
 		});
 	
@@ -88,11 +89,6 @@ function $IframeWindow(options){
 	$win.css({
 		width: (options.innerWidth || 640) + width_from_frame,
 		height: (options.innerHeight || 380) + height_from_frame + 21,
-	});
-	$iframe.css({
-		width: "",
-		height: "",
-		flex: 1,
 	});
 	$win.$content.css({
 		display: "flex",
