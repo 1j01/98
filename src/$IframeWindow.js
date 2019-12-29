@@ -4,7 +4,7 @@ var programs_being_loaded = 0;
 function $IframeWindow(options){
 	
 	var $win = new $Window(options);
-	$win.$content.html("<iframe allowfullscreen sandbox='allow-same-origin allow-scripts allow-forms allow-pointer-lock'>");
+	$win.$content.html("<iframe allowfullscreen sandbox='allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals'>");
 	
 	var $iframe = $win.$iframe = $win.$content.find("iframe");
 	var iframe = $win.iframe = $iframe[0];
