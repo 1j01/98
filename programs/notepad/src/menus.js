@@ -27,7 +27,7 @@ var menus = {
 			action: file_save_as,
 			description: "Saves the active document with a new name.",
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		// {
 		// 	item: "Print Pre&view",
 		// 	action: function(){
@@ -52,13 +52,13 @@ var menus = {
 			},
 			description: "Prints the active document and sets printing options.",
 		},
-		// $MenuBar.DIVIDER,
+		// MENU_DIVIDER,
 		// {
 		// 	item: "Recent File",
 		// 	enabled: false,
 		// 	description: "Opens this document.",
 		// },
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "E&xit",
 			// shortcut: "Alt+F4",
@@ -92,7 +92,7 @@ var menus = {
 			},
 			description: "Redoes the previously undone action.",
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		// FIXME: Several of these commands can actually work even though they appear disabled.
 		// I probably need to change how menu item enabledness querying works,
 		// make it so it queries the enabled status of all items before switching focus to the menus.
@@ -159,7 +159,7 @@ var menus = {
 			},
 			description: "Deletes the selection.",
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "Select &All",
 			// NOTE: Notepad in Windows 98 doesn't actually have Ctrl+A as a shortcut
@@ -176,7 +176,7 @@ var menus = {
 			action: insert_time_and_date,
 			description: "Inserts the current time and date.", // NOTE: made up text
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "&Word Wrap",
 			checkbox: {
@@ -235,7 +235,7 @@ var menus = {
 			// Windows Explorer: "Opens Help."
 			// Paint: "Displays Help for the current task or command."
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "&About Notepad",
 			action: function(){},

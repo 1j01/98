@@ -1,36 +1,28 @@
 
-$MenuBar.DIVIDER = "MENU_DIVIDER";
+// TODO: make menus not take focus so we can support copy/pasting text in the text tool textarea from the menus
 
-function E(t){
-	return document.createElement(t);
-}
+const MENU_DIVIDER = "MENU_DIVIDER";
 
 function $MenuBar(menus){
 	
-	var $ = jQuery;
-	var $G = $(self);
+	const $ = jQuery;
+	const $G = $(self);
 	
-	var $menus = $(E("div")).addClass("menus");
+	const $menus = $(E("div")).addClass("menus");
 	
 	$menus.attr("touch-action", "none");
-	var selecting_menus = false;
+	let selecting_menus = false;
 	
-	var _html = function(menus_key){
-		return menus_key.replace(/&(.)/, function(m){
-			return "<span class='menu-hotkey'>" + m[1] + "</span>";
-		});
-	};
-	var _hotkey = function(menus_key){
-		return menus_key[menus_key.indexOf("&")+1].toUpperCase();
-	};
+	const _html = menus_key => menus_key.replace(/&(.)/, m => `<span class='menu-hotkey'>${m[1]}</span>`);
+	const _hotkey = menus_key => menus_key[menus_key.indexOf("&")+1].toUpperCase();
 	
-	var close_menus = function(){
+	const close_menus = () => {
 		$menus.find(".menu-button").trigger("release");
 		// Close any rogue floating submenus
 		$(".menu-popup").hide();
 	};
 	
-	var is_disabled = function(item){
+	const is_disabled = item => {
 		if(typeof item.enabled === "function"){
 			return !item.enabled();
 		}else if(typeof item.enabled === "boolean"){
@@ -42,20 +34,20 @@ function $MenuBar(menus){
 	
 	// TODO: API for context menus (i.e. floating menu popups)
 	function $MenuPopup(menu_items){
-		var $menu_popup = $(E("div")).addClass("menu-popup");
-		var $menu_popup_table = $(E("table")).addClass("menu-popup-table").appendTo($menu_popup);
+		const $menu_popup = $(E("div")).addClass("menu-popup");
+		const $menu_popup_table = $(E("table")).addClass("menu-popup-table").appendTo($menu_popup);
 		
-		$.map(menu_items, function(item){
-			var $row = $(E("tr")).addClass("menu-row").appendTo($menu_popup_table)
-			if(item === $MenuBar.DIVIDER){
-				var $td = $(E("td")).attr({colspan: 4}).appendTo($row);
-				var $hr = $(E("hr")).addClass("menu-hr").appendTo($td);
+		$.map(menu_items, item => {
+			const $row = $(E("tr")).addClass("menu-row").appendTo($menu_popup_table);
+			if(item === MENU_DIVIDER){
+				const $td = $(E("td")).attr({colspan: 4}).appendTo($row);
+				const $hr = $(E("hr")).addClass("menu-hr").appendTo($td);
 			}else{
-				var $item = $row.addClass("menu-item");
-				var $checkbox_area = $(E("td")).addClass("menu-item-checkbox-area");
-				var $label = $(E("td")).addClass("menu-item-label");
-				var $shortcut = $(E("td")).addClass("menu-item-shortcut");
-				var $submenu_area = $(E("td")).addClass("menu-item-submenu-area");
+				const $item = $row.addClass("menu-item");
+				const $checkbox_area = $(E("td")).addClass("menu-item-checkbox-area");
+				const $label = $(E("td")).addClass("menu-item-label");
+				const $shortcut = $(E("td")).addClass("menu-item-shortcut");
+				const $submenu_area = $(E("td")).addClass("menu-item-submenu-area");
 				
 				$item.append($checkbox_area, $label, $shortcut, $submenu_area);
 				
@@ -64,15 +56,15 @@ function $MenuBar(menus){
 				$label.html(_html(item.item));
 				$shortcut.text(item.shortcut);
 				
-				$menu_popup.on("update", function(){
+				$menu_popup.on("update", () => {
 					$item.attr("disabled", is_disabled(item));
 					if(item.checkbox && item.checkbox.check){
 						$checkbox_area.text(item.checkbox.check() ? "✓" : "");
 					}
 				});
-				$item.on("pointerover", function(){
+				$item.on("pointerover", () => {
 					$menu_popup.triggerHandler("update");
-					$item.focus();
+					$item[0].focus();
 				});
 				
 				if(item.checkbox){
@@ -82,41 +74,53 @@ function $MenuBar(menus){
 				if(item.submenu){
 					$submenu_area.html('<svg xmlns="http://www.w3.org/2000/svg" width="10" height="11" viewBox="0 0 10 11" style="fill:currentColor;display:inline-block;vertical-align:middle"><path d="M7.5 4.33L0 8.66L0 0z"/></svg>');
 					
-					var $submenu_popup = $MenuPopup(item.submenu).appendTo("body");
+					const $submenu_popup = $MenuPopup(item.submenu).appendTo("body");
 					$submenu_popup.hide();
 					
-					var open_submenu = function(){
+					const open_submenu = () => {
 						$submenu_popup.show();
 						$submenu_popup.triggerHandler("update");
-						var rect = $submenu_area[0].getBoundingClientRect();
+						const rect = $item[0].getBoundingClientRect();
 						$submenu_popup.css({
 							position: "absolute",
 							left: rect.right,
 							top: rect.top,
 						});
+						let submenu_popup_rect = $submenu_popup[0].getBoundingClientRect();
+						if (submenu_popup_rect.right > innerWidth) {
+							$submenu_popup.css({
+								left: rect.left - submenu_popup_rect.width,
+							});
+							submenu_popup_rect = $submenu_popup[0].getBoundingClientRect();
+							if (submenu_popup_rect.left < 0) {
+								$submenu_popup.css({
+									left: 0,
+								});
+							}
+						}
 					};
-					var open_tid, close_tid;
-					$item.add($submenu_popup).on("pointerover", function(e){
+					let open_tid, close_tid;
+					$item.add($submenu_popup).on("pointerover", ()=> {
 						if(open_tid){clearTimeout(open_tid);}
 						if(close_tid){clearTimeout(close_tid);}
 					});
-					$item.on("pointerover", function(e){
+					$item.on("pointerover", ()=> {
 						if(open_tid){clearTimeout(open_tid);}
 						if(close_tid){clearTimeout(close_tid);}
 						open_tid = setTimeout(open_submenu, 200);
 					});
-					$item.add($submenu_popup).on("pointerout", function(){
-						$menu_popup.closest(".menu-container").find(".menu-button").focus();
+					$item.add($submenu_popup).on("pointerout", () => {
+						$menu_popup.closest(".menu-container").find(".menu-button")[0].focus();
 						if(open_tid){clearTimeout(open_tid);}
 						if(close_tid){clearTimeout(close_tid);}
-						close_tid = setTimeout(function(){
+						close_tid = setTimeout(() => {
 							$submenu_popup.hide();
 						}, 200);
 					});
 					$item.on("click pointerdown", open_submenu);
 				}
 				
-				var item_action = function(){
+				const item_action = () => {
 					if(item.checkbox){
 						if(item.checkbox.toggle){
 							item.checkbox.toggle();
@@ -127,28 +131,32 @@ function $MenuBar(menus){
 						item.action();
 					}
 				};
-				$item.on("pointerup", function(e){
+				$item.on("pointerup", e => {
 					if(e.pointerType === "mouse" && e.button !== 0){
 						return;
 					}
 					item_action();
 				});
-				$item.on("pointerover", function(){
+				$item.on("pointerover", () => {
 					if(item.submenu){
 						$menus.triggerHandler("info", "");
 					}else{
 						$menus.triggerHandler("info", item.description || "");
 					}
 				});
-				$item.on("pointerout", function(){
+				$item.on("pointerout", () => {
 					if($item.is(":visible")){
 						$menus.triggerHandler("info", "");
-						$menu_popup.closest(".menu-container").find(".menu-button").focus();
+						// may not exist for submenu popups
+						const menu_button = $menu_popup.closest(".menu-container").find(".menu-button")[0];
+						if(menu_button){
+							menu_button.focus();
+						}
 					}
 				});
 				
-				$item.on("keydown", function(e){
-					if(e.ctrlKey || e.shiftKey || e.altKey){
+				$item.on("keydown", e => {
+					if(e.ctrlKey || e.shiftKey || e.altKey || e.metaKey){
 						return;
 					}
 					if(e.keyCode === 13){ // Enter
@@ -157,13 +165,13 @@ function $MenuBar(menus){
 					}
 				});
 				
-				$menu_popup.on("keydown", function(e){
-					if(e.ctrlKey || e.shiftKey || e.altKey){
+				$menu_popup.on("keydown", e => {
+					if(e.ctrlKey || e.shiftKey || e.altKey || e.metaKey){
 						return;
 					}
 					if(String.fromCharCode(e.keyCode) === _hotkey(item.item)){
 						e.preventDefault();
-						$item.click();
+						$item.trogger("click");
 					}
 				});
 			}
@@ -172,28 +180,39 @@ function $MenuBar(menus){
 		return $menu_popup;
 	}
 	
-	var this_click_opened_the_menu = false;
-	$.each(menus, function(menus_key, menu_items){
-		var $menu_container = $(E("div")).addClass("menu-container").appendTo($menus);
-		var $menu_button = $(E("div")).addClass("menu-button").appendTo($menu_container);
-		var $menu_popup = $MenuPopup(menu_items).appendTo($menu_container);
+	let this_click_opened_the_menu = false;
+	const make_menu = (menus_key, menu_items) => {
+		const $menu_container = $(E("div")).addClass("menu-container").appendTo($menus);
+		const $menu_button = $(E("div")).addClass("menu-button").appendTo($menu_container);
+		const $menu_popup = $MenuPopup(menu_items).appendTo($menu_container);
 		
-		var menu_id = menus_key.replace("&", "").replace(/ /g, "-").toLowerCase();
-		$menu_button.addClass("" + menu_id + "-menu-button");
+		const update_position_from_containing_bounds = ()=> {
+			$menu_popup.css("left", "");
+			const uncorrected_rect = $menu_popup[0].getBoundingClientRect();
+			if(uncorrected_rect.right > innerWidth) {
+				$menu_popup.css("left", innerWidth - uncorrected_rect.width - uncorrected_rect.left);
+			}
+		};
+		$G.on("resize", update_position_from_containing_bounds);
+		$menu_popup.on("update", update_position_from_containing_bounds);
+		update_position_from_containing_bounds();
+
+		const menu_id = menus_key.replace("&", "").replace(/ /g, "-").toLowerCase();
+		$menu_button.addClass(`${menu_id}-menu-button`);
 		
 		$menu_popup.hide();
 		$menu_button.html(_html(menus_key));
 		$menu_button.attr("tabIndex", -1)
-		$menu_container.on("keydown", function(e){
-			var $focused_item = $menu_popup.find(".menu-item:focus");
+		$menu_container.on("keydown", e => {
+			const $focused_item = $menu_popup.find(".menu-item:focus");
 			switch(e.keyCode){
 				case 37: // Left
 					$menu_container.prev().find(".menu-button").trigger("pointerdown");
 					break;
 				case 39: // Right
 					if($focused_item.find(".menu-item-submenu-area:not(:empty)").length){
-						$focused_item.click();
-						$(".menu-popup .menu-item").first().focus();
+						$focused_item.trigger("click");
+						$(".menu-popup .menu-item")[0].focus(); // first item
 						e.preventDefault();
 					}else{
 						$menu_container.next().find(".menu-button").trigger("pointerdown");
@@ -201,33 +220,33 @@ function $MenuBar(menus){
 					break;
 				case 40: // Down
 					if($menu_popup.is(":visible") && $focused_item.length){
-						var $next = $focused_item.next();
+						let $next = $focused_item.next();
 						while($next.length && !$next.is(".menu-item")){
 							$next = $next.next();
 						}
-						$next.focus();
+						$next[0].focus();
 					}else{
 						$menu_button.trigger("pointerdown");
-						$menu_popup.find(".menu-item").first().focus();
+						$menu_popup.find(".menu-item")[0].focus(); // first item
 					}
 					break;
 				case 38: // Up
 					if($menu_popup.is(":visible") && $focused_item.length){
-						var $prev = $focused_item.prev();
+						let $prev = $focused_item.prev();
 						while($prev.length && !$prev.is(".menu-item")){
 							$prev = $prev.prev();
 						}
-						$prev.focus();
+						$prev[0].focus();
 					}else{
 						$menu_button.trigger("pointerdown"); // or maybe do nothing?
-						$menu_popup.find(".menu-item").last().focus();
+						$menu_popup.find(".menu-item").last()[0].focus();
 					}
 					break;
 			}
 		});
-		$G.on("keydown", function(e){
-			if(e.ctrlKey){ // Ctrl+...
-				if(e.keyCode !== 17){ // anything but Ctrl
+		$G.on("keydown", e => {
+			if(e.ctrlKey || e.metaKey){ // Ctrl or Command held
+				if(e.keyCode !== 17 && e.keyCode !== 91 && e.keyCode !== 93 && e.keyCode !== 224){ // anything but Ctrl or Command pressed
 					close_menus();
 				}
 				return;
@@ -239,7 +258,7 @@ function $MenuBar(menus){
 				}
 			}
 		});
-		$menu_button.on("pointerdown pointerover", function(e){
+		$menu_button.on("pointerdown pointerover", e => {
 			if(e.type === "pointerover" && !selecting_menus){
 				return;
 			}
@@ -251,7 +270,7 @@ function $MenuBar(menus){
 			
 			close_menus();
 			
-			$menu_button.focus();
+			$menu_button[0].focus();
 			$menu_button.addClass("active");
 			$menu_popup.show();
 			$menu_popup.triggerHandler("update");
@@ -260,7 +279,7 @@ function $MenuBar(menus){
 			
 			$menus.triggerHandler("info", "");
 		});
-		$menu_button.on("pointerup", function(e){
+		$menu_button.on("pointerup", ()=> {
 			if(this_click_opened_the_menu){
 				this_click_opened_the_menu = false;
 				return;
@@ -269,7 +288,7 @@ function $MenuBar(menus){
 				close_menus();
 			}
 		});
-		$menu_button.on("release", function(e){
+		$menu_button.on("release", ()=> {
 			selecting_menus = false;
 			
 			$menu_button.removeClass("active");
@@ -277,19 +296,23 @@ function $MenuBar(menus){
 			
 			$menus.triggerHandler("default-info");
 		});
-	});
-	$G.on("keypress", function(e){
+	};
+	for (const menu_key in menus) {
+		make_menu(menu_key, menus[menu_key]);
+	}
+
+	$G.on("keypress", e => {
 		if(e.keyCode === 27){ // Esc
 			close_menus();
 		}
 	});
-	$G.on("blur", function(e){
-		// console.log("blur", e.target, document.activeElement);
+	$G.on("blur", ()=> {
+		// window.console && console.log("blur", e.target, document.activeElement);
 		close_menus();
 	});
-	$G.on("pointerdown pointerup", function(e){
+	$G.on("pointerdown pointerup", e => {
 		if($(e.target).closest(".menus, .menu-popup").length === 0){
-			// console.log(e.type, "occurred outside of menus (on ", e.target, ") so...");
+			// window.console && console.log(e.type, "occurred outside of menus (on ", e.target, ") so...");
 			close_menus();
 		}
 	});

@@ -43,7 +43,7 @@ var menus = {
 				minesweeper_.restart();
 			},
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "&Beginner",
 			checkbox: checkbox_for_difficulty(0),
@@ -71,7 +71,7 @@ var menus = {
 				},
 			},
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "&Marks (?)",
 			enabled: false,
@@ -98,7 +98,7 @@ var menus = {
 				},
 			}
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "Best &Times...",
 			enabled: false,
@@ -106,7 +106,7 @@ var menus = {
 				// TODO
 			},
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "E&xit",
 			action: function(){
@@ -122,7 +122,7 @@ var menus = {
 				// TODO
 			},
 		},
-		$MenuBar.DIVIDER,
+		MENU_DIVIDER,
 		{
 			item: "&About Minesweeper",
 			action: function(){
