@@ -37,7 +37,7 @@
 		"live-server": "^1.2.0",
 		"recursive-copy": "^2.0.9",
 		"rimraf": "^2.6.2",
-		"webamp": "1.1.1"
+		"webamp": "1.4.0"
 	},
 	"scripts": {
 		"start": "live-server",

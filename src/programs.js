@@ -132,11 +132,12 @@ function openWinamp(){
 					artist: "DJ Mike Llama",
 					title: "Llama Whippin' Intro",
 				},
-				url: "programs/winamp/mp3/llama-2.91.mp3"
+				url: "programs/winamp/mp3/llama-2.91.mp3",
+                duration: 5.322286,
 			}],
-			initialSkin: {
-				url: "programs/winamp/skins/base-2.91.wsz"
-			},
+			// initialSkin: {
+			// 	url: "programs/winamp/skins/base-2.91.wsz",
+			// },
 			enableHotkeys: true,
 			// TODO: filePickers
 		});
@@ -154,8 +155,8 @@ function openWinamp(){
 		webamp.renderWhenReady(visual_container)
 		.then(function(){
 			console.log("Webamp rendered");
-			// TODO: handle blurring (currently one of the winamp windows is always selected)
-			// (but I don't really handle blurring for regular windows yet, so maybe I should do that first!)
+			// TODO: handle blurring for taskbar
+			// also for regular windows - maybe I should do that first!
 			
 			// TODO: refactor for less hackiness
 			var $win_for_Task = $("#webamp");
