@@ -116,8 +116,16 @@ var load_winamp_bundle_if_not_loaded = function(callback){
 	if(webamp_bundle_loaded){
 		callback();
 	}else{
-		// $.getScript("winamp/lib/webamp.bundle.js", callback);
-		$.getScript("programs/winamp/lib/webamp.bundle.min.js", callback);
+		// $.getScript("programs/winamp/lib/webamp.bundle.min.js", callback);
+		// TODO: paralellize (if possible)
+		$.getScript("programs/winamp/lib/webamp.bundle.min.js", ()=> {
+			// TODO: use local js files (don't rely on any CDN)
+			$.getScript("https://unpkg.com/butterchurn@2.6.7/lib/butterchurn.min.js", ()=> {
+				$.getScript("https://unpkg.com/butterchurn-presets@2.4.7/lib/butterchurnPresets.min.js", ()=> {
+					callback();
+				});
+			});
+		});
 	}
 }
 function openWinamp(){
@@ -139,6 +147,25 @@ function openWinamp(){
 			// 	url: "programs/winamp/skins/base-2.91.wsz",
 			// },
 			enableHotkeys: true,
+            __butterchurnOptions: {
+                importButterchurn: () => Promise.resolve(window.butterchurn),
+                getPresets: () => {
+                    const presets = window.butterchurnPresets.getPresets();
+                    return Object.keys(presets).map((name) => {
+                        return {
+                            name,
+                            butterchurnPresetObject: presets[name]
+                        };
+                    });
+                },
+                butterchurnOpen: true,
+            },
+            __initialWindowLayout: {
+                main: { position: { x: 0, y: 0 } },
+                equalizer: { position: { x: 0, y: 116 } },
+                playlist: { position: { x: 0, y: 232 }, size: [0, 4] },
+                milkdrop: { position: { x: 275, y: 0 }, size: [7, 12] }
+            },
 			// TODO: filePickers
 		});
 		
