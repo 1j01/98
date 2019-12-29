@@ -99,7 +99,7 @@ function Explorer(address){
 	var win_title = document_title;
 	// TODO: focus existing window if folder is currently open
 	var $win = new $IframeWindow({
-		src: "programs/explorer/index.html" + (address ? ("?address=" + address) : ""),
+		src: "programs/explorer/index.html" + (address ? ("?address=" + encodeURIComponent(address)) : ""),
 		icon: "folder-open",
 		title: win_title,
 		innerWidth: 500,

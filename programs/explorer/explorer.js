@@ -85,7 +85,9 @@ var go_to = function(address){
 			// TODO: maybe only do this if the page fails to load?
 			// or at least don't force it
 			// maybe do it the other way around, if the archive URL fails to load, try to show an up to date version
-			address = "https://web.archive.org/web/1998/" + address;
+			if (!address.match(/^https?:\/\/(www\.)?(copy.sh)/)) {
+				address = "https://web.archive.org/web/1998/" + address;
+			}
 		}
 	}else{
 		// TODO: open html files! and other files. (check if it's a file or folder!)
