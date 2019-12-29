@@ -175,7 +175,8 @@ function openWinamp(){
 				$win_for_Task.triggerHandler("closed");
 				// alternatively: task.$task.remove();
 				// TODO: probably something like task.close()
-				$win_for_Task.remove(); // TODO: a better way to destroy Webamp?
+				webamp.dispose();
+				$win_for_Task.remove();
 			});
 			webamp.onMinimize(function(){
 				// TODO: refactor
