@@ -119,9 +119,8 @@ var load_winamp_bundle_if_not_loaded = function(callback){
 		// $.getScript("programs/winamp/lib/webamp.bundle.min.js", callback);
 		// TODO: paralellize (if possible)
 		$.getScript("programs/winamp/lib/webamp.bundle.min.js", ()=> {
-			// TODO: use local js files (don't rely on any CDN)
-			$.getScript("https://unpkg.com/butterchurn@2.6.7/lib/butterchurn.min.js", ()=> {
-				$.getScript("https://unpkg.com/butterchurn-presets@2.4.7/lib/butterchurnPresets.min.js", ()=> {
+			$.getScript("programs/winamp/lib/butterchurn.min.js", ()=> {
+				$.getScript("programs/winamp/lib/butterchurnPresets.min.js", ()=> {
 					callback();
 				});
 			});
