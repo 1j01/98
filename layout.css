@@ -122,7 +122,7 @@ html, body {
 .start-button,
 .tasks,
 .task,
-.window,
+.window:not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window),
 .window-titlebar,
 .window-title {
 	cursor: default;
