@@ -28,8 +28,17 @@ function $Window(options){
 		$w.close();
 	});
 	$w.$maximize.on("click", function(){
+		// TODO: do something legitimate
 		$w.css({"width": "100vw", "height": "100vh"});
 		$w.applyBounds();
+		$w.css("transform", "");
+	});
+	$w.$minimize.on("click", function(){
+		// TODO: do something legitimate
+		const scale_match = $w[0].style.transform.match(/scale\(([\d\.]+)\)/);
+		const scale = scale_match ? scale_match[1] : 1;
+		console.log(scale_match, $w[0].style.transform, $w.css("transform"));
+		$w.css("transform", `scale(${scale*0.9})`);
 	});
 	$w.$title_area.on("mousedown selectstart", ".window-button", function(e){
 		e.preventDefault();
