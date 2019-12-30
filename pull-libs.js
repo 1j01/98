@@ -9,15 +9,16 @@ const copy = (from, toDir)=> {
 	copySync(from, to);
 };
 
-copy("node_modules/webamp/built/webamp.bundle.js", "programs/winamp/lib/");
-copy("node_modules/webamp/built/webamp.bundle.min.js", "programs/winamp/lib/");
-copy("node_modules/webamp/built/webamp.bundle.min.js.map", "programs/winamp/lib/");
 copy("node_modules/browserfs/dist/browserfs.js", "lib/");
 copy("node_modules/browserfs/dist/browserfs.js.map", "lib/");
 copy("node_modules/browserfs/dist/browserfs.min.js", "lib/");
 copy("node_modules/browserfs/dist/browserfs.min.js.map", "lib/");
+copy("node_modules/webamp/built/webamp.bundle.js", "programs/winamp/lib/");
+copy("node_modules/webamp/built/webamp.bundle.min.js", "programs/winamp/lib/");
+copy("node_modules/webamp/built/webamp.bundle.min.js.map", "programs/winamp/lib/");
 copy("node_modules/butterchurn/lib/butterchurn.min.js", "programs/winamp/lib/");
 copy("node_modules/butterchurn-presets/lib/butterchurnPresets.min.js", "programs/winamp/lib/");
+
 console.log(`Done.
 
 Note: This script doesn't handle updating npm dependencies, it just copies scripts into the repo.`);
