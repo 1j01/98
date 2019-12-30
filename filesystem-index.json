@@ -267,7 +267,9 @@
   "layout.css": null,
   "lib": {
     "browserfs.js": null,
+    "browserfs.js.map": null,
     "browserfs.min.js": null,
+    "browserfs.min.js.map": null,
     "jquery.min.js": null,
     "konami.js": null,
     "pep.js": null
@@ -665,8 +667,11 @@
     },
     "winamp": {
       "lib": {
+        "butterchurn.min.js": null,
+        "butterchurnPresets.min.js": null,
         "webamp.bundle.js": null,
-        "webamp.bundle.min.js": null
+        "webamp.bundle.min.js": null,
+        "webamp.bundle.min.js.map": null
       },
       "mp3": {
         "llama-2.91.mp3": null
@@ -677,6 +682,7 @@
       }
     }
   },
+  "pull-libs.js": null,
   "README.md": null,
   "safari-pinned-tab.svg": null,
   "site.webmanifest": null,
