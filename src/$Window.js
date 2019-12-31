@@ -29,19 +29,8 @@ function $Window(options){
 	});
 	let before_maximize;
 	$w.$maximize.on("click", function(){
-		const before_rect = $w.$titlebar[0].getBoundingClientRect();
-		if ($w.hasClass("maximized")) {
-			$w.removeClass("maximized");
-			$w.css({width: "", height: ""});
-			if (before_maximize) {
-				$w.css({
-					left: before_maximize.left,
-					top: before_maximize.top,
-					width: before_maximize.width,
-					height: before_maximize.height,
-				});
-			}
-		} else {
+
+		const instantly_maximize = ()=> {
 			before_maximize = {
 				left: $w.css("left"),
 				top: $w.css("top"),
@@ -56,10 +45,39 @@ function $Window(options){
 				width: "100vw",
 				height: `calc(100vh - ${$(".taskbar").height() + 1}px)`,
 			});
-		}
+		};
+		const instantly_unmaximize = ()=> {
+			$w.removeClass("maximized");
+			$w.css({width: "", height: ""});
+			if (before_maximize) {
+				$w.css({
+					left: before_maximize.left,
+					top: before_maximize.top,
+					width: before_maximize.width,
+					height: before_maximize.height,
+				});
+			}
+		};
+
+		const before_rect = $w.$titlebar[0].getBoundingClientRect();
+		let after_rect;
 		$w.css("transform", "");
-		const after_rect = $w.$titlebar[0].getBoundingClientRect();
-		$w.animateTitlebar(before_rect, after_rect);
+		if ($w.hasClass("maximized")) {
+			instantly_unmaximize();
+			after_rect = $w.$titlebar[0].getBoundingClientRect();
+			instantly_maximize();
+		} else {
+			instantly_maximize();
+			after_rect = $w.$titlebar[0].getBoundingClientRect();
+			instantly_unmaximize();
+		}
+		$w.animateTitlebar(before_rect, after_rect, ()=> {
+			if ($w.hasClass("maximized")) {
+				instantly_unmaximize();
+			} else {
+				instantly_maximize();
+			}
+		});
 	});
 	$w.$minimize.on("click", function(){
 		// TODO: do something legitimate
