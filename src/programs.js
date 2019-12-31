@@ -252,22 +252,12 @@ function openWinamp(file_path){
 				// TODO: refactor
 				winamp_task.$task.trigger("click");
 			});
-			let lastTrackInfo;
 			const updateTitle = (trackInfo)=> {
-				trackInfo = trackInfo || lastTrackInfo;
-				lastTrackInfo = trackInfo;
-
+				// ignoring trackInfo && trackInfo.metaData
 				let taskTitle = "Winamp 2.91";
-				if (trackInfo && trackInfo.metaData) {
-					// TODO: include position in playlist, e.g. "1. "
-					// TODO: show filename by default if no metadata
-					// TODO: handle when only artist exists?
-					if (trackInfo.metaData.title) {
-						taskTitle = `${trackInfo.metaData.title} - Winamp`;
-						if (trackInfo.metaData.artist) {
-							taskTitle = `${trackInfo.metaData.artist} - ${taskTitle}`;
-						}
-					}
+				const $cell = $fake_win_for_winamp_task.find(".playlist-track-titles .track-cell.current");
+				if($cell.length){
+					taskTitle = `${$cell.text()} - Winamp`;
 					switch (webamp.getMediaStatus()) {
 						case "STOPPED":
 							taskTitle = `${taskTitle} [Stopped]`
