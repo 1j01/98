@@ -249,13 +249,25 @@ html, body {
 	display: block !important;
 	float: right;
 }
+.window-close-button::before,
+.window-maximize-button::before,
+.window-minimize-button::before {
+	color: transparent;
+	font-size: 1px;
+	background: url("images/titlebar-buttons.png");
+	display: block;
+	width: 15px;
+	height: 13px;
+}
 .window-close-button::before {
 	content: '🗙';
 	position: relative;
+	background-position: -30px;
 }
 .window-maximize-button::before {
 	content: '🗖';
 	position: relative;
+	background-position: -15px;
 }
 .maximized .window-maximize-button::before {
 	content: '🗗';
