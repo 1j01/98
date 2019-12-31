@@ -127,13 +127,29 @@ var load_winamp_bundle_if_not_loaded = function(callback){
 		});
 	}
 }
-function openWinamp(){
-	if($("#webamp").length){
-		// TODO: show & focus existing instance of webamp
+
+let webamp;
+let winamp_task;
+let $fake_win_for_winamp_task;
+function openWinamp(file_path){
+	const whenOpen = ()=> {
+		// show if minimized... TODO: refactor!
+		// console.log($fake_win_for_winamp_task.is(":visible"), $fake_win_for_winamp_task)
+		if ($fake_win_for_winamp_task.css("display") === "none") {
+			winamp_task.$task.trigger("click");
+		}
+
+		$fake_win_for_winamp_task.bringToFront()
+
+		// TODO: focus
+		// TODO: open files
+	}
+	if(winamp_task){
+		whenOpen()
 		return;
 	}
 	load_winamp_bundle_if_not_loaded(function(){
-		const webamp = new Webamp({
+		webamp = new Webamp({
 			initialTracks: [{
 				metaData: {
 					artist: "DJ Mike Llama",
@@ -185,49 +201,54 @@ function openWinamp(){
 			// also for regular windows - maybe I should do that first!
 			
 			// TODO: refactor for less hackiness
-			var $win_for_Task = $("#webamp");
-			$win_for_Task.title = function(title){
+			$fake_win_for_winamp_task = $("#webamp");
+			$fake_win_for_winamp_task.title = function(title){
 				if(title !== undefined){
 					// this probably shouldn't ever happen
 				}else{
 					return "Winamp";
 				}
 			};
-			$win_for_Task.icon_name = "winamp2";
-			var task = new Task($win_for_Task);
+			$fake_win_for_winamp_task.icon_name = "winamp2";
+			winamp_task = new Task($fake_win_for_winamp_task);
 			webamp.onClose(function(){
 				// simulating $Window.close() but not allowing canceling close event in this case (generally used *by* an application (for "Save changes?"), not outside of it)
-				$win_for_Task.triggerHandler("close");
-				$win_for_Task.triggerHandler("closed");
-				// alternatively: task.$task.remove();
-				// TODO: probably something like task.close()
+				$fake_win_for_winamp_task.triggerHandler("close");
+				$fake_win_for_winamp_task.triggerHandler("closed");
+				// alternatively: winamp_task.$task.remove();
+				// TODO: probably something like winamp_task.close()
 				webamp.dispose();
-				$win_for_Task.remove();
+				$fake_win_for_winamp_task.remove();
+
+				webamp = null;
+				winamp_task = null;
+				$fake_win_for_winamp_task = null;
 			});
 			webamp.onMinimize(function(){
 				// TODO: refactor
-				task.$task.trigger("click");
+				winamp_task.$task.trigger("click");
 			});
 			
 			// Bring window to front, initially and when clicked
 			// copied from $Window.js, with `left: 0, top: 0` added
 			// (because it's a container rather than a window,
 			// and needs the left top origin for positioning the window)
-			$win_for_Task.css({
+			$fake_win_for_winamp_task.css({
 				position: "absolute",
 				left: 0,
 				top: 0,
 				zIndex: $Window.Z_INDEX++
 			});
-			task.$task.trigger("click"); // TODO: don't click a toggle button, set/assert the state in a clean way
-			$win_for_Task.bringToFront = function(){
-				$win_for_Task.css({
+			winamp_task.$task.trigger("click"); // TODO: don't click a toggle button, set/assert the state in a clean way
+			$fake_win_for_winamp_task.bringToFront = function(){
+				$fake_win_for_winamp_task.css({
 					zIndex: $Window.Z_INDEX++
 				});
 			};
-			$win_for_Task.on("pointerdown", function(){
-				$win_for_Task.bringToFront();
+			$fake_win_for_winamp_task.on("pointerdown", function(){
+				$fake_win_for_winamp_task.bringToFront();
 			});
+			whenOpen()
 		}, function(error){
 			// TODO: show_error_message("Failed to load Webamp:", error);
 			alert("Failed to render Webamp:\n\n" + error);
@@ -235,6 +256,7 @@ function openWinamp(){
 		});
 	});
 }
+// openWinamp.acceptsFilePaths = true;
 
 /*
 function saveAsDialog(){
