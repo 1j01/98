@@ -142,7 +142,28 @@ function openWinamp(file_path){
 		$fake_win_for_winamp_task.bringToFront()
 
 		// TODO: focus
-		// TODO: open files
+		// - main window or last window?
+
+		if (file_path) {
+			withFilesystem(function(){
+				var fs = BrowserFS.BFSRequire("fs");
+				fs.readFile(file_path, function(err, buffer){
+					if(err){
+						return alert(err);
+					}
+					const byte_array = new Uint8Array(buffer);
+					// TODO: detect mime type? or can i get away with not specifying it?
+					const blob = new Blob([byte_array], {type: 'audio/mpeg'});
+					const blob_url = URL.createObjectURL(blob);
+					// TODO: revokeObjectURL
+
+					// TODO: what's the behavior regarding autoplaying & playlist updating?
+					webamp.appendTracks([
+						{url: blob_url}
+					]);
+				});
+			});
+		}
 	}
 	if(winamp_task){
 		whenOpen()
@@ -256,7 +277,7 @@ function openWinamp(file_path){
 		});
 	});
 }
-// openWinamp.acceptsFilePaths = true;
+openWinamp.acceptsFilePaths = true;
 
 /*
 function saveAsDialog(){
