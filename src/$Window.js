@@ -29,7 +29,6 @@ function $Window(options){
 	});
 	let before_maximize;
 	$w.$maximize.on("click", function(){
-		// TODO: account for taskbar
 		if ($w.hasClass("maximized")) {
 			$w.removeClass("maximized");
 			$w.css({width: "", height: ""});
@@ -49,9 +48,13 @@ function $Window(options){
 				height: $w.css("height"),
 			};
 			$w.addClass("maximized");
-			$w.css({width: "100vw", height: "100vh"});
+			$w.css({
+				top: 0,
+				left: 0,
+				width: "100vw",
+				height: `calc(100vh - ${$(".taskbar").height() + 1}px)`,
+			});
 		}
-		$w.applyBounds();
 		$w.css("transform", "");
 	});
 	$w.$minimize.on("click", function(){
