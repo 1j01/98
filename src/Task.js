@@ -32,10 +32,11 @@ function Task($win){
 				}
 			}else{
 				const before_rect = $win.$titlebar[0].getBoundingClientRect();
-				$win.hide();
-				$win.triggerHandler("blur");
 				const after_rect = $task[0].getBoundingClientRect();
-				$win.animateTitlebar(before_rect, after_rect);
+				$win.animateTitlebar(before_rect, after_rect, ()=> {
+					$win.hide();
+					$win.triggerHandler("blur");
+				});
 			}
 		} else {
 			if($task.hasClass("selected")){
