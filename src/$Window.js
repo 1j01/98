@@ -257,7 +257,7 @@ function $Window(options){
 				width: to.width,
 				height: to.height,
 			});
-		});
+		}, 5);
 		const tid = setTimeout(()=> {
 			$eye_leader.remove();
 			callback();
