@@ -29,6 +29,7 @@ function $Window(options){
 	});
 	let before_maximize;
 	$w.$maximize.on("click", function(){
+		const before_rect = $w.$titlebar[0].getBoundingClientRect();
 		if ($w.hasClass("maximized")) {
 			$w.removeClass("maximized");
 			$w.css({width: "", height: ""});
@@ -47,6 +48,7 @@ function $Window(options){
 				width: $w.css("width"),
 				height: $w.css("height"),
 			};
+			
 			$w.addClass("maximized");
 			$w.css({
 				top: 0,
@@ -56,13 +58,19 @@ function $Window(options){
 			});
 		}
 		$w.css("transform", "");
+		const after_rect = $w.$titlebar[0].getBoundingClientRect();
+		$w.animateTitlebar(before_rect, after_rect);
 	});
 	$w.$minimize.on("click", function(){
 		// TODO: do something legitimate
 		const scale_match = $w[0].style.transform.match(/scale\(([\d\.]+)\)/);
 		const scale = scale_match ? scale_match[1] : 1;
 		// console.log(scale_match, $w[0].style.transform, $w.css("transform"));
+
+		const before_rect = $w.$titlebar[0].getBoundingClientRect();
 		$w.css("transform", `scale(${scale*0.9})`);
+		const after_rect = $w.$titlebar[0].getBoundingClientRect();
+		$w.animateTitlebar(before_rect, after_rect);
 	});
 	$w.$title_area.on("mousedown selectstart", ".window-button", function(e){
 		e.preventDefault();
@@ -222,6 +230,37 @@ function $Window(options){
 		old_$icon.replaceWith($w.$icon);
 		$w.triggerHandler("icon-change");
 		return $w;
+	};
+	$w.animateTitlebar = function(from, to) {
+		const $eye_leader = $w.$titlebar.clone(true);
+		$eye_leader.find("button").remove();
+		$eye_leader.appendTo("body");
+		const durationMS = 200; // TODO: how long?
+		const duration = `${durationMS}ms`;
+		$eye_leader.css({
+			transition: `left ${duration} linear, top ${duration} linear, width ${duration} linear, height ${duration} linear`,
+			position: "absolute",
+			zIndex: 10000000,
+			pointerEvents: "none",
+			left: from.left,
+			top: from.top,
+			width: from.width,
+			height: from.height,
+		});
+		requestAnimationFrame(()=> {
+			$eye_leader.css({
+				left: to.left,
+				top: to.top,
+				width: to.width,
+				height: to.height,
+			});
+		});
+		$eye_leader.on("transitionend", ()=> {
+			$eye_leader.remove();
+		});
+		setTimeout(()=> {
+			$eye_leader.remove();
+		}, durationMS * 1.2);
 	};
 	$w.close = function(force){
 		if(!force){
