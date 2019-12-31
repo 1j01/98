@@ -202,6 +202,9 @@ function openWinamp(file_path){
                 playlist: { position: { x: 0, y: 232 }, size: [0, 4] },
                 milkdrop: { position: { x: 275, y: 0 }, size: [7, 12] }
             },
+			// TODO: handleTrackDropEvent: (event)=> {
+				
+			// },
 			// TODO: filePickers
 		});
 		
@@ -249,6 +252,35 @@ function openWinamp(file_path){
 				// TODO: refactor
 				winamp_task.$task.trigger("click");
 			});
+			let lastTrackInfo;
+			const updateTitle = (trackInfo)=> {
+				trackInfo = trackInfo || lastTrackInfo;
+				lastTrackInfo = trackInfo;
+
+				let taskTitle = "Winamp 2.91";
+				if (trackInfo && trackInfo.metaData) {
+					// TODO: include position in playlist, e.g. "1. "
+					// TODO: show filename by default if no metadata
+					// TODO: handle when only artist exists?
+					if (trackInfo.metaData.title) {
+						taskTitle = `${trackInfo.metaData.title} - Winamp`;
+						if (trackInfo.metaData.artist) {
+							taskTitle = `${trackInfo.metaData.artist} - ${taskTitle}`;
+						}
+					}
+					switch (webamp.getMediaStatus()) {
+						case "STOPPED":
+							taskTitle = `${taskTitle} [Stopped]`
+							break;
+						case "PAUSED":
+							taskTitle = `${taskTitle} [Paused]`
+							break;
+					}
+				}
+				winamp_task.$task.find(".title").text(taskTitle)
+			};
+			webamp.onTrackDidChange(updateTitle);
+			updateTitle();
 			
 			// Bring window to front, initially and when clicked
 			// copied from $Window.js, with `left: 0, top: 0` added
