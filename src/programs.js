@@ -190,43 +190,46 @@ function openWinamp(file_path){
 		return;
 	}
 	load_winamp_bundle_if_not_loaded(includeButterchurn, function(){
-		webamp = new Webamp({
+		const webamp_options = {
 			initialTracks: [{
 				metaData: {
 					artist: "DJ Mike Llama",
 					title: "Llama Whippin' Intro",
 				},
 				url: "programs/winamp/mp3/llama-2.91.mp3",
-                duration: 5.322286,
+				duration: 5.322286,
 			}],
 			// initialSkin: {
 			// 	url: "programs/winamp/skins/base-2.91.wsz",
 			// },
 			enableHotkeys: true,
-            __butterchurnOptions: includeButterchurn && {
-                importButterchurn: () => Promise.resolve(window.butterchurn),
-                getPresets: () => {
-                    const presets = window.butterchurnPresets.getPresets();
-                    return Object.keys(presets).map((name) => {
-                        return {
-                            name,
-                            butterchurnPresetObject: presets[name]
-                        };
-                    });
-                },
-                butterchurnOpen: true,
-            },
-            __initialWindowLayout: includeButterchurn && {
-                main: { position: { x: 0, y: 0 } },
-                equalizer: { position: { x: 0, y: 116 } },
-                playlist: { position: { x: 0, y: 232 }, size: [0, 4] },
-                milkdrop: { position: { x: 275, y: 0 }, size: [7, 12] }
-            },
 			// TODO: handleTrackDropEvent: (event)=> {
 				
 			// },
 			// TODO: filePickers
-		});
+		};
+		if (includeButterchurn) {
+			webamp_options.__butterchurnOptions = {
+				importButterchurn: () => Promise.resolve(window.butterchurn),
+				getPresets: () => {
+					const presets = window.butterchurnPresets.getPresets();
+					return Object.keys(presets).map((name) => {
+						return {
+							name,
+							butterchurnPresetObject: presets[name]
+						};
+					});
+				},
+				butterchurnOpen: true,
+			};
+			webamp_options.__initialWindowLayout = {
+				main: { position: { x: 0, y: 0 } },
+				equalizer: { position: { x: 0, y: 116 } },
+				playlist: { position: { x: 0, y: 232 }, size: [0, 4] },
+				milkdrop: { position: { x: 275, y: 0 }, size: [7, 12] }
+			};
+		}
+		webamp = new Webamp(webamp_options);
 		
 		var visual_container = document.createElement("div");
 		visual_container.classList.add("webamp-visual-container");
