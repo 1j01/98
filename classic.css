@@ -181,13 +181,15 @@ button.selected {
 /* XXX: complicatedly avoiding applying to webamp windows */
 .window:not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window):not(#playlist-window-shade) {
 	background: #c0c0c0;
+}
+.window:not(.maximized):not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window):not(#playlist-window-shade) {
 	border-top: 1px solid #dfdfdf;
 	border-left: 1px solid #dfdfdf;
 	border-right: 1px solid #000;
 	border-bottom: 1px solid #000;
 	padding: 2px;
 }
-.window:not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window):not(#playlist-window-shade)::after {
+.window:not(.maximized):not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window):not(#playlist-window-shade)::after {
 	content: '';
 	pointer-events: none;
 	position: absolute;
