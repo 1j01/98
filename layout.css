@@ -122,7 +122,7 @@ html, body {
 .start-button,
 .tasks,
 .task,
-.window:not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window),
+.window:not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window):not(#playlist-window-shade),
 .window-titlebar,
 .window-title {
 	cursor: default;
@@ -132,7 +132,7 @@ html, body {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
-.window:not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window) {
+.window:not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window):not(#playlist-window-shade) {
 	display: flex;
 	flex-direction: column;
 }
