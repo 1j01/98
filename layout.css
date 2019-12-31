@@ -249,33 +249,39 @@ html, body {
 	display: block !important;
 	float: right;
 }
-.window-close-button::before,
-.window-maximize-button::before,
-.window-minimize-button::before {
-	color: transparent;
-	font-size: 1px;
-	background: url("images/titlebar-buttons.png");
+.window-close-button,
+.window-maximize-button,
+.window-minimize-button {
+	background-image: url("images/titlebar-buttons.png");
 	display: block;
-	width: 15px;
-	height: 13px;
+	width: 16px;
+	height: 14px;
 }
-.window-close-button::before {
-	content: '🗙';
-	position: relative;
-	background-position: -30px;
+
+.window-close-button {
+	background-position: calc(-3 * 13px);
 }
-.window-maximize-button::before {
-	content: '🗖';
-	position: relative;
-	background-position: -15px;
+.window-maximize-button {
+	background-position: calc(-1 * 13px);
 }
-.maximized .window-maximize-button::before {
-	content: '🗗';
-	position: relative;
+.maximized .window-maximize-button {
+	background-position: calc(-2 * 13px);
 }
-.window-minimize-button::before {
-	content: '🗕';
-	position: relative;
+.window-minimize-button {
+	background-position: calc(-0 * 13px);
+}
+
+.window-close-button:hover:active {
+	background-position: calc(-3 * 13px + 1px) 2px;
+}
+.window-maximize-button:hover:active {
+	background-position: calc(-1 * 13px + 1px) 2px;
+}
+.maximized .window-maximize-button:hover:active {
+	background-position: calc(-2 * 13px + 1px) 2px;
+}
+.window-minimize-button:hover:active {
+	background-position: calc(-0 * 13px + 1px) 2px;
 }
 
 .window-content .button-group {

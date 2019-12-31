@@ -222,7 +222,10 @@ button.selected {
 	padding-left: 2px;
 }
 .window-button {
-	margin: 2px;
+	margin: 2px 0;
+}
+.window-close-button {
+	margin-left: 2px;
 }
 .window-content {
 	font-family: Arial, sans-serif;
