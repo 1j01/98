@@ -131,18 +131,17 @@ var load_winamp_bundle_if_not_loaded = function(callback){
 let webamp;
 let winamp_task;
 let $fake_win_for_winamp_task;
+// TODO: support opening multiple files at once
 function openWinamp(file_path){
 	const whenOpen = ()=> {
 		// show if minimized... TODO: refactor!
-		// console.log($fake_win_for_winamp_task.is(":visible"), $fake_win_for_winamp_task)
 		if ($fake_win_for_winamp_task.css("display") === "none") {
 			winamp_task.$task.trigger("click");
 		}
 
 		$fake_win_for_winamp_task.bringToFront()
 
-		// TODO: focus
-		// - main window or last window?
+		// TODO: focus last focused winamp window
 
 		if (file_path) {
 			withFilesystem(function(){
@@ -152,13 +151,11 @@ function openWinamp(file_path){
 						return alert(err);
 					}
 					const byte_array = new Uint8Array(buffer);
-					// TODO: detect mime type? or can i get away with not specifying it?
-					const blob = new Blob([byte_array], {type: 'audio/mpeg'});
+					const blob = new Blob([byte_array]);
 					const blob_url = URL.createObjectURL(blob);
 					// TODO: revokeObjectURL
 
-					// TODO: what's the behavior regarding autoplaying & playlist updating?
-					webamp.appendTracks([
+					webamp.setTracksToPlay([
 						{url: blob_url}
 					]);
 				});
