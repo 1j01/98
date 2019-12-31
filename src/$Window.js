@@ -70,7 +70,10 @@ function $Window(options){
 		const before_rect = $w.$titlebar[0].getBoundingClientRect();
 		$w.css("transform", `scale(${scale*0.9})`);
 		const after_rect = $w.$titlebar[0].getBoundingClientRect();
-		$w.animateTitlebar(before_rect, after_rect);
+		$w.css("transform", `scale(${scale})`);
+		$w.animateTitlebar(before_rect, after_rect, ()=> {
+			$w.css("transform", `scale(${scale*0.9})`);
+		});
 	});
 	$w.$title_area.on("mousedown selectstart", ".window-button", function(e){
 		e.preventDefault();
@@ -231,7 +234,7 @@ function $Window(options){
 		$w.triggerHandler("icon-change");
 		return $w;
 	};
-	$w.animateTitlebar = function(from, to) {
+	$w.animateTitlebar = function(from, to, callback=()=>{}) {
 		const $eye_leader = $w.$titlebar.clone(true);
 		$eye_leader.find("button").remove();
 		$eye_leader.appendTo("body");
@@ -247,7 +250,7 @@ function $Window(options){
 			width: from.width,
 			height: from.height,
 		});
-		requestAnimationFrame(()=> {
+		setTimeout(()=> {
 			$eye_leader.css({
 				left: to.left,
 				top: to.top,
@@ -255,12 +258,15 @@ function $Window(options){
 				height: to.height,
 			});
 		});
-		$eye_leader.on("transitionend", ()=> {
+		const tid = setTimeout(()=> {
 			$eye_leader.remove();
-		});
-		setTimeout(()=> {
-			$eye_leader.remove();
+			callback();
 		}, durationMS * 1.2);
+		$eye_leader.on("transitionend animationcancel", ()=> {
+			$eye_leader.remove();
+			clearTimeout(tid);
+			callback();
+		});
 	};
 	$w.close = function(force){
 		if(!force){
