@@ -80,18 +80,11 @@ function $Window(options){
 		});
 	});
 	$w.$minimize.on("click", function(){
-		// TODO: do something legitimate
-		const scale_match = $w[0].style.transform.match(/scale\(([\d\.]+)\)/);
-		const scale = scale_match ? scale_match[1] : 1;
-		// console.log(scale_match, $w[0].style.transform, $w.css("transform"));
-
-		const before_rect = $w.$titlebar[0].getBoundingClientRect();
-		$w.css("transform", `scale(${scale*0.9})`);
-		const after_rect = $w.$titlebar[0].getBoundingClientRect();
-		$w.css("transform", `scale(${scale})`);
-		$w.animateTitlebar(before_rect, after_rect, ()=> {
-			$w.css("transform", `scale(${scale*0.9})`);
-		});
+		// TODO: refactor
+		$w.__$task.trigger("click");
+		if ($w.__$task.hasClass("selected")) {
+			$w.__$task.trigger("click");
+		}
 	});
 	$w.$title_area.on("mousedown selectstart", ".window-button", function(e){
 		e.preventDefault();
