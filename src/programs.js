@@ -156,7 +156,10 @@ function openWinamp(file_path){
 					// TODO: revokeObjectURL
 
 					webamp.setTracksToPlay([
-						{url: blob_url}
+						{
+							url: blob_url,
+							defaultName: file_name_from_path(file_path).replace(/\.[a-z0-9]+$/i, ""),
+						}
 					]);
 				});
 			});
