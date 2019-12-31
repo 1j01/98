@@ -110,29 +110,49 @@ function Explorer(address){
 Explorer.acceptsFilePaths = true;
 
 var webamp_bundle_loaded = false;
-var load_winamp_bundle_if_not_loaded = function(callback){
+var load_winamp_bundle_if_not_loaded = function(includeButterchurn, callback){
 	// FIXME: webamp_bundle_loaded not actually set to true when loaded
 	// TODO: also maybe handle already-loading-but-not-done
 	if(webamp_bundle_loaded){
 		callback();
 	}else{
-		// $.getScript("programs/winamp/lib/webamp.bundle.min.js", callback);
 		// TODO: paralellize (if possible)
 		$.getScript("programs/winamp/lib/webamp.bundle.min.js", ()=> {
-			$.getScript("programs/winamp/lib/butterchurn.min.js", ()=> {
-				$.getScript("programs/winamp/lib/butterchurnPresets.min.js", ()=> {
-					callback();
+			if (includeButterchurn) {
+				$.getScript("programs/winamp/lib/butterchurn.min.js", ()=> {
+					$.getScript("programs/winamp/lib/butterchurnPresets.min.js", ()=> {
+						callback();
+					});
 				});
-			});
+			} else {
+				callback();
+			}
 		});
 	}
 }
+
+// from https://github.com/jberg/butterchurn/blob/master/src/isSupported.js
+const isButterchurnSupported = () => {
+	const canvas = document.createElement('canvas');
+	let gl;
+	try {
+		gl = canvas.getContext('webgl2');
+	} catch (x) {
+		gl = null;
+	}
+
+	const webGL2Supported = !!gl;
+	const audioApiSupported = !!(window.AudioContext || window.webkitAudioContext);
+
+	return webGL2Supported && audioApiSupported;
+};
 
 let webamp;
 let winamp_task;
 let $fake_win_for_winamp_task;
 // TODO: support opening multiple files at once
 function openWinamp(file_path){
+	const includeButterchurn = isButterchurnSupported();
 	const whenOpen = ()=> {
 		// show if minimized... TODO: refactor!
 		if ($fake_win_for_winamp_task.css("display") === "none") {
@@ -169,7 +189,7 @@ function openWinamp(file_path){
 		whenOpen()
 		return;
 	}
-	load_winamp_bundle_if_not_loaded(function(){
+	load_winamp_bundle_if_not_loaded(includeButterchurn, function(){
 		webamp = new Webamp({
 			initialTracks: [{
 				metaData: {
@@ -183,7 +203,7 @@ function openWinamp(file_path){
 			// 	url: "programs/winamp/skins/base-2.91.wsz",
 			// },
 			enableHotkeys: true,
-            __butterchurnOptions: {
+            __butterchurnOptions: includeButterchurn && {
                 importButterchurn: () => Promise.resolve(window.butterchurn),
                 getPresets: () => {
                     const presets = window.butterchurnPresets.getPresets();
@@ -196,7 +216,7 @@ function openWinamp(file_path){
                 },
                 butterchurnOpen: true,
             },
-            __initialWindowLayout: {
+            __initialWindowLayout: includeButterchurn && {
                 main: { position: { x: 0, y: 0 } },
                 equalizer: { position: { x: 0, y: 116 } },
                 playlist: { position: { x: 0, y: 232 }, size: [0, 4] },
