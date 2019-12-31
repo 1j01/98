@@ -22,10 +22,12 @@ function Task($win){
 					$win.hide();
 					$win.animateTitlebar(before_rect, after_rect, ()=> {
 						$win.show();
+						$win.bringToFront();
 						$win.triggerHandler("focus");
 					});
 				} else {
 					$win.show();
+					$win.bringToFront();
 					$win.triggerHandler("focus");
 				}
 			}else{
@@ -38,6 +40,7 @@ function Task($win){
 		} else {
 			if($task.hasClass("selected")){
 				$win.show();
+				$win.bringToFront();
 				$win.triggerHandler("focus");
 			} else {
 				$win.hide();
