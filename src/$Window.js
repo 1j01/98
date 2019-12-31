@@ -175,6 +175,9 @@ function $Window(options){
 		if($(e.target).is("button")){
 			return;
 		}
+		if ($w.hasClass("maximized")) {
+			return;
+		}
 		drag_offset_x = e.clientX - $w.position().left;
 		drag_offset_y = e.clientY - $w.position().top;
 		$G.on("pointermove", drag);
