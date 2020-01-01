@@ -23,9 +23,6 @@
 
 		* Could *maybe* use [`<base>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base) for `<img>`s, but all styles (that aren't shared) would have to be inline, and I think it would be better just to try to make everything canvases
 
-	* Can't drag outside of the window bounds when drawing or making a selection
-	([`setCapture`](https://developer.mozilla.org/en-US/docs/Web/API/Element/setCapture) could make this work)
-
 * Integrate [Pipes screensaver](https://github.com/1j01/pipes)
 
 * Integrate Blue Screen of Death similar to http://fakebsod.com/generic
