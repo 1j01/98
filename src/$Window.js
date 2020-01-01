@@ -40,6 +40,9 @@ function $Window(options){
 	$w.onClosed = makeSimpleListenable("closed");
 
 	$w.focus = ()=> {
+		if (window.focusedWindow === $w) {
+			return;
+		}
 		window.focusedWindow && focusedWindow.blur();
 		$w.bringToFront();
 		$w.addClass("focused");
@@ -47,15 +50,18 @@ function $Window(options){
 		$eventTarget.triggerHandler("focus");
 	};
 	$w.blur = ()=> {
+		if (window.focusedWindow !== $w) {
+			return;
+		}
 		$w.removeClass("focused");
 		// TODO: document.activeElement && document.activeElement.blur()?
 		$eventTarget.triggerHandler("blur");
+
+		window.focusedWindow = null;
 	};
 
-	$w.on("focusin iframe-focusin pointerdown", function(e){
-		if (!$w.hasClass("focused")) {
-			$w.focus();
-		}
+	$w.on("focusin pointerdown", function(e){
+		$w.focus();
 	});
 	$G.on("pointerdown", (e)=> {
 		if (

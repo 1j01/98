@@ -10,19 +10,15 @@ function $IframeWindow(options){
 	var iframe = $win.iframe = $iframe[0];
 	iframe.$window = $win;
 
-	var focus_window_contents = function(e){
-		if(!iframe.contentWindow){
+	var focus_window_contents = function(){
+		if (!iframe.contentWindow) {
 			return;
 		}
-		
-		$win.bringToFront();
 		
 		iframe.contentWindow.focus();
 		setTimeout(function(){
 			iframe.contentWindow.focus();
 		});
-
-		$win.triggerHandler("iframe-focusin");
 	};
 	$win.onFocus(focus_window_contents);
 	
@@ -49,11 +45,12 @@ function $IframeWindow(options){
 				$("body").removeClass("loading-program");
 			}
 			$win.show();
-			iframe.contentWindow.focus();
+			$win.focus();
+			// focus_window_contents();
 			
 			var $contentWindow = $(iframe.contentWindow);
 			$contentWindow.on("pointerdown click", function(e){
-				focus_window_contents(e);
+				$win.focus();
 			});
 			// We want to disable pointer events for other iframes, but not this one
 			$contentWindow.on("pointerdown", function(e){

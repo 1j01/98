@@ -280,6 +280,9 @@ function openWinamp(file_path){
 				});
 			};
 			winamp_interface.focus = ()=> {
+				if (window.focusedWindow === winamp_interface) {
+					return;
+				}
 				window.focusedWindow && focusedWindow.blur();
 				winamp_interface.bringToFront();
 				// TODO: trigger click?
@@ -289,8 +292,13 @@ function openWinamp(file_path){
 				window.focusedWindow = winamp_interface;
 			};
 			winamp_interface.blur = ()=> {
+				if (window.focusedWindow !== winamp_interface) {
+					return;
+				}
 				// TODO
 				$eventTarget.triggerHandler("blur");
+
+				window.focusedWindow = null;
 			};
 			winamp_interface.minimize = ()=> {
 				// TODO: are these actually useful or does webamp hide it?
@@ -299,6 +307,7 @@ function openWinamp(file_path){
 			winamp_interface.unminimize = ()=> {
 				// more to the point does this work necsesarilyrdrfsF??
 				$webamp.show();
+				// $webamp.focus();
 			};
 			winamp_interface.close = ()=> {
 				// not allowing canceling close event in this case (generally used *by* an application (for "Save changes?"), not outside of it)

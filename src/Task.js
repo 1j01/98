@@ -33,9 +33,7 @@ function Task(win){
 			win.focus();
 		}
 	});
-	// if(win.is(":visible")){
-	// 	win.focus();
-	// }
+	
 	win.onFocus(()=> {
 		$task.addClass("selected");
 	});
@@ -45,4 +43,8 @@ function Task(win){
 	win.onClosed(()=> {
 		$task.remove();
 	});
+
+	if(win.is && win.is(":visible")){
+		win.focus();
+	}
 }
