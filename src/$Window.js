@@ -85,7 +85,7 @@ function $Window(options){
 			const after_rect = $task[0].getBoundingClientRect();
 			$w.animateTitlebar(before_rect, after_rect, ()=> {
 				$w.hide();
-				$w.triggerHandler("blur");
+				$w.blur();
 			});
 		}
 	};
@@ -99,7 +99,7 @@ function $Window(options){
 			$w.animateTitlebar(before_rect, after_rect, ()=> {
 				$w.show();
 				$w.bringToFront();
-				$w.triggerHandler("focus");
+				$w.focus();
 			});
 		}
 	};
