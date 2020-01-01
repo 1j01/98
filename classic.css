@@ -219,6 +219,13 @@ button.selected {
 	color: white;
 	font-family: 'Segoe UI', sans-serif;
 	font-size: 12px;
+	font-weight: bold;
+}
+.window:not(.focused) .window-titlebar {
+	background: darkgray;
+	background: linear-gradient(to right, #808080 0%, #b3b3b3 100%);
+
+	color: #c0c0c0;
 }
 .window-title {
 	padding-left: 2px;

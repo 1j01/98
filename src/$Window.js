@@ -21,7 +21,24 @@ function $Window(options){
 	if($component){
 		$w.addClass("component-window");
 	}
-	
+
+	$w.on("focusin iframe-focusin pointerdown", function(e){
+		if (!$w.hasClass("focused")) {
+			$w.triggerHandler("focus");
+		}
+	});
+	$w.on("focus", function(e){
+		if ($w.is(e.target)) {
+			$(".window.focused").triggerHandler("blur");
+			$w.addClass("focused");
+		}
+	});
+	$w.on("blur", function(e){
+		if ($w.is(e.target)) {
+			$w.removeClass("focused");
+		}
+	});
+
 	$w.attr("touch-action", "none");
 	
 	$w.$x.on("click", function(){

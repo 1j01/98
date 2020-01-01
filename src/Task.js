@@ -26,7 +26,6 @@ function Task($win){
 	}
 	$win.on("focus", function(e){
 		if ($win.is(e.target)) {
-			$(".task").removeClass("selected");
 			$task.addClass("selected");
 		}
 	})
@@ -35,10 +34,6 @@ function Task($win){
 			$task.removeClass("selected");
 		}
 	})
-	$win.on("focusin iframe-focusin", function(e){
-		$(".task").removeClass("selected");
-		$win.triggerHandler("focus");
-	});
 	$win.on("close", function(){
 		$task.remove();
 	});

@@ -245,7 +245,6 @@ function openWinamp(file_path){
 		.then(function(){
 			console.log("Webamp rendered");
 			// TODO: handle blurring for taskbar
-			// also for regular windows - maybe I should do that first!
 			
 			// TODO: refactor for less hackiness
 			$fake_win_for_winamp_task = $("#webamp");
