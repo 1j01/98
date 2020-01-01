@@ -56,7 +56,7 @@ minesweeper.grid.prototype.generate = function(number_mines, seed) {
         var surrounding_tiles = self.get_surrounding_tiles(coordinates.x, coordinates.y);
         tiles_to_highlight = tiles_to_highlight.concat(surrounding_tiles);
       }
-     for(var i in tiles_to_highlight) {
+      for(var i in tiles_to_highlight) {
         if(tiles_to_highlight[i].highlight()) {
           self.highlighted_tiles.push(tiles_to_highlight[i]);
         }
@@ -208,16 +208,16 @@ minesweeper.grid.prototype.shuffle_tiles = function(seed) {
 }
 
 minesweeper.grid.prototype.shuffle_array = function(array) {
-    var tmp, current, top = array.length;
+  var tmp, current, top = array.length;
 
-    if(top) while(--top) {
-      current = Math.floor(Math.random() * (top + 1));
-      tmp = array[current];
-      array[current] = array[top];
-      array[top] = tmp;
-    }
+  if(top) while(--top) {
+    current = Math.floor(Math.random() * (top + 1));
+    tmp = array[current];
+    array[current] = array[top];
+    array[top] = tmp;
+  }
 
-    return array;
+  return array;
 }
 
 minesweeper.grid.prototype.detect_mines = function() {
@@ -241,7 +241,7 @@ minesweeper.grid.prototype.get_surrounding_tiles = function(x, y) {
     for(var x_ = x-1; x_ <= x+1; x_++) {
       if(x_ >= 0 && x_ < this.width && y_ >= 0 && y_ < this.height && !(x_ == x && y_ == y)) {
         tiles.push(this.tiles[x_][y_]);
-       }
+      }
     }
   }
   return tiles;
