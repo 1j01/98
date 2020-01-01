@@ -153,7 +153,7 @@ let $fake_win_for_winamp_task;
 // TODO: support opening multiple files at once
 function openWinamp(file_path){
 	const includeButterchurn = isButterchurnSupported();
-	const whenOpen = ()=> {
+	const whenLoaded = ()=> {
 		// show if minimized... TODO: refactor!
 		if ($fake_win_for_winamp_task.css("display") === "none") {
 			winamp_task.$task.trigger("click");
@@ -186,7 +186,7 @@ function openWinamp(file_path){
 		}
 	}
 	if(winamp_task){
-		whenOpen()
+		whenLoaded()
 		return;
 	}
 	load_winamp_bundle_if_not_loaded(includeButterchurn, function(){
@@ -319,7 +319,7 @@ function openWinamp(file_path){
 			$fake_win_for_winamp_task.on("pointerdown", function(){
 				$fake_win_for_winamp_task.bringToFront();
 			});
-			whenOpen()
+			whenLoaded()
 		}, function(error){
 			// TODO: show_error_message("Failed to load Webamp:", error);
 			alert("Failed to render Webamp:\n\n" + error);
