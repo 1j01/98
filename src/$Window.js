@@ -40,7 +40,6 @@ function $Window(options){
 	$w.onClosed = makeSimpleListenable("closed");
 
 	$w.focus = ()=> {
-		// TODO: actually focus contents of window?
 		window.focusedWindow && focusedWindow.blur();
 		$w.bringToFront();
 		$w.addClass("focused");

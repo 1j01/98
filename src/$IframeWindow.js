@@ -24,6 +24,7 @@ function $IframeWindow(options){
 
 		$win.triggerHandler("iframe-focusin");
 	};
+	$win.onFocus(focus_window_contents);
 	
 	// Let the iframe to handle mouseup events outside itself
 	var delegate_pointerup = function(){

@@ -10,6 +10,9 @@ function Notepad(file_path){
 		icon: "notepad",
 		title: win_title
 	});
+	$win.onFocus(()=> {
+		$win.iframe.contentWindow.document.querySelector("textarea").focus();
+	});
 	return new Task($win);
 }
 Notepad.acceptsFilePaths = true;
