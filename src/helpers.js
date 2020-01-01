@@ -93,3 +93,26 @@ function Canvas(width, height){
 	new_canvas.ctx = new_ctx;
 	return new_canvas;
 }
+
+function mustHaveMethods(obj, methodNames) {
+    for (const methodName of methodNames) {
+        if(typeof obj[methodName] != 'function') {
+			console.error("Missing method", methodName, "on object", obj);
+            throw new TypeError("missing method " + methodName);
+        }
+    }
+    return true;
+}
+const windowInterfaceMethods = [
+	"close",
+	"minimize",
+	"unminimize",
+	// "maximize",
+	// "unmaximize",
+	"bringToFront", // TODO: maybe setZIndex instead
+	"getTitle",
+	"getIconName",
+	// jQuery (TODO: remove)
+	"on",
+	"is", // .is(":visible")
+];

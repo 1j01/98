@@ -282,6 +282,12 @@ function $Window(options){
 			return $w.$title.text();
 		}
 	};
+	$w.getTitle = function() {
+		return $w.title();
+	};
+	$w.getIconName = function() {
+		return $w.icon_name;
+	};
 	$w.setIconByID = function(icon_name){
 		// $w.$icon.attr("src", getIconPath(icon_name));
 		var old_$icon = $w.$icon;
@@ -351,6 +357,8 @@ function $Window(options){
 		$w.center();
 	}
 	
+	mustHaveMethods($w, windowInterfaceMethods);
+	
 	return $w;
 }
 
@@ -378,6 +386,8 @@ function $FormWindow(title){
 		
 		return $b;
 	};
+
+	mustHaveMethods($w, windowInterfaceMethods);
 	
 	return $w;
 };
