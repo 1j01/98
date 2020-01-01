@@ -61,6 +61,11 @@ function $IframeWindow(options){
 			var $contentWindow = $(iframe.contentWindow);
 			$contentWindow.on("pointerdown click", function(e){
 				$win.focus();
+				
+				// from close_menus in $MenuBar
+				$(".menu-button").trigger("release");
+				// Close any rogue floating submenus
+				$(".menu-popup").hide();
 			});
 			// We want to disable pointer events for other iframes, but not this one
 			$contentWindow.on("pointerdown", function(e){

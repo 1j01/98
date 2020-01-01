@@ -13,8 +13,6 @@
 
 	* "Legitimate content"
 
-* Reliably focus window contents (i.e. for keyboard shortcuts in Paint) (also close menus when clicking inside)
-
 * File save and open dialogs
 
 * Integrate [js-solitaire](https://github.com/uzi88/js-solitaire)
