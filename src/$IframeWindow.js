@@ -10,20 +10,30 @@ function $IframeWindow(options){
 	var iframe = $win.iframe = $iframe[0];
 	iframe.$window = $win;
 
+	var disable_delegate_pointerup = false;
+	
 	var focus_window_contents = function(){
 		if (!iframe.contentWindow) {
 			return;
 		}
+		if (iframe.contentDocument.hasFocus()) {
+			return;
+		}
 		
+		disable_delegate_pointerup = true;
 		iframe.contentWindow.focus();
 		setTimeout(function(){
 			iframe.contentWindow.focus();
+			disable_delegate_pointerup = false;
 		});
 	};
 	$win.onFocus(focus_window_contents);
 	
 	// Let the iframe to handle mouseup events outside itself
 	var delegate_pointerup = function(){
+		if (disable_delegate_pointerup) {
+			return;
+		}
 		if(iframe.contentWindow && iframe.contentWindow.jQuery){
 			iframe.contentWindow.jQuery("body").trigger("pointerup");
 		}
