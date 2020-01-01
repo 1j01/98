@@ -1,11 +1,11 @@
 function Task($win){
 	$win.task = this;
 	const $task = this.$task = $("<button class='task'/>").appendTo($(".tasks"));
-	const $title = $("<span class='title'/>").text($win.getTitle());
-
-	$win.on("title-change", function(e){
+	const $title = $("<span class='title'/>");
+	
+	this.updateTitle = ()=> {
 		$title.text($win.getTitle());
-	});
+	};
 
 	let $icon;
 	this.updateIcon = ()=> {
@@ -18,6 +18,8 @@ function Task($win){
 			$task.prepend($icon);
 		}
 	};
+	
+	this.updateTitle();
 	this.updateIcon();
 
 	$task.append($icon, $title);

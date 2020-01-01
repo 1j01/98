@@ -276,7 +276,9 @@ function $Window(options){
 	$w.title = function(title){
 		if(title !== undefined){
 			$w.$title.text(title);
-			$w.triggerHandler("title-change");
+			if ($w.task) {
+				$w.task.updateTitle();
+			}
 			return $w;
 		}else{
 			return $w.$title.text();
