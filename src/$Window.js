@@ -293,7 +293,8 @@ function $Window(options){
 		var old_$icon = $w.$icon;
 		$w.$icon = $Icon(icon_name, TITLEBAR_ICON_SIZE);
 		old_$icon.replaceWith($w.$icon);
-		$w.triggerHandler("icon-change");
+		$w.icon_name = icon_name;
+		$w.task.updateIcon();
 		return $w;
 	};
 	$w.animateTitlebar = function(from, to, callback=()=>{}) {

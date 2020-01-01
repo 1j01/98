@@ -1,15 +1,25 @@
 function Task($win){
 	$win.task = this;
-	var $task = this.$task = $("<button class='task'/>").appendTo($(".tasks"));
-	var $icon = $Icon($win.getIconName() || "task", TASKBAR_ICON_SIZE);
-	var $title = $("<span class='title'/>").text($win.getTitle());
+	const $task = this.$task = $("<button class='task'/>").appendTo($(".tasks"));
+	const $title = $("<span class='title'/>").text($win.getTitle());
+
 	$win.on("title-change", function(e){
 		$title.text($win.getTitle());
 	});
-	$win.on("icon-change", function(e){
-		// $icon = ... needed so changing works multiple times
-		$icon.replaceWith($icon = $win.$icon.clone()); // XXX: assuming TITLEBAR_ICON_SIZE === TASKBAR_ICON_SIZE
-	});
+
+	let $icon;
+	this.updateIcon = ()=> {
+		const icon_name = $win.getIconName() || "task";
+		const old_$icon = $icon;
+		$icon = $Icon(icon_name, TASKBAR_ICON_SIZE);
+		if (old_$icon) {
+			old_$icon.replaceWith($icon);
+		} else {
+			$task.prepend($icon);
+		}
+	};
+	this.updateIcon();
+
 	$task.append($icon, $title);
 	$task.on("click", function(){
 		if($task.hasClass("selected")){
