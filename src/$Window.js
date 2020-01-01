@@ -27,6 +27,11 @@ function $Window(options){
 			$w.triggerHandler("focus");
 		}
 	});
+	$G.on("pointerdown", (e)=> {
+		if (e.target.closest(".window") !== $w[0]) {
+			$w.triggerHandler("blur");
+		}
+	});
 	$w.on("focus", function(e){
 		if ($w.is(e.target)) {
 			$(".window.focused").triggerHandler("blur");
