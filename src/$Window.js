@@ -28,7 +28,7 @@ function $Window(options){
 		}
 	});
 	$G.on("pointerdown", (e)=> {
-		if (e.target.closest(".window") !== $w[0]) {
+		if (e.target.closest(".window") !== $w[0] && !e.target.closest(".taskbar")) {
 			$w.triggerHandler("blur");
 		}
 	});
@@ -129,11 +129,7 @@ function $Window(options){
 		});
 	});
 	$w.$minimize.on("click", function(){
-		// TODO: refactor
-		$w.__$task.trigger("click");
-		if ($w.__$task.hasClass("selected")) {
-			$w.__$task.trigger("click");
-		}
+		$w.minimize();
 	});
 	$w.$title_area.on("mousedown selectstart", ".window-button", function(e){
 		e.preventDefault();
