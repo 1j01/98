@@ -40,14 +40,11 @@ function $Window(options){
 	$w.onClosed = makeSimpleListenable("closed");
 
 	$w.focus = ()=> {
-		blurFocusedWindow();
+		// TODO: actually focus contents of window?
+		window.focusedWindow && focusedWindow.blur();
 		$w.bringToFront();
 		$w.addClass("focused");
-		// TODO: actually focus contents?
-		blurFocusedWindow = ()=> {
-			$w.blur();
-			blurFocusedWindow = ()=> {};
-		};
+		window.focusedWindow = $w;
 		$eventTarget.triggerHandler("focus");
 	};
 	$w.blur = ()=> {
@@ -58,7 +55,6 @@ function $Window(options){
 
 	$w.on("focusin iframe-focusin pointerdown", function(e){
 		if (!$w.hasClass("focused")) {
-			blurFocusedWindow();
 			$w.focus();
 		}
 	});
@@ -67,7 +63,7 @@ function $Window(options){
 			e.target.closest(".window") !== $w[0] &&
 			!e.target.closest(".taskbar")
 		) {
-			blurFocusedWindow();
+			$w.blur();
 		}
 	});
 

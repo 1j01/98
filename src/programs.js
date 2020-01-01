@@ -279,15 +279,13 @@ function openWinamp(file_path){
 				});
 			};
 			winamp_interface.focus = ()=> {
+				window.focusedWindow && focusedWindow.blur();
 				winamp_interface.bringToFront();
 				// TODO: trigger click?
 				// on last focused winamp window
 				$eventTarget.triggerHandler("focus");
 				
-				blurFocusedWindow = ()=> {
-					winamp_interface.blur();
-					blurFocusedWindow = ()=> {};
-				};
+				window.focusedWindow = winamp_interface;
 			};
 			winamp_interface.blur = ()=> {
 				// TODO

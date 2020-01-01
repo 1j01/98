@@ -46,6 +46,3 @@ function Task(win){
 		$task.remove();
 	});
 }
-
-// could store focusedWindow instead, but minimal for now
-blurFocusedWindow = ()=> {};
