@@ -159,9 +159,7 @@ function openWinamp(file_path){
 			winamp_interface.unminimize();
 		}
 
-		winamp_interface.bringToFront()
-
-		// TODO: focus last focused winamp window
+		winamp_interface.focus();
 
 		if (file_path) {
 			withFilesystem(function(){
@@ -349,6 +347,15 @@ function openWinamp(file_path){
 			
 			$webamp.on("pointerdown", ()=> {
 				winamp_interface.focus();
+			});
+			// TODO: DRY
+			$G.on("pointerdown", (e)=> {
+				if (
+					e.target.closest("#webamp") !== $webamp[0] &&
+					!e.target.closest(".taskbar")
+				) {
+					winamp_interface.blur();
+				}
 			});
 			
 			whenLoaded()

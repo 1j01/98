@@ -8,9 +8,7 @@ Try it [on 98.js.org](https://98.js.org/) or [standalone at webamp.org](https://
 
 ### TODO
 
-* Window blurring (also needed for regular windows!)
-
-* Localize keyboard shortcuts (currently pretty much everything in 98.js uses iframes, and I haven't implemented arrow keys for icons on the desktop, so it's hard to tell, and it doesn't matter much (yet), but the keyboard shortcuts should only apply when Winamp is focused - so this depends on window blurring)
+* Keyboard shortcuts should only apply when Winamp is focused
 
 * Interop with Sound Recorder should be fun! ;)
 
