@@ -310,6 +310,12 @@ function openWinamp(file_path){
 					zIndex: $Window.Z_INDEX++
 				});
 			};
+			$fake_win_for_winamp_task.minimize = function(){
+				$fake_win_for_winamp_task.hide();
+			};
+			$fake_win_for_winamp_task.unminimize = function(){
+				$fake_win_for_winamp_task.show();
+			};
 			winamp_task.$task.trigger("click"); // TODO: don't click a toggle button, set/assert the state in a clean way
 			$fake_win_for_winamp_task.on("pointerdown", function(){
 				$fake_win_for_winamp_task.bringToFront();

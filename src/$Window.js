@@ -27,6 +27,33 @@ function $Window(options){
 	$w.$x.on("click", function(){
 		$w.close();
 	});
+
+	$w.minimize = function() {
+		if ($w.is(":visible")) {
+			const $task = this.task.$task;
+			const before_rect = $w.$titlebar[0].getBoundingClientRect();
+			const after_rect = $task[0].getBoundingClientRect();
+			$w.animateTitlebar(before_rect, after_rect, ()=> {
+				$w.hide();
+				$w.triggerHandler("blur");
+			});
+		}
+	};
+	$w.unminimize = function() {
+		if ($w.is(":hidden")) {
+			const $task = this.task.$task;
+			const before_rect = $task[0].getBoundingClientRect();
+			$w.show();
+			const after_rect = $w.$titlebar[0].getBoundingClientRect();
+			$w.hide();
+			$w.animateTitlebar(before_rect, after_rect, ()=> {
+				$w.show();
+				$w.bringToFront();
+				$w.triggerHandler("focus");
+			});
+		}
+	};
+
 	let before_maximize;
 	$w.$maximize.on("click", function(){
 
