@@ -22,25 +22,52 @@ function $Window(options){
 		$w.addClass("component-window");
 	}
 
+	const $eventTarget = $({});
+	const makeSimpleListenable = (name)=> {
+		return (callback)=> {
+			const fn = ()=> {
+				callback();
+			};
+			$eventTarget.on(name, fn);
+			const dispose = ()=> {
+				$eventTarget.off(name, fn);
+			};
+			return dispose;
+		};
+	};
+	$w.onFocus = makeSimpleListenable("focus");
+	$w.onBlur = makeSimpleListenable("blur");
+	$w.onClosed = makeSimpleListenable("closed");
+
+	$w.focus = ()=> {
+		blurFocusedWindow();
+		$w.bringToFront();
+		$w.addClass("focused");
+		// TODO: actually focus contents?
+		blurFocusedWindow = ()=> {
+			$w.blur();
+			blurFocusedWindow = ()=> {};
+		};
+		$eventTarget.triggerHandler("focus");
+	};
+	$w.blur = ()=> {
+		$w.removeClass("focused");
+		// TODO: document.activeElement && document.activeElement.blur()?
+		$eventTarget.triggerHandler("blur");
+	};
+
 	$w.on("focusin iframe-focusin pointerdown", function(e){
 		if (!$w.hasClass("focused")) {
-			$w.triggerHandler("focus");
+			blurFocusedWindow();
+			$w.focus();
 		}
 	});
 	$G.on("pointerdown", (e)=> {
-		if (e.target.closest(".window") !== $w[0] && !e.target.closest(".taskbar")) {
-			$w.triggerHandler("blur");
-		}
-	});
-	$w.on("focus", function(e){
-		if ($w.is(e.target)) {
-			$(".window.focused").triggerHandler("blur");
-			$w.addClass("focused");
-		}
-	});
-	$w.on("blur", function(e){
-		if ($w.is(e.target)) {
-			$w.removeClass("focused");
+		if (
+			e.target.closest(".window") !== $w[0] &&
+			!e.target.closest(".taskbar")
+		) {
+			blurFocusedWindow();
 		}
 	});
 
@@ -346,7 +373,8 @@ function $Window(options){
 		}
 		$w.remove();
 		$w.closed = true;
-		$w.trigger("closed");
+		$eventTarget.triggerHandler("closed");
+		// $w.trigger("closed");
 		// TODO: change usages of "close" to "closed" where appropriate
 		// and probably rename the "close" event
 	};
@@ -390,7 +418,5 @@ function $FormWindow(title){
 		return $b;
 	};
 
-	mustHaveMethods($w, windowInterfaceMethods);
-	
 	return $w;
 };

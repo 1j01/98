@@ -112,7 +112,9 @@ const windowInterfaceMethods = [
 	"bringToFront", // TODO: maybe setZIndex instead
 	"getTitle",
 	"getIconName",
-	// jQuery (TODO: remove)
-	"on",
-	"is", // .is(":visible")
+	"focus",
+	"blur",
+	"onFocus",
+	"onBlur",
+	"onClosed",
 ];

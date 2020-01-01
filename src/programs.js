@@ -148,18 +148,18 @@ const isButterchurnSupported = () => {
 };
 
 let webamp;
+let $webamp;
 let winamp_task;
-let $winamp_winterface;
+let winamp_interface;
 // TODO: support opening multiple files at once
 function openWinamp(file_path){
 	const includeButterchurn = isButterchurnSupported();
 	const whenLoaded = ()=> {
-		// show if minimized... TODO: refactor!
-		if ($winamp_winterface.css("display") === "none") {
-			winamp_task.$task.trigger("click");
+		if ($webamp.css("display") === "none") {
+			winamp_interface.unminimize();
 		}
 
-		$winamp_winterface.bringToFront()
+		winamp_interface.bringToFront()
 
 		// TODO: focus last focused winamp window
 
@@ -242,46 +242,83 @@ function openWinamp(file_path){
 		document.body.appendChild(visual_container);
 		// Render after the skin has loaded.
 		webamp.renderWhenReady(visual_container)
-		.then(function(){
-			console.log("Webamp rendered");
-			// TODO: handle blurring for taskbar
-			
-			// TODO: refactor for less hackiness
-			$winamp_winterface = $("#webamp");
-			$winamp_winterface.getIconName = ()=> "winamp2";
+		.then(()=> {
+			window.console && console.log("Webamp rendered");
+
+			$webamp = $("#webamp");
 			// Bring window to front, initially and when clicked
-			$winamp_winterface.css({
+			$webamp.css({
 				position: "absolute",
 				left: 0,
 				top: 0,
 				zIndex: $Window.Z_INDEX++
 			});
-			$winamp_winterface.bringToFront = function(){
-				$winamp_winterface.css({
+
+			const $eventTarget = $({});
+			const makeSimpleListenable = (name)=> {
+				return (callback)=> {
+					const fn = ()=> {
+						callback();
+					};
+					$eventTarget.on(name, fn);
+					const dispose = ()=> {
+						$eventTarget.off(name, fn);
+					};
+					return dispose;
+				};
+			};
+
+			winamp_interface = {};
+			winamp_interface.onFocus = makeSimpleListenable("focus");
+			winamp_interface.onBlur = makeSimpleListenable("blur");
+			winamp_interface.onClosed = makeSimpleListenable("closed");
+			winamp_interface.getIconName = ()=> "winamp2";
+			winamp_interface.bringToFront = ()=> {
+				$webamp.css({
 					zIndex: $Window.Z_INDEX++
 				});
 			};
-			$winamp_winterface.minimize = function(){
-				$winamp_winterface.hide();
+			winamp_interface.focus = ()=> {
+				winamp_interface.bringToFront();
+				// TODO: trigger click?
+				// on last focused winamp window
+				$eventTarget.triggerHandler("focus");
+				
+				blurFocusedWindow = ()=> {
+					winamp_interface.blur();
+					blurFocusedWindow = ()=> {};
+				};
 			};
-			$winamp_winterface.unminimize = function(){
-				$winamp_winterface.show();
+			winamp_interface.blur = ()=> {
+				// TODO
+				$eventTarget.triggerHandler("blur");
 			};
-			$winamp_winterface.close = function(){
+			winamp_interface.minimize = ()=> {
+				// TODO: are these actually useful or does webamp hide it?
+				$webamp.hide();
+			};
+			winamp_interface.unminimize = ()=> {
+				// more to the point does this work necsesarilyrdrfsF??
+				$webamp.show();
+			};
+			winamp_interface.close = ()=> {
 				// not allowing canceling close event in this case (generally used *by* an application (for "Save changes?"), not outside of it)
 				// TODO: probably something like winamp_task.close()
-				$winamp_winterface.triggerHandler("close");
-				$winamp_winterface.triggerHandler("closed");
+				// winamp_interface.triggerHandler("close");
+				// winamp_interface.triggerHandler("closed");
 				webamp.dispose();
-				$winamp_winterface.remove();
+				$webamp.remove();
+
+				$eventTarget.triggerHandler("closed");
 
 				webamp = null;
+				$webamp = null;
 				winamp_task = null;
-				$winamp_winterface = null;
+				winamp_interface = null;
 			};
-			$winamp_winterface.getTitle = function(){
+			winamp_interface.getTitle = ()=> {
 				let taskTitle = "Winamp 2.91";
-				const $cell = $winamp_winterface.find(".playlist-track-titles .track-cell.current");
+				const $cell = $webamp.find(".playlist-track-titles .track-cell.current");
 				if($cell.length){
 					taskTitle = `${$cell.text()} - Winamp`;
 					switch (webamp.getMediaStatus()) {
@@ -296,31 +333,28 @@ function openWinamp(file_path){
 				return taskTitle;
 			};
 			
-			mustHaveMethods($winamp_winterface, windowInterfaceMethods);
+			mustHaveMethods(winamp_interface, windowInterfaceMethods);
 			
-			winamp_task = new Task($winamp_winterface);
+			winamp_task = new Task(winamp_interface);
 			webamp.onClose(function(){
-				$winamp_winterface.close();
+				winamp_interface.close();
 			});
 			webamp.onMinimize(function(){
-				// TODO: refactor
-				winamp_task.$task.trigger("click");
+				winamp_interface.minimize();
 			});
-			const updateTitle = (trackInfo)=> {
-				// ignoring trackInfo && trackInfo.metaData
-				const taskTitle = $winamp_winterface.getTitle();
+			const updateTitle = (_trackInfo)=> {
+				const taskTitle = winamp_interface.getTitle();
 				winamp_task.$task.find(".title").text(taskTitle)
 			};
 			webamp.onTrackDidChange(updateTitle);
 			updateTitle();
 			
-			// winamp_task.$task.trigger("click"); // TODO: don't click a toggle button, set/assert the state in a clean way
-			$winamp_winterface.on("pointerdown", function(){
-				$winamp_winterface.bringToFront();
+			$webamp.on("pointerdown", ()=> {
+				winamp_interface.focus();
 			});
 			
 			whenLoaded()
-		}, function(error){
+		}, (error)=> {
 			// TODO: show_error_message("Failed to load Webamp:", error);
 			alert("Failed to render Webamp:\n\n" + error);
 			console.error(error);
