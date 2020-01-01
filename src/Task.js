@@ -12,21 +12,32 @@ function Task($win){
 	});
 	$task.append($icon, $title);
 	$task.on("click", function(){
-		$task.toggleClass("selected");
 		if($task.hasClass("selected")){
+			$win.minimize();
+			$win.triggerHandler("blur");
+		}else{
 			$win.unminimize();
 			$win.bringToFront();
 			$win.triggerHandler("focus");
-		}else{
-			$win.minimize();
 		}
 	});
 	if($win.is(":visible")){
-		$task.addClass("selected");
 		$win.triggerHandler("focus");
 	}
+	$win.on("focus", function(e){
+		if ($win.is(e.target)) {
+			$(".task").removeClass("selected");
+			$task.addClass("selected");
+		}
+	})
+	$win.on("blur", function(e){
+		if ($win.is(e.target)) {
+			$task.removeClass("selected");
+		}
+	})
 	$win.on("focusin iframe-focusin", function(e){
-		$task.addClass("selected");
+		$(".task").removeClass("selected");
+		$win.triggerHandler("focus");
 	});
 	$win.on("close", function(){
 		$task.remove();
