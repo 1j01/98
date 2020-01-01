@@ -158,9 +158,18 @@ function $FolderView(folder_path) {
 				}
 			}
 		});
+		const unfocus = ()=> {
+			$folder_view.removeClass("focused");
+		};
 		$(window).on("pointerdown", function(e){
-			if($(e.target).closest(".folder-view").length == 0){
-				$folder_view.removeClass("focused");
+			if(!$(e.target).closest(".folder-view").is($folder_view)){
+				unfocus();
+			}
+		});
+		$(window).on("focusout", function(e){
+			if(e.target === window) {
+				// focus may have gone to an iframe, or outside the browser window
+				unfocus();
 			}
 		});
 		$(window).on("pointermove", function(e){
