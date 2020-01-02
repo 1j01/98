@@ -11,7 +11,10 @@ function Notepad(file_path){
 		title: win_title
 	});
 	$win.onFocus(()=> {
-		$win.iframe.contentWindow.document.querySelector("textarea").focus();
+		const textarea = $win.iframe.contentWindow.document.querySelector("textarea");
+		if (textarea) {
+			textarea.focus();
+		}
 	});
 	return new Task($win);
 }

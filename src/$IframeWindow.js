@@ -64,6 +64,27 @@ function $IframeWindow(options){
 			$win.focus();
 			// focus_window_contents();
 			
+			const wb_embedded = iframe.contentDocument.querySelector(".wb_embedded");
+			if (wb_embedded){
+				wb_embedded.classList.remove("wb_embedded")
+				var error_element = iframe.contentDocument.querySelector("#error")
+				error_element.style.position = "absolute";
+				error_element.style.left = "0";
+				error_element.style.right = "0";
+				error_element.style.top = "0";
+				error_element.style.bottom = "0";
+				error_element.style.background = "#c0c0c0";
+				error_element.style.color = "#000";
+				error_element.style.padding = "50px";
+				var livewebInfo = iframe.contentDocument.querySelector("#livewebInfo.available");
+				livewebInfo.style.borderRadius = "0";
+				livewebInfo.style.border = "inset 2px #fff";
+				livewebInfo.style.background = "#ffffe0";
+				iframe.contentDocument.querySelector("#searchHome").style.display = "none";
+				iframe.contentDocument.querySelector("footer").style.display = "none";
+				iframe.contentDocument.querySelector("#errorBorder").style.width = "100%";
+			}
+
 			var $contentWindow = $(iframe.contentWindow);
 			$contentWindow.on("pointerdown click", function(e){
 				$win.focus();
