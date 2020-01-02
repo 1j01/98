@@ -1,4 +1,5 @@
-Hello! Welcome to 98.js
+Hello! Welcome to 98.js.org
+
 https://github.com/1j01/98
 
 --------------------------------------
@@ -10,8 +11,12 @@ Minesweeper by Jon Ziebell
 
 Webamp by Jordan Eldredge
 	https://github.com/captbaritone/webamp
+	
+	Featuring:
+	Butterchurn Visualizer by Jordan Berg
+		https://github.com/jberg/butterchurn
 
-Paint, Sound Recorder, Notepad, and the 98.js desktop by Isaiah Odhner
+Paint, Sound Recorder, Notepad, and the 98.js.org desktop by Isaiah Odhner
 	https://github.com/1j01/98
 	https://github.com/1j01/jspaint
 
