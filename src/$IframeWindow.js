@@ -37,6 +37,12 @@ function $IframeWindow(options){
 		if(iframe.contentWindow && iframe.contentWindow.jQuery){
 			iframe.contentWindow.jQuery("body").trigger("pointerup");
 		}
+		if(iframe.contentWindow){
+			const event = new iframe.contentWindow.MouseEvent("mouseup", {button: 0});
+			iframe.contentWindow.dispatchEvent(event);
+			const event2 = new iframe.contentWindow.MouseEvent("mouseup", {button: 2});
+			iframe.contentWindow.dispatchEvent(event2);
+		}
 	};
 	$G.on("mouseup blur", delegate_pointerup);
 	$win.on("close", function(){

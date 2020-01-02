@@ -197,7 +197,8 @@ $.ready(function() {
           }
         }
       }
-    })
+    });
+  window
     .addEventListener("mouseup", function(e) {
       if(e.target.nodeName !== "TD") {
         if(e.which == 1) minesweeper_.mouse.left = false;
