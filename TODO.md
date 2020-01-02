@@ -5,8 +5,6 @@
 
 * *Properly* link to the repo from within the app, not just with a URL in a virtual text file
 
-* On the Wayback Machine, the filesystem fails to initialize, and so CREDITS.txt can't be viewed (among other things). What can I do about that? Can I add prefetch links to CREDITS.txt and filesystem-index.json?
-
 * Start Menu
 
 	* Aria attributes
