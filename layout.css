@@ -106,6 +106,7 @@ html, body {
 	display: flex;
 	flex: 1;
 	height: 100%;
+	min-width: 0; /* reset implicit min-width from flexbox */
 }
 .task {
 	max-width: 200px;
