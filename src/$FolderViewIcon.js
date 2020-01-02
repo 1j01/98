@@ -36,5 +36,6 @@ function $FolderViewIcon(options){
 		width: grid_size_x,
 		height: grid_size_y,
 	});
+	$container[0].dataset.filePath = options.file_path;
 	return $container;
 }

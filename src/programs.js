@@ -160,7 +160,35 @@ let winamp_interface;
 // TODO: support opening multiple files at once
 function openWinamp(file_path){
 	const includeButterchurn = isButterchurnSupported();
-	const whenLoaded = ()=> {
+
+	const filePathToBlob = (file_path)=> {
+		return new Promise((resolve, reject)=> {
+			withFilesystem(function(){
+				var fs = BrowserFS.BFSRequire("fs");
+				fs.readFile(file_path, function(err, buffer){
+					if(err){
+						return reject(err);
+					}
+					const byte_array = new Uint8Array(buffer);
+					const blob = new Blob([byte_array]);
+					resolve(blob);
+				});
+			});
+		});
+	};
+
+	const filePathToTrack = async (file_path)=> {
+		const blob = await filePathToBlob(file_path);
+		const blob_url = URL.createObjectURL(blob);
+		// TODO: revokeObjectURL
+		const track = {
+			url: blob_url,
+			defaultName: file_name_from_path(file_path).replace(/\.[a-z0-9]+$/i, ""),
+		};
+		return track;
+	};
+
+	const whenLoaded = async ()=> {
 		if ($webamp.css("display") === "none") {
 			winamp_interface.unminimize();
 		}
@@ -168,25 +196,8 @@ function openWinamp(file_path){
 		winamp_interface.focus();
 
 		if (file_path) {
-			withFilesystem(function(){
-				var fs = BrowserFS.BFSRequire("fs");
-				fs.readFile(file_path, function(err, buffer){
-					if(err){
-						return alert(err);
-					}
-					const byte_array = new Uint8Array(buffer);
-					const blob = new Blob([byte_array]);
-					const blob_url = URL.createObjectURL(blob);
-					// TODO: revokeObjectURL
-
-					webamp.setTracksToPlay([
-						{
-							url: blob_url,
-							defaultName: file_name_from_path(file_path).replace(/\.[a-z0-9]+$/i, ""),
-						}
-					]);
-				});
-			});
+			const track = await filePathToTrack(file_path);
+			webamp.setTracksToPlay([track]);
 		}
 	}
 	if(winamp_task){
@@ -207,9 +218,10 @@ function openWinamp(file_path){
 			// 	url: "programs/winamp/skins/base-2.91.wsz",
 			// },
 			enableHotkeys: true,
-			// TODO: handleTrackDropEvent: (event)=> {
-				
-			// },
+			handleTrackDropEvent: (event)=>
+				Promise.all(
+					dragging_file_paths.map(filePathToTrack)
+				),
 			// TODO: filePickers
 		};
 		if (includeButterchurn) {

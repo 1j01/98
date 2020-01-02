@@ -39,6 +39,15 @@ var file_extension_icons = {
 	url: "html",
 };
 
+const set_dragging_file_paths = (dragging_file_paths)=> {
+	window.dragging_file_paths = dragging_file_paths;
+	let frame = window;
+	while (frame !== frame.parent) {
+		frame = frame.parent;
+		frame.dragging_file_paths = dragging_file_paths;
+	}
+};
+
 function $FolderView(folder_path) {
 	// TODO: ensure a trailing slash / use path.join where appropriate
 
@@ -148,7 +157,11 @@ function $FolderView(folder_path) {
 			current = {x: e.pageX - folder_view_offset.left, y: e.pageY - folder_view_offset.top};
 			if($icon.length > 0){
 				$marquee.hide();
+				set_dragging_file_paths($icon.get().map((icon)=>
+					icon.dataset.filePath
+				).filter((file_path)=> file_path));
 			}else{
+				set_dragging_file_paths([]);
 				dragging = true;
 				// don't deselect right away unless the 
 				// TODO: deselect on pointerUP, if the desktop was focused
@@ -232,7 +245,8 @@ function $FolderView(folder_path) {
 			// icon: $IconByPathPromise(get_icon_for_file_path(file_path), DESKTOP_ICON_SIZE),
 			icon: $IconByIDPromise(get_icon_for_file_path(file_path), DESKTOP_ICON_SIZE),
 			open: function(){ executeFile(file_path); },
-			shortcut: file_path.match(/\.url$/)
+			shortcut: file_path.match(/\.url$/),
+			file_path,
 		}).appendTo($folder_view).css({
 			left: x,
 			top: y,
