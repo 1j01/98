@@ -4,6 +4,8 @@
 		<meta charset="utf-8">
 		<title>98.js - Windows 98 Online</title>
 		<link href="layout.css" rel="stylesheet" type="text/css">
+		<link href="lib/os-gui/layout.css" rel="stylesheet" type="text/css">
+		<link href="lib/os-gui/windows-98.css" rel="stylesheet" type="text/css">
 		<link href="classic.css" rel="stylesheet" type="text/css">
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=LbWArJzeO7">
 		<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=LbWArJzeO7">
@@ -24,14 +26,14 @@
 	<body>
 		<div class="desktop" style="background-image: url(images/clouds.jpg); background-size: cover; background-position: center;"></div>
 		<div class="taskbar">
-			<button class="start-button" title="Click here to begin.">
+			<button class="start-button toggle" title="Click here to begin.">
 				<img src="images/start.png"/><b>Start</b>
 			</button>
 			<div class="taskbar-divider"></div>
 			<!-- TODO: pinned apps and resizing handles -->
 			<div class="tasks"></div>
 			<div class="taskbar-divider"></div>
-			<div class="tray">
+			<div class="tray inset-shallow">
 				<div class="tray-icons">
 					<img class="tray-icon" src="images/icons/task-scheduler-16x16.png" title="Task Scheduler is not ready." onclick="alert('Good day to you!')">
 					<img class="tray-icon" src="images/icons/audio-okay-16x16.png" title="Volume" onclick="alert('Have a good day!')">
@@ -39,7 +41,7 @@
 				<div class="taskbar-time"></div>
 			</div>
 		</div>
-		<div class="start-menu" hidden style="display: none;">
+		<div class="start-menu outset-deep" hidden style="display: none;">
 			<div class="start-menu-titlebar"></div>
 			<div class="start-menu-content">
 			Welcome to the Start Menu.
@@ -99,6 +101,7 @@
 		<script src="lib/jquery.min.js"></script>
 		<script src="lib/browserfs.js"></script>
 		<script src="lib/konami.js"></script>
+		<script src="lib/os-gui/parse-theme.js"></script>
 		<script src="src/3d-fun.js"></script>
 		<script src="src/helpers.js"></script>
 		<script src="src/filesystem-setup.js"></script>

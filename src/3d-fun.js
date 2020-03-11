@@ -6,7 +6,7 @@
 			cleanup();
 			cleanup = null;
 		}
-		$(".window").css({
+		$(".os-window").css({
 			transform: ""
 		});
 	};
@@ -23,7 +23,7 @@
 			// 	everything = everything.add(this.contentWindow.$ && this.contentWindow.$("*"));
 			// });
 			// everything.each(function(){
-			$(".window").each(function(){
+			$(".os-window").each(function(){
 				var $window = $(this);
 				//var offset = $window.offset();//position();
 				var el = this;

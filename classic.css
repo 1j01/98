@@ -1,19 +1,16 @@
 
 .desktop {
-	background: #008080;
+	background: var(--Background);
 }
 .taskbar {
-	outline: 1px solid #c0c0c0;
-	border-top: 1px solid white;
-	background: #c0c0c0;
+	outline: 1px solid var(--ButtonLight);
+	border-top: 1px solid var(--ButtonHilight);
+	background: var(--ButtonFace);
+	color: var(--ButtonText);
 }
 .taskbar-divider {
-	border-left: 1px solid #707070; /* TODO: is this the correct color? */
-	border-right: 1px solid white;
-}
-.tray {
-	/* border: inset 1px; */
-	box-shadow: 1px 1px 0 #707070 inset, -1px -1px 0 white inset;
+	border-left: 1px solid var(--ButtonShadow);
+	border-right: 1px solid var(--ButtonHilight);
 }
 .taskbar-time {
 	font-family: sans-serif;
@@ -57,22 +54,18 @@
 .task.selected {
 	font-weight: bold;
 }
-button {
-	outline: 0; /* sorry (breaks some accessibility) */
-	/* TODO: have a focus ring for start button at least  */
-}
 .desktop-icon .title {
 	margin-top: 5px;
 	font-family: sans-serif;
 	font-family: "MS Sans Serif", "Segoe UI", sans-serif;
 	/*font-size: 10px;*/
 	font-size: 8pt;
-	background: #008080;
+	background: var(--Background);
 	color: white;
 	position: relative;
 }
 .folder-view.focused .desktop-icon.selected .title {
-	background: #000080;
+	background: var(--Hilight);
 	color: white;
 }
 .folder-view.focused .desktop-icon.focused .title::after {
@@ -93,7 +86,7 @@ button {
 	position: absolute;
 	left: 0;
 	top: 0;
-	filter: drop-shadow(32px 0 0 #000080);
+	filter: drop-shadow(32px 0 0 var(--Hilight));
 	transform: translateX(-32px);
 	clip-path: polygon(100% 0, 200% 0, 200% 100%, 100% 100%);
 	opacity: 0.5;
@@ -114,253 +107,7 @@ button {
 	z-index: 1;
 }
 
-.menus *,
-.menu-popup * {
-	font-family: 'Segoe UI', sans-serif;
-	font-size: 12px;
-	cursor: default;
-}
-.menu-container {
-	margin-bottom: 1px;
-}
-.menu-button {
-	padding: 2px 5px;
-	position: relative;
-	outline: 0;
-}
-.menu-button:hover {
-	box-shadow: 1px 1px 0 white inset, -1px -1px 0 #707070 inset;
-}
-.menu-button:active,
-.menu-button.active {
-	box-shadow: 1px 1px 0 #707070 inset, -1px -1px 0 white inset;
-	top: 1px;
-	left: 1px;
-}
-.menu-popup:not(.something-else) { /* CSS specifity hack */
-	display: block;
-	padding: 2px;
-	background: #c0c0c0;
-	border-top: 1px solid #c0c0c0;
-	border-left: 1px solid #c0c0c0;
-	border-right: 1px solid #000;
-	border-bottom: 1px solid #000;
-	box-shadow: 1px 1px 0 white inset, -1px -1px 0 #707070 inset;
-}
-.menu-item {
-	padding: 1px 3px;
-	margin: 2px;
-}
-.menu-item[disabled] {
-	text-shadow: 0.8px 0.8px 0px #fff;
-}
-.menu-item:focus, 
-.menu-item.active {
-	background: #007;
-	color: #fff;
-	text-shadow: none;
-	outline: 0;
-}
-.menu-item[disabled] {
-	color: #808080;
-}
-.menu-hr {
-	border: 0;
-	border-top: 1px solid #808080;
-	border-bottom: 1px solid #ffffff;
-	margin: 0px 2px;
-}
-.menu-hotkey {
-	text-decoration: underline;
-}
-
-button.selected {
-	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAABlBMVEW9vb3///8EwsWUAAAADElEQVQI12NoYHAAAAHEAMFJRSpJAAAAAElFTkSuQmCC) repeat;
-}
-
-/* XXX: complicatedly avoiding applying to webamp windows */
-.window:not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window):not(#playlist-window-shade) {
-	background: #c0c0c0;
-}
-.window:not(.maximized):not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window):not(#playlist-window-shade) {
-	border-top: 1px solid #dfdfdf;
-	border-left: 1px solid #dfdfdf;
-	border-right: 1px solid #000;
-	border-bottom: 1px solid #000;
-	padding: 2px;
-}
-.window:not(.maximized):not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window):not(#playlist-window-shade)::after {
-	content: '';
-	pointer-events: none;
-	position: absolute;
-	left: 0;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	border-top: 1px solid #fff;
-	border-left: 1px solid #fff;
-	border-right: 1px solid #7b7b7b;
-	border-bottom: 1px solid #7b7b7b;
-}
-.window:not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window):not(#playlist-window-shade)::after > *  {
-	margin: 1px;
-}
-.window-titlebar {
-	background: #000080; /* fallback to standard color */
-	background: -moz-linear-gradient(left, #000080 0%, #1084d0 100%); /* FF3.6+ */
-	background: -webkit-gradient(linear, left top, right top, color-stop(0%, #000080), color-stop(100%, #1084d0)); /* Chrome, Safari4+ */
-	background: -webkit-linear-gradient(left, #000080 0%, #1084d0 100%); /* Chrome10+, Safari5.1+ */
-	background: -o-linear-gradient(left, #000080 0%, #1084d0 100%); /* Opera 11.10+ */
-	background: -ms-linear-gradient(left, #000080 0%, #1084d0 100%); /* IE10+ */
-	background: linear-gradient(to right, #000080 0%, #1084d0 100%); /* W3C */
-	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000080', endColorstr='#1084d0', GradientType=1 ); /* IE6-9 */
-	/* TODO: gradient shouldn't actually extend to the window controls */
-	
-	color: white;
-	font-family: 'Segoe UI', sans-serif;
-	font-size: 12px;
-	font-weight: bold;
-}
-.window:not(.focused) .window-titlebar {
-	background: darkgray;
-	background: linear-gradient(to right, #808080 0%, #b3b3b3 100%);
-
-	color: #c0c0c0;
-}
-.window-title {
-	padding-left: 2px;
-}
-.window-button {
-	margin: 2px 0;
-}
-.window-close-button {
-	margin-left: 2px;
-}
-.window-content {
-	font-family: Arial, sans-serif;
-	font-size: 16px;
-}
-/* TODO: different kind of button effect (at least for taskbar buttons) where there's only a single 1px solid white on top and left borders (not depressed) */
-.start-menu,
-.ui-slider-handle,
-button {
-	padding: 0;
-	vertical-align: middle;
-	font-family: Arial, sans-serif;
-	font-size: 12px;
-	background: #c0c0c0;
-	border-top: 1px solid #fff;
-	border-left: 1px solid #fff;
-	border-right: 1px solid #000;
-	border-bottom: 1px solid #000;
-	position: relative;
-}
-.start-menu:after,
-.ui-slider-handle:after,
-button:after {
-	content: '';
-	pointer-events: none;
-	position: absolute;
-	left: 0;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	border-top: 1px solid #dfdfdf;
-	border-left: 1px solid #dfdfdf;
-	border-right: 1px solid #808080;
-	border-bottom: 1px solid #808080;
-}
-button:not([disabled]):hover:active,
-button.selected {
-	border-top: 1px solid #000;
-	border-left: 1px solid #000;
-	border-right: 1px solid #fff;
-	border-bottom: 1px solid #fff;
-}
-button:not([disabled]):hover:active:after,
-button.selected:after {
-	border-top: 1px solid #808080;
-	border-left: 1px solid #808080;
-	border-right: 1px solid #dfdfdf;
-	border-bottom: 1px solid #dfdfdf;
-}
-button:before,
-.start-menu:before {
-	right: 0px;
-	top: -3px;
-}
-button:hover:active:before {
-	right: -1px;
-	top: -2px;
-}
-
 * {
 	image-rendering: crisp-edges;
 	image-rendering: pixelated;
 }
-
-::selection {
-	background-color: #000080;
-	color: white;
-}
-
-::-webkit-scrollbar,
-::-webkit-scrollbar-thumb,
-::-webkit-scrollbar-button {
-	width: 16px;
-	height: 16px;
-}
-::-webkit-scrollbar-thumb,
-::-webkit-scrollbar-button {
-	background: #c0c0c0;
-	border-top: 1px solid #c0c0c0;
-	border-left: 1px solid #c0c0c0;
-	border-right: 1px solid #000;
-	border-bottom: 1px solid #000;
-	box-shadow: 1px 1px 0 white inset, -1px -1px 0 #707070 inset;
-}
-::-webkit-scrollbar-button:hover:active {
-	border: 1px solid #7b7b7b;
-	box-shadow: none;
-}
-::-webkit-scrollbar-corner {
-	background: #c0c0c0;
-}
-::-webkit-scrollbar-button {
-	background-position: center;
-	background-repeat: no-repeat;
-}
-::-webkit-scrollbar-button {
-	background-image: url("images/arrows.png");
-}
-::-webkit-scrollbar-button:horizontal:decrement:disabled {
-	background-position: calc(-24px + 1px) 1px; /* left */
-}
-::-webkit-scrollbar-button:horizontal:increment:disabled {
-	background-position: calc(-36px + 1px) 1px; /* right */
-}
-::-webkit-scrollbar-button:vertical:decrement:disabled {
-	background-position: calc(-12px + 1px) 1px; /* up */
-}
-::-webkit-scrollbar-button:vertical:increment:disabled {
-	background-position: calc(-0px + 1px) 1px; /* down */
-}
-::-webkit-scrollbar-button:horizontal:decrement {
-	background-position: calc(-24px + 1px) calc(-12px + 1px); /* left */
-}
-::-webkit-scrollbar-button:horizontal:increment {
-	background-position: calc(-36px + 1px) calc(-12px + 1px); /* right */
-}
-::-webkit-scrollbar-button:vertical:decrement {
-	background-position: calc(-12px + 1px) calc(-12px + 1px); /* up */
-}
-::-webkit-scrollbar-button:vertical:increment {
-	background-position: calc(-0px + 1px) calc(-12px + 1px); /* down */
-}
-::-webkit-scrollbar {
-	background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAABlBMVEW9vb3///8EwsWUAAAADElEQVQI12NoYHAAAAHEAMFJRSpJAAAAAElFTkSuQmCC) repeat;
-}
-::-webkit-scrollbar-track-piece:active {
-	background: black;
-}
-

@@ -1,6 +1,6 @@
 function Task(win){
 	win.task = this;
-	const $task = this.$task = $("<button class='task'/>").appendTo($(".tasks"));
+	const $task = this.$task = $("<button class='task toggle'/>").appendTo($(".tasks"));
 	const $title = $("<span class='title'/>");
 	
 	this.updateTitle = ()=> {

@@ -7,9 +7,40 @@ $folder_view.appendTo($desktop);
 
 // Prevent drag and drop from redirecting the page (the browser default behavior for files)
 // TODO: only prevent if there are actually files; there's nothing that uses text inputs atm that's not in an iframe, so it doesn't matter YET (afaik)
-$G.on("dragover", function(e){
-	e.preventDefault();
+// $G.on("dragover", function(e){
+// 	e.preventDefault();
+// });
+// $G.on("drop", function(e){
+// 	e.preventDefault();
+// });
+
+function loadThemeFile(file) {
+	var reader = new FileReader();
+	reader.onload = ()=> {
+		var fileText = reader.result;
+
+		var cssProperties = parseThemeFileString(fileText);
+		applyCSSProperties(cssProperties);
+		console.log(makeThemeCSSFile(cssProperties));
+	};
+	reader.readAsText(file);
+}
+
+$("html").on("dragover", function(event) {
+	event.preventDefault();  
+	event.stopPropagation();
 });
-$G.on("drop", function(e){
-	e.preventDefault();
+$("html").on("dragleave", function(event) {
+	event.preventDefault();  
+	event.stopPropagation();
+});
+$("html").on("drop", function(event) {
+	event.preventDefault();  
+	event.stopPropagation();
+	var files = [...event.originalEvent.dataTransfer.files];
+	for (var file of files) {
+		if (file.name.match(/\.theme(pack)?$/i)) {
+			loadThemeFile(file);
+		}
+	}
 });

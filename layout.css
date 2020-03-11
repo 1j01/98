@@ -122,7 +122,7 @@ html, body {
 .start-button,
 .tasks,
 .task,
-.window:not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window):not(#playlist-window-shade),
+.os-window,
 .window-titlebar,
 .window-title {
 	cursor: default;
@@ -132,7 +132,7 @@ html, body {
 	-moz-user-select: none;
 	-webkit-user-select: none;
 }
-.window:not(.gen-window):not(#main-window):not(#playlist-window):not(#equalizer-window):not(#playlist-window-shade) {
+.os-window {
 	display: flex;
 	flex-direction: column;
 }
@@ -177,111 +177,6 @@ html, body {
 
 .marquee {
 	pointer-events: none;
-}
-
-.menus {
-	display: flex;
-	flex: 0 0 auto;
-}
-.menu-container {
-	position: relative;
-}
-.menu-popup {
-	position: absolute;
-	top: 100%;
-	left: 0;
-	z-index: 400000; /* so sub-menu-popups can be visible over the window */
-	box-sizing: border-box;
-}
-.menu-popup-table {
-	border-collapse: collapse;
-}
-.menu-item {
-	white-space: nowrap;
-}
-.menu-hr {
-	display: block !important;
-	height: 0;
-	width: auto;
-}
-.menu-hotkey {
-	display: inline !important;
-}
-.menu-item-checkbox-area,
-.menu-item-submenu-area {
-	min-width: 16px;
-}
-.menu-item-checkbox-area,
-.menu-item-submenu-area {
-	text-align: center;
-}
-
-.window-titlebar {
-	display: flex;
-	flex-direction: row;
-	align-items: center;
-}
-.window-title-area {
-	position: relative;
-	flex: 1;
-	height: 16px; /* 100% doesn't work */
-}
-.window-title {
-	position: absolute;
-	left: 0;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	display: inline-block !important;
-	margin: 0;
-	padding: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-.window-close-button {
-	display: block !important;
-	float: right;
-	/* width: 13px;
-	height: 11px; */
-}
-.window-close-button {
-	display: block !important;
-	float: right;
-}
-.window-close-button,
-.window-maximize-button,
-.window-minimize-button {
-	background-image: url("images/titlebar-buttons.png");
-	display: block;
-	width: 16px;
-	height: 14px;
-}
-
-.window-close-button {
-	background-position: calc(-3 * 13px);
-}
-.window-maximize-button {
-	background-position: calc(-1 * 13px);
-}
-.maximized .window-maximize-button {
-	background-position: calc(-2 * 13px);
-}
-.window-minimize-button {
-	background-position: calc(-0 * 13px);
-}
-
-.window-close-button:hover:active {
-	background-position: calc(-3 * 13px + 1px) 2px;
-}
-.window-maximize-button:hover:active {
-	background-position: calc(-1 * 13px + 1px) 2px;
-}
-.maximized .window-maximize-button:hover:active {
-	background-position: calc(-2 * 13px + 1px) 2px;
-}
-.window-minimize-button:hover:active {
-	background-position: calc(-0 * 13px + 1px) 2px;
 }
 
 .window-content .button-group {

@@ -4,6 +4,10 @@ sprite_sheet.src = "img/buttons.png";
 
 var $Button = function(title, n){
 	var $button = $("<button/>").attr("title", title);
+
+	// These aren't really toggle buttons (except for their radio button behavior)...
+	// but they have the look of toggle buttons while being clicked.
+	$button.addClass("toggle");
 	
 	var n_buttons = 5;
 	var sheet_width = 125;
