@@ -424,6 +424,19 @@ function openURLFile(file_path){
 }
 openURLFile.acceptsFilePaths = true;
 
+function openThemeFile(file_path){
+	withFilesystem(function(){
+		var fs = BrowserFS.BFSRequire("fs");
+		fs.readFile(file_path, "utf8", function(err, content){
+			if(err){
+				return alert(err);
+			}
+			loadThemeFromText(content);
+		});
+	});
+}
+openThemeFile.acceptsFilePaths = true;
+
 var file_extension_associations = {
 	"": Notepad,
 	txt: Notepad,
@@ -450,6 +463,8 @@ var file_extension_associations = {
 	htm: Explorer,
 	html: Explorer,
 	url: openURLFile,
+	theme: openThemeFile,
+	themepack: openThemeFile,
 };
 
 // Note: global executeFile called by explorer

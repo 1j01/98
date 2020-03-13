@@ -17,22 +17,23 @@ $folder_view.appendTo($desktop);
 function loadThemeFile(file) {
 	var reader = new FileReader();
 	reader.onload = ()=> {
-		var fileText = reader.result;
-
-		var cssProperties = parseThemeFileString(fileText);
-		applyCSSProperties(cssProperties);
-		console.log(makeThemeCSSFile(cssProperties));
-
-		window.themeCSSProperties = cssProperties;
-		$("iframe").each((i, iframe)=> {
-			try {
-				applyCSSProperties(cssProperties, iframe.contentDocument.documentElement);
-			} catch(error) {
-				console.log("error applying theme to iframe", iframe, error);
-			}
-		})
+		loadThemeFromText(reader.result);
 	};
 	reader.readAsText(file);
+}
+
+function loadThemeFromText(fileText) {
+	var cssProperties = parseThemeFileString(fileText);
+	applyCSSProperties(cssProperties);
+
+	window.themeCSSProperties = cssProperties;
+	$("iframe").each((i, iframe)=> {
+		try {
+			applyCSSProperties(cssProperties, iframe.contentDocument.documentElement);
+		} catch(error) {
+			console.log("error applying theme to iframe", iframe, error);
+		}
+	})
 }
 
 $("html").on("dragover", function(event) {
