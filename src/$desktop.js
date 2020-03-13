@@ -22,6 +22,15 @@ function loadThemeFile(file) {
 		var cssProperties = parseThemeFileString(fileText);
 		applyCSSProperties(cssProperties);
 		console.log(makeThemeCSSFile(cssProperties));
+
+		window.themeCSSProperties = cssProperties;
+		$("iframe").each((i, iframe)=> {
+			try {
+				applyCSSProperties(cssProperties, iframe.contentDocument.documentElement);
+			} catch(error) {
+				console.log("error applying theme to iframe", iframe, error);
+			}
+		})
 	};
 	reader.readAsText(file);
 }

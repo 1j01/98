@@ -64,6 +64,10 @@ function $IframeWindow(options){
 			$win.focus();
 			// focus_window_contents();
 			
+			if (window.themeCSSProperties) {
+				applyCSSProperties(themeCSSProperties, iframe.contentDocument.documentElement);
+			}
+
 			// on Wayback Machine, and iframe's url not saved yet
 			if (iframe.contentDocument.querySelector("#error #livewebInfo.available")) {
 				var message = document.createElement("div");
