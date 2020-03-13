@@ -37,6 +37,8 @@ var file_extension_icons = {
 	htm: "html",
 	html: "html",
 	url: "html",
+	theme: "themes",
+	themepack: "themes",
 };
 
 const set_dragging_file_paths = (dragging_file_paths)=> {
