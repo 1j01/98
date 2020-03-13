@@ -157,10 +157,9 @@ let webamp;
 let $webamp;
 let winamp_task;
 let winamp_interface;
+let winamp_loading = false;
 // TODO: support opening multiple files at once
 function openWinamp(file_path){
-	const includeButterchurn = isButterchurnSupported();
-
 	const filePathToBlob = (file_path)=> {
 		return new Promise((resolve, reject)=> {
 			withFilesystem(function(){
@@ -199,11 +198,22 @@ function openWinamp(file_path){
 			const track = await filePathToTrack(file_path);
 			webamp.setTracksToPlay([track]);
 		}
+
+		winamp_loading = false;
 	}
-	if(winamp_task){
+	if (winamp_task) {
 		whenLoaded()
 		return;
 	}
+	if (winamp_loading) {
+		return; // TODO: queue up files?
+	}
+	winamp_loading = true;
+
+	// This check creates a WebGL context, so don't do it if you try to open Winamp while it's opening or open.
+	// (Otherwise it will lead to "WARNING: Too many active WebGL contexts. Oldest context will be lost.")
+	const includeButterchurn = isButterchurnSupported();
+
 	load_winamp_bundle_if_not_loaded(includeButterchurn, function(){
 		const webamp_options = {
 			initialTracks: [{
