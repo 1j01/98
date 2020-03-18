@@ -1,0 +1,139 @@
+;Copyright © Microsoft Corp. 1995
+
+[CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%The Golden Era My Computer.ico
+
+[CLSID\{208D2C60-3AEA-1069-A2D7-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%The Golden Era Network Neighborhood.ico
+
+[CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon]
+full=%ThemeDir%The Golden Era Recycle Full.ico,0
+empty=%ThemeDir%The Golden Era Recycle Empty.ico,0
+
+
+[Control Panel\Colors]
+ActiveTitle=216 112 96
+Background=0 0 0
+Hilight=128 136 168
+HilightText=255 248 224
+TitleText=255 248 224
+Window=255 248 224
+WindowText=0 0 0
+Scrollbar=220 228 220
+InactiveTitle=112 143 112
+Menu=184 200 184
+WindowFrame=0 0 0
+MenuText=0 0 0
+ActiveBorder=184 200 184
+InactiveBorder=184 200 184
+AppWorkspace=112 143 112
+ButtonFace=184 200 184
+ButtonShadow=112 143 112
+GrayText=112 143 112
+ButtonText=0 0 0
+InactiveTitleText=0 0 0
+ButtonHilight=220 228 220
+ButtonDkShadow=0 0 0
+ButtonLight=184 200 184
+InfoText=0 0 0
+InfoWindow=255 255 225
+
+[Control Panel\Cursors]
+Arrow=%ThemeDir%The Golden Era arrow.cur
+Help=%ThemeDir%The Golden Era help.cur
+AppStarting=%ThemeDir%The Golden Era wait.ani
+Wait=%ThemeDir%The Golden Era busy.ani
+NWPen=%ThemeDir%The Golden Era pen.cur
+No=%ThemeDir%The Golden Era no.cur
+SizeNS=%ThemeDir%The Golden Era Size NS.cur
+SizeWE=%ThemeDir%The Golden Era Size WE.cur
+Crosshair=%ThemeDir%The Golden Era cross.cur
+IBeam=%ThemeDir%The Golden Era beam.cur
+SizeNWSE=%ThemeDir%The Golden Era Size NWSE.cur
+SizeNESW=%ThemeDir%The Golden Era Size NESW.cur
+SizeAll=%ThemeDir%The Golden Era move.cur
+UpArrow=%ThemeDir%The Golden Era up.cur
+DefaultValue=Windows default
+
+[Control Panel\Desktop]
+Wallpaper=%ThemeDir%The Golden Era wallpaper.jpg
+TileWallpaper=0
+Pattern=
+ScreenSaveActive=1
+
+[Control Panel\Desktop\WindowMetrics]
+
+
+
+[AppEvents\Schemes\Apps\.Default\.Default\.Current]
+DefaultValue=%ThemeDir%The Golden Era default sound.wav
+
+[AppEvents\Schemes\Apps\.Default\AppGPFault\.Current]
+DefaultValue=%ThemeDir%The Golden Era program error.wav
+
+[AppEvents\Schemes\Apps\.Default\Maximize\.Current]
+DefaultValue=%ThemeDir%The Golden Era maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuCommand\.Current]
+DefaultValue=%ThemeDir%The Golden Era menu command.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuPopup\.Current]
+DefaultValue=%ThemeDir%The Golden Era menu popup.wav
+
+[AppEvents\Schemes\Apps\.Default\Minimize\.Current]
+DefaultValue=%ThemeDir%The Golden Era minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\Open\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Close\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\RestoreDown\.Current]
+DefaultValue=%ThemeDir%The Golden Era minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\RestoreUp\.Current]
+DefaultValue=%ThemeDir%The Golden Era maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\RingIn\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Ringout\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\SystemAsterisk\.Current]
+DefaultValue=%ThemeDir%The Golden Era asterisk.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemDefault\.Current]
+DefaultValue=%ThemeDir%The Golden Era beep.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExclamation\.Current]
+DefaultValue=%ThemeDir%The Golden Era exclamation.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExit\.Current]
+DefaultValue=%ThemeDir%The Golden Era exit windows.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemHand\.Current]
+DefaultValue=%ThemeDir%The Golden Era critical stop.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemQuestion\.Current]
+DefaultValue=%ThemeDir%The Golden Era Question.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemStart\.Current]
+DefaultValue=%ThemeDir%The Golden Era startup.wav
+
+[AppEvents\Schemes\Apps\Explorer\EmptyRecycleBin\.Current]
+DefaultValue=%ThemeDir%The Golden Era empty recycle bin.wav
+
+
+[Metrics]
+IconMetrics=76 0 0 0 112 0 0 0 99 0 0 0 1 0 0 0 248 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 0 3 8 0 119 3 102 130 95 6 15 3 8 0 0 0 126 32
+NonclientMetrics=84 1 0 0 1 0 0 0 13 0 0 0 13 0 0 0 23 0 0 0 23 0 0 0 240 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 67 101 110 116 117 114 121 32 71 111 116 104 105 99 0 110 101 46 84 104 101 109 101 0 0 96 82 129 148 42 11 193 15 0 0 0 15 0 0 0 248 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 0 110 101 46 84 104 101 109 101 0 0 96 82 129 148 42 11 193 18 0 0 0 18 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 1 0 0 0 0 0 0 0 67 101 110 116 117 114 121 32 71 111 116 104 105 99 0 110 101 46 84 104 101 109 101 0 0 96 82 129 148 42 11 193 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 0 110 101 46 84 104 101 109 101 0 0 96 82 129 148 42 11 193 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 0 110 101 46 84 104 101 109 101 0 0 96 82 129 148 42 11 193
+
+[boot]
+SCRNSAVE.EXE=%WinDir%system\The Golden Era.scr
+
+[MasterThemeSelector]
+MTSM=DABJDKT
+ThemeColorBPP=8
+Stretch=1

@@ -1,0 +1,139 @@
+;Copyright © Microsoft Corp. 1995
+
+[CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Dangerous Creatures My Computer.ico,0
+
+[CLSID\{208D2C60-3AEA-1069-A2D7-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Dangerous Creatures Network Neighborhood.ico,0
+
+[CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon]
+full=%ThemeDir%Dangerous Creatures Recycle Full.ico,0
+empty=%ThemeDir%Dangerous Creatures Recycle Empty.ico,0
+
+
+[Control Panel\Colors]
+ActiveTitle=0 128 128
+Background=0 0 0
+Hilight=0 128 128
+HilightText=255 255 255
+TitleText=255 255 255
+Window=184 184 184
+WindowText=0 0 0
+Scrollbar=184 184 184
+InactiveTitle=72 72 72
+Menu=112 112 112
+WindowFrame=0 0 0
+MenuText=0 0 0
+ActiveBorder=112 112 112
+InactiveBorder=112 112 112
+AppWorkspace=72 72 72
+ButtonFace=112 112 112
+ButtonShadow=72 72 72
+GrayText=72 72 72
+ButtonText=0 0 0
+InactiveTitleText=112 112 112
+ButtonHilight=184 184 184
+ButtonDkShadow=0 0 0
+ButtonLight=112 112 112
+InfoText=128 0 128
+InfoWindow=255 255 255
+
+[Control Panel\Cursors]
+Arrow=%ThemeDir%Dangerous Creatures arrow.cur
+Help=%ThemeDir%Dangerous Creatures help.cur
+AppStarting=%ThemeDir%Dangerous Creatures wait.ani
+Wait=%ThemeDir%Dangerous Creatures busy.ani
+NWPen=%ThemeDir%Dangerous Creatures pen.cur
+No=%ThemeDir%Dangerous Creatures no.cur
+SizeNS=%ThemeDir%Dangerous Creatures Size NS.cur
+SizeWE=%ThemeDir%Dangerous Creatures Size WE.cur
+Crosshair=%ThemeDir%Dangerous Creatures cross.cur
+IBeam=%ThemeDir%Dangerous Creatures beam.cur
+SizeNWSE=%ThemeDir%Dangerous Creatures Size NWSE.cur
+SizeNESW=%ThemeDir%Dangerous Creatures Size NESW.cur
+SizeAll=%ThemeDir%Dangerous Creatures move.cur
+UpArrow=%ThemeDir%Dangerous Creatures up.cur
+DefaultValue=Windows default
+
+[Control Panel\Desktop]
+Wallpaper=%ThemeDir%Dangerous Creatures wallpaper.jpg
+Tilewallpaper=0
+Pattern=(None)
+ScreenSaveActive=1
+
+[Control Panel\Desktop\WindowMetrics]
+
+
+[AppEvents\Schemes\Apps\.Default\.Default\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures default sound.wav
+
+[AppEvents\Schemes\Apps\.Default\AppGPFault\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures program error.wav
+
+[AppEvents\Schemes\Apps\.Default\Maximize\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuCommand\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures menu command.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuPopup\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures menu popup.wav
+
+[AppEvents\Schemes\Apps\.Default\Minimize\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\Open\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Close\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\RestoreDown\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\RestoreUp\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\RingIn\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Ringout\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\SystemAsterisk\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures asterisk.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemDefault\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures beep.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExclamation\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures exclamation.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExit\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures startup.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemHand\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures critical stop.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemQuestion\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures question.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemStart\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures startup.wav
+
+[AppEvents\Schemes\Apps\Explorer\EmptyRecycleBin\.Current]
+DefaultValue=%ThemeDir%Dangerous Creatures empty recycle bin.wav
+
+
+[Metrics]
+IconMetrics=76 0 0 0 96 0 0 0 83 0 0 0 1 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 65 114 105 97 108 0 101 109 112 116 121 32 114 101 99 121 99 108 101 32 98 105 110 46 119 97 118 0 98 105 110 46
+NonclientMetrics=84 1 0 0 1 0 0 0 13 0 0 0 13 0 0 0 18 0 0 0 18 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 0 0 0 0 0 0 0 0 65 114 105 97 108 0 77 69 83 92 68 97 110 103 101 114 111 117 115 32 50 46 84 72 77 0 64 0 0 0 0 0 16 0 0 0 16 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 65 114 105 97 108 0 77 69 83 92 68 97 110 103 101 114 111 117 115 32 50 46 84 72 77 0 64 0 0 0 0 0 18 0 0 0 18 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 65 114 105 97 108 0 77 69 83 92 68 97 110 103 101 114 111 117 115 32 50 46 84 72 77 0 64 0 0 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 0 0 0 0 0 0 0 0 65 114 105 97 108 0 77 69 83 92 68 97 110 103 101 114 111 117 115 32 50 46 84 72 77 0 64 0 0 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 65 114 105 97 108 0 77 69 83 92 68 97 110 103 101 114 111 117 115 32 50 46 84 72 77 0 64 0 0 0 0 0
+
+[boot]
+SCRNSAVE.EXE=%Windir%System\Dangerous Creatures.scr
+
+[MasterThemeSelector]
+MTSM=DABJDKT
+ThemeColorBPP=8
+ThemeImageBPP=8
+Stretch=1

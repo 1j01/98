@@ -1,0 +1,143 @@
+;Copyright © Microsoft Corp. 1995
+
+[CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%The 60's USA My Computer.ico
+
+[CLSID\{208D2C60-3AEA-1069-A2D7-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%The 60's USA Network Neighborhood.ico
+
+[CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon]
+full=%ThemeDir%The 60's USA Recycle Full.ico,0
+empty=%ThemeDir%The 60's USA Recycle Empty.ico,0
+
+
+[Control Panel\Colors]
+ActiveTitle=0 0 128
+Background=160 48 168
+Hilight=0 255 0
+HilightText=0 0 0
+TitleText=255 255 255
+Window=255 255 255
+WindowText=0 0 0
+Scrollbar=232 184 240
+InactiveTitle=160 48 168
+Menu=208 104 216
+WindowFrame=0 0 0
+MenuText=0 0 0
+ActiveBorder=208 104 216
+InactiveBorder=208 104 216
+AppWorkspace=128 0 128
+ButtonFace=208 104 216
+ButtonShadow=160 48 168
+GrayText=160 48 168
+ButtonText=0 0 0
+InactiveTitleText=232 184 240
+ButtonHilight=232 184 240
+ButtonDkShadow=0 0 0
+ButtonLight=208 104 216
+InfoText=0 0 0
+InfoWindow=255 255 0
+
+
+[Control Panel\Cursors]
+Arrow=%ThemeDir%The 60's USA arrow.cur
+Help=%ThemeDir%The 60's USA help.cur
+AppStarting=%ThemeDir%The 60's USA wait.ani
+Wait=%ThemeDir%The 60's USA busy.ani
+NWPen=%ThemeDir%The 60's USA pen.cur
+No=%ThemeDir%The 60's USA no.cur
+SizeNS=%ThemeDir%The 60's USA Size NS.cur
+SizeWE=%ThemeDir%The 60's USA Size WE.cur
+Crosshair=%ThemeDir%The 60's USA cross.cur
+IBeam=%ThemeDir%The 60's USA beam.cur
+SizeNWSE=%ThemeDir%The 60's USA Size NWSE.cur
+SizeNESW=%ThemeDir%The 60's USA Size NESW.cur
+SizeAll=%ThemeDir%The 60's USA move.cur
+UpArrow=%ThemeDir%The 60's USA up.cur
+DefaultValue=Windows default
+
+[Control Panel\Desktop]
+Wallpaper=%ThemeDir%The 60's USA wallpaper.jpg
+TileWallpaper=0
+Pattern=(None)
+ScreenSaveActive=1
+
+[Control Panel\Desktop\WindowMetrics]
+
+
+
+[AppEvents\Schemes\Apps\.Default\.Default\.Current]
+DefaultValue=%ThemeDir%The 60's USA default sound.wav
+
+[AppEvents\Schemes\Apps\.Default\AppGPFault\.Current]
+DefaultValue=%ThemeDir%The 60's USA program error.wav
+
+[AppEvents\Schemes\Apps\.Default\Maximize\.Current]
+DefaultValue=%ThemeDir%The 60's USA maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuCommand\.Current]
+DefaultValue=%ThemeDir%The 60's USA menu command.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuPopup\.Current]
+DefaultValue=%ThemeDir%The 60's USA menu popup.wav
+
+[AppEvents\Schemes\Apps\.Default\Minimize\.Current]
+DefaultValue=%ThemeDir%The 60's USA minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\Open\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Close\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\RestoreDown\.Current]
+DefaultValue=%ThemeDir%The 60's USA Restore Down.wav
+
+[AppEvents\Schemes\Apps\.Default\RestoreUp\.Current]
+DefaultValue=%ThemeDir%The 60's USA Restore Up.wav
+
+[AppEvents\Schemes\Apps\.Default\RingIn\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Ringout\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\SystemAsterisk\.Current]
+DefaultValue=%ThemeDir%The 60's USA asterisk.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemDefault\.Current]
+DefaultValue=%ThemeDir%The 60's USA beep.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExclamation\.Current]
+DefaultValue=%ThemeDir%The 60's USA exclamation.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExit\.Current]
+DefaultValue=%ThemeDir%The 60's USA exit windows.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemHand\.Current]
+DefaultValue=%ThemeDir%The 60's USA critical stop.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemQuestion\.Current]
+DefaultValue=%ThemeDir%The 60's USA question.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemStart\.Current]
+DefaultValue=%ThemeDir%The 60's USA startup.wav
+
+[AppEvents\Schemes\Apps\Explorer\EmptyRecycleBin\.Current]
+DefaultValue=%ThemeDir%The 60's USA empty recycle bin.wav
+
+
+
+[Metrics]
+IconMetrics=76 0 0 0 79 0 0 0 83 0 0 0 0 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 76 117 99 105 100 97 32 72 97 110 100 119 114 105 116 105 110 103 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+NonclientMetrics=84 1 0 0 1 0 0 0 16 0 0 0 16 0 0 0 19 0 0 0 19 0 0 0 243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 0 0 0 0 0 0 0 0 76 117 99 105 100 97 32 72 97 110 100 119 114 105 116 105 110 103 0 0 255 255 255 231 0 96 82 129 164 14 2 2 17 0 0 0 17 0 0 0 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 1 0 0 0 0 0 0 0 76 117 99 105 100 97 32 83 97 110 115 0 114 105 116 105 110 103 0 0 255 255 255 231 0 96 82 129 164 14 2 2 18 0 0 0 18 0 0 0 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 1 0 0 0 0 0 0 0 76 117 99 105 100 97 32 83 97 110 115 0 114 105 116 105 110 103 0 0 255 255 255 231 0 96 82 129 164 14 2 2 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 1 0 0 0 0 0 0 0 76 117 99 105 100 97 32 83 97 110 115 0 114 105 116 105 110 103 0 0 255 255 255 231 0 96 82 129 164 14 2 2 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 1 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 116 105 110 103 0 0 255 255 255 231 0 96 82 129 164 14 2 2
+
+
+[boot]
+SCRNSAVE.EXE=%WinDir%System\The 60's USA.scr
+
+[MasterThemeSelector]
+MTSM=DABJDKT
+ThemeColorBPP=8
+ThemeImageBPP=8
+Stretch=1

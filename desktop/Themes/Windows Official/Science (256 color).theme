@@ -1,0 +1,141 @@
+;Copyright © Microsoft Corp. 1995
+
+[CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Science My Computer.ico
+
+[CLSID\{208D2C60-3AEA-1069-A2D7-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Science Network Neighborhood.ico
+
+[CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon]
+full=%ThemeDir%Science Recycle Full.ico,0
+empty=%ThemeDir%Science Recycle Empty.ico,0
+
+
+[Control Panel\Colors]
+ActiveTitle=0 128 128
+Background=79 101 125
+Hilight=0 128 128
+HilightText=255 255 255
+TitleText=255 255 255
+Window=255 255 255
+WindowText=0 0 0
+Scrollbar=193 204 217
+InactiveTitle=160 160 164
+Menu=131 153 177
+WindowFrame=0 0 0
+MenuText=0 0 0
+ActiveBorder=131 153 177
+InactiveBorder=131 153 177
+AppWorkspace=128 128 128
+ButtonFace=131 153 177
+ButtonShadow=79 101 125
+GrayText=79 101 125
+ButtonText=0 0 0
+InactiveTitleText=193 204 217
+ButtonHilight=193 204 217
+ButtonDkShadow=0 0 0
+ButtonLight=131 153 177
+InfoText=0 0 0
+InfoWindow=193 204 217
+
+[Control Panel\Cursors]
+Arrow=%ThemeDir%Science arrow.cur
+Help=%ThemeDir%Science help.cur
+AppStarting=%ThemeDir%Science wait.ani
+Wait=%ThemeDir%Science busy.ani
+NWPen=%ThemeDir%Science pen.cur
+No=%ThemeDir%Science no.cur
+SizeNS=%ThemeDir%Science Size NS.cur
+SizeWE=%ThemeDir%Science Size WE.cur
+Crosshair=%ThemeDir%Science cross.cur
+IBeam=%ThemeDir%Science beam.cur
+SizeNWSE=%ThemeDir%Science Size NWSE.cur
+SizeNESW=%ThemeDir%Science Size NESW.cur
+SizeAll=%ThemeDir%Science move.cur
+UpArrow=%ThemeDir%Science up.cur
+DefaultValue=Windows default
+
+[Control Panel\Desktop]
+Wallpaper=%ThemeDir%Science wallpaper.jpg
+TileWallpaper=0
+Pattern=(None)
+ScreenSaveActive=1
+
+[Control Panel\Desktop\WindowMetrics]
+
+
+
+[AppEvents\Schemes\Apps\.Default\.Default\.Current]
+DefaultValue=%ThemeDir%Science default sound.wav
+
+[AppEvents\Schemes\Apps\.Default\AppGPFault\.Current]
+DefaultValue=%ThemeDir%Science program error.wav
+
+[AppEvents\Schemes\Apps\.Default\Maximize\.Current]
+DefaultValue=%ThemeDir%Science maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuCommand\.Current]
+DefaultValue=%ThemeDir%Science menu command.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuPopup\.Current]
+DefaultValue=%ThemeDir%Science menu popup.wav
+
+[AppEvents\Schemes\Apps\.Default\Minimize\.Current]
+DefaultValue=%ThemeDir%Science minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\Open\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Close\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\RestoreDown\.Current]
+DefaultValue=%ThemeDir%Science minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\RestoreUp\.Current]
+DefaultValue=%ThemeDir%Science maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\RingIn\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Ringout\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\SystemAsterisk\.Current]
+DefaultValue=%ThemeDir%Science asterisk.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemDefault\.Current]
+DefaultValue=%ThemeDir%Science beep.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExclamation\.Current]
+DefaultValue=%ThemeDir%Science exclamation.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExit\.Current]
+DefaultValue=%ThemeDir%Science exit windows.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemHand\.Current]
+DefaultValue=%ThemeDir%Science critical stop.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemQuestion\.Current]
+DefaultValue=%ThemeDir%Science question.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemStart\.Current]
+DefaultValue=%ThemeDir%Science startup.wav
+
+[AppEvents\Schemes\Apps\Explorer\EmptyRecycleBin\.Current]
+DefaultValue=%ThemeDir%Science empty recycle bin.wav
+
+
+
+[Metrics]
+IconMetrics=76 0 0 0 96 0 0 0 83 0 0 0 1 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 76 117 99 105 100 97 32 83 97 110 115 32 85 110 105 99 111 100 101 0 196 14 15 3 8 0 95 3 110 130 65 15
+NonclientMetrics=84 1 0 0 1 0 0 0 13 0 0 0 13 0 0 0 18 0 0 0 18 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 0 0 0 0 0 0 0 0 76 117 99 105 100 97 32 83 97 110 115 32 85 110 105 99 111 100 101 0 236 70 247 191 0 64 210 129 206 105 65 0 16 0 0 0 16 0 0 0 247 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 0 0 0 0 0 0 0 0 76 117 99 105 100 97 32 83 97 110 115 32 85 110 105 99 111 100 101 0 236 70 247 191 0 64 210 129 206 105 65 0 18 0 0 0 18 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 76 117 99 105 100 97 32 83 97 110 115 32 85 110 105 99 111 100 101 0 236 70 247 191 0 64 210 129 206 105 65 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 76 117 99 105 100 97 32 83 97 110 115 32 85 110 105 99 111 100 101 0 236 70 247 191 0 64 210 129 206 105 65 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 105 99 111 100 101 0 236 70 247 191 0 64 210 129 206 105 65 0
+
+[boot]
+SCRNSAVE.EXE=%WinDir%system\Science.scr 
+
+[MasterThemeSelector]
+MTSM=DABJDKT
+ThemeColorBPP=8
+ThemeImageBPP=8
+Stretch=1

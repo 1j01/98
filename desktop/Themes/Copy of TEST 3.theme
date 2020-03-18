@@ -1,0 +1,132 @@
+[CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Baseball My Computer.ico,0
+
+[CLSID\{208D2C60-3AEA-1069-A2D7-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Baseball Network Neighborhood.ico,0
+
+[CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon]
+full=%ThemeDir%Baseball Recycle Full.ico,0
+empty=%ThemeDir%Baseball Recycle Empty.ico,0
+
+[Control Panel\Cursors]
+Arrow=%ThemeDir%Baseball Normal Select.cur
+Help=%ThemeDir%Baseball Help Select.cur
+AppStarting=%ThemeDir%Baseball Working in background.ani
+Wait=%ThemeDir%Baseball Busy.ani
+NWPen=%ThemeDir%Baseball Handwriting.cur
+No=%ThemeDir%Baseball Unavailable.cur
+SizeNS=%ThemeDir%Baseball Vertical Resize.cur
+SizeWE=%ThemeDir%Baseball Horizontal Resize.cur
+Crosshair=%ThemeDir%Baseball Precision Select.cur
+IBeam=%ThemeDir%Baseball Text Select.cur
+SizeNWSE=%ThemeDir%Baseball Diagonal Resize 1.cur
+SizeNESW=%ThemeDir%Baseball Diagonal Resize 2.cur
+SizeAll=%ThemeDir%Baseball Move.cur
+UpArrow=%ThemeDir%Baseball Alternate Select.cur
+DefaultValue=
+
+[Control Panel\Desktop]
+Wallpaper=%ThemeDir%Baseball wallpaper.jpg
+Pattern=(None)
+TileWallpaper=0
+WallpaperStyle=2
+
+[AppEvents\Schemes\Apps\.Default\.Default\.Current]
+DefaultValue=%ThemeDir%Baseball default sound.wav
+
+[AppEvents\Schemes\Apps\.Default\AppGPFault\.Current]
+DefaultValue=%ThemeDir%Baseball program error.wav
+
+[AppEvents\Schemes\Apps\.Default\Maximize\.Current]
+DefaultValue=%ThemeDir%Baseball maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuCommand\.Current]
+DefaultValue=%ThemeDir%Baseball menu command.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuPopup\.Current]
+DefaultValue=%ThemeDir%Baseball menu popup.wav
+
+[AppEvents\Schemes\Apps\.Default\Minimize\.Current]
+DefaultValue=%ThemeDir%Baseball minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\Open\.Current]
+DefaultValue=%ThemeDir%Baseball open program.wav
+
+[AppEvents\Schemes\Apps\.Default\Close\.Current]
+DefaultValue=%ThemeDir%Baseball close program.wav
+
+[AppEvents\Schemes\Apps\.Default\RestoreDown\.Current]
+DefaultValue=%ThemeDir%Baseball restore down.wav
+
+[AppEvents\Schemes\Apps\.Default\RestoreUp\.Current]
+DefaultValue=%ThemeDir%Baseball restore up.wav
+
+[AppEvents\Schemes\Apps\.Default\RingIn\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Ringout\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\SystemAsterisk\.Current]
+DefaultValue=%ThemeDir%Baseball asterisk.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemDefault\.Current]
+DefaultValue=%ThemeDir%Baseball beep.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExclamation\.Current]
+DefaultValue=%ThemeDir%Baseball exclamation.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExit\.Current]
+DefaultValue=%ThemeDir%Baseball exit windows.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemHand\.Current]
+DefaultValue=%ThemeDir%Baseball critical stop.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemQuestion\.Current]
+DefaultValue=%ThemeDir%Baseball question.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemStart\.Current]
+DefaultValue=%ThemeDir%Baseball startup.wav
+
+[AppEvents\Schemes\Apps\Explorer\EmptyRecycleBin\.Current]
+DefaultValue=%ThemeDir%Baseball empty recycle bin.wav
+
+[Metrics]
+IconMetrics=76 0 0 0 102 0 0 0 112 0 0 0 1 0 0 0 248 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 97 118 0 98 105 110 46 119 97 118 0 33 92 84 72 69 77 69
+NonclientMetrics=84 1 0 0 1 0 0 0 13 0 0 0 13 0 0 0 18 0 0 0 18 0 0 0 243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 0 0 0 0 0 0 0 0 67 101 110 116 117 114 121 32 71 111 116 104 105 99 0 97 108 108 32 40 50 53 54 32 99 111 108 111 114 41 46 116 15 0 0 0 15 0 0 0 247 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 0 97 108 108 32 40 50 53 54 32 99 111 108 111 114 41 46 116 18 0 0 0 18 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 0 97 108 108 32 40 50 53 54 32 99 111 108 111 114 41 46 116 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 0 97 108 108 32 40 50 53 54 32 99 111 108 111 114 41 46 116 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 0 97 108 108 32 40 50 53 54 32 99 111 108 111 114 41 46 116
+
+[Control Panel\Colors]
+ActiveTitle=0 0 0
+Background=255 255 255
+Hilight=255 69 0
+HilightText=0 0 69
+TitleText=255 255 255
+Window=0 0 0
+WindowText=0 255 255
+Scrollbar=0 255 255
+InactiveTitle=160 112 56
+Menu=255 168 112
+WindowFrame=0 0 0
+MenuText=0 0 0
+ActiveBorder=208 168 112
+InactiveBorder=208 168 112
+AppWorkspace=159 115 53
+ButtonFace=208 168 0
+ButtonShadow=160 112 56
+GrayText=128 128 128
+ButtonText=255 0 0
+InactiveTitleText=0 255 112
+ButtonHilight=232 208 184
+ButtonDkShadow=255 0 255
+ButtonLight=9 168 0
+InfoText=128 0 0
+InfoWindow=225 224 210
+
+[boot]
+SCRNSAVE.EXE=%WinDir%SYSTEM\Baseball.SCR
+
+[MasterThemeSelector]
+MTSM=DABJDKT
+ThemeImageBPP=8
+ThemeColorBPP=8
+Stretch=1

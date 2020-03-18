@@ -1,0 +1,138 @@
+;Copyright © Microsoft Corp. 1995
+
+[CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Nature My Computer.ico,0
+
+[CLSID\{208D2C60-3AEA-1069-A2D7-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Nature Network Neighborhood.ico,0
+
+[CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon]
+full=%ThemeDir%Nature Recycle Full.ico,0
+empty=%ThemeDir%Nature Recycle Empty.ico,0
+
+
+[Control Panel\Colors]
+ActiveTitle=0 72 72
+Background=0 0 0
+Hilight=176 144 112
+HilightText=0 0 0
+TitleText=240 232 216
+Window=240 232 216
+WindowText=0 0 0
+Scrollbar=240 224 208
+InactiveTitle=104 80 56
+Menu=216 192 160
+WindowFrame=0 0 0
+MenuText=0 0 0
+ActiveBorder=216 192 160
+InactiveBorder=216 192 160
+AppWorkspace=155 119 83
+ButtonFace=216 192 160
+ButtonShadow=176 136 72
+GrayText=176 136 72
+ButtonText=0 0 0
+InactiveTitleText=0 0 0
+ButtonHilight=240 224 208
+ButtonDkShadow=0 0 0
+ButtonLight=216 192 160
+InfoText=0 72 72
+InfoWindow=255 255 255
+
+[Control Panel\Cursors]
+Arrow=%ThemeDir%Nature arrow.cur
+Help=%ThemeDir%Nature help.cur
+AppStarting=%ThemeDir%Nature wait.ani
+Wait=%ThemeDir%Nature busy.ani
+NWPen=%ThemeDir%Nature pen.cur
+No=%ThemeDir%Nature no.cur
+SizeNS=%ThemeDir%Nature Size NS.cur
+SizeWE=%ThemeDir%Nature Size WE.cur
+Crosshair=%ThemeDir%Nature cross.cur
+IBeam=%ThemeDir%Nature beam.cur
+SizeNWSE=%ThemeDir%Nature Size NWSE.cur
+SizeNESW=%ThemeDir%Nature Size NESW.cur
+SizeAll=%ThemeDir%Nature move.cur
+UpArrow=%ThemeDir%Nature up.cur
+DefaultValue=
+
+[Control Panel\Desktop]
+Wallpaper=%ThemeDir%Nature wallpaper.jpg
+TileWallpaper=0
+Pattern=(None)
+ScreenSaveActive=1
+
+[Control Panel\Desktop\WindowMetrics]
+
+
+[AppEvents\Schemes\Apps\.Default\.Default\.Current]
+DefaultValue=%ThemeDir%Nature default sound.wav
+
+[AppEvents\Schemes\Apps\.Default\AppGPFault\.Current]
+DefaultValue=%ThemeDir%Nature program error.wav
+
+[AppEvents\Schemes\Apps\.Default\Maximize\.Current]
+DefaultValue=%ThemeDir%Nature maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuCommand\.Current]
+DefaultValue=%ThemeDir%Nature menu command.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuPopup\.Current]
+DefaultValue=%ThemeDir%Nature menu popup.wav
+
+[AppEvents\Schemes\Apps\.Default\Minimize\.Current]
+DefaultValue=%ThemeDir%Nature minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\Open\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Close\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\RestoreDown\.Current]
+DefaultValue=%ThemeDir%Nature Restore Down.wav
+
+[AppEvents\Schemes\Apps\.Default\RestoreUp\.Current]
+DefaultValue=%ThemeDir%Nature Restore Up.wav
+
+[AppEvents\Schemes\Apps\.Default\RingIn\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Ringout\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\SystemAsterisk\.Current]
+DefaultValue=%ThemeDir%Nature asterisk.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemDefault\.Current]
+DefaultValue=%ThemeDir%Nature beep.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExclamation\.Current]
+DefaultValue=%ThemeDir%Nature exclamation.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExit\.Current]
+DefaultValue=%ThemeDir%Nature exit windows.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemHand\.Current]
+DefaultValue=%ThemeDir%Nature critical stop.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemQuestion\.Current]
+DefaultValue=%ThemeDir%Nature question.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemStart\.Current]
+DefaultValue=%ThemeDir%Nature startup.wav
+
+[AppEvents\Schemes\Apps\Explorer\EmptyRecycleBin\.Current]
+DefaultValue=%ThemeDir%Nature empty recycle bin.wav
+
+
+[Metrics]
+IconMetrics=76 0 0 0 96 0 0 0 83 0 0 0 1 0 0 0 243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 67 111 112 112 101 114 112 108 97 116 101 32 71 111 116 104 105 99 32 76 105 103 104 116 0 0 103 3 102 130 229 14
+NonclientMetrics=84 1 0 0 1 0 0 0 13 0 0 0 13 0 0 0 18 0 0 0 18 0 0 0 241 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 0 0 0 0 0 0 0 0 67 111 112 112 101 114 112 108 97 116 101 32 71 111 116 104 105 99 32 66 111 108 100 0 0 64 210 129 206 105 65 0 15 0 0 0 15 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 67 111 112 112 101 114 112 108 97 116 101 32 71 111 116 104 105 99 32 76 105 103 104 116 0 64 210 129 206 105 65 0 18 0 0 0 18 0 0 0 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 67 111 112 112 101 114 112 108 97 116 101 32 71 111 116 104 105 99 32 76 105 103 104 116 0 64 210 129 206 105 65 0 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 67 111 112 112 101 114 112 108 97 116 101 32 71 111 116 104 105 99 32 76 105 103 104 116 0 64 210 129 206 105 65 0 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 116 104 105 99 32 76 105 103 104 116 0 64 210 129 206 105 65 0
+
+[boot]
+SCRNSAVE.EXE=%WinDir%System\Nature.SCR
+
+[MasterThemeSelector]
+MTSM=DABJDKT
+ThemeColorBPP=8
+Stretch=1

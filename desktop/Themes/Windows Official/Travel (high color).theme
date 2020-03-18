@@ -1,0 +1,142 @@
+;Copyright © Microsoft Corp. 1995
+
+[CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Travel My Computer.ico
+
+[CLSID\{208D2C60-3AEA-1069-A2D7-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Travel Network Neighborhood.ico
+
+[CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon]
+full=%ThemeDir%Travel Recycle Full.ico,0
+empty=%ThemeDir%Travel Recycle Empty.ico,0
+
+
+[Control Panel\Colors]
+ActiveTitle=64 72 120
+Background=0 0 0
+Hilight=72 96 80
+HilightText=224 224 216
+TitleText=224 224 216
+Window=216 208 200
+WindowText=0 0 0
+Scrollbar=200 192 184
+InactiveTitle=96 88 72
+Menu=144 128 112
+WindowFrame=0 0 0
+MenuText=0 0 0
+ActiveBorder=144 128 112
+InactiveBorder=144 128 112
+AppWorkspace=95 84 73
+ButtonFace=144 128 112
+ButtonShadow=96 88 72
+GrayText=96 88 72
+ButtonText=0 0 0
+InactiveTitleText=144 128 112
+ButtonHilight=200 192 184
+ButtonDkShadow=0 0 0
+ButtonLight=144 128 112
+InfoText=64 72 120
+InfoWindow=255 255 255
+
+[Control Panel\Cursors]
+Arrow=%ThemeDir%Travel arrow.cur
+Help=%ThemeDir%Travel help.cur
+AppStarting=%ThemeDir%Travel wait.ani
+Wait=%ThemeDir%Travel busy.ani
+NWPen=%ThemeDir%Travel pen.cur
+No=%ThemeDir%Travel no.cur
+SizeNS=%ThemeDir%Travel Size NS.cur
+SizeWE=%ThemeDir%Travel Size WE.cur
+Crosshair=%ThemeDir%Travel cross.cur
+IBeam=%ThemeDir%Travel beam.cur
+SizeNWSE=%ThemeDir%Travel Size NWSE.cur
+SizeNESW=%ThemeDir%Travel Size NESW.cur
+SizeAll=%ThemeDir%Travel move.cur
+UpArrow=%ThemeDir%Travel up.cur
+DefaultValue=%ThemeDir%Travel arrow.cur
+
+[Control Panel\Desktop]
+Wallpaper=%ThemeDir%Travel wallpaper.jpg
+TileWallpaper=0
+Pattern=(None)
+ScreenSaveActive=1
+
+[Control Panel\Desktop\WindowMetrics]
+
+
+
+[AppEvents\Schemes\Apps\.Default\.Default\.Current]
+DefaultValue=%ThemeDir%Travel default sound.wav
+
+[AppEvents\Schemes\Apps\.Default\AppGPFault\.Current]
+DefaultValue=%ThemeDir%Travel program error.wav
+
+[AppEvents\Schemes\Apps\.Default\Maximize\.Current]
+DefaultValue=%ThemeDir%Travel maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuCommand\.Current]
+DefaultValue=%ThemeDir%Travel menu command.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuPopup\.Current]
+DefaultValue=%ThemeDir%Travel menu popup.wav
+
+[AppEvents\Schemes\Apps\.Default\Minimize\.Current]
+DefaultValue=%ThemeDir%Travel minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\Open\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Close\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\RestoreDown\.Current]
+DefaultValue=%ThemeDir%Travel Restore Down.wav
+
+[AppEvents\Schemes\Apps\.Default\RestoreUp\.Current]
+DefaultValue=%ThemeDir%Travel Restore Up.wav
+
+[AppEvents\Schemes\Apps\.Default\RingIn\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Ringout\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\SystemAsterisk\.Current]
+DefaultValue=%ThemeDir%Travel asterisk.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemDefault\.Current]
+DefaultValue=%ThemeDir%Travel beep.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExclamation\.Current]
+DefaultValue=%ThemeDir%Travel exclamation.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExit\.Current]
+DefaultValue=%ThemeDir%Travel exit windows.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemHand\.Current]
+DefaultValue=%ThemeDir%Travel critical stop.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemQuestion\.Current]
+DefaultValue=%ThemeDir%Travel question.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemStart\.Current]
+DefaultValue=%ThemeDir%Travel startup.wav
+
+[AppEvents\Schemes\Apps\Explorer\EmptyRecycleBin\.Current]
+DefaultValue=%ThemeDir%Travel empty recycle bin.wav
+
+
+
+[Metrics]
+IconMetrics=76 0 0 0 96 0 0 0 83 0 0 0 1 0 0 0 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 67 111 109 105 99 32 83 97 110 115 32 77 83 0 2 0 0 0 2 0 223 5 0 0 0 0 103 37 63 1 243 21
+NonclientMetrics=84 1 0 0 1 0 0 0 16 0 0 0 16 0 0 0 18 0 0 0 19 0 0 0 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 0 0 0 0 0 0 0 0 67 111 109 105 99 32 83 97 110 115 32 77 83 0 0 0 4 203 211 129 236 70 247 191 0 64 210 129 206 105 65 0 15 0 0 0 15 0 0 0 247 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 67 111 109 105 99 32 83 97 110 115 32 77 83 0 0 0 4 203 211 129 236 70 247 191 0 64 210 129 206 105 65 0 19 0 0 0 19 0 0 0 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 67 111 109 105 99 32 83 97 110 115 32 77 83 0 0 0 4 203 211 129 236 70 247 191 0 64 210 129 206 105 65 0 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 67 111 109 105 99 32 83 97 110 115 32 77 83 0 0 0 4 203 211 129 236 70 247 191 0 64 210 129 206 105 65 0 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 0 0 4 203 211 129 236 70 247 191 0 64 210 129 206 105 65 0
+
+[boot]
+SCRNSAVE.EXE=%WinDir%System\Travel.scr
+
+[MasterThemeSelector]
+MTSM=DABJDKT
+ThemeColorBPP=8
+ThemeImageBPP=8
+Stretch=1
+Dither=4

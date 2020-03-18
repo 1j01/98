@@ -1,0 +1,138 @@
+;Copyright © Microsoft Corp. 1995
+
+[CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Leonardo da Vinci My Computer.ico
+
+[CLSID\{208D2C60-3AEA-1069-A2D7-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Leonardo da Vinci Network Neighborhood.ico
+
+[CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon]
+full=%ThemeDir%Leonardo da Vinci Recycle Full.ico,0
+empty=%ThemeDir%Leonardo da Vinci Recycle Empty.ico,0
+
+
+[Control Panel\Colors]
+ActiveTitle=128 0 0
+Background=139 101 92
+Hilight=128 0 0
+HilightText=255 255 255
+TitleText=255 255 255
+Window=255 255 255
+WindowText=0 0 0
+Scrollbar=223 210 208
+InactiveTitle=139 101 92
+Menu=191 165 159
+WindowFrame=0 0 0
+MenuText=0 0 0
+ActiveBorder=191 165 159
+InactiveBorder=191 165 159
+AppWorkspace=139 101 92
+ButtonFace=191 165 159
+ButtonShadow=139 101 92
+GrayText=139 101 92
+ButtonText=0 0 0
+InactiveTitleText=223 210 208
+ButtonHilight=223 210 208
+ButtonDkShadow=0 0 0
+ButtonLight=191 165 159
+InfoText=0 0 0
+InfoWindow=255 255 255
+
+[Control Panel\Cursors]
+Arrow=%ThemeDir%Leonardo da Vinci arrow.cur
+Help=%ThemeDir%Leonardo da Vinci help.cur
+AppStarting=%ThemeDir%Leonardo da Vinci wait.ani
+Wait=%ThemeDir%Leonardo da Vinci busy.ani
+NWPen=%ThemeDir%Leonardo da Vinci pen.cur
+No=%ThemeDir%Leonardo da Vinci no.cur
+SizeNS=%ThemeDir%Leonardo da Vinci Size NS.cur
+SizeWE=%ThemeDir%Leonardo da Vinci Size WE.cur
+Crosshair=%ThemeDir%Leonardo da Vinci cross.cur
+IBeam=%ThemeDir%Leonardo da Vinci beam.cur
+SizeNWSE=%ThemeDir%Leonardo da Vinci Size NWSE.cur
+SizeNESW=%ThemeDir%Leonardo da Vinci Size NESW.cur
+SizeAll=%ThemeDir%Leonardo da Vinci move.cur
+UpArrow=%ThemeDir%Leonardo da Vinci up.cur
+DefaultValue=Windows default
+
+[Control Panel\Desktop]
+Wallpaper=%ThemeDir%Leonardo da Vinci wallpaper.jpg
+TileWallpaper=0
+Pattern=
+ScreenSaveActive=1
+
+
+[AppEvents\Schemes\Apps\.Default\.Default\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci default sound.wav
+
+[AppEvents\Schemes\Apps\.Default\AppGPFault\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci program error.wav
+
+[AppEvents\Schemes\Apps\.Default\Maximize\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuCommand\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci menu command.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuPopup\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci menu popup.wav
+
+[AppEvents\Schemes\Apps\.Default\Minimize\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\Open\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Close\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\RestoreDown\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci restore down.wav
+
+[AppEvents\Schemes\Apps\.Default\RestoreUp\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci restore up.wav
+
+[AppEvents\Schemes\Apps\.Default\RingIn\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Ringout\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\SystemAsterisk\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci asterisk.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemDefault\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci beep.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExclamation\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci exclamation.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExit\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci startup.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemHand\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci critical stop.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemQuestion\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci question.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemStart\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci startup.wav
+
+[AppEvents\Schemes\Apps\Explorer\EmptyRecycleBin\.Current]
+DefaultValue=%ThemeDir%Leonardo da Vinci empty recycle bin.wav
+
+
+
+[Metrics]
+IconMetrics=76 0 0 0 96 0 0 0 83 0 0 0 1 0 0 0 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 66 111 111 107 32 65 110 116 105 113 117 97 0 119 97 118 0 116 46 119 97 118 0 59 10 0 116 6 70 32 232 130
+NonclientMetrics=84 1 0 0 1 0 0 0 16 0 0 0 16 0 0 0 20 0 0 0 20 0 0 0 243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 0 0 0 0 0 0 0 0 66 111 111 107 32 65 110 116 105 113 117 97 0 109 101 0 192 206 211 129 236 70 247 191 0 64 210 129 206 105 65 0 18 0 0 0 18 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 0 0 0 0 0 0 0 0 66 111 111 107 32 65 110 116 105 113 117 97 0 109 101 0 192 206 211 129 236 70 247 191 0 64 210 129 206 105 65 0 18 0 0 0 18 0 0 0 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 66 111 111 107 32 65 110 116 105 113 117 97 0 109 101 0 192 206 211 129 236 70 247 191 0 64 210 129 206 105 65 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 66 111 111 107 32 65 110 116 105 113 117 97 0 109 101 0 192 206 211 129 236 70 247 191 0 64 210 129 206 105 65 0 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 101 0 192 206 211 129 236 70 247 191 0 64 210 129 206 105 65 0
+
+[boot]
+SCRNSAVE.EXE=%Windir%System\Leonardo da Vinci.scr
+
+[MasterThemeSelector]
+MTSM=DABJDKT
+ThemeImageBPP=8
+ThemeColorBPP=8
+Stretch=1

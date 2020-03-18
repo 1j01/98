@@ -1,0 +1,132 @@
+[CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Space My Computer.ico,0
+
+[CLSID\{208D2C60-3AEA-1069-A2D7-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Space Network Neighborhood.ico,0
+
+[CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon]
+full=%ThemeDir%Space Recycle Full.ico,0
+empty=%ThemeDir%Space Recycle Empty.ico,0
+
+[Control Panel\Cursors]
+Arrow=%ThemeDir%Space Normal Select.cur
+Help=%ThemeDir%Space Help Select.cur
+AppStarting=%ThemeDir%Space Working in background.ani
+Wait=%ThemeDir%Space Busy.ani
+NWPen=%ThemeDir%Space Handwriting.cur
+No=%ThemeDir%Space Unavailable.cur
+SizeNS=%ThemeDir%Space Vertical Resize.cur
+SizeWE=%ThemeDir%Space Horizontal Resize.cur
+Crosshair=%ThemeDir%Space Precision Select.cur
+IBeam=%ThemeDir%Space Text Select.cur
+SizeNWSE=%ThemeDir%Space Diagonal Resize 1.cur
+SizeNESW=%ThemeDir%Space Diagonal Resize 2.cur
+SizeAll=%ThemeDir%Space Move.cur
+UpArrow=%ThemeDir%Space Alternate Select.cur
+DefaultValue=
+
+[Control Panel\Desktop]
+Wallpaper=%ThemeDir%Space wallpaper.jpg
+Pattern=(None)
+TileWallpaper=0
+WallpaperStyle=2
+
+[AppEvents\Schemes\Apps\.Default\.Default\.Current]
+DefaultValue=%ThemeDir%Space default sound.wav
+
+[AppEvents\Schemes\Apps\.Default\AppGPFault\.Current]
+DefaultValue=%ThemeDir%Space program error.wav
+
+[AppEvents\Schemes\Apps\.Default\Maximize\.Current]
+DefaultValue=%ThemeDir%Space maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuCommand\.Current]
+DefaultValue=%ThemeDir%Space menu command.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuPopup\.Current]
+DefaultValue=%ThemeDir%Space menu popup.wav
+
+[AppEvents\Schemes\Apps\.Default\Minimize\.Current]
+DefaultValue=%ThemeDir%Space minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\Open\.Current]
+DefaultValue=%ThemeDir%Space open program.wav
+
+[AppEvents\Schemes\Apps\.Default\Close\.Current]
+DefaultValue=%ThemeDir%Space close program.wav
+
+[AppEvents\Schemes\Apps\.Default\RestoreDown\.Current]
+DefaultValue=%ThemeDir%Space restore down.wav
+
+[AppEvents\Schemes\Apps\.Default\RestoreUp\.Current]
+DefaultValue=%ThemeDir%Space restore up.wav
+
+[AppEvents\Schemes\Apps\.Default\RingIn\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Ringout\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\SystemAsterisk\.Current]
+DefaultValue=%ThemeDir%Space asterisk.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemDefault\.Current]
+DefaultValue=%ThemeDir%Space beep.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExclamation\.Current]
+DefaultValue=%ThemeDir%Space exclamation.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExit\.Current]
+DefaultValue=%ThemeDir%Space exit windows.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemHand\.Current]
+DefaultValue=%ThemeDir%Space critical stop.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemQuestion\.Current]
+DefaultValue=%ThemeDir%Space question.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemStart\.Current]
+DefaultValue=%ThemeDir%Space startup.wav
+
+[AppEvents\Schemes\Apps\Explorer\EmptyRecycleBin\.Current]
+DefaultValue=%ThemeDir%Space empty recycle bin.wav
+
+[Metrics]
+IconMetrics=76 0 0 0 75 0 0 0 75 0 0 0 0 0 0 0 248 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 98 105 110 46 119 97 118 0 76 85 83 33 92 84 72 69 77 69
+NonclientMetrics=84 1 0 0 1 0 0 0 13 0 0 0 13 0 0 0 20 0 0 0 20 0 0 0 240 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 87 101 115 116 109 105 110 115 116 101 114 0 75 105 100 115 32 80 108 117 115 33 92 84 104 101 109 101 115 92 115 112 15 0 0 0 15 0 0 0 247 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 100 115 32 80 108 117 115 33 92 84 104 101 109 101 115 92 115 112 18 0 0 0 18 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 79 67 82 32 65 32 69 120 116 101 110 100 101 100 0 115 32 80 108 117 115 33 92 84 104 101 109 101 115 92 115 112 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 0 115 32 80 108 117 115 33 92 84 104 101 109 101 115 92 115 112 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 79 67 82 32 65 32 69 120 116 101 110 100 101 100 0 115 32 80 108 117 115 33 92 84 104 101 109 101 115 92 115 112
+
+[Control Panel\Colors]
+ActiveTitle=0 0 0
+Background=0 0 0
+Hilight=0 0 0
+HilightText=0 255 0
+TitleText=0 255 0
+Window=255 255 255
+WindowText=0 0 0
+Scrollbar=192 200 208
+InactiveTitle=80 96 104
+Menu=128 144 152
+WindowFrame=0 0 0
+MenuText=0 0 0
+ActiveBorder=128 144 152
+InactiveBorder=128 144 152
+AppWorkspace=83 96 102
+ButtonFace=128 144 152
+ButtonShadow=80 96 104
+GrayText=80 96 104
+ButtonText=0 0 0
+InactiveTitleText=192 192 192
+ButtonHilight=192 200 208
+ButtonDkShadow=0 0 0
+ButtonLight=128 144 152
+InfoText=0 0 0
+InfoWindow=255 255 255
+
+[boot]
+SCRNSAVE.EXE=%WinDir%SYSTEM\Space.SCR
+
+[MasterThemeSelector]
+MTSM=DABJDKT
+ThemeImageBPP=8
+ThemeColorBPP=8
+Stretch=1

@@ -1,0 +1,140 @@
+;Copyright © Microsoft Corp. 1995
+
+[CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%More Windows My Computer.ico,0
+
+[CLSID\{208D2C60-3AEA-1069-A2D7-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%More Windows Network Neighborhood.ico,0
+
+[CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon]
+full=%ThemeDir%More Windows Recycle Full.ico,0
+empty=%ThemeDir%More Windows Recycle Empty.ico,0
+DefaultValue=%ThemeDir%More Windows Recycle Empty.ico,0
+
+[Control Panel\Colors]
+ActiveTitle=0 0 0
+Background=0 0 0
+Hilight=240 208 48
+HilightText=0 0 0
+TitleText=240 208 48
+Window=255 255 255
+WindowText=0 0 0
+Scrollbar=200 208 208
+InactiveTitle=96 104 112
+Menu=144 152 160
+WindowFrame=0 0 0
+MenuText=0 0 0
+ActiveBorder=144 152 160
+InactiveBorder=144 152 160
+AppWorkspace=92 101 109
+ButtonFace=144 152 160
+ButtonShadow=96 104 112
+GrayText=96 104 112
+ButtonText=0 0 0
+InactiveTitleText=200 200 208
+ButtonHilight=200 208 208
+ButtonDkShadow=0 0 0
+ButtonLight=144 152 160
+InfoText=0 0 0
+InfoWindow=240 208 48
+
+[Control Panel\Cursors]
+Arrow=%ThemeDir%More Windows arrow.cur
+Help=%ThemeDir%More Windows help.cur
+AppStarting=%ThemeDir%More Windows wait.ani
+Wait=%ThemeDir%More Windows busy.ani
+NWPen=%ThemeDir%More Windows pen.cur
+No=%ThemeDir%More Windows no.cur
+SizeNS=%ThemeDir%More Windows Size NS.cur
+SizeWE=%ThemeDir%More Windows Size WE.cur
+Crosshair=%ThemeDir%More Windows cross.cur
+IBeam=%ThemeDir%More Windows beam.cur
+SizeNWSE=%ThemeDir%More Windows Size NWSE.cur
+SizeNESW=%ThemeDir%More Windows Size NESW.cur
+SizeAll=%ThemeDir%More Windows move.cur
+UpArrow=%ThemeDir%More Windows up.cur
+DefaultValue=
+
+[Control Panel\Desktop]
+Wallpaper=%ThemeDir%More Windows wallpaper.jpg
+TileWallpaper=0
+Pattern=(None)
+ScreenSaveActive=1
+
+[Control Panel\Desktop\WindowMetrics]
+
+
+[AppEvents\Schemes\Apps\.Default\.Default\.Current]
+DefaultValue=%ThemeDir%Windows 98 default sound.wav
+
+[AppEvents\Schemes\Apps\.Default\AppGPFault\.Current]
+DefaultValue=%ThemeDir%Windows 98 program error.wav
+
+[AppEvents\Schemes\Apps\.Default\Maximize\.Current]
+DefaultValue=%ThemeDir%Windows 98 maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuCommand\.Current]
+DefaultValue=%ThemeDir%Windows 98 menu command.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuPopup\.Current]
+DefaultValue=%ThemeDir%Windows 98 menu popup.wav
+
+[AppEvents\Schemes\Apps\.Default\Minimize\.Current]
+DefaultValue=%ThemeDir%Windows 98 minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\Open\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Close\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\RestoreDown\.Current]
+DefaultValue=%ThemeDir%Windows 98 Restore Down.wav
+
+[AppEvents\Schemes\Apps\.Default\RestoreUp\.Current]
+DefaultValue=%ThemeDir%Windows 98 Restore Up.wav
+
+[AppEvents\Schemes\Apps\.Default\RingIn\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Ringout\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\SystemAsterisk\.Current]
+DefaultValue=%ThemeDir%Windows 98 asterisk.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemDefault\.Current]
+DefaultValue=%ThemeDir%Windows 98 beep.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExclamation\.Current]
+DefaultValue=%ThemeDir%Windows 98 exclamation.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExit\.Current]
+DefaultValue=%ThemeDir%Windows 98 exit windows.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemHand\.Current]
+DefaultValue=%ThemeDir%Windows 98 critical stop.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemQuestion\.Current]
+DefaultValue=%ThemeDir%Windows 98 question.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemStart\.Current]
+DefaultValue=%Windir%Media\The Microsoft Sound.wav
+
+[AppEvents\Schemes\Apps\Explorer\EmptyRecycleBin\.Current]
+DefaultValue=%ThemeDir%Windows 98 empty recycle bin.wav
+av
+
+
+[Metrics]
+IconMetrics=76 0 0 0 112 0 0 0 99 0 0 0 1 0 0 0 248 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 46 119 97 118 0 98 105 110 46 119 97 118 0 99 111 44 48 0
+NonclientMetrics=84 1 0 0 1 0 0 0 13 0 0 0 13 0 0 0 22 0 0 0 22 0 0 0 240 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 1 0 0 0 0 0 0 0 78 101 119 115 32 71 111 116 104 105 99 32 77 84 0 46 116 104 101 109 101 0 64 0 192 221 64 0 1 0 0 0 17 0 0 0 17 0 0 0 247 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 78 101 119 115 32 71 111 116 104 105 99 32 77 84 0 46 116 104 101 109 101 0 64 0 192 221 64 0 1 0 0 0 20 0 0 0 20 0 0 0 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 78 101 119 115 32 71 111 116 104 105 99 32 77 84 0 46 116 104 101 109 101 0 64 0 192 221 64 0 1 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 78 101 119 115 32 71 111 116 104 105 99 32 77 84 0 46 116 104 101 109 101 0 64 0 192 221 64 0 1 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 0 46 116 104 101 109 101 0 64 0 192 221 64 0 1 0 0 0
+
+[boot]
+SCRNSAVE.EXE=%Windir%System\Windows 98.scr
+
+[MasterThemeSelector]
+MTSM=DABJDKT
+ThemeColorBPP=8
+Stretch=1
+Dither=4

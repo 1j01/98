@@ -1,0 +1,143 @@
+;Copyright © Microsoft Corp. 1995
+
+[CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Sports My Computer.ico
+
+[CLSID\{208D2C60-3AEA-1069-A2D7-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Sports Network Neighborhood.ico
+
+[CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon]
+full=%ThemeDir%Sports Recycle Full.ico,0
+empty=%ThemeDir%Sports Recycle Empty.ico,0
+
+
+
+[Control Panel\Colors]
+ActiveTitle=0 128 128
+Background=0 0 0
+Hilight=255 255 0
+HilightText=0 0 0
+TitleText=0 0 0
+Window=255 255 255
+WindowText=0 128 0
+Scrollbar=192 192 192
+InactiveTitle=0 128 0
+Menu=176 224 160
+WindowFrame=0 0 0
+MenuText=0 128 0
+ActiveBorder=176 224 160
+InactiveBorder=104 184 72
+AppWorkspace=216 240 208
+ButtonFace=176 224 160
+ButtonShadow=104 184 72
+GrayText=104 184 72
+ButtonText=0 0 0
+InactiveTitleText=176 224 160
+ButtonHilight=216 240 208
+ButtonDkShadow=0 0 0
+ButtonLight=192 192 192
+InfoText=0 0 0
+InfoWindow=255 255 0
+
+[Control Panel\Cursors]
+Arrow=%ThemeDir%Sports arrow.cur
+Help=%ThemeDir%Sports help.cur
+AppStarting=%ThemeDir%Sports wait.ani
+Wait=%ThemeDir%Sports busy.ani
+NWPen=%ThemeDir%Sports pen.cur
+No=%ThemeDir%Sports no.cur
+SizeNS=%ThemeDir%Sports Size NS.cur
+SizeWE=%ThemeDir%Sports Size WE.cur
+Crosshair=%ThemeDir%Sports cross.cur
+IBeam=%ThemeDir%Sports beam.cur
+SizeNWSE=%ThemeDir%Sports Size NWSE.cur
+SizeNESW=%ThemeDir%Sports Size NESW.cur
+SizeAll=%ThemeDir%Sports move.cur
+UpArrow=%ThemeDir%Sports up.cur
+DefaultValue=Windows default
+
+[Control Panel\Desktop]
+Wallpaper=%ThemeDir%Sports wallpaper.jpg
+TileWallpaper=0
+Pattern=(None)
+ScreenSaveActive=1
+
+[Control Panel\Desktop\WindowMetrics]
+
+
+
+[AppEvents\Schemes\Apps\.Default\.Default\.Current]
+DefaultValue=%ThemeDir%Sports default sound.wav
+
+[AppEvents\Schemes\Apps\.Default\AppGPFault\.Current]
+DefaultValue=%ThemeDir%Sports program error.wav
+
+[AppEvents\Schemes\Apps\.Default\Maximize\.Current]
+DefaultValue=%ThemeDir%Sports maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuCommand\.Current]
+DefaultValue=%ThemeDir%Sports menu command.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuPopup\.Current]
+DefaultValue=%ThemeDir%Sports menu popup.wav
+
+[AppEvents\Schemes\Apps\.Default\Minimize\.Current]
+DefaultValue=%ThemeDir%Sports minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\Open\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Close\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\RestoreDown\.Current]
+DefaultValue=%ThemeDir%Sports minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\RestoreUp\.Current]
+DefaultValue=%ThemeDir%Sports maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\RingIn\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Ringout\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\SystemAsterisk\.Current]
+DefaultValue=%ThemeDir%Sports asterisk.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemDefault\.Current]
+DefaultValue=%ThemeDir%Sports beep.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExclamation\.Current]
+DefaultValue=%ThemeDir%Sports exclamation.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExit\.Current]
+DefaultValue=%ThemeDir%Sports exit windows.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemHand\.Current]
+DefaultValue=%ThemeDir%Sports asterisk.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemQuestion\.Current]
+DefaultValue=%ThemeDir%Sports question.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemStart\.Current]
+DefaultValue=%ThemeDir%Sports startup.wav
+
+[AppEvents\Schemes\Apps\Explorer\EmptyRecycleBin\.Current]
+DefaultValue=%ThemeDir%Sports empty recycle bin.wav
+
+
+[Metrics]
+IconMetrics=76 0 0 0 75 0 0 0 75 0 0 0 0 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 79 67 82 32 65 32 69 120 116 101 110 100 101 100 0 98 105 110 46 119 97 118 0 0 0 0 0 0 0 0 0 0
+NonclientMetrics=84 1 0 0 1 0 0 0 13 0 0 0 13 0 0 0 18 0 0 0 18 0 0 0 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 79 67 82 32 65 32 69 120 116 101 110 100 101 100 0 115 46 84 104 101 109 101 0 129 0 96 82 129 244 81 9 193 15 0 0 0 15 0 0 0 248 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 0 115 46 84 104 101 109 101 0 129 0 96 82 129 244 81 9 193 18 0 0 0 18 0 0 0 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 79 67 82 32 65 32 69 120 116 101 110 100 101 100 0 115 46 84 104 101 109 101 0 129 0 96 82 129 244 81 9 193 245 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 0 115 46 84 104 101 109 101 0 129 0 96 82 129 244 81 9 193 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 77 83 32 83 97 110 115 32 83 101 114 105 102 0 0 115 46 84 104 101 109 101 0 129 0 96 82 129 244 81 9 193
+
+
+[boot]
+SCRNSAVE.EXE=%WinDir%System\Sports.scr
+
+
+[MasterThemeSelector]
+MTSM=DABJDKT
+ThemeColorBPP=8
+ThemeImageBPP=8
+Stretch=1
