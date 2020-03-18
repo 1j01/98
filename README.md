@@ -76,6 +76,18 @@ Also:
 
 See [CONTRIBUTING](CONTRIBUTING.md)
 
+## Development Setup
+
+- Install [Git](https://git-scm.com/) if you don't already have it.
+- Install [Node.js](https://nodejs.org/) if you don't already have it.
+- Open up a terminal / command prompt in the project directory, and run `npm install` to install dependencies.
+- Run `npm start` to start up a live-reloading development web server.
+
+When pulling changes from git, run `npm install` again in case there are any new or updated dependencies.
+(If you know `package-lock.json` hasn't changed, you shouldn't need to do this.)
+
+Some dependencies are versioned with npm, but pulled into the repo with `npm run pull-libs`
+
 ## TODO
 
 See [TODO](TODO.md)
