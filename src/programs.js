@@ -403,7 +403,8 @@ function openWinamp(file_path){
 			const windowElements = $(".os-window, .window:not(.gen-window)").toArray();
 			const visualizerOverlay = new VisualizerOverlay(
 				$webamp.find(".gen-window canvas")[0],
-				windowElements
+				windowElements,
+				{ mirror: true, stretch: true },
 			);
 
 			// doesn't really need to be checking every frame, but whatever
