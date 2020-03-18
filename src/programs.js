@@ -367,10 +367,14 @@ function openWinamp(file_path){
 			};
 			
 			mustHaveMethods(winamp_interface, windowInterfaceMethods);
+
+			// let raf_id;
 			
 			winamp_task = new Task(winamp_interface);
 			webamp.onClose(function(){
 				winamp_interface.close();
+				// cancelAnimationFrame(raf_id);
+				visualizerOverlay.fadeOutAndCleanUp();
 			});
 			webamp.onMinimize(function(){
 				winamp_interface.minimize();
@@ -394,6 +398,21 @@ function openWinamp(file_path){
 					winamp_interface.blur();
 				}
 			});
+
+			const windowElements = $webamp.find(".window:not(.gen-window)").toArray();
+			const visualizerOverlay = new VisualizerOverlay(
+				$webamp.find(".gen-window canvas")[0],
+				windowElements
+			);
+
+			// const animate = ()=> {
+			// 	raf_id = requestAnimationFrame(animate);
+			// 	visualizerOverlay.render({ mirror: true, stretch: true });
+			// 	visualizerOverlay.fadeIn();
+			// };
+			// raf_id = requestAnimationFrame(animate);
+			
+			visualizerOverlay.fadeIn();
 			
 			whenLoaded()
 		}, (error)=> {
