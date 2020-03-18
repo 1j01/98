@@ -400,7 +400,7 @@ function openWinamp(file_path){
 				}
 			});
 
-			const windowElements = $webamp.find(".window:not(.gen-window)").toArray();
+			const windowElements = $(".os-window, .window:not(.gen-window)").toArray();
 			const visualizerOverlay = new VisualizerOverlay(
 				$webamp.find(".gen-window canvas")[0],
 				windowElements
