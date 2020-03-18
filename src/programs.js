@@ -368,12 +368,12 @@ function openWinamp(file_path){
 			
 			mustHaveMethods(winamp_interface, windowInterfaceMethods);
 
-			// let raf_id;
+			let raf_id;
 			
 			winamp_task = new Task(winamp_interface);
 			webamp.onClose(function(){
 				winamp_interface.close();
-				// cancelAnimationFrame(raf_id);
+				cancelAnimationFrame(raf_id);
 				visualizerOverlay.fadeOutAndCleanUp();
 			});
 			webamp.onMinimize(function(){
@@ -390,6 +390,7 @@ function openWinamp(file_path){
 				winamp_interface.focus();
 			});
 			// TODO: DRY
+			// TODO: clean up event listener, if it's not gonna be DRY'd with something globally
 			$G.on("pointerdown", (e)=> {
 				if (
 					e.target.closest("#webamp") !== $webamp[0] &&
@@ -405,14 +406,18 @@ function openWinamp(file_path){
 				windowElements
 			);
 
-			// const animate = ()=> {
-			// 	raf_id = requestAnimationFrame(animate);
-			// 	visualizerOverlay.render({ mirror: true, stretch: true });
-			// 	visualizerOverlay.fadeIn();
-			// };
-			// raf_id = requestAnimationFrame(animate);
-			
-			visualizerOverlay.fadeIn();
+			// doesn't really need to be checking every frame, but whatever
+			// Note: can't access butterchurn canvas image data during a requestAnimationFrame here
+			// because of double buffering
+			const animate = ()=> {
+				if (webamp.getMediaStatus() === "PLAYING") {
+					visualizerOverlay.fadeIn();
+				} else {
+					visualizerOverlay.fadeOut();
+				}
+				raf_id = requestAnimationFrame(animate);
+			};
+			raf_id = requestAnimationFrame(animate);
 			
 			whenLoaded()
 		}, (error)=> {
