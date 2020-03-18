@@ -7,7 +7,67 @@
   "CNAME": null,
   "CONTRIBUTING.md": null,
   "desktop": {
-    "CREDITS.txt": null
+    "CREDITS.txt": null,
+    "Themes": {
+      "Ash.themepack": null,
+      "Blue.themepack": null,
+      "classicthemes8": {
+        "install.cmd": null,
+        "readme.txt": null,
+        "Themes": {
+          "Brick_classic8.theme": null,
+          "desert_classic8.theme": null,
+          "eggplant_classic8.theme": null,
+          "liac_classic8.theme": null,
+          "maple_classic8.theme": null,
+          "marine_classic8.theme": null,
+          "plum_classic8.theme": null,
+          "pumplkin_classic8.theme": null,
+          "rainyday_classic8.theme": null,
+          "redbluewhite_classic8.theme": null,
+          "rose_classic8.theme": null,
+          "slate_classic8.theme": null,
+          "spruce_classic8.theme": null,
+          "storm_classic8.theme": null,
+          "teal_classic8.theme": null,
+          "wheat_classic8.theme": null,
+          "winxp_classic8.theme": null
+        },
+        "themes for windows 8.url": null
+      },
+      "Copy of TEST 3.theme": null,
+      "Fx.themepack": null,
+      "Honey.themepack": null,
+      "Peggys Pastels.themepack": null,
+      "PowerShell.themepack": null,
+      "Precision.themepack": null,
+      "Red Wine.themepack": null,
+      "Solarized Dark.themepack": null,
+      "Teal for Shelbi - Dark.themepack": null,
+      "Vista-esque Midnight (Green).themepack": null,
+      "Windows 1.themepack": null,
+      "Windows Hybrid - Dark.themepack": null,
+      "Windows Official": {
+        "Baseball (256 color).theme": null,
+        "Copy of Dangerous Creatures (256 color).theme": null,
+        "Dangerous Creatures (256 color).theme": null,
+        "Inside your Computer (high color).theme": null,
+        "Jungle (256 color).theme": null,
+        "Leonardo da Vinci (256 color).theme": null,
+        "More Windows (high color).theme": null,
+        "Mystery (high color).theme": null,
+        "Nature (high color).theme": null,
+        "Science (256 color).theme": null,
+        "Space (256 color).theme": null,
+        "Sports (256 color).theme": null,
+        "The 60's USA (256 color).theme": null,
+        "The Golden Era (high color).theme": null,
+        "Travel (high color).theme": null,
+        "Underwater (high color).theme": null,
+        "Windows 98 (256 color).theme": null,
+        "Windows Default.theme": null
+      }
+    }
   },
   "favicon-16x16.png": null,
   "favicon-32x32.png": null,
@@ -26,7 +86,6 @@
   },
   "images": {
     "3d.jpg": null,
-    "arrows.png": null,
     "clouds.jpg": null,
     "favicon-src": {
       "favicon-16x16.png": null,
@@ -223,6 +282,12 @@
       "task-16x16.png": null,
       "task-32x32.png": null,
       "task-scheduler-16x16.png": null,
+      "themes-16x16-higher-color.png": null,
+      "themes-16x16.png": null,
+      "themes-32x32-higher-color.png": null,
+      "themes-32x32.png": null,
+      "themes-48x48-higher-color.png": null,
+      "themes-48x48.png": null,
       "Thumbs.db": null,
       "tools-folder-16x16.png": null,
       "tools-folder-32x32.png": null,
@@ -272,6 +337,17 @@
     "browserfs.min.js.map": null,
     "jquery.min.js": null,
     "konami.js": null,
+    "os-gui": {
+      "layout.css": null,
+      "layout.css.map": null,
+      "parse-theme.js": null,
+      "peggys-pastels.css": null,
+      "peggys-pastels.css.map": null,
+      "windows-98.css": null,
+      "windows-98.css.map": null,
+      "windows-default.css": null,
+      "windows-default.css.map": null
+    },
     "pep.js": null
   },
   "mstile-150x150.png": null,
@@ -304,15 +380,11 @@
       "browserconfig.xml": null,
       "CONTRIBUTING.md": null,
       "cypress": {
-        "fixtures": {},
         "integration": {
           "visual-tests.spec.js": null
         },
         "plugins": {
           "index.js": null
-        },
-        "screenshots": {
-          "visual-tests.spec.js": {}
         },
         "snapshots": {
           "visual-tests.spec.js": {
@@ -700,7 +772,8 @@
     "helpers.js": null,
     "programs.js": null,
     "Task.js": null,
-    "update-jspaint.js": null
+    "update-jspaint.js": null,
+    "visualizer-overlay.js": null
   },
   "TODO.md": null
 }
