@@ -403,9 +403,12 @@ function openWinamp(file_path){
 			const windowElements = $(".os-window, .window:not(.gen-window)").toArray();
 			const visualizerOverlay = new VisualizerOverlay(
 				$webamp.find(".gen-window canvas")[0],
-				windowElements,
 				{ mirror: true, stretch: true },
 			);
+			windowElements.forEach(windowEl => {
+				visualizerOverlay.makeOverlayCanvas(windowEl);
+			});
+			
 
 			// doesn't really need to be checking every frame, but whatever
 			// Note: can't access butterchurn canvas image data during a requestAnimationFrame here

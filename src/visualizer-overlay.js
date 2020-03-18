@@ -16,7 +16,7 @@ function getOffset(element, fromElement) {
 window.monkey_patch_render = (obj)=> obj.render();
 
 class VisualizerOverlay {
-	constructor(visualizerCanvas, windowElements, renderOptions) {
+	constructor(visualizerCanvas, renderOptions) {
 		this.visualizerCanvas = visualizerCanvas;
 
 		this.wrappyCanvas = document.createElement("canvas");
@@ -25,10 +25,6 @@ class VisualizerOverlay {
 		this.overlayCanvases = [];
 		this.animateFns = [];
 
-		Array.from(windowElements).forEach(windowEl => {
-			this.makeOverlayCanvas(windowEl);
-		});
-		
 		window.monkey_patch_render = (obj)=> {
 			// check for Butterchurn's Visualizer class
 			if (obj.audio && obj.renderer) {
