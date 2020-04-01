@@ -1,8 +1,8 @@
 .menus,
 .menu-popup,
 .os-window,
-.window-titlebar,
-.window-title {
+.os-window .window-titlebar,
+.os-window .window-title {
 	cursor: default;
 	-webkit-user-select: none;
 	   -moz-user-select: none;
@@ -10,12 +10,23 @@
 	        user-select: none;
 }
 
-.window-titlebar .icon {
+.os-window .window-titlebar,
+body > .window-titlebar {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+}
+.os-window .window-title-area {
+	position: relative;
+	flex: 1;
+}
+
+.os-window .window-titlebar .icon {
 	vertical-align: bottom;
 }
 
 /* Fix dragging things (like windows) over iframes */
-.drag iframe {
+.dragging iframe {
 	pointer-events: none;
 }
 
