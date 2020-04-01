@@ -35,7 +35,6 @@
         },
         "themes for windows 8.url": null
       },
-      "Copy of TEST 3.theme": null,
       "Fx.themepack": null,
       "Honey.themepack": null,
       "Peggys Pastels.themepack": null,
@@ -44,6 +43,11 @@
       "Red Wine.themepack": null,
       "Solarized Dark.themepack": null,
       "Teal for Shelbi - Dark.themepack": null,
+      "TEST": {
+        "Copy of TEST 3.theme": null,
+        "GEN TEST THEME 2.theme": null,
+        "GEN TEST THEME.theme": null
+      },
       "Vista-esque Midnight (Green).themepack": null,
       "Windows 1.themepack": null,
       "Windows Hybrid - Dark.themepack": null,

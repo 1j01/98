@@ -1,0 +1,207 @@
+; JS CODE TO GENERATE:
+;
+; /**
+;  * Converts an HSL color value to RGB. Conversion formula
+;  * adapted from http://en.wikipedia.org/wiki/HSL_color_space.
+;  * Assumes h, s, and l are contained in the set [0, 1] and
+;  * returns r, g, and b in the set [0, 255].
+;  *
+;  * @param   {number}  h       The hue
+;  * @param   {number}  s       The saturation
+;  * @param   {number}  l       The lightness
+;  * @return  {Array}           The RGB representation
+;  */
+; function hslToRgb(h, s, l){
+;     var r, g, b;
+; 
+;     if(s == 0){
+;         r = g = b = l; // achromatic
+;     }else{
+;         var hue2rgb = function hue2rgb(p, q, t){
+;             if(t < 0) t += 1;
+;             if(t > 1) t -= 1;
+;             if(t < 1/6) return p + (q - p) * 6 * t;
+;             if(t < 1/2) return q;
+;             if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+;             return p;
+;         }
+; 
+;         var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+;         var p = 2 * l - q;
+;         r = hue2rgb(p, q, h + 1/3);
+;         g = hue2rgb(p, q, h);
+;         b = hue2rgb(p, q, h - 1/3);
+;     }
+; 
+;     return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+; }
+; 
+; 
+; `ActiveTitle=
+; Background=
+; Hilight=
+; HilightText=
+; TitleText=
+; Window=
+; WindowText=
+; Scrollbar=
+; InactiveTitle=
+; Menu=
+; WindowFrame=
+; MenuText=
+; ActiveBorder=
+; InactiveBorder=
+; AppWorkspace=
+; ButtonFace=
+; ButtonShadow=
+; GrayText=
+; ButtonText=
+; InactiveTitleText=
+; ButtonHilight=
+; ButtonDkShadow=
+; ButtonLight=
+; InfoText=
+; InfoWindow=`.split("\n").map((line)=> line.split("=")).map(([v, c], i, arr)=> `${v}=${hslToRgb(i/arr.length, 0.3 + i/arr.length*0.2, 0.3 + i/arr.length*0.2).join(" ")}`).join("\n")
+
+
+
+[CLSID\{20D04FE0-3AEA-1069-A2D8-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Inside your Computer My Computer.ico
+
+[CLSID\{208D2C60-3AEA-1069-A2D7-08002B30309D}\DefaultIcon]
+DefaultValue=%ThemeDir%Inside your Computer Network Neighborhood.ico
+
+[CLSID\{645FF040-5081-101B-9F08-00AA002F954E}\DefaultIcon]
+full=%ThemeDir%Inside your Computer Recycle Full.ico,0
+empty=%ThemeDir%Inside your Computer Recycle Empty.ico,0
+
+
+[Control Panel\Colors]
+ActiveTitle=99 54 54
+Background=103 66 54
+Hilight=106 80 55
+HilightText=109 94 56
+TitleText=113 111 57
+Window=104 116 57
+WindowText=92 120 58
+Scrollbar=79 123 58
+InactiveTitle=64 127 59
+Menu=60 130 71
+WindowFrame=60 134 90
+MenuText=61 137 110
+ActiveBorder=61 141 131
+InactiveBorder=61 135 145
+AppWorkspace=62 117 148
+ButtonFace=62 98 152
+ButtonShadow=62 77 156
+GrayText=70 63 160
+ButtonText=95 63 163
+InactiveTitleText=122 63 167
+ButtonHilight=150 63 171
+ButtonDkShadow=175 63 171
+ButtonLight=179 64 147
+InfoText=183 64 121
+InfoWindow=187 64 93
+
+
+[Control Panel\Cursors]
+Arrow=%ThemeDir%Inside your Computer arrow.cur
+Help=%ThemeDir%Inside your Computer help.cur
+AppStarting=%ThemeDir%Inside your Computer wait.ani
+Wait=%ThemeDir%Inside your Computer busy.ani
+NWPen=%ThemeDir%Inside your Computer pen.cur
+No=%ThemeDir%Inside your Computer no.cur
+SizeNS=%ThemeDir%Inside your Computer Size NS.cur
+SizeWE=%ThemeDir%Inside your Computer Size WE.cur
+Crosshair=%ThemeDir%Inside your Computer cross.cur
+IBeam=%ThemeDir%Inside your Computer beam.cur
+SizeNWSE=%ThemeDir%Inside your Computer Size NWSE.cur
+SizeNESW=%ThemeDir%Inside your Computer Size NESW.cur
+SizeAll=%ThemeDir%Inside your Computer move.cur
+UpArrow=%ThemeDir%Inside your Computer up.cur
+DefaultValue=Windows default
+
+[Control Panel\Desktop]
+Wallpaper=%ThemeDir%Inside your Computer wallpaper.jpg
+TileWallpaper=0
+Pattern=(None)
+ScreenSaveActive=1
+
+[Control Panel\Desktop\WindowMetrics]
+
+
+
+[AppEvents\Schemes\Apps\.Default\.Default\.Current]
+DefaultValue=%ThemeDir%Inside your Computer default sound.wav
+
+[AppEvents\Schemes\Apps\.Default\AppGPFault\.Current]
+DefaultValue=%ThemeDir%Inside your Computer program error.wav
+
+[AppEvents\Schemes\Apps\.Default\Maximize\.Current]
+DefaultValue=%ThemeDir%Inside your Computer maximize.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuCommand\.Current]
+DefaultValue=%ThemeDir%Inside your Computer menu command.wav
+
+[AppEvents\Schemes\Apps\.Default\MenuPopup\.Current]
+DefaultValue=%ThemeDir%Inside your Computer menu popup.wav
+
+[AppEvents\Schemes\Apps\.Default\Minimize\.Current]
+DefaultValue=%ThemeDir%Inside your Computer minimize.wav
+
+[AppEvents\Schemes\Apps\.Default\Open\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Close\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\RestoreDown\.Current]
+DefaultValue=%ThemeDir%Inside your Computer Restore Down.wav
+
+[AppEvents\Schemes\Apps\.Default\RestoreUp\.Current]
+DefaultValue=%ThemeDir%Inside your Computer Restore Up.wav
+
+[AppEvents\Schemes\Apps\.Default\RingIn\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\Ringout\.Current]
+DefaultValue=
+
+[AppEvents\Schemes\Apps\.Default\SystemAsterisk\.Current]
+DefaultValue=%ThemeDir%Inside your Computer asterisk.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemDefault\.Current]
+DefaultValue=%ThemeDir%Inside your Computer beep.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExclamation\.Current]
+DefaultValue=%ThemeDir%Inside your Computer exclamation.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemExit\.Current]
+DefaultValue=%ThemeDir%Inside your Computer exit windows.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemHand\.Current]
+DefaultValue=%ThemeDir%Inside your Computer critical stop.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemQuestion\.Current]
+DefaultValue=%ThemeDir%Inside your Computer question.wav
+
+[AppEvents\Schemes\Apps\.Default\SystemStart\.Current]
+DefaultValue=%ThemeDir%Inside your Computer startup.wav
+
+[AppEvents\Schemes\Apps\Explorer\EmptyRecycleBin\.Current]
+DefaultValue=%ThemeDir%Inside your Computer empty recycle bin.wav
+
+
+[Metrics]
+IconMetrics=76 0 0 0 96 0 0 0 83 0 0 0 1 0 0 0 241 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 65 98 97 100 105 32 77 84 32 67 111 110 100 101 110 115 101 100 32 76 105 103 104 116 0 119 97 118 0 98 105 110
+NonclientMetrics=84 1 0 0 1 0 0 0 16 0 0 0 16 0 0 0 20 0 0 0 20 0 0 0 240 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 0 0 0 0 0 0 0 0 65 98 97 100 105 32 77 84 32 67 111 110 100 101 110 115 101 100 32 76 105 103 104 116 0 112 82 129 124 76 11 193 17 0 0 0 17 0 0 0 243 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 188 2 0 0 0 0 0 0 0 0 0 0 65 98 97 100 105 32 77 84 32 67 111 110 100 101 110 115 101 100 32 76 105 103 104 116 0 112 82 129 124 76 11 193 19 0 0 0 19 0 0 0 241 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 65 98 97 100 105 32 77 84 32 67 111 110 100 101 110 115 101 100 32 76 105 103 104 116 0 112 82 129 124 76 11 193 241 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 65 98 97 100 105 32 77 84 32 67 111 110 100 101 110 115 101 100 32 76 105 103 104 116 0 112 82 129 124 76 11 193 244 255 255 255 0 0 0 0 0 0 0 0 0 0 0 0 144 1 0 0 0 0 0 0 0 0 0 0 65 98 97 100 105 32 77 84 32 67 111 110 100 101 110 115 101 100 32 76 105 103 104 116 0 112 82 129 124 76 11 193
+
+
+[boot]
+SCRNSAVE.EXE=%WinDir%\System\Inside your Computer.SCR
+
+
+[MasterThemeSelector]
+MTSM=DABJDKT
+ThemeColorBPP=8
+Stretch=1
