@@ -21,19 +21,22 @@ function loadThemeFile(file) {
 	};
 	reader.readAsText(file);
 }
+function applyCSSPropertiesEverywhere(cssProperties, documentElement=document.documentElement) {
+	applyCSSProperties(cssProperties, documentElement);
 
-function loadThemeFromText(fileText) {
-	var cssProperties = parseThemeFileString(fileText);
-	applyCSSProperties(cssProperties);
-
-	window.themeCSSProperties = cssProperties;
-	$("iframe").each((i, iframe)=> {
+	$(documentElement).find("iframe").each((i, iframe)=> {
 		try {
-			applyCSSProperties(cssProperties, iframe.contentDocument.documentElement);
+			applyCSSPropertiesEverywhere(cssProperties, iframe.contentDocument.documentElement);
 		} catch(error) {
 			console.log("error applying theme to iframe", iframe, error);
 		}
-	})
+	});
+}
+function loadThemeFromText(fileText) {
+	var cssProperties = parseThemeFileString(fileText);
+	applyCSSPropertiesEverywhere(cssProperties);
+
+	window.themeCSSProperties = cssProperties;
 }
 
 $("html").on("dragover", function(event) {
