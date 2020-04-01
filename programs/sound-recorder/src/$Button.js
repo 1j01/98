@@ -2,8 +2,53 @@
 var sprite_sheet = document.createElement("img");
 sprite_sheet.src = "img/buttons.png";
 
+var make_canvas = (width, height)=> {
+	var canvas = document.createElement("canvas");
+	canvas.width = width;
+	canvas.height = height;
+	canvas.ctx = canvas.getContext("2d");
+	return canvas;
+};
+
+// $(":root").css({"--icon-enabled": `url("${sprite_sheet.src}")`});
+document.documentElement.style.setProperty("--icon-enabled", `url("${sprite_sheet.src}")`);
+
+function renderDisabledStateIcons() {
+	var {width, height} = sprite_sheet;
+
+	var disabled_canvas = make_canvas(width, height);
+	
+	var drawShadowOfImage = function(x, y, color){
+		var temp_canvas = make_canvas(width, height);
+		var tmx = temp_canvas.ctx;
+		tmx.drawImage(sprite_sheet, 0, 0);
+		tmx.globalCompositeOperation = "source-in";
+		tmx.fillStyle = color;
+		tmx.fillRect(0, 0, width, height);
+		disabled_canvas.ctx.drawImage(temp_canvas, x, y);
+	};
+
+	var style = getComputedStyle(document.documentElement);
+	var hilight = style.getPropertyValue("--ButtonHilight");
+	var shadow = style.getPropertyValue("--ButtonShadow");
+
+	drawShadowOfImage(1, 1, hilight);
+	drawShadowOfImage(0, 0, shadow);
+
+	disabled_canvas.toBlob((blob)=> {
+		var blob_url = URL.createObjectURL(blob);
+		// $(":root").css({"--icon-disabled": `url("${blob_url}")`});
+		document.documentElement.style.setProperty("--icon-disabled", `url("${blob_url}")`);
+	});
+}
+
+$(sprite_sheet).load(function(){
+	renderDisabledStateIcons();
+	$(window).on("theme-changed", renderDisabledStateIcons);
+});
+
 var $Button = function(title, n){
-	var $button = $("<button/>").attr("title", title);
+	var $button = $("<button><div class='button-icon'/></button>").attr("title", title);
 
 	// These aren't really toggle buttons (except for their radio button behavior)...
 	// but they have the look of toggle buttons while being clicked.
@@ -14,64 +59,19 @@ var $Button = function(title, n){
 	var sheet_height = 17;
 	var sprite_width = sheet_width / n_buttons;
 	var sprite_height = sheet_height;
-	
-	var make_canvas = (width, height)=> {
-		var canvas = document.createElement("canvas");
-		canvas.width = width;
-		canvas.height = height;
-		canvas.ctx = canvas.getContext("2d");
-		return canvas;
-	};
 
-	var enabled_canvas = make_canvas(sprite_width, sprite_height);
-	var disabled_canvas = make_canvas(sprite_width, sprite_height);
-	
-	function drawButtonIcon() {
-		enabled_canvas.ctx.drawImage(
-			// source
-			sprite_sheet, sprite_width*n, 0, sprite_width, sprite_height,
-			// dest
-			0, 0, sprite_width, sprite_height
-		);
-		
-		disabled_canvas.ctx.drawShadowOfImage = function(x, y, color){
-			var temp_canvas = make_canvas(sprite_width, sprite_height);
-			var tmx = temp_canvas.ctx;
-			tmx.drawImage(enabled_canvas, 0, 0);
-			tmx.globalCompositeOperation = "source-in";
-			tmx.fillStyle = color;
-			tmx.fillRect(0, 0, sprite_width, sprite_height);
-			disabled_canvas.ctx.drawImage(temp_canvas, x, y);
-		};
-
-		var style = getComputedStyle($button[0]);
-		var hilight = style.getPropertyValue("--ButtonHilight");
-		var shadow = style.getPropertyValue("--ButtonShadow");
-
-		disabled_canvas.ctx.drawShadowOfImage(1, 1, hilight);
-		disabled_canvas.ctx.drawShadowOfImage(0, 0, shadow);
-	}
-
-	$(sprite_sheet).load(function(){
-		drawButtonIcon();
-		$(window).on("theme-changed", drawButtonIcon);
-	});
-	
-	$(enabled_canvas).add(disabled_canvas).css({
-		margin: "auto",
-		marginTop: 1,
-		marginBottom: 2,
-		pointerEvents: "none",
+	$button.find(".button-icon").css({
+		"background-position": `-${n * sprite_width}px 0`,
+		width: sprite_width,
+		height: sprite_height,
 	});
 	
 	$button.disable = function(){
 		$button.attr("disabled", true);
-		$button.empty().append(disabled_canvas);
 		return $button;
 	};
 	$button.enable = function(){
 		$button.attr("disabled", false);
-		$button.empty().append(enabled_canvas);
 		return $button;
 	};
 	$button.disable();
