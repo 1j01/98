@@ -11,6 +11,9 @@ body {
 }
 #address {
 	flex: 1;
+	background: var(--Window);
+	color: var(--WindowText);
+	border: inset 1px gray; /* not particularly accurate */
 }
 button {
 	padding: 5px;
@@ -27,13 +30,14 @@ button {
 #content {
 	flex: 1;
 	display: flex;
-	background: white;
+	background: var(--Window);
+	color: var(--WindowText);
 	overflow: auto; /* TODO: should the folder-view have overflow: auto instead? */
 }
 #content iframe {
 	flex: 1;
 }
 .desktop-icon .title {
-	background: white;
-	color: black;
+	background: transparent;
+	color: var(--WindowText);
 }

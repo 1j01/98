@@ -66,7 +66,7 @@
 }
 .folder-view.focused .desktop-icon.selected .title {
 	background: var(--Hilight);
-	color: white;
+	color: var(--HilightText);
 }
 .folder-view.focused .desktop-icon.focused .title::after {
 	content: "";
