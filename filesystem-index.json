@@ -342,6 +342,7 @@
     "jquery.min.js": null,
     "konami.js": null,
     "os-gui": {
+      "$MenuBar.js": null,
       "layout.css": null,
       "layout.css.map": null,
       "parse-theme.js": null,
@@ -382,13 +383,19 @@
     },
     "jspaint": {
       "browserconfig.xml": null,
+      "CNAME": null,
       "CONTRIBUTING.md": null,
       "cypress": {
+        "fixtures": {},
         "integration": {
           "visual-tests.spec.js": null
         },
         "plugins": {
           "index.js": null
+        },
+        "screenshots": {
+          "tool-tests.spec.js": {},
+          "visual-tests.spec.js": {}
         },
         "snapshots": {
           "visual-tests.spec.js": {
@@ -476,6 +483,8 @@
         "p_invert.png": null,
         "p_line.gif": null,
         "p_make_opaque.png": null,
+        "p_monochrome.png": null,
+        "p_monochrome_undo.png": null,
         "p_opaq.gif": null,
         "p_oval.gif": null,
         "p_paint.gif": null,
@@ -632,11 +641,23 @@
         "jquery-3.4.1.min.js": null,
         "konami.js": null,
         "libtess.min.js": null,
+        "os-gui": {
+          "$MenuBar.js": null,
+          "$Window.js": null,
+          "layout.css": null,
+          "layout.css.map": null,
+          "parse-theme.js": null,
+          "peggys-pastels.css": null,
+          "peggys-pastels.css.map": null,
+          "windows-98.css": null,
+          "windows-98.css.map": null,
+          "windows-default.css": null,
+          "windows-default.css.map": null
+        },
         "palette.js": null,
         "pep.js": null
       },
       "manifest.webmanifest": null,
-      "netlify.toml": null,
       "out": {},
       "package-lock.json": null,
       "package.json": null,
@@ -646,9 +667,8 @@
         "$Component.js": null,
         "$FontBox.js": null,
         "$Handles.js": null,
-        "$MenuBar.js": null,
         "$ToolBox.js": null,
-        "$Window.js": null,
+        "$ToolWindow.js": null,
         "app.js": null,
         "electron-injected.js": null,
         "electron-main.js": null,
@@ -767,7 +787,6 @@
     "$FolderView.js": null,
     "$FolderViewIcon.js": null,
     "$IframeWindow.js": null,
-    "$MenuBar.js": null,
     "$start-menu.js": null,
     "$taskbar-time.js": null,
     "$Window.js": null,
