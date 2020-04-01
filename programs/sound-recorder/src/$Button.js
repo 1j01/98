@@ -18,8 +18,8 @@ var $Button = function(title, n){
 	var enabled_canvas = new Canvas(sprite_width, sprite_height);
 	var disabled_canvas = new Canvas(sprite_width, sprite_height);
 	
-	$(sprite_sheet).load(function(){
-		
+	function drawButtonIcon() {
+
 		enabled_canvas.ctx.drawImage(
 			// source
 			sprite_sheet, sprite_width*n, 0, sprite_width, sprite_height,
@@ -36,9 +36,19 @@ var $Button = function(title, n){
 			tmx.fillRect(0, 0, sprite_width, sprite_height);
 			disabled_canvas.ctx.drawImage(temp_canvas, x, y);
 		};
-		disabled_canvas.ctx.drawShadowOfImage(1, 1, "#FFFFFF");
-		disabled_canvas.ctx.drawShadowOfImage(0, 0, "#7F7F7F");
-		
+
+		var style = getComputedStyle($button[0]);
+		var hilight = style.getPropertyValue("--ButtonHilight");
+		var shadow = style.getPropertyValue("--ButtonShadow");
+
+		disabled_canvas.ctx.drawShadowOfImage(1, 1, hilight);
+		disabled_canvas.ctx.drawShadowOfImage(0, 0, shadow);
+	}
+
+	$(sprite_sheet).load(function(){
+		drawButtonIcon();
+		// TODO: only update when theme changes
+		setInterval(drawButtonIcon, 200);
 	});
 	
 	$(enabled_canvas).add(disabled_canvas).css({
