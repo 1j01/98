@@ -168,13 +168,17 @@ var menus = {
 	"&Help": [
 		{
 			item: "&Help Topics",
-			action: function(){},
+			action: function(){
+				alert("Help isn't implemented, sorry!");
+			},
 			description: "Displays Help for the current task or command.",
 		},
 		MENU_DIVIDER,
 		{
 			item: "&About Sound Recorder",
-			action: function(){},
+			action: function(){
+				window.open("https://github.com/1j01/98/tree/master/programs/sound-recorder");
+			},
 			description: "Displays information about this application."
 		}
 	],

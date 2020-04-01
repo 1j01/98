@@ -119,9 +119,8 @@ var menus = {
 	"&Help": [
 		{
 			item: "&Help Topics",
-			enabled: false,
 			action: function(){
-				// TODO
+				alert("Click anywhere on the field to start the timer.\nNumbers show the number of mines in the surrounding 8 tiles.\nTry to find all the mines without uncovering them.");
 			},
 		},
 		MENU_DIVIDER,

@@ -228,8 +228,9 @@ var menus = {
 		// TODO: help options
 		{
 			item: "&Help Topics",
-			action: function(){},
-			enabled: false,
+			action: function(){
+				alert("Help isn't implemented, sorry!");
+			},
 			description: "Lists Help topics.",
 			// WordPad: "Lists Help topics"
 			// Windows Explorer: "Opens Help."
@@ -238,10 +239,11 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			item: "&About Notepad",
-			action: function(){},
-			enabled: false,
-			description: "Displays program information, version number, and copyright."
-			// or just "Displays information about this application." if that's more accurate
+			action: function(){
+				window.open("https://github.com/1j01/98/tree/master/programs/notepad");
+			},
+			description: "Displays information about this application."
+			// description: "Displays program information, version number, and copyright."
 		}
 	],
 };
