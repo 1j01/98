@@ -70,6 +70,12 @@ body {
 	color: white;
 	/*padding: 16px;*/
 	/*height: 32px;*/
+	padding-right: 8px;
+}
+.tool-window .window-titlebar {
+	padding: 5px;
+}
+.window-title-area {
 	padding: 8px;
 }
 .window-content {
@@ -84,12 +90,28 @@ body {
 .component-window .component {
 	padding: 16px;
 }
-.window-close-button {
+.window-button {
 	border: 0;
 	background: none;
-	color: inherit;
-	font: inherit;
+	color: transparent;
 	transform: scale(1.5);
+	font-size: 1px;
+}
+.os-window .window-button {
+	transform: scale(1.8);
+}
+.window-button::after {
+	color: white;
+	font-size: 15px;
+}
+.window-close-button::after {
+	content: "×";
+}
+.window-minimize-button::after {
+	content: "-";
+}
+.window-maximize-button::after {
+	content: "+";
 }
 
 .menus {

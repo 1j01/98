@@ -176,7 +176,7 @@ function show_custom_zoom_window() {
 	if ($custom_zoom_window) {
 		$custom_zoom_window.close();
 	}
-	const $w = new $FormWindow("Custom Zoom");
+	const $w = new $FormToolWindow("Custom Zoom");
 	$custom_zoom_window = $w;
 
 	// TODO: show Current zoom: blah% ?
@@ -221,7 +221,7 @@ function show_custom_zoom_window() {
 				mag = parseFloat(option_val) / 100;
 			}
 			if(isNaN(mag)){
-				const $msgw = new $FormWindow("Invalid Value").addClass("dialogue-window");
+				const $msgw = new $FormToolWindow("Invalid Value").addClass("dialogue-window");
 				$msgw.$main.text("The value specified for custom zoom was invalid.");
 				$msgw.$Button("Okay", () => {
 					$msgw.close();
@@ -448,26 +448,44 @@ function open_from_File(file, callback, canceled){
 		}, canceled);
 	});
 }
-function get_image_file_from_FileList_or_show_error(files, user_input_method_verb_past_tense){
+function open_from_FileList(files, user_input_method_verb_past_tense){
 	for (const file of files) {
-		if(file.type.match(/^image/)){
-			return file;
+		if (file.type.match(/^image/)) {
+			open_from_File(file, err => {
+				if(err){ return show_error_message("Failed to open file:", err); }
+			});
+			return;
+		} else if (file.name.match(/\.theme(pack)?$/i)) {
+			loadThemeFile(file);
+			return;
 		}
 	}
-
 	if(files.length > 1){
 		show_error_message(`None of the files ${user_input_method_verb_past_tense} appear to be images.`);
 	}else{
 		show_error_message(`File ${user_input_method_verb_past_tense} does not appear to be an image.`);
 	}
 }
-function open_from_FileList(files, user_input_method_verb_past_tense){
-	const file = get_image_file_from_FileList_or_show_error(files, user_input_method_verb_past_tense);
-	if(file){
-		open_from_File(file, err => {
-			if(err){ return show_error_message("Failed to open file:", err); }
-		});
-	}
+
+function loadThemeFile(file) {
+	var reader = new FileReader();
+	reader.onload = ()=> {
+		loadThemeFromText(reader.result);
+	};
+	reader.readAsText(file);
+}
+function loadThemeFromText(fileText) {
+	var cssProperties = parseThemeFileString(fileText);
+	applyCSSProperties(cssProperties);
+
+	window.themeCSSProperties = cssProperties;
+	$("iframe").each((i, iframe)=> {
+		try {
+			applyCSSProperties(cssProperties, iframe.contentDocument.documentElement);
+		} catch(error) {
+			console.log("error applying theme to iframe", iframe, error);
+		}
+	})
 }
 
 function file_new(){
@@ -500,7 +518,7 @@ function file_load_from_url(){
 	if($file_load_from_url_window){
 		$file_load_from_url_window.close();
 	}
-	const $w = new $FormWindow().addClass("dialogue-window");
+	const $w = new $FormToolWindow().addClass("dialogue-window");
 	$file_load_from_url_window = $w;
 	$w.title("Load from URL");
 	// TODO: URL validation (input has to be in a form (and we don't want the form to submit))
@@ -560,7 +578,7 @@ function are_you_sure(action, canceled){
 	if(saved){
 		action();
 	}else{
-		const $w = new $FormWindow().addClass("dialogue-window");
+		const $w = new $FormToolWindow().addClass("dialogue-window");
 		$w.title("Paint");
 		$w.$main.text(`Save changes to ${file_name}?`);
 		$w.$Button("Save", () => {
@@ -584,7 +602,7 @@ function are_you_sure(action, canceled){
 }
 
 function show_error_message(message, error){
-	const $w = $FormWindow().title("Error").addClass("dialogue-window");
+	const $w = $FormToolWindow().title("Error").addClass("dialogue-window");
 	$w.$main.text(message);
 	$w.$main.css("max-width", "600px");
 	if(error){
@@ -616,7 +634,7 @@ function show_error_message(message, error){
 // because it can get pretty confusing
 function show_resource_load_error_message(){
 	// NOTE: apparently distinguishing cross-origin errors is disallowed
-	const $w = $FormWindow().title("Error").addClass("dialogue-window");
+	const $w = $FormToolWindow().title("Error").addClass("dialogue-window");
 	$w.$main.html(
 		"<p>Failed to load image from URL.</p>" +
 		"<p>Check your browser's devtools for details.</p>" +
@@ -651,7 +669,7 @@ function show_about_paint(){
 	if($about_paint_window){
 		$about_paint_window.close();
 	}
-	$about_paint_window = $Window().title("About Paint");
+	$about_paint_window = $ToolWindow().title("About Paint");
 	if (is_pride_month) {
 		$("#paint-32x32").attr("src", "./images/icons/gay-es-paint-32x32-light-outline.png");
 	}
@@ -753,7 +771,7 @@ function show_news(){
 	if($news_window){
 		$news_window.close();
 	}
-	$news_window = $Window().title("Project News");
+	$news_window = $ToolWindow().title("Project News");
 
 	// const $latest_entries = $latest_news.find(".news-entry");
 	// const latest_entry = $latest_entries[$latest_entries.length - 1];
@@ -793,9 +811,16 @@ function paste_image_from_file(file){
 
 function paste_from_file_select_dialog(){
 	get_FileList_from_file_select_dialog(files => {
-		const file = get_image_file_from_FileList_or_show_error(files, "selected");
-		if(file){
-			paste_image_from_file(file);
+		for (const file of files) {
+			if(file.type.match(/^image/)){
+				paste_image_from_file(file);
+				return;
+			}
+		}
+		if(files.length > 1){
+			show_error_message(`None of the files selected appear to be images.`);
+		}else{
+			show_error_message(`File selected does not appear to be an image.`);
 		}
 	});
 }
@@ -803,7 +828,7 @@ function paste_from_file_select_dialog(){
 function paste(img){
 
 	if(img.width > canvas.width || img.height > canvas.height){
-		const $w = new $FormWindow().addClass("dialogue-window");
+		const $w = new $FormToolWindow().addClass("dialogue-window");
 		$w.title("Paint");
 		$w.$main.html(
 			"The image is bigger than the canvas.<br>" +
@@ -848,7 +873,7 @@ function paste(img){
 }
 
 function render_history_as_gif(){
-	const $win = $FormWindow();
+	const $win = $FormToolWindow();
 	$win.title("Rendering GIF");
 	$win.center();
 	const $output = $win.$main;
@@ -1121,7 +1146,7 @@ function redo(){
 			$document_history_prompt_window.close();
 		}
 		if (!$document_history_window || $document_history_window.closed) {
-			const $w = $document_history_prompt_window = new $Window();
+			const $w = $document_history_prompt_window = new $ToolWindow();
 			$w.title("Redo");
 			$w.$content.html("Press <b>Ctrl+Shift+Y</b> at any time to open the History window.");
 			$w.$Button("Show History", show_document_history);
@@ -1158,7 +1183,7 @@ function show_document_history() {
 	if ($document_history_window) {
 		$document_history_window.close();
 	}
-	const $w = $document_history_window = new $Window();
+	const $w = $document_history_window = new $ToolWindow();
 	$w.title("Document History");
 	$w.$content.html(`
 		<div class="history-view"></div>
@@ -1446,9 +1471,9 @@ async function edit_paste(execCommandFallback){
 	}
 }
 
-function image_invert(){
+function image_invert_colors(){
 	apply_image_transformation({
-		name: "Invert",
+		name: "Invert Colors",
 		icon: get_help_folder_icon("p_invert.png"),
 	}, (original_canvas, original_ctx, new_canvas, new_ctx) => {
 		invert_rgb(original_ctx, new_ctx);
@@ -1459,7 +1484,7 @@ function clear(){
 	deselect();
 	cancel();
 	undoable({
-		name: "Clear",
+		name: "Clear Image",
 		icon: get_help_folder_icon("p_blank.png"),
 	}, () => {
 		saved = false;
@@ -1558,6 +1583,22 @@ function detect_transparency(){
 	transparency = has_any_transparency(ctx);
 }
 
+function is_all_black_and_white(ctx) { 
+	const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
+	for(let i=0, l=id.data.length; i<l; i+=4){
+		if(id.data[i+3] < 255){
+			return false;
+		}
+		if(!(
+			(id.data[i] === 255 && id.data[i+1] === 255 && id.data[i+2] === 255) ||
+			(id.data[i] === 0 && id.data[i+1] === 0 && id.data[i+2] === 0)
+		)){
+			return false;
+		}
+	}
+	return true;
+}
+
 function make_monochrome_pattern(lightness){
 
 	const dither_threshold_table = Array.from({length: 64}, (_undefined, p) => {
@@ -1595,9 +1636,6 @@ function make_monochrome_pattern(lightness){
 }
 
 function make_monochrome_palette(){
-	// TODO: maybe *offer* to convert the existing image to monochrome
-	// (offer as opposed to forcing it)
-
 	const palette = [];
 	const n_colors_per_row = 14;
 	const n_colors = n_colors_per_row * 2;
@@ -1706,7 +1744,7 @@ function image_attributes(){
 	if(image_attributes.$window){
 		image_attributes.$window.close();
 	}
-	const $w = image_attributes.$window = new $FormWindow("Attributes");
+	const $w = image_attributes.$window = new $FormToolWindow("Attributes");
 
 	const $main = $w.$main;
 
@@ -1783,13 +1821,15 @@ function image_attributes(){
 		if(monochrome != was_monochrome){
 			if(monochrome){
 				palette = monochrome_palette;
-				// TODO: offer to convert to monochrome (with some threshold) (but don't require it)
 			}else{
 				palette = polychrome_palette;
 			}
 
 			$colorbox.rebuild_palette();
 			reset_colors();
+		}
+		if (monochrome && !is_all_black_and_white(ctx)) {
+			show_convert_to_black_and_white();
 		}
 
 		const unit_to_px = unit_sizes_in_px[unit];
@@ -1820,8 +1860,48 @@ function image_attributes(){
 	image_attributes.$window.center();
 }
 
+function show_convert_to_black_and_white() {
+	const $w = new $FormToolWindow("Convert to Black and White");
+	$w.addClass("convert-to-black-and-white");
+	$w.$main.append("<fieldset><legend>Threshold</legend><input type='range' min='0' max='1' step='0.01' value='0.5'></fieldset>");
+	const $slider = $w.$main.find("input[type='range']");
+	const original_canvas = make_canvas(canvas);
+	let threshold;
+	const update_threshold = ()=> {
+		make_or_update_undoable({
+			name: "Make Monochrome",
+			match: (history_node)=> history_node.name === "Make Monochrome",
+			icon: get_help_folder_icon("p_monochrome.png"),
+		}, ()=> {
+			threshold = $slider.val();
+			ctx.copy(original_canvas);
+			threshold_black_and_white(ctx, threshold);
+		});
+	};
+	update_threshold();
+	$slider.on("input", debounce(update_threshold, 100));
+
+	$w.$Button("Okay", ()=> {
+		$w.close();
+	});
+	$w.$Button("Cancel", ()=> {
+		if (current_history_node.name === "Make Monochrome") {
+			undo();
+		} else {
+			undoable({
+				name: "Cancel Make Monochrome",
+				icon: get_help_folder_icon("p_monochrome_undo.png"),
+			}, ()=> {
+				ctx.copy(original_canvas);
+			});
+		}
+		$w.close();
+	});
+	$w.center();
+}
+
 function image_flip_and_rotate(){
-	const $w = new $FormWindow("Flip and Rotate");
+	const $w = new $FormToolWindow("Flip and Rotate");
 	$w.addClass("flip-and-rotate");
 
 	const $fieldset = $(E("fieldset")).appendTo($w.$main);
@@ -1872,7 +1952,7 @@ function image_flip_and_rotate(){
 		const angle = angle_deg / 360 * TAU;
 
 		if(isNaN(angle)){
-			const $msgw = new $FormWindow("Invalid Value").addClass("dialogue-window");
+			const $msgw = new $FormToolWindow("Invalid Value").addClass("dialogue-window");
 			$msgw.$main.text("The value specified for Degrees was invalid.");
 			$msgw.$Button("Okay", () => {
 				$msgw.close();
@@ -1904,7 +1984,7 @@ function image_flip_and_rotate(){
 }
 
 function image_stretch_and_skew(){
-	const $w = new $FormWindow("Stretch and Skew");
+	const $w = new $FormToolWindow("Stretch and Skew");
 
 	const $fieldset_stretch = $(E("fieldset")).appendTo($w.$main);
 	$fieldset_stretch.append("<legend>Stretch</legend><table></table>");
@@ -2039,7 +2119,7 @@ function sanity_check_blob(blob, okay_callback){
 	if(blob.size > 0){
 		okay_callback();
 	}else{
-		const $w = $FormWindow().title("Warning").addClass("dialogue-window");
+		const $w = $FormToolWindow().title("Warning").addClass("dialogue-window");
 		$w.$main.html(
 			"<p>Tried to save file, but file was empty.</p>" +
 			"<p>Try again, or if the problem persists, report here: " +

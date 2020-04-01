@@ -1,11 +1,11 @@
 
 $Window.Z_INDEX = 50; // dynamically incrementing z-index
 
-function $Window($component){
-	const $w = $(E("div")).addClass("window").appendTo("body");
+function $ToolWindow($component){
+	const $w = $(E("div")).addClass("window tool-window").appendTo("body");
 	$w.$titlebar = $(E("div")).addClass("window-titlebar").appendTo($w);
 	$w.$title = $(E("span")).addClass("window-title").appendTo($w.$titlebar);
-	$w.$x = $(E("button")).addClass("window-close-button").appendTo($w.$titlebar);
+	$w.$x = $(E("button")).addClass("window-close-button window-button").appendTo($w.$titlebar);
 	$w.$content = $(E("div")).addClass("window-content").appendTo($w);
 	
 	if($component){
@@ -190,8 +190,8 @@ function $Window($component){
 	return $w;
 }
 
-function $FormWindow(title){
-	const $w = new $Window();
+function $FormToolWindow(title){
+	const $w = new $ToolWindow();
 	
 	$w.title(title);
 	$w.$form = $(E("form")).appendTo($w.$content);

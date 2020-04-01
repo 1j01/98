@@ -3,7 +3,7 @@
 	let vaporwave_active = false;
 
 	if (parent && frameElement && parent.$) {
-		$window = parent.$(frameElement).closest(".os-window");
+		$window = parent.$(frameElement).closest(".window");
 	} else {
 		$window = $();
 	}

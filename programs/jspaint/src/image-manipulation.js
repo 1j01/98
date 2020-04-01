@@ -297,7 +297,7 @@ function draw_fill_without_pattern_support(ctx, start_x, start_y, fill_r, fill_g
 		y = new_pos[1];
 
 		pixel_pos = (y*c_width + x) * 4;
-		while(matches_start_color(pixel_pos)){
+		while(should_fill_at(pixel_pos)){
 			y--;
 			pixel_pos = (y*c_width + x) * 4;
 		}
@@ -308,14 +308,14 @@ function draw_fill_without_pattern_support(ctx, start_x, start_y, fill_r, fill_g
 			y++;
 			pixel_pos = (y*c_width + x) * 4;
 			
-			if(!(y < c_height && matches_start_color(pixel_pos))){
+			if(!(y < c_height && should_fill_at(pixel_pos))){
 				break;
 			}
 			
-			color_pixel(pixel_pos);
+			do_fill_at(pixel_pos);
 
 			if(x > 0){
-				if(matches_start_color(pixel_pos - 4)){
+				if(should_fill_at(pixel_pos - 4)){
 					if(!reach_left){
 						stack.push([x - 1, y]);
 						reach_left = true;
@@ -326,7 +326,7 @@ function draw_fill_without_pattern_support(ctx, start_x, start_y, fill_r, fill_g
 			}
 
 			if(x < c_width-1){
-				if(matches_start_color(pixel_pos + 4)){
+				if(should_fill_at(pixel_pos + 4)){
 					if(!reach_right){
 						stack.push([x + 1, y]);
 						reach_right = true;
@@ -341,8 +341,9 @@ function draw_fill_without_pattern_support(ctx, start_x, start_y, fill_r, fill_g
 	}
 	ctx.putImageData(id, 0, 0);
 
-	function matches_start_color(pixel_pos){
+	function should_fill_at(pixel_pos){
 		return (
+			// matches start color (i.e. region to fill)
 			id.data[pixel_pos+0] === start_r &&
 			id.data[pixel_pos+1] === start_g &&
 			id.data[pixel_pos+2] === start_b &&
@@ -350,7 +351,7 @@ function draw_fill_without_pattern_support(ctx, start_x, start_y, fill_r, fill_g
 		);
 	}
 
-	function color_pixel(pixel_pos){
+	function do_fill_at(pixel_pos){
 		id.data[pixel_pos+0] = fill_r;
 		id.data[pixel_pos+1] = fill_g;
 		id.data[pixel_pos+2] = fill_b;
@@ -394,7 +395,7 @@ function draw_fill_separately(source_ctx, dest_ctx, start_x, start_y, fill_r, fi
 		y = new_pos[1];
 
 		pixel_pos = (y*c_width + x) * 4;
-		while(matches_start_color(pixel_pos)){
+		while(should_fill_at(pixel_pos)){
 			y--;
 			pixel_pos = (y*c_width + x) * 4;
 		}
@@ -405,14 +406,14 @@ function draw_fill_separately(source_ctx, dest_ctx, start_x, start_y, fill_r, fi
 			y++;
 			pixel_pos = (y*c_width + x) * 4;
 			
-			if(!(y < c_height && matches_start_color(pixel_pos))){
+			if(!(y < c_height && should_fill_at(pixel_pos))){
 				break;
 			}
 			
-			color_pixel(pixel_pos);
+			do_fill_at(pixel_pos);
 
 			if(x > 0){
-				if(matches_start_color(pixel_pos - 4)){
+				if(should_fill_at(pixel_pos - 4)){
 					if(!reach_left){
 						stack.push([x - 1, y]);
 						reach_left = true;
@@ -423,7 +424,7 @@ function draw_fill_separately(source_ctx, dest_ctx, start_x, start_y, fill_r, fi
 			}
 
 			if(x < c_width-1){
-				if(matches_start_color(pixel_pos + 4)){
+				if(should_fill_at(pixel_pos + 4)){
 					if(!reach_right){
 						stack.push([x + 1, y]);
 						reach_right = true;
@@ -438,12 +439,11 @@ function draw_fill_separately(source_ctx, dest_ctx, start_x, start_y, fill_r, fi
 	}
 	dest_ctx.putImageData(dest_id, 0, 0);
 
-	// TODO: rename function
-	function matches_start_color(pixel_pos){
+	function should_fill_at(pixel_pos){
 		return (
-			// NOT REACHED YET
+			// not reached yet
 			dest_id.data[pixel_pos+3] === 0 &&
-			// and matches start color (i.e. area to fill)
+			// and matches start color (i.e. region to fill)
 			(
 				source_id.data[pixel_pos+0] === start_r &&
 				source_id.data[pixel_pos+1] === start_g &&
@@ -453,7 +453,7 @@ function draw_fill_separately(source_ctx, dest_ctx, start_x, start_y, fill_r, fi
 		);
 	}
 
-	function color_pixel(pixel_pos){
+	function do_fill_at(pixel_pos){
 		dest_id.data[pixel_pos+0] = fill_r;
 		dest_id.data[pixel_pos+1] = fill_g;
 		dest_id.data[pixel_pos+2] = fill_b;
@@ -557,7 +557,7 @@ function apply_image_transformation(meta, fn){
 	
 	if(selection){
 		undoable({
-			name: `${meta.name} Selection`,
+			name: `${meta.name} (Selection)`,
 			icon: meta.icon,
 			soft: true,
 		}, () => {
@@ -747,6 +747,18 @@ function invert_rgb(source_ctx, dest_ctx=source_ctx) {
 		image_data.data[i+2] = 255 - image_data.data[i+2];
 	}
 	dest_ctx.putImageData(image_data, 0, 0);
+}
+
+function threshold_black_and_white(ctx, threshold) {
+	const image_data = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
+	for(let i=0; i<image_data.data.length; i+=4){
+		const white = (image_data.data[i+0] + image_data.data[i+1] + image_data.data[i+2]) / 3 / 255 > threshold;
+		image_data.data[i+0] = 255 * white;
+		image_data.data[i+1] = 255 * white;
+		image_data.data[i+2] = 255 * white;
+		image_data.data[i+3] = 255;
+	}
+	ctx.putImageData(image_data, 0, 0);
 }
 
 function replace_colors_with_swatch(ctx, swatch, x_offset_from_global_canvas, y_offset_from_global_canvas){
