@@ -1,12 +1,4 @@
 
-var $log = $("<pre class='outside-app-widget'/>");
-var __log = function(message, data){
-	$log.append(
-		$("<div style='font-family:monospace'/>").text(message + " " + (data || ""))
-	);
-	$log.appendTo("body");
-}
-
 // webkit shim
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
@@ -15,11 +7,11 @@ window.URL = window.URL || window.webkitURL;
 if(window.AudioContext){
 	try {
 		var audio_context = new AudioContext;
-		__log('Audio context set up.');
-		__log('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));
+		console.log('Audio context set up.');
+		console.log('navigator.getUserMedia ' + (navigator.getUserMedia ? 'available.' : 'not present!'));
 	} catch (e) {
-		__log(e);
+		console.log(e);
 	}
 }else{
-	__log('No web audio support in this browser!');
+	alert('No web audio support in this browser!');
 }

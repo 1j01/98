@@ -225,7 +225,7 @@ var read_audio_data = function(file, callback){
 	fileReader.onload = function(){
 		var arrayBuffer = this.result;
 		audio_context.decodeAudioData(arrayBuffer, callback, function(){
-			__log("Failed to read audio from file");
+			alert("Failed to read audio from file");
 		});
 	};
 	fileReader.readAsArrayBuffer(file);
@@ -329,7 +329,7 @@ $(function(){
 	
 	var gotStream = function(stream){
 		input = audio_context.createMediaStreamSource(stream);
-		__log("Media stream created.");
+		console.log("Media stream created.");
 		
 		input.connect($wave_display.analyser);
 		input.connect(file.recorder);
@@ -337,7 +337,7 @@ $(function(){
 		$record.enable();
 	};
 	var gotError = function(err){
-		__log("No live audio input: " + err);
+		console.log("No live audio input: ", err);
 	};
 
 	navigator.getUserMedia = (
