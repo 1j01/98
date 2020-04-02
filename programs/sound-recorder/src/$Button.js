@@ -27,7 +27,6 @@ var $Button = function(title, n){
 	var disabled_canvas = make_canvas(sprite_width, sprite_height);
 	
 	function drawButtonIcon() {
-
 		enabled_canvas.ctx.drawImage(
 			// source
 			sprite_sheet, sprite_width*n, 0, sprite_width, sprite_height,
@@ -55,8 +54,7 @@ var $Button = function(title, n){
 
 	$(sprite_sheet).load(function(){
 		drawButtonIcon();
-		// TODO: only update when theme changes
-		setInterval(drawButtonIcon, 200);
+		$(window).on("theme-changed", drawButtonIcon);
 	});
 	
 	$(enabled_canvas).add(disabled_canvas).css({

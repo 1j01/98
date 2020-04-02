@@ -65,7 +65,7 @@ function $IframeWindow(options){
 			// focus_window_contents();
 			
 			if (window.themeCSSProperties) {
-				applyCSSProperties(themeCSSProperties, iframe.contentDocument.documentElement);
+				applyTheme(themeCSSProperties, iframe.contentDocument.documentElement);
 			}
 
 			// on Wayback Machine, and iframe's url not saved yet
