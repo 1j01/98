@@ -1,7 +1,7 @@
 
-var $position = $("<div class='inset-shallow position'>Position:<br/><span/> sec.</div>");
+var $position = $("<div class='inset-shallow position'><div class='center-me'>Position:<br/><span/> sec.</div></div>");
 $position.display = function(t){ $position.find("span").text(t.toFixed(2)); };
-var $length = $("<div class='inset-shallow length'>Length:<br/><span/> sec.</div>");
+var $length = $("<div class='inset-shallow length'><div class='center-me'>Length:<br/><span/> sec.</div></div>");
 $length.display = function(t){ $length.find("span").text(t.toFixed(2)); };
 var $wave_display = new $WaveDisplay;
 var $wave = $("<div class='inset-shallow wave'/>").append($wave_display);

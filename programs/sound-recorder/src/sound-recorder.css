@@ -38,8 +38,14 @@ body,
 	flex-grow: 0;
 	flex-shrink: 0;
 	height: 100%;
-	text-align: center;
 	box-sizing: border-box;
+	display: table;
+}
+.position .center-me,
+.length .center-me {
+	display: table-cell;
+	text-align: center;
+	vertical-align: middle;
 }
 
 .controls {
