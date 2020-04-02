@@ -1,6 +1,6 @@
 
 var sprite_sheet = document.createElement("img");
-sprite_sheet.src = "img/buttons.png";
+sprite_sheet.src = "img/buttons-spaced-out.png";
 
 var make_canvas = (width, height)=> {
 	var canvas = document.createElement("canvas");
@@ -49,17 +49,11 @@ var $Button = function(title, n){
 	var $button = $("<button/>").attr("title", title);
 
 	// These aren't really toggle buttons (except for their radio button behavior)...
-	// but they have the look of toggle buttons while being clicked.
+	// but they have a similar look while being clicked.
 	$button.addClass("toggle");
 	
-	var n_buttons = 5;
-	var sheet_width = 125;
-	var sheet_height = 17;
-	var sprite_width = sheet_width / n_buttons;
-	var sprite_height = sheet_height;
-
 	$button.css({
-		"background-position": `-${n * sprite_width}px 0`,
+		"background-position": `-${n * 44}px 0`,
 	});
 	
 	$button.disable = function(){

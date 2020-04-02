@@ -738,6 +738,7 @@
     },
     "sound-recorder": {
       "img": {
+        "buttons-spaced-out.png": null,
         "buttons.png": null,
         "Thumbs.db": null
       },

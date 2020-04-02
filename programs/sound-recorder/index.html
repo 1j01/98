@@ -81,7 +81,7 @@
 				box-sizing: border-box;
 				width: 48px;
 				height: 24px;
-				padding: 2px 10px;
+				padding: 0;
 				display: flex;
 				background-image: var(--icon-enabled);
 				background-clip: content-box;
@@ -89,6 +89,10 @@
 			}
 			.controls button[disabled] {
 				background-image: var(--icon-disabled);
+			}
+			.controls button:hover:active {
+				padding-left: 1px;
+				padding-top: 1px;
 			}
 			.controls button + button {
 				margin-left: 3px;
