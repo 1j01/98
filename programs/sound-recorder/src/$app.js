@@ -17,7 +17,8 @@ var $stop = $Button("Stop", 3).click(stop);
 var $record = $Button("Record", 4).click(record);
 var $controls = $("<div class='controls'/>").append($seek_to_start, $seek_to_end, $play, $stop, $record);
 
-var $main = $("<div class='main'/>").appendTo($V).append($display, $slider_container, $controls);
+var $app = $("<div class='sound-recorder'/>").appendTo("body");
+var $main = $("<div class='main'/>").appendTo($app).append($display, $slider_container, $controls);
 
 $position.display(0);
 $length.display(0);
@@ -95,7 +96,7 @@ function open_from_file_list_warning_if_unsaved(files){
 	});
 }
 
-$body.on("dragover dragenter", function(e){
+$("body").on("dragover dragenter", function(e){
 	e.preventDefault();
 	e.stopPropagation();
 }).on("drop", function(e){

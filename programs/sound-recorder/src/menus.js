@@ -193,5 +193,5 @@ var $menu_bar = $MenuBar(menus);
 if(go_outside_frame){
 	$menu_bar.insertBefore(frameElement);
 }else{
-	$menu_bar.prependTo($V);
+	$menu_bar.prependTo(".sound-recorder");
 }

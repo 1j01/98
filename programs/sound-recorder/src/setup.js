@@ -1,10 +1,4 @@
 
-// @TODO: make menus a component or jquery plugin, and the status bar optional
-var $body = $("body")
-var $V = $("<div class='sound-recorder'/>").appendTo("body");
-var $status_text = $();
-$status_text.default = function(){};
-
 var $log = $("<pre class='outside-app-widget'/>");
 var __log = function(message, data){
 	$log.append(
