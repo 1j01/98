@@ -15,8 +15,16 @@ var $Button = function(title, n){
 	var sprite_width = sheet_width / n_buttons;
 	var sprite_height = sheet_height;
 	
-	var enabled_canvas = new Canvas(sprite_width, sprite_height);
-	var disabled_canvas = new Canvas(sprite_width, sprite_height);
+	var make_canvas = (width, height)=> {
+		var canvas = document.createElement("canvas");
+		canvas.width = width;
+		canvas.height = height;
+		canvas.ctx = canvas.getContext("2d");
+		return canvas;
+	};
+
+	var enabled_canvas = make_canvas(sprite_width, sprite_height);
+	var disabled_canvas = make_canvas(sprite_width, sprite_height);
 	
 	function drawButtonIcon() {
 
@@ -28,7 +36,7 @@ var $Button = function(title, n){
 		);
 		
 		disabled_canvas.ctx.drawShadowOfImage = function(x, y, color){
-			var temp_canvas = new Canvas(sprite_width, sprite_height);
+			var temp_canvas = make_canvas(sprite_width, sprite_height);
 			var tmx = temp_canvas.ctx;
 			tmx.drawImage(enabled_canvas, 0, 0);
 			tmx.globalCompositeOperation = "source-in";
