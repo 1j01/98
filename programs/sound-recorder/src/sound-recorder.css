@@ -10,35 +10,45 @@
 	background: var(--ButtonFace);
 }
 .main {
-	padding: 5px;
+	padding: 8px 10px;
 	text-align: center;
-	width: 252px;
+	/* width: 252px; */
 }
 .display {
 	display: flex;
-	height: 35px;
+	height: 37px;
+	justify-content: center;
 }
 .wave {
-	width: 112px;
+	flex-basis: 114px;
+	/* max-width: 500px; */
+	/* flex: 1; */
 	height: 100%;
 	background: black;
 	margin: 0 9px;
+	box-sizing: border-box;
 }
 .position,
 .length {
-	width: 58px;
+	width: 60px;
+	flex-grow: 0;
+	flex-shrink: 0;
 	height: 100%;
 	text-align: center;
+	box-sizing: border-box;
 }
 
 .controls {
 	display: flex;
+	justify-content: center;
 }
 .controls button {
 	box-sizing: border-box;
 	width: 48px;
 	height: 24px;
 	padding: 0;
+	flex-grow: 0;
+	flex-shrink: 0;
 	display: flex;
 	background-image: var(--icon-enabled);
 	background-clip: content-box;

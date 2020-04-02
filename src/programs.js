@@ -92,8 +92,8 @@ function SoundRecorder(file_path){
 		src: "programs/sound-recorder/index.html" + (file_path ? ("?path=" + file_path) : ""),
 		icon: "speaker",
 		title: win_title,
-		innerWidth: 252+10,
-		innerHeight: 102
+		innerWidth: 270,
+		innerHeight: 108
 	});
 	return new Task($win);
 }
