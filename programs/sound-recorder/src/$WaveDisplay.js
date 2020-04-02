@@ -32,19 +32,28 @@ function $WaveDisplay(){
 			}
 		}
 		
+		wave_canvas.width = 1;
+		wave_canvas.height = 1;
+		wave_canvas.width = wave_canvas.parentElement.scrollWidth;
+		wave_canvas.height = wave_canvas.parentElement.scrollHeight;
+
 		wave_ctx.clearRect(0, 0, wave_canvas.width, wave_canvas.height);
+		
+		var middle = ~~(wave_canvas.height / 2);
+
 		for(var x=0; x<wave_canvas.width; x++){
 			var loudness = data[~~(data.length * x/wave_canvas.width)] / 128.0 - 1;
 			
-			if(location.protocol === "file:"){
-				var h = ~~(loudness*20 * wave_canvas.height/2);
-				wave_ctx.fillStyle = "rgba(0, 255, 0, 0.3)";
-				wave_ctx.fillRect(x, 17-h, 1, h*2+1);
-			}
+			
+			// if(wave_canvas.width >/== 112){
+			// 	var h = ~~(loudness*20 * wave_canvas.height/2);
+			// 	wave_ctx.fillStyle = "rgba(0, 255, 0, 0.3)";
+			// 	wave_ctx.fillRect(x, middle-h, 1, h*2+1);
+			// }
 			
 			var h = ~~(loudness * wave_canvas.height/2);
 			wave_ctx.fillStyle = "lime";
-			wave_ctx.fillRect(x, 17-h, 1, h*2+1);
+			wave_ctx.fillRect(x, middle-h, 1, h*2+1);
 		}
 	};
 	

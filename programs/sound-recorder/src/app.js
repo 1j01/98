@@ -359,6 +359,9 @@ $(function(){
 	
 	update();
 	
+	$(window).on("resize", ()=> {
+		$wave_display.display();
+	});
 });
 
 // NOTE: DOM-related stuff is apparently supposed to happen in $app.js

@@ -1,6 +1,13 @@
 .sound-recorder {
 	background: var(--ButtonFace);
 }
+body,
+.sound-recorder,
+.main {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+}
 .main {
 	padding: 8px 10px;
 	text-align: center;
@@ -8,13 +15,18 @@
 }
 .display {
 	display: flex;
-	height: 37px;
+	flex: 1;
 	justify-content: center;
+}
+.display,
+.wave {
+	min-height: 37px;
+	max-height: 200px;
 }
 .wave {
 	flex-basis: 114px;
-	/* max-width: 500px; */
-	/* flex: 1; */
+	max-width: 500px;
+	flex: 1;
 	height: 100%;
 	background: black;
 	margin: 0 9px;
