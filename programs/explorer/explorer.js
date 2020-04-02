@@ -81,53 +81,76 @@ var go_to = function(address){
 	address = address || "/";
 	var is_url = !!address.match(/\w+:\/\//);
 	if(is_url){
-		if(!address.match(/^https?:\/\/web.archive.org\//)){
+		if(!address.match(/^https?:\/\/web.archive.org\//) && !address.startsWith(window.location.origin)){
 			if (address.match(/^https?:\/\/(www\.)?(windows93.net)/)) {
 				address = "https://web.archive.org/web/2015-05-05/" + address;
 			} else if (!address.match(/^https?:\/\/(www\.)?(copy.sh)/)) {
 				address = "https://web.archive.org/web/1998/" + address;
 			}
 		}
+		address_determined();
 	}else{
-		// TODO: open html files! and other files. (check if it's a file or folder!)
-		if(address[address.length - 1] !== "/"){
-			address += "/";
-		}
+		withFilesystem(function(){
+			var fs = BrowserFS.BFSRequire("fs");
+			fs.stat(address, function(err, stats){
+				if(err){
+					return alert("Failed to get info about " + address + "\n\n" + err);
+				}
+				if(stats.isDirectory()){
+					if(address[address.length - 1] !== "/"){
+						address += "/";
+					}
+					address_determined();
+				} else {
+					// TODO: open html files in a new window, but don't infinitely recurse
+					// executeFile(address);
+					if (address.match(/\.html$/i)) {
+						address = window.location.origin + "/" + address.replace(/^\/?/, "");
+						is_url = true;
+						address_determined();
+					} else {
+						executeFile(address);
+					}
+				}
+			});
+		});
 	}
+
+	function address_determined() {
+		$("#address").val(address);
 	
-	$("#address").val(address);
+		set_title(get_display_name_for_address(address));
+		set_icon(get_icon_for_address(address));
 	
-	set_title(get_display_name_for_address(address));
-	set_icon(get_icon_for_address(address));
-
-	if(is_url){
-		$iframe = $("<iframe>").attr({
-			src: address,
-			allowfullscreen: "allowfullscreen",
-			sandbox: "allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-popups",
-		}).appendTo("#content");
-
-		// If only we could access the contentDocument cross-origin
-		// For https://archive.is/szqQ5
-		// $iframe.on("load", function(){
-		// 	$($iframe[0].contentDocument.getElementById("CONTENT")).css({
-		// 		position: "absolute",
-		// 		left: 0,
-		// 		top: 0,
-		// 		right: 0,
-		// 		bottom: 0,
-		// 	});
-		// });
-
-		// We also can't inject a user agent stylesheet, for things like scrollbars
-		// Too bad :/
-
-		// We also can't get the title; it's kinda hard to make a web browser like this!
-		// $iframe.on("load", function(){
-		// 	set_title($iframe[0].contentDocument.title + " - Explorer"); // " - Microsoft Internet Explorer"
-		// });
-	}else{
-		$folder_view = $FolderView(address).appendTo("#content");
+		if(is_url){
+			$iframe = $("<iframe>").attr({
+				src: address,
+				allowfullscreen: "allowfullscreen",
+				sandbox: "allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-popups",
+			}).appendTo("#content");
+	
+			// If only we could access the contentDocument cross-origin
+			// For https://archive.is/szqQ5
+			// $iframe.on("load", function(){
+			// 	$($iframe[0].contentDocument.getElementById("CONTENT")).css({
+			// 		position: "absolute",
+			// 		left: 0,
+			// 		top: 0,
+			// 		right: 0,
+			// 		bottom: 0,
+			// 	});
+			// });
+	
+			// We also can't inject a user agent stylesheet, for things like scrollbars
+			// Too bad :/
+	
+			// We also can't get the title; it's kinda hard to make a web browser like this!
+			// $iframe.on("load", function(){
+			// 	set_title($iframe[0].contentDocument.title + " - Explorer"); // " - Microsoft Internet Explorer"
+			// });
+		}else{
+			$folder_view = $FolderView(address).appendTo("#content");
+		}
 	}
 };
 
