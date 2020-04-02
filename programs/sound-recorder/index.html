@@ -78,19 +78,17 @@
 				display: flex;
 			}
 			.controls button {
+				box-sizing: border-box;
 				width: 48px;
 				height: 24px;
+				padding: 2px 10px;
 				display: flex;
+				background-image: var(--icon-enabled);
+				background-clip: content-box;
+				background-origin: content-box;
 			}
-			.controls button .button-icon {
-				background: var(--icon-enabled);
-				margin: auto;
-				margin-top: 1px;
-				margin-bottom: 2px;
-				pointer-events: none;
-			}
-			.controls button[disabled] .button-icon {
-				background: var(--icon-disabled);
+			.controls button[disabled] {
+				background-image: var(--icon-disabled);
 			}
 			.controls button + button {
 				margin-left: 3px;

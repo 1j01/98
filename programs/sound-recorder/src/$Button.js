@@ -10,7 +10,6 @@ var make_canvas = (width, height)=> {
 	return canvas;
 };
 
-// $(":root").css({"--icon-enabled": `url("${sprite_sheet.src}")`});
 document.documentElement.style.setProperty("--icon-enabled", `url("${sprite_sheet.src}")`);
 
 function renderDisabledStateIcons() {
@@ -37,7 +36,6 @@ function renderDisabledStateIcons() {
 
 	disabled_canvas.toBlob((blob)=> {
 		var blob_url = URL.createObjectURL(blob);
-		// $(":root").css({"--icon-disabled": `url("${blob_url}")`});
 		document.documentElement.style.setProperty("--icon-disabled", `url("${blob_url}")`);
 	});
 }
@@ -48,7 +46,7 @@ $(sprite_sheet).load(function(){
 });
 
 var $Button = function(title, n){
-	var $button = $("<button><div class='button-icon'/></button>").attr("title", title);
+	var $button = $("<button/>").attr("title", title);
 
 	// These aren't really toggle buttons (except for their radio button behavior)...
 	// but they have the look of toggle buttons while being clicked.
@@ -60,10 +58,8 @@ var $Button = function(title, n){
 	var sprite_width = sheet_width / n_buttons;
 	var sprite_height = sheet_height;
 
-	$button.find(".button-icon").css({
+	$button.css({
 		"background-position": `-${n * sprite_width}px 0`,
-		width: sprite_width,
-		height: sprite_height,
 	});
 	
 	$button.disable = function(){
