@@ -32,6 +32,10 @@ $slider.slider({
 });
 $slider.find(".ui-slider-handle").addClass("outset-deep");
 
+$slider_container.on("mousedown pointerdown", ()=> {
+	$slider.find(".ui-slider-handle").focus();
+});
+
 /* ------------------------------------- */
 
 $("body").on("mousedown selectstart contextmenu", function(e){
