@@ -164,6 +164,8 @@ var record = function(){
 	$record.disable();
 	$stop.enable();
 	
+	audio_context.resume();
+
 	file.availLength = Math.max(file.length, file.position + 23.77);
 	file.updateBufferSize(file.availLength);
 	
@@ -193,6 +195,7 @@ var play = function(){
 	if(file.position >= file.length){
 		file.position = 0;
 	}
+	audio_context.resume();
 	file.audio.seek(file.position);
 	file.audio.play();
 	
