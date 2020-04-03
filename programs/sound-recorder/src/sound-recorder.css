@@ -28,6 +28,7 @@ body,
 	max-width: 500px;
 	flex: 1;
 	height: 100%;
+	display: flex;
 	background: black;
 	margin: 0 9px;
 	box-sizing: border-box;
