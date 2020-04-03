@@ -140,8 +140,8 @@ function AudioFile(){
 		
 		// Update the file position and playback state
 		file.position = f(old_position);
-		console.log("old position:", old_position, "new position:", file.position);
-		console.log("old length:", old_length, "new length:", file.length);
+		// console.log("old position:", old_position, "new position:", file.position);
+		// console.log("old length:", old_length, "new length:", file.length);
 		file.audio.seek(file.position);
 		if(playing){
 			file.audio.play();

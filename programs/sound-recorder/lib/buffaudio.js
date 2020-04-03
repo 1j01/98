@@ -56,7 +56,6 @@
 		
 		// Play the currently loaded buffer
 		this.play = function() {
-			console.log("Play");
 			if (this._isPlaying) return;
 			this.initSource();
 			this._source.start(0, this._playbackTime);
@@ -89,7 +88,6 @@
 		
 		// Stops or pauses playback and sets playbackTime accordingly
 		this.stop = function(pause) {
-			console.log("Stop");
 			if (this._source) {
 				this._source.onended = null;
 				this._source.stop(0);
@@ -104,7 +102,6 @@
 		// Callback for reaching end of buffer
 		// (not for handling pause/stop because onended listener is removed before manual stop)
 		this.onended = function() {
-			console.log("onended");
 			this._playbackTime = 0;
 			this._isPlaying = false;
 		}.bind(this);

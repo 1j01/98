@@ -329,7 +329,7 @@ $(function(){
 	
 	var gotStream = function(stream){
 		input = audio_context.createMediaStreamSource(stream);
-		console.log("Media stream created.");
+		// console.log("Media stream created.");
 		
 		input.connect($wave_display.analyser);
 		input.connect(file.recorder);

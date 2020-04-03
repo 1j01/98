@@ -47,11 +47,6 @@ $("body").on("mousedown selectstart contextmenu", function(e){
 });
 
 $("body").on("keydown", function(e){
-	
-	if(e.altKey){
-		//find key codes
-		window.console && console.log(e.keyCode);
-	}
 	if(e.keyCode === 32){ //Space
 		if(playing || recording){
 			stop();
