@@ -3,6 +3,9 @@
 
 Try it [as part of 98](https://98.js.org/) or [standalone](https://98.js.org/programs/sound-recorder/)
 
+### Extra Features
+
+* The window can be maximized, allowing for a larger slider and waveform display
 
 ### TODO
 
@@ -16,11 +19,9 @@ Try it [as part of 98](https://98.js.org/) or [standalone](https://98.js.org/pro
 
 * Improve keyboard support
 
-* Fix ghost playback
-
 * Fix recording over a file (multiple times?)
 
-* Show error messages visibly when in window where log isn't visible
+* Make all error messages visible to the user
 
 * Implement Help options
 
