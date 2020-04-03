@@ -38,33 +38,31 @@
 		this._isPlaying = false;
 		this._bufferDuration = 0; // seconds
 		
-		// Whenever we get a new AudioBuffer, we create a new AudioBufferSourceNode and reset
-		// the playback time. Make sure any existing audio is stopped beforehand.
+		// Whenever we get a new AudioBuffer, we reset the playback time.
+		// Make sure any existing audio is stopped beforehand.
 		this.initNewBuffer = function(buffer) {
 			this.stop();
 			this._buffer = buffer;
 			this._playbackTime = 0;
-		}
+		};
 		
 		// Create a new AudioBufferSourceNode
 		this.initSource = function() {
 			this._source = this._audioContext.createBufferSource();
 			this._source.buffer = this._buffer;
 			this._source.connect(this._audioContext.destination);
-			// Bind the callback to this
-			this._source.onended = this.onended.bind(this);
-		}
+			this._source.onended = this.onended;
+		};
 		
 		// Play the currently loaded buffer
 		this.play = function() {
 			console.log("Play");
 			if (this._isPlaying) return;
-			var when = 0; // when to schedule playback, 0 is immediately
 			this.initSource();
 			this._source.start(0, this._playbackTime);
 			this._startTimestamp = Date.now();
 			this._isPlaying = true;
-		}
+		};
 		
 		// Seek to a specific playbackTime (seconds) in the audio buffer. Do not change
 		// playback state.
@@ -82,24 +80,26 @@
 			} else {
 				this._playbackTime = playbackTime;
 			}
-		}
+		};
 		
 		// Pause playback, keep track of where playback stopped
 		this.pause = function() {
 			this.stop(true);
-		}
+		};
 		
 		// Stops or pauses playback and sets playbackTime accordingly
 		this.stop = function(pause) {
 			console.log("Stop");
+			if (this._source) {
+				this._source.onended = null;
+				this._source.stop(0);
+				this._source = null;
+			}
 			if (!this._isPlaying) return;
 			this._isPlaying = false;
-			this._source.onended = null;
-			this._source.stop(0);
-			this._source = null;
 			// If paused, calculate time where we stopped. Otherwise go back to beginning of playback (0).
 			this._playbackTime = pause ? (Date.now() - this._startTimestamp)/1000 + this._playbackTime : 0;
-		}
+		};
 		
 		// Callback for reaching end of buffer
 		// (not for handling pause/stop because onended listener is removed before manual stop)
@@ -107,7 +107,7 @@
 			console.log("onended");
 			this._playbackTime = 0;
 			this._isPlaying = false;
-		}
+		}.bind(this);
 		
 		this.init = function() {
 			this.initNewBuffer(this._buffer);
