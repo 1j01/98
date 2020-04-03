@@ -1,7 +1,5 @@
 
-// webkit shim
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
-navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia;
 window.URL = window.URL || window.webkitURL;
 
 if(window.AudioContext){
@@ -89,7 +87,7 @@ var download_wav_file = function(file){
 
 	var gotWAV = function(blob){
 		var a = document.createElement('a');
-		a.href = (window.URL || window.webkitURL).createObjectURL(blob);
+		a.href = URL.createObjectURL(blob);
 		a.download = file.name.replace(/(?:\.wav)?$/, ".wav");
 		var click = document.createEvent("Event");
 		click.initEvent("click", true, true);
