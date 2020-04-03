@@ -152,22 +152,24 @@ var update = function(position_from_slider){
 	$position.display(file.position);
 	$wave_display.display();
 	
-	if(file.length && file.position > 0){
+	var can_seek_to_start = file.length && file.position > 0;
+	// SLIDER_DUMBNESS: the slider doesn't slide all the way to the max value
+	var can_seek_to_end = file.length && file.position + SLIDER_DUMBNESS < file.length;
+
+	if(can_seek_to_start){
 		$seek_to_start.enable();
-	}else{
+	}
+	if (can_seek_to_end) {
+		$seek_to_end.enable();
+	}
+
+	if (!can_seek_to_start) {
 		if ($seek_to_start.is(":focus")) {
-			// TODO: DRY
-			if(file.length && file.position + SLIDER_DUMBNESS < file.length){
-				$seek_to_end.enable();
-			}
 			$seek_to_end.focus();
 		}
 		$seek_to_start.disable();
 	}
-	// SLIDER_DUMBNESS: the slider doesn't slide all the way to the max value
-	if(file.length && file.position + SLIDER_DUMBNESS < file.length){
-		$seek_to_end.enable();
-	}else{
+	if (!can_seek_to_end) {
 		if ($seek_to_end.is(":focus")) {
 			$seek_to_start.focus();
 		}
@@ -180,9 +182,7 @@ var record = function(){
 	
 	$record.disable();
 	$stop.enable();
-	// if ($play.is(":focus")) {
 	$stop.focus();
-	// }
 	
 	audio_context.resume();
 
@@ -230,9 +230,7 @@ var play = function(){
 	file.audio.play();
 	
 	$stop.enable();
-	// if ($play.is(":focus")) {
 	$stop.focus();
-	// }
 	$play.disable();
 	
 	playing = true;
