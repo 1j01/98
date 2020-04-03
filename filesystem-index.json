@@ -639,6 +639,9 @@
           "gif.worker.js.map": null
         },
         "jquery-3.4.1.min.js": null,
+        "jquery-ui-1.12.1.custom": {
+          "external": {}
+        },
         "konami.js": null,
         "libtess.min.js": null,
         "os-gui": {
@@ -759,7 +762,7 @@
         "AudioFile.js": null,
         "effects.js": null,
         "menus.js": null,
-        "setup.js": null
+        "sound-recorder.css": null
       }
     },
     "winamp": {
