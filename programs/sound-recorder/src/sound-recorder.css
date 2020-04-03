@@ -99,21 +99,22 @@ body,
 }
 .ui-slider-handle {
 	outline: none;
+	box-sizing: border-box;
 }
 .ui-slider-handle:active {
 	background: var(--checker);
 }
 .ui-slider-horizontal .ui-slider-handle {
-	width: 10px;
-	height: 20px;
-	top: -10px;
+	width: 9px;
+	height: 17px;
+	top: -8px;
 	margin-left: -5px;
 }
 .ui-slider-vertical .ui-slider-handle {
-	width: 20px;
-	height: 10px;
+	height: 9px;
+	width: 17px;
 	top: -5px;
-	margin-left: -10px;
+	margin-left: -8px;
 }
 
 /* From .menus *, .menu-popup * {} */
