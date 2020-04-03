@@ -52,8 +52,7 @@
 			this._source.buffer = this._buffer;
 			this._source.connect(this._audioContext.destination);
 			// Bind the callback to this
-			var endOfPlayback = this.endOfPlayback.bind(this);
-			this._source.onended = endOfPlayback;
+			this._source.onended = this.onended.bind(this);
 		}
 		
 		// Play the currently loaded buffer
@@ -94,18 +93,19 @@
 		this.stop = function(pause) {
 			console.log("Stop");
 			if (!this._isPlaying) return;
-			this._isPlaying = false; // Set to flag to endOfPlayback callback that this was set manually
+			this._isPlaying = false;
+			this._source.onended = null;
 			this._source.stop(0);
+			this._source = null;
 			// If paused, calculate time where we stopped. Otherwise go back to beginning of playback (0).
 			this._playbackTime = pause ? (Date.now() - this._startTimestamp)/1000 + this._playbackTime : 0;
 		}
 		
-		// Callback for any time playback stops/pauses
-		this.endOfPlayback = function(endEvent) {
-			console.log("end of playback");
-			
-			// If playback stopped because end of buffer was reached
-			if (this._isPlaying) this._playbackTime = 0;
+		// Callback for reaching end of buffer
+		// (not for handling pause/stop because onended listener is removed before manual stop)
+		this.onended = function() {
+			console.log("onended");
+			this._playbackTime = 0;
 			this._isPlaying = false;
 		}
 		
