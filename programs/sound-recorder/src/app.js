@@ -128,6 +128,9 @@ var update = function(position_from_slider){
 				stop();
 			}
 		}else{
+			if ($stop.is(":focus")) {
+				$play.focus();
+			}
 			$stop.disable();
 		}
 		if(recording){
@@ -136,6 +139,9 @@ var update = function(position_from_slider){
 		if(file.length && !playing && !recording){
 			$play.enable();
 		}else{
+			if ($play.is(":focus")) {
+				$stop.focus();
+			}
 			$play.disable();
 		}
 		$slider.slider("option", "max", file.availLength);
@@ -149,11 +155,22 @@ var update = function(position_from_slider){
 	if(file.length && file.position > 0){
 		$seek_to_start.enable();
 	}else{
+		if ($seek_to_start.is(":focus")) {
+			// TODO: DRY
+			if(file.length && file.position + SLIDER_DUMBNESS < file.length){
+				$seek_to_end.enable();
+			}
+			$seek_to_end.focus();
+		}
 		$seek_to_start.disable();
 	}
-	if(file.length && file.position + SLIDER_DUMBNESS < file.length){ // why doesn't the slider slide all the way to the max?
+	// SLIDER_DUMBNESS: the slider doesn't slide all the way to the max value
+	if(file.length && file.position + SLIDER_DUMBNESS < file.length){
 		$seek_to_end.enable();
 	}else{
+		if ($seek_to_end.is(":focus")) {
+			$seek_to_start.focus();
+		}
 		$seek_to_end.disable();
 	}
 };
@@ -163,6 +180,9 @@ var record = function(){
 	
 	$record.disable();
 	$stop.enable();
+	// if ($play.is(":focus")) {
+	$stop.focus();
+	// }
 	
 	audio_context.resume();
 
@@ -180,11 +200,21 @@ var stop = function(){
 	
 	file.audio.pause();
 	
+	if(input){ $record.enable(); }
+	if(file.length) { $play.enable(); }
+
+	if ($stop.is(":focus")) {
+		if (recording) {
+			$record.focus();
+		} else {
+			$play.focus();
+		}
+	}
+
 	recording = false;
 	playing = false;
 	
 	$stop.disable();
-	if(input){ $record.enable(); }
 	
 	file.availLength = file.length;
 	update();
@@ -199,8 +229,11 @@ var play = function(){
 	file.audio.seek(file.position);
 	file.audio.play();
 	
-	$play.disable();
 	$stop.enable();
+	// if ($play.is(":focus")) {
+	$stop.focus();
+	// }
+	$play.disable();
 	
 	playing = true;
 	previous_time = audio_context.currentTime;
@@ -210,6 +243,7 @@ var play = function(){
 
 var seek_to_start = function(){
 	seek(0);
+	$seek_to_end.focus();
 };
 
 var seek_to_end = function(){

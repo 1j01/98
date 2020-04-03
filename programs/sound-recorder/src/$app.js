@@ -40,6 +40,7 @@ $slider_container.on("mousedown pointerdown", ()=> {
 
 $("body").on("mousedown selectstart contextmenu", function(e){
 	if(
+		e.target instanceof HTMLButtonElement ||
 		e.target instanceof HTMLSelectElement ||
 		e.target instanceof HTMLTextAreaElement ||
 		(e.target instanceof HTMLLabelElement && e.type !== "contextmenu") ||
@@ -51,13 +52,7 @@ $("body").on("mousedown selectstart contextmenu", function(e){
 });
 
 $("body").on("keydown", function(e){
-	if(e.keyCode === 32){ //Space
-		if(playing || recording){
-			stop();
-		}else{
-			play();
-		}
-	}else if(e.ctrlKey){
+	if(e.ctrlKey){
 		var key = String.fromCharCode(e.keyCode).toUpperCase();
 		switch(key){
 			// case "Z":

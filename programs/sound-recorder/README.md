@@ -26,12 +26,6 @@ Try it [as part of 98](https://98.js.org/) or [standalone](https://98.js.org/pro
 
 * Handle mousewheel for focused slider
 
-* Let buttons take focus from clicking, and focus appropriate buttons when the focused button becomes disabled.
-  (Currently space is handled globally to play/pause, which is not how it works.)
-  Seek to start should go to seek to end and visa versa, play should go to stop and visa versa, if such buttons are enabled.
-  Record should go to stop, and visa versa, which overlaps.
-  It might be based on whether it was recording when you press Stop, or what was focused most recently, and that may or may not be a distinction that matters.
-
 * Implement Help > Help Topics
 
 * Audio Properties?
