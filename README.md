@@ -13,11 +13,10 @@ Includes:
 
 Features:
 * Drop files onto the desktop, and they'll be stored in a virtual filesystem
-* Easter eggs (cheat codes) 😉
-* A clock that shows the *actual time*, wooooo
-* Currently, an extremely illegitimate start menu
+* Load Windows themes! Many are included in the Themes folder on the desktop.
+* Easter eggs (try a famous cheat code 😉)
 * Meticulous detail in many areas (altho there's obviously lots "missing")
-* You can add it to your homescreen on mobile
+* You can add the site to your homescreen on mobile
 
 ## Try it out
 
