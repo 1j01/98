@@ -24,7 +24,11 @@ $position.display(0);
 $length.display(0);
 
 $slider.slider({
-	step: SLIDER_DUMBNESS = 0.00001, // we don't really want it to step
+	step: SLIDER_DUMBNESS = 0.00001, // we don't really want it to step...
+	// except for if you use the keyboard (or mousewheel)
+	// TODO: is there a way to have it be continuous when dragging, but still step reasonably?
+	// handle keyboard events manually and prevent the default I guess
+
 	slide: function(event, ui){
 		// $slider.slider("value") is not updated yet here so you have to use ui.value
 		update(ui.value);
