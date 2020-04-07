@@ -169,7 +169,17 @@ var menus = {
 		{
 			item: "&Help Topics",
 			action: function(){
-				alert("Help isn't implemented, sorry!");
+				var show_help = window.show_help;
+				try {
+					show_help = parent.show_help;
+				} catch(e) {}
+				if (show_help === undefined) {
+					return alert("Help Topics only works when inside of the 98.js.org desktop.");
+				}
+				show_help({
+					contentsFile: "help/sound-recorder-help/soundrec.hhc",
+					root: "help/sound-recorder-help",
+				});
 			},
 			description: "Displays Help for the current task or command.",
 		},

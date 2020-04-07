@@ -187,6 +187,56 @@ html, body {
 	padding: 3px 5px;
 }
 
+.help-window .window-content {
+	display: flex;
+	flex-flow: row;
+}
+.help-window .contents {
+	background: white;
+	background: var(--Window);
+	color: var(--WindowText);
+	flex-basis: 300px; /* normally the default is 200px, but that leaves a scrollbar and we don't have rollover viewing of longer titles (@TODO) */
+	flex-grow: 0;
+	flex-shrink: 0;
+	overflow: auto;
+}
+.help-window ul {
+	margin: 0;
+	padding: 0;
+}
+.help-window li {
+	display: block;
+	white-space: nowrap;
+}
+.help-window .item {
+	display: inline-block;
+}
+.help-window .folder:not(.expanded) ul {
+	display: none;
+}
+.help-window iframe {
+	flex: 1;
+	width: 0;
+}
+.help-window li ul {
+	padding-left: 16px;
+}
+.help-window li:before {
+	content: "";
+	display: inline-block;
+	vertical-align: middle;
+	width: 16px;
+	height: 16px;
+	background-position: 0 0;
+	margin-right: 2px;
+}
+.help-window .folder.expanded:before {
+	background-position: -16px 0;
+}
+.help-window .page:before {
+	background-position: -32px 0;
+}
+
 ::before, ::after {
 	pointer-events: none;
 }

@@ -225,11 +225,20 @@ var menus = {
 		// },
 	],
 	"&Help": [
-		// TODO: help options
 		{
 			item: "&Help Topics",
 			action: function(){
-				alert("Help isn't implemented, sorry!");
+				var show_help = window.show_help;
+				try {
+					show_help = parent.show_help;
+				} catch(e) {}
+				if (show_help === undefined) {
+					return alert("Help Topics only works when inside of the 98.js.org desktop.");
+				}
+				show_help({
+					contentsFile: "help/notepad-help/notepad.hhc",
+					root: "help/notepad-help",
+				});
 			},
 			description: "Lists Help topics.",
 			// WordPad: "Lists Help topics"
@@ -240,6 +249,7 @@ var menus = {
 		{
 			item: "&About Notepad",
 			action: function(){
+				// TODO: dialog
 				window.open("https://github.com/1j01/98/tree/master/programs/notepad");
 			},
 			description: "Displays information about this application."
