@@ -1,11 +1,5 @@
-// TODO: window per program's documentation
-let $help_window;
-
 function show_help(options){
-	if($help_window){
-		$help_window.close();
-	}
-	$help_window = $Window({
+	var $help_window = $Window({
 		title: options.title || "Help Topics",
 		icon: "chm",
 	})
