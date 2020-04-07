@@ -1,0 +1,153 @@
+<HTML>
+<HEAD>
+<!-- Sitemap 1.0 -->
+</HEAD>
+<BODY>
+<OBJECT type="text/site properties">
+              <param name="FrameName" value="current">
+</OBJECT>
+
+<UL>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="appending logs">
+              <param name="Name" value="To append a log to a document">
+              <param name="Local" value="win_notepad_tracking_time.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="copying text">
+              <param name="Name" value="To cut, copy, paste, or delete text">
+              <param name="Local" value="win_notepad_delete_text.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="creating headers, footers">
+              <param name="Name" value="To create a header or footer">
+              <param name="Local" value="win_notepad_header_footer.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="current date, time">
+              <param name="Name" value="To append a log to a document">
+              <param name="Local" value="win_notepad_tracking_time.htm">
+              <param name="Name" value="To insert the time and date in a document">
+              <param name="Local" value="win_notepad_time_date.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="cutting text">
+              <param name="Name" value="To cut, copy, paste, or delete text">
+              <param name="Local" value="win_notepad_delete_text.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="date">
+              <param name="Name" value="To append a log to a document">
+              <param name="Local" value="win_notepad_tracking_time.htm">
+              <param name="Name" value="To insert the time and date in a document">
+              <param name="Local" value="win_notepad_time_date.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="deleting text">
+              <param name="Name" value="To cut, copy, paste, or delete text">
+              <param name="Local" value="win_notepad_delete_text.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="finding text">
+              <param name="Name" value="To find specific characters or words">
+              <param name="Local" value="win_notepad_finding_words.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="footers">
+              <param name="Name" value="To create a header or footer">
+              <param name="Local" value="win_notepad_header_footer.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="headers">
+              <param name="Name" value="To create a header or footer">
+              <param name="Local" value="win_notepad_header_footer.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="inserting date, time">
+              <param name="Name" value="To append a log to a document">
+              <param name="Local" value="win_notepad_tracking_time.htm">
+              <param name="Name" value="To insert the time and date in a document">
+              <param name="Local" value="win_notepad_time_date.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="inserting headers, footers">
+              <param name="Name" value="To create a header or footer">
+              <param name="Local" value="win_notepad_header_footer.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="inserting text">
+              <param name="Name" value="To cut, copy, paste, or delete text">
+              <param name="Local" value="win_notepad_delete_text.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="line wrap">
+              <param name="Name" value="To wrap text to the window size">
+              <param name="Local" value="win_notepad_wrapping_text.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="logs">
+              <param name="Name" value="To append a log to a document">
+              <param name="Local" value="win_notepad_tracking_time.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="moving text">
+              <param name="Name" value="To cut, copy, paste, or delete text">
+              <param name="Local" value="win_notepad_delete_text.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="pasting text">
+              <param name="Name" value="To cut, copy, paste, or delete text">
+              <param name="Local" value="win_notepad_delete_text.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="printing">
+              <param name="Name" value="To create a header or footer">
+              <param name="Local" value="win_notepad_header_footer.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="searching for text">
+              <param name="Name" value="To find specific characters or words">
+              <param name="Local" value="win_notepad_finding_words.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="stamping file with date, time">
+              <param name="Name" value="To append a log to a document">
+              <param name="Local" value="win_notepad_tracking_time.htm">
+              <param name="Name" value="To insert the time and date in a document">
+              <param name="Local" value="win_notepad_time_date.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="text">
+              <param name="Name" value="To cut, copy, paste, or delete text">
+              <param name="Local" value="win_notepad_delete_text.htm">
+              <param name="Name" value="To find specific characters or words">
+              <param name="Local" value="win_notepad_finding_words.htm">
+              <param name="Name" value="To wrap text to the window size">
+              <param name="Local" value="win_notepad_wrapping_text.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="time">
+              <param name="Name" value="To append a log to a document">
+              <param name="Local" value="win_notepad_tracking_time.htm">
+              <param name="Name" value="To insert the time and date in a document">
+              <param name="Local" value="win_notepad_time_date.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="window size">
+              <param name="Name" value="To wrap text to the window size">
+              <param name="Local" value="win_notepad_wrapping_text.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="word wrap">
+              <param name="Name" value="To wrap text to the window size">
+              <param name="Local" value="win_notepad_wrapping_text.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="wrapping text">
+              <param name="Name" value="To wrap text to the window size">
+              <param name="Local" value="win_notepad_wrapping_text.htm">
+</OBJECT>
+</LI>
+</UL>
+</HEAD>
+</HTML>

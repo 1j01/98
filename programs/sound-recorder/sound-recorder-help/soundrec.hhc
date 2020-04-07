@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.00">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="Window Styles" value="0x800624">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Recording and Playing Sounds">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Record a sound">
+			<param name="Local" value="soundrec_create.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Play a sound">
+			<param name="Local" value="soundrec_playing.htm">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Modifying Sound Files">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Delete part of a sound file">
+			<param name="Local" value="soundrec_delete_sound.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Change the speed of a sound file">
+			<param name="Local" value="soundrec_change_speed.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Change the volume of a sound file">
+			<param name="Local" value="soundrec_change_volume.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Play a sound file in reverse">
+			<param name="Local" value="soundrec_reverse.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Add an echo to a sound file">
+			<param name="Local" value="soundrec_add_echo.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Undo changes made to a sound file">
+			<param name="Local" value="soundrec_undo_changes.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Change the quality of a sound file">
+			<param name="Local" value="soundrec_convert_file.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Change the format of a sound file">
+			<param name="Local" value="soundrec_pr_change_format.htm">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Adding Sound to Other Sound Files">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Record a sound into a sound file">
+			<param name="Local" value="soundrec_add_sound.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Insert a sound file into another sound file">
+			<param name="Local" value="soundrec_insert_sound.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Overlay (mix) sound files">
+			<param name="Local" value="soundrec_overlay_file.htm">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Placing a Sound File in a Document">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Insert a sound file into a document">
+			<param name="Local" value="windows_soundrec_insert.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Link a sound file to a document">
+			<param name="Local" value="windows_soundrec_link.htm">
+			</OBJECT>
+	</UL>
+</UL>
+</HTML>

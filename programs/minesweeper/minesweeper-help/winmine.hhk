@@ -1,0 +1,29 @@
+<HTML>
+<HEAD>
+<!-- Sitemap 1.0 -->
+</HEAD>
+<BODY>
+<OBJECT type="text/site properties">
+              <param name="FrameName" value="current">
+</OBJECT>
+
+<UL>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="object of the game">
+              <param name="Name" value="The object of Minesweeper">
+              <param name="Local" value="mine_object.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="playing the game">
+              <param name="Name" value="To play Minesweeper">
+              <param name="Local" value="mine_play.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Name" value="strategies and tips">
+              <param name="Name" value="Strategies and tips">
+              <param name="Local" value="mine_tips.htm">
+</OBJECT>
+</LI>
+</UL>
+</HEAD>
+</HTML>

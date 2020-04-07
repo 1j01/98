@@ -1,0 +1,484 @@
+<HTML>
+<HEAD>
+<!-- Sitemap 1.0 -->
+</HEAD>
+<BODY>
+<OBJECT type="text/site properties">
+              <param name="FrameName" value="current">
+</OBJECT>
+
+<UL>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="adding echo">
+              <param name="Name" value="To add an echo to a sound file">
+              <param name="Local" value="soundrec_add_echo.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="adding sounds">
+              <param name="Name" value="To insert a sound file into another sound file">
+              <param name="Local" value="soundrec_insert_sound.htm">
+              <param name="Name" value="To record a sound into a sound file">
+              <param name="Local" value="soundrec_add_sound.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="adjusting sound quality">
+              <param name="Name" value="To change the format of a sound file">
+              <param name="Local" value="soundrec_pr_change_format.htm">
+              <param name="Name" value="To change the quality of a sound file">
+              <param name="Local" value="soundrec_convert_file.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="adjusting speed">
+              <param name="Name" value="To change the speed of a sound file">
+              <param name="Local" value="soundrec_change_speed.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="adjusting volume">
+              <param name="Name" value="To change the volume of a sound file">
+              <param name="Local" value="soundrec_change_volume.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="audio formats">
+              <param name="Name" value="To change the format of a sound file">
+              <param name="Local" value="soundrec_pr_change_format.htm">
+              <param name="Name" value="To change the quality of a sound file">
+              <param name="Local" value="soundrec_convert_file.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="audio input devices">
+              <param name="Name" value="To record a sound">
+              <param name="Local" value="soundrec_create.htm">
+              <param name="Name" value="To record a sound into a sound file">
+              <param name="Local" value="soundrec_add_sound.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="changing properties">
+              <param name="Name" value="To change the format of a sound file">
+              <param name="Local" value="soundrec_pr_change_format.htm">
+              <param name="Name" value="To change the quality of a sound file">
+              <param name="Local" value="soundrec_convert_file.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="converting formats">
+              <param name="Name" value="To change the format of a sound file">
+              <param name="Local" value="soundrec_pr_change_format.htm">
+              <param name="Name" value="To change the quality of a sound file">
+              <param name="Local" value="soundrec_convert_file.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="copying sounds">
+              <param name="Name" value="To insert a sound file into another sound file">
+              <param name="Local" value="soundrec_insert_sound.htm">
+              <param name="Name" value="To insert sound into a document">
+              <param name="Local" value="windows_soundrec_insert.htm">
+              <param name="Name" value="To link a sound file to a document">
+              <param name="Local" value="windows_soundrec_link.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="cutting sounds">
+              <param name="Name" value="To delete part of a sound file">
+              <param name="Local" value="soundrec_delete_sound.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="decreasing speed">
+              <param name="Name" value="To change the speed of a sound file">
+              <param name="Local" value="soundrec_change_speed.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="decreasing volume">
+              <param name="Name" value="To change the volume of a sound file">
+              <param name="Local" value="soundrec_change_volume.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="deleting sounds">
+              <param name="Name" value="To delete part of a sound file">
+              <param name="Local" value="soundrec_delete_sound.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="devices">
+              <param name="Name" value="To record a sound">
+              <param name="Local" value="soundrec_create.htm">
+              <param name="Name" value="To record a sound into a sound file">
+              <param name="Local" value="soundrec_add_sound.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="documents, inserting sounds into">
+              <param name="Name" value="To insert sound into a document">
+              <param name="Local" value="windows_soundrec_insert.htm">
+              <param name="Name" value="To link a sound file to a document">
+              <param name="Local" value="windows_soundrec_link.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="echo">
+              <param name="Name" value="To add an echo to a sound file">
+              <param name="Local" value="soundrec_add_echo.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="editing sound files">
+              <param name="Name" value="To delete part of a sound file">
+              <param name="Local" value="soundrec_delete_sound.htm">
+              <param name="Name" value="To insert a sound file into another sound file">
+              <param name="Local" value="soundrec_insert_sound.htm">
+              <param name="Name" value="To overlay (mix) sound files">
+              <param name="Local" value="soundrec_overlay_file.htm">
+              <param name="Name" value="To record a sound into a sound file">
+              <param name="Local" value="soundrec_add_sound.htm">
+              <param name="Name" value="To undo changes made to a sound file">
+              <param name="Local" value="soundrec_undo_changes.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="effects">
+              <param name="Name" value="To add an echo to a sound file">
+              <param name="Local" value="soundrec_add_echo.htm">
+              <param name="Name" value="To change the speed of a sound file">
+              <param name="Local" value="soundrec_change_speed.htm">
+              <param name="Name" value="To change the volume of a sound file">
+              <param name="Local" value="soundrec_change_volume.htm">
+              <param name="Name" value="To play a sound file in reverse">
+              <param name="Local" value="soundrec_reverse.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="file formats">
+              <param name="Name" value="To change the format of a sound file">
+              <param name="Local" value="soundrec_pr_change_format.htm">
+              <param name="Name" value="To change the quality of a sound file">
+              <param name="Local" value="soundrec_convert_file.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="formats">
+              <param name="Name" value="To change the format of a sound file">
+              <param name="Local" value="soundrec_pr_change_format.htm">
+              <param name="Name" value="To change the quality of a sound file">
+              <param name="Local" value="soundrec_convert_file.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="increasing speed">
+              <param name="Name" value="To change the speed of a sound file">
+              <param name="Local" value="soundrec_change_speed.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="increasing volume">
+              <param name="Name" value="To change the volume of a sound file">
+              <param name="Local" value="soundrec_change_volume.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="input devices">
+              <param name="Name" value="To record a sound">
+              <param name="Local" value="soundrec_create.htm">
+              <param name="Name" value="To record a sound into a sound file">
+              <param name="Local" value="soundrec_add_sound.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="inserting sound files">
+              <param name="Name" value="To insert a sound file into another sound file">
+              <param name="Local" value="soundrec_insert_sound.htm">
+              <param name="Name" value="To insert sound into a document">
+              <param name="Local" value="windows_soundrec_insert.htm">
+              <param name="Name" value="To link a sound file to a document">
+              <param name="Local" value="windows_soundrec_link.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="linking sound files">
+              <param name="Name" value="To link a sound file to a document">
+              <param name="Local" value="windows_soundrec_link.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="loudness">
+              <param name="Name" value="To change the volume of a sound file">
+              <param name="Local" value="soundrec_change_volume.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="mixing sound files">
+              <param name="Name" value="To overlay (mix) sound files">
+              <param name="Local" value="soundrec_overlay_file.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="opening sound files">
+              <param name="Name" value="To play a sound">
+              <param name="Local" value="soundrec_playing.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="overlaying sound files">
+              <param name="Name" value="To overlay (mix) sound files">
+              <param name="Local" value="soundrec_overlay_file.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="pasting sounds">
+              <param name="Name" value="To insert a sound file into another sound file">
+              <param name="Local" value="soundrec_insert_sound.htm">
+              <param name="Name" value="To insert sound into a document">
+              <param name="Local" value="windows_soundrec_insert.htm">
+              <param name="Name" value="To link a sound file to a document">
+              <param name="Local" value="windows_soundrec_link.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="playing sounds">
+              <param name="Name" value="To play a sound">
+              <param name="Local" value="soundrec_playing.htm">
+              <param name="Name" value="To play a sound file in reverse">
+              <param name="Local" value="soundrec_reverse.htm">
+              <param name="Name" value="To record a sound">
+              <param name="Local" value="soundrec_create.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="properties">
+              <param name="Name" value="To change the format of a sound file">
+              <param name="Local" value="soundrec_pr_change_format.htm">
+              <param name="Name" value="To change the quality of a sound file">
+              <param name="Local" value="soundrec_convert_file.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="quality, sound">
+              <param name="Name" value="To change the format of a sound file">
+              <param name="Local" value="soundrec_pr_change_format.htm">
+              <param name="Name" value="To change the quality of a sound file">
+              <param name="Local" value="soundrec_convert_file.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="recording sounds">
+              <param name="Name" value="To record a sound">
+              <param name="Local" value="soundrec_create.htm">
+              <param name="Name" value="To record a sound into a sound file">
+              <param name="Local" value="soundrec_add_sound.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="replacing sounds">
+              <param name="Name" value="To insert a sound file into another sound file">
+              <param name="Local" value="soundrec_insert_sound.htm">
+              <param name="Name" value="To record a sound into a sound file">
+              <param name="Local" value="soundrec_add_sound.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="restoring sound files">
+              <param name="Name" value="To undo changes made to a sound file">
+              <param name="Local" value="soundrec_undo_changes.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="reverse play">
+              <param name="Name" value="To play a sound file in reverse">
+              <param name="Local" value="soundrec_reverse.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="reverting">
+              <param name="Name" value="To undo changes made to a sound file">
+              <param name="Local" value="soundrec_undo_changes.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="saving sound files">
+              <param name="Name" value="To record a sound">
+              <param name="Local" value="soundrec_create.htm">
+              <param name="Name" value="To record a sound into a sound file">
+              <param name="Local" value="soundrec_add_sound.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="sound effects">
+              <param name="Name" value="To add an echo to a sound file">
+              <param name="Local" value="soundrec_add_echo.htm">
+              <param name="Name" value="To change the speed of a sound file">
+              <param name="Local" value="soundrec_change_speed.htm">
+              <param name="Name" value="To change the volume of a sound file">
+              <param name="Local" value="soundrec_change_volume.htm">
+              <param name="Name" value="To play a sound file in reverse">
+              <param name="Local" value="soundrec_reverse.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="sound files">
+<param name="Name" value="To insert a sound file into another sound file">
+<param name="Local" value="soundrec_insert_sound.htm">
+<param name="Name" value="To overlay (mix) sound files">
+<param name="Local" value="soundrec_overlay_file.htm">
+<param name="Name" value="To record a sound into a sound file">
+<param name="Local" value="soundrec_add_sound.htm">
+<param name="Name" value="To undo changes made to a sound file">
+<param name="Local" value="soundrec_undo_changes.htm">
+<param name="Name" value="To add an echo to a sound file">
+<param name="Local" value="soundrec_add_echo.htm">
+<param name="Name" value="To change the speed of a sound file">
+<param name="Local" value="soundrec_change_speed.htm">
+<param name="Name" value="To change the volume of a sound file">
+<param name="Local" value="soundrec_change_volume.htm">
+<param name="Name" value="To play a sound file in reverse">
+<param name="Local" value="soundrec_reverse.htm">
+<param name="Name" value="To change the format of a sound file">
+<param name="Local" value="soundrec_pr_change_format.htm">
+<param name="Name" value="To change the quality of a sound file">
+<param name="Local" value="soundrec_convert_file.htm">
+<param name="Name" value="To insert sound into a document">
+<param name="Local" value="windows_soundrec_insert.htm">
+<param name="Name" value="To link a sound file to a document">
+<param name="Local" value="windows_soundrec_link.htm">
+<param name="Name" value="To play a sound">
+<param name="Local" value="soundrec_playing.htm">
+<param name="Name" value="To record a sound">
+<param name="Local" value="soundrec_create.htm">
+   <UL>
+                 <param name="Name" value="To delete part of a sound file">
+                 <param name="Local" value="soundrec_delete_sound.htm">
+                 </OBJECT>
+   <LI><OBJECT type="Text/sitemap">
+                 <param name="Keyword" value="editing">
+                 <param name="Name" value="To delete part of a sound file">
+                 <param name="Local" value="soundrec_delete_sound.htm">
+                 <param name="Name" value="To insert a sound file into another sound file">
+                 <param name="Local" value="soundrec_insert_sound.htm">
+                 <param name="Name" value="To overlay (mix) sound files">
+                 <param name="Local" value="soundrec_overlay_file.htm">
+                 <param name="Name" value="To record a sound into a sound file">
+                 <param name="Local" value="soundrec_add_sound.htm">
+                 <param name="Name" value="To undo changes made to a sound file">
+                 <param name="Local" value="soundrec_undo_changes.htm">
+                 </OBJECT>
+   <LI><OBJECT type="Text/sitemap">
+                 <param name="Keyword" value="effects">
+                 <param name="Name" value="To add an echo to a sound file">
+                 <param name="Local" value="soundrec_add_echo.htm">
+                 <param name="Name" value="To change the speed of a sound file">
+                 <param name="Local" value="soundrec_change_speed.htm">
+                 <param name="Name" value="To change the volume of a sound file">
+                 <param name="Local" value="soundrec_change_volume.htm">
+                 <param name="Name" value="To play a sound file in reverse">
+                 <param name="Local" value="soundrec_reverse.htm">
+                 </OBJECT>
+   <LI><OBJECT type="Text/sitemap">
+                 <param name="Keyword" value="formats">
+                 <param name="Name" value="To change the format of a sound file">
+                 <param name="Local" value="soundrec_pr_change_format.htm">
+                 <param name="Name" value="To change the quality of a sound file">
+                 <param name="Local" value="soundrec_convert_file.htm">
+                 </OBJECT>
+   <LI><OBJECT type="Text/sitemap">
+                 <param name="Keyword" value="inserting">
+                 <param name="Name" value="To insert a sound file into another sound file">
+                 <param name="Local" value="soundrec_insert_sound.htm">
+                 <param name="Name" value="To insert sound into a document">
+                 <param name="Local" value="windows_soundrec_insert.htm">
+                 <param name="Name" value="To link a sound file to a document">
+                 <param name="Local" value="windows_soundrec_link.htm">
+                 </OBJECT>
+   <LI><OBJECT type="Text/sitemap">
+                 <param name="Keyword" value="linking">
+                 <param name="Name" value="To link a sound file to a document">
+                 <param name="Local" value="windows_soundrec_link.htm">
+                 </OBJECT>
+   <LI><OBJECT type="Text/sitemap">
+                 <param name="Keyword" value="mixing">
+                 <param name="Name" value="To overlay (mix) sound files">
+                 <param name="Local" value="soundrec_overlay_file.htm">
+                 </OBJECT>
+   <LI><OBJECT type="Text/sitemap">
+                 <param name="Keyword" value="playing">
+                 <param name="Name" value="To play a sound">
+                 <param name="Local" value="soundrec_playing.htm">
+                 <param name="Name" value="To play a sound file in reverse">
+                 <param name="Local" value="soundrec_reverse.htm">
+                 <param name="Name" value="To record a sound">
+                 <param name="Local" value="soundrec_create.htm">
+                 </OBJECT>
+   <LI><OBJECT type="Text/sitemap">
+                 <param name="Keyword" value="quality">
+                 <param name="Name" value="To change the format of a sound file">
+                 <param name="Local" value="soundrec_pr_change_format.htm">
+                 <param name="Name" value="To change the quality of a sound file">
+                 <param name="Local" value="soundrec_convert_file.htm">
+                 </OBJECT>
+   <LI><OBJECT type="Text/sitemap">
+                 <param name="Keyword" value="recording">
+                 <param name="Name" value="To record a sound">
+                 <param name="Local" value="soundrec_create.htm">
+                 <param name="Name" value="To record a sound into a sound file">
+                 <param name="Local" value="soundrec_add_sound.htm">
+                 </OBJECT>
+   <LI><OBJECT type="Text/sitemap">
+                 <param name="Keyword" value="undoing changes to">
+                 <param name="Name" value="To undo changes made to a sound file">
+                 <param name="Local" value="soundrec_undo_changes.htm">
+                 </OBJECT>
+   </UL>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="sound quality">
+              <param name="Name" value="To change the format of a sound file">
+              <param name="Local" value="soundrec_pr_change_format.htm">
+              <param name="Name" value="To change the quality of a sound file">
+              <param name="Local" value="soundrec_convert_file.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="sounds">
+<param name="Name" value="To record a sound into a sound file">
+<param name="Local" value="soundrec_add_sound.htm">
+<param name="Name" value="To delete part of a sound file">
+<param name="Local" value="soundrec_delete_sound.htm">
+<param name="Name" value="To add an echo to a sound file">
+<param name="Local" value="soundrec_add_echo.htm">
+<param name="Name" value="To change the speed of a sound file">
+<param name="Local" value="soundrec_change_speed.htm">
+<param name="Name" value="To change the volume of a sound file">
+<param name="Local" value="soundrec_change_volume.htm">
+<param name="Name" value="To play a sound file in reverse">
+<param name="Local" value="soundrec_reverse.htm">
+<param name="Name" value="To play a sound">
+<param name="Local" value="soundrec_playing.htm">
+<param name="Name" value="To record a sound">
+<param name="Local" value="soundrec_create.htm">
+   <UL>
+                 <param name="Name" value="To insert a sound file into another sound file">
+                 <param name="Local" value="soundrec_insert_sound.htm">
+                 </OBJECT>
+   <LI><OBJECT type="Text/sitemap">
+                 <param name="Keyword" value="adding">
+                 <param name="Name" value="To insert a sound file into another sound file">
+                 <param name="Local" value="soundrec_insert_sound.htm">
+                 <param name="Name" value="To record a sound into a sound file">
+                 <param name="Local" value="soundrec_add_sound.htm">
+                 </OBJECT>
+   <LI><OBJECT type="Text/sitemap">
+                 <param name="Keyword" value="deleting">
+                 <param name="Name" value="To delete part of a sound file">
+                 <param name="Local" value="soundrec_delete_sound.htm">
+                 </OBJECT>
+   <LI><OBJECT type="Text/sitemap">
+                 <param name="Keyword" value="effects">
+                 <param name="Name" value="To add an echo to a sound file">
+                 <param name="Local" value="soundrec_add_echo.htm">
+                 <param name="Name" value="To change the speed of a sound file">
+                 <param name="Local" value="soundrec_change_speed.htm">
+                 <param name="Name" value="To change the volume of a sound file">
+                 <param name="Local" value="soundrec_change_volume.htm">
+                 <param name="Name" value="To play a sound file in reverse">
+                 <param name="Local" value="soundrec_reverse.htm">
+                 </OBJECT>
+   <LI><OBJECT type="Text/sitemap">
+                 <param name="Keyword" value="playing">
+                 <param name="Name" value="To play a sound">
+                 <param name="Local" value="soundrec_playing.htm">
+                 <param name="Name" value="To play a sound file in reverse">
+                 <param name="Local" value="soundrec_reverse.htm">
+                 <param name="Name" value="To record a sound">
+                 <param name="Local" value="soundrec_create.htm">
+                 </OBJECT>
+   <LI><OBJECT type="Text/sitemap">
+                 <param name="Keyword" value="recording">
+                 <param name="Name" value="To record a sound">
+                 <param name="Local" value="soundrec_create.htm">
+                 <param name="Name" value="To record a sound into a sound file">
+                 <param name="Local" value="soundrec_add_sound.htm">
+                 </OBJECT>
+   </UL>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="speed">
+              <param name="Name" value="To change the speed of a sound file">
+              <param name="Local" value="soundrec_change_speed.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="undoing changes">
+              <param name="Name" value="To undo changes made to a sound file">
+              <param name="Local" value="soundrec_undo_changes.htm">
+              </OBJECT>
+<LI><OBJECT type="Text/sitemap">
+              <param name="Keyword" value="volume control">
+              <param name="Name" value="To change the volume of a sound file">
+              <param name="Local" value="soundrec_change_volume.htm">
+</OBJECT>
+</LI>
+</UL>
+</HEAD>
+</HTML>
