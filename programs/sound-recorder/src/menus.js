@@ -177,6 +177,7 @@ var menus = {
 					return alert("Help Topics only works when inside of the 98.js.org desktop.");
 				}
 				show_help({
+					title: "Sound Recorder Help",
 					contentsFile: "help/sound-recorder-help/soundrec.hhc",
 					root: "help/sound-recorder-help",
 				});

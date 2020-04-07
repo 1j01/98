@@ -236,6 +236,7 @@ var menus = {
 					return alert("Help Topics only works when inside of the 98.js.org desktop.");
 				}
 				show_help({
+					title: "Notepad Help",
 					contentsFile: "help/notepad-help/notepad.hhc",
 					root: "help/notepad-help",
 				});

@@ -26,8 +26,6 @@ Try it [as part of 98](https://98.js.org/) or [standalone](https://98.js.org/pro
 
 * Handle mousewheel for focused slider
 
-* Implement Help > Help Topics
-
 * Audio Properties?
   Make a dialogue with an error icon that says exactly the following:
   ```

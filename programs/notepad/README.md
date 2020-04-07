@@ -11,8 +11,6 @@ Try it [as part of 98](https://98.js.org/) or [standalone](https://98.js.org/pro
 * Help > About Notepad
   * Link back to 98 in case the app is opened standalone
 
-* Implement Help > Help Topics
-
 * Search (altho you can use the browser's <kbd>Ctrl+F</kbd>)
 
 * Edit > Set Font

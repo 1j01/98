@@ -6,8 +6,8 @@ function show_help(options){
 		$help_window.close();
 	}
 	$help_window = $Window({
-		title: "Help Topics", // "<Program Name> Help" // "Windows Help"
-		icon: "help",
+		title: options.title || "Help Topics",
+		icon: "chm",
 	})
 	$help_window.addClass("help-window");
 	// $toolbar = $(E("div")).addClass("toolbar");

@@ -128,6 +128,7 @@ var menus = {
 					return alert("Help Topics only works when inside of the 98.js.org desktop.");
 				}
 				show_help({
+					title: "Minesweeper Help",
 					contentsFile: "help/minesweeper-help/winmine.hhc",
 					root: "help/minesweeper-help",
 				});
