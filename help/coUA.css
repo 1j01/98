@@ -12,6 +12,10 @@ body {
 	font-family: Verdana, Arial, Helvetica, "MS Sans Serif";
 }
 
+.winhelp-popup-link {
+	border-bottom: 1px dotted black;
+}
+
 a:link {
 	color: #0000CC;
 	color: var(--HotTrackingColor);
