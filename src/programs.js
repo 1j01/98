@@ -57,10 +57,9 @@ function show_help(options){
 	}));
 	$contents.append($default_item_li);
 	
-	$.get(options.contentsFile, hhc => {
-		$($.parseHTML(hhc)).filter("ul").children().get().forEach((li) => {
-			
-			const object = parse_object_params($(li).children("object"));
+	function renderItem(source_li, $folder_items_ul) {
+		const object = parse_object_params($(source_li).children("object"));
+		if ($(source_li).find("li").length > 0){
 			
 			const $folder_li = $(E("li")).addClass("folder");
 			$folder_li.append($Item(object.Name));
@@ -69,14 +68,25 @@ function show_help(options){
 			const $folder_items_ul = $(E("ul"));
 			$folder_li.append($folder_items_ul);
 			
-			$(li).children("ul").children().get().forEach((li) => {
-				const object = parse_object_params($(li).children("object"));
-				const $item_li = $(E("li")).addClass("page");
-				$item_li.append($Item(object.Name).on("click", ()=> {
-					$iframe.attr({src: `${options.root}/${object.Local}`});
-				}));
-				$folder_items_ul.append($item_li);
+			$(source_li).children("ul").children().get().forEach((li)=> {
+				renderItem(li, $folder_items_ul);
 			});
+		} else {
+			const $item_li = $(E("li")).addClass("page");
+			$item_li.append($Item(object.Name).on("click", ()=> {
+				$iframe.attr({src: `${options.root}/${object.Local}`});
+			}));
+			if ($folder_items_ul) {
+				$folder_items_ul.append($item_li);
+			} else {
+				$contents.append($item_li);
+			}
+		}
+	}
+
+	$.get(options.contentsFile, hhc => {
+		$($.parseHTML(hhc)).filter("ul").children().get().forEach((li)=> {
+			renderItem(li, null);
 		});
 	});
 	
