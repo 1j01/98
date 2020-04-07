@@ -35,13 +35,18 @@ If ErrorLevel
 	MsgBox, Failed to activate DirtyMarkup; I'm not gonna open it for u just open it lol (and focus the tab)
 	Goto, ResetAndEnd
 }
-Click, 420, 420
+Click, 420, 469
 Sleep, 50
 Send, ^a
 Sleep, 150 ; not sure this needs to be higher
 Send, ^v
 Sleep, 150 ; not sure this needs to be higher
-Click, 69, 420
+Send, ^l
+SetKeyDelay, 0
+Send javascript:document.querySelector("[type=submit]").click()
+Send {Enter}
+SetKeyDelay, 10
+Sleep, 200
 Clipboard :=
 Click, 420, 420
 Sleep, 50
@@ -67,3 +72,25 @@ F11::
 Send ^0 ; Ctrl+0 focuses the sidebar in VS Code
 Send {Down}{Enter}
 Return
+
+; -------------------------------------------------
+; Auto-reload this script for development on Ctrl+S
+; - Works with any editor that includes the file name in the window title
+; - Doesn't work with autosave or other ways of triggering a save
+; - Ctrl+Enter might be better
+; - Listening for filesystem changes might be better, except for the likely complexity
+; - Theoretically there's a race condition between file saving and reloading the script
+; - Assumes SetTitleMatchMode 3 should be the default
+~^s::
+	SplashTextOff
+	SetTitleMatchMode 2
+	IfWinActive, %A_ScriptName%
+	{
+		SplashTextOn,,,Reloading %A_ScriptName%,
+		Sleep, 500
+		SplashTextOff
+		Reload
+	}
+	SetTitleMatchMode 3
+Return
+; -------------------------------------------------
