@@ -80,7 +80,7 @@ var go_to = function(address){
 	
 	address = address || "/";
 	var is_url = !!address.match(/\w+:\/\//);
-	if(is_url){
+	function handle_url_case() {
 		if(!address.match(/^https?:\/\/web.archive.org\//) && !address.startsWith(window.location.origin)){
 			if (address.match(/^https?:\/\/(www\.)?(windows93.net)/)) {
 				address = "https://web.archive.org/web/2015-05-05/" + address;
@@ -89,11 +89,19 @@ var go_to = function(address){
 			}
 		}
 		address_determined();
+	}
+	if(is_url){
+		handle_url_case();
 	}else{
 		withFilesystem(function(){
 			var fs = BrowserFS.BFSRequire("fs");
 			fs.stat(address, function(err, stats){
 				if(err){
+					if(err.code === "ENOENT") {
+						address = "https://" + address;
+						handle_url_case();
+						return;
+					}
 					return alert("Failed to get info about " + address + "\n\n" + err);
 				}
 				if(stats.isDirectory()){
