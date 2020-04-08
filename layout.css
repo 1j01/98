@@ -189,7 +189,23 @@ html, body {
 
 .help-window .window-content {
 	display: flex;
+	flex-flow: column;
+}
+.help-window .main {
+	flex: 1;
+	display: flex;
 	flex-flow: row;
+}
+.help-window .toolbar button {
+	width: 55px;
+	height: 40px;
+	padding: 0;
+	font-size: 12px;
+	line-height: 60px;
+}
+.help-window .toolbar button:not(:hover) {
+	/* TODO: different spritesheet */
+	filter: saturate(0%);
 }
 .help-window .contents {
 	background: white;

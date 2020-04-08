@@ -4,15 +4,34 @@ function show_help(options){
 		icon: "chm",
 	})
 	$help_window.addClass("help-window");
-	// const $toolbar = $(E("div")).addClass("toolbar");
-	// $help_window.$content.append($toolbar);
+
+	const $main = $(E("div")).addClass("main");
+	const $toolbar = $(E("div")).addClass("toolbar");
+	const add_toolbar_button = (name, sprite_n, )=> {
+		$("<button class='lightweight'>")
+		.text(name)
+		.appendTo($toolbar)
+		.css({
+			backgroundImage: `url("images/help-viewer-toolbar-icons.png")`,
+			backgroundPosition: `${-sprite_n * 55}px 0px`,
+		});
+	};
+	add_toolbar_button("Show", 0); // TODO: show/hide
+	add_toolbar_button("Back", 1);
+	add_toolbar_button("Forward", 2);
+	add_toolbar_button("Options", 3); // TODO: hotkey and underline on O
+	add_toolbar_button("Web Help", 4);
 	
 	const $iframe = $Iframe({src: "help/default.html"}).addClass("inset-deep");
 	$iframe[0].$window = $help_window;
 	const $resizer = $(E("div")).addClass("resizer");
 	const $contents = $(E("ul")).addClass("contents inset-deep");
-	$help_window.$content.append($contents, $resizer, $iframe);
+
+	$main.append($contents, $resizer, $iframe);
+	$help_window.$content.append($toolbar, $main);
+
 	$help_window.css({width: 800, height: 600});
+
 	$iframe.attr({name: "help-frame"});
 	$iframe.css({
 		backgroundColor: "white",
@@ -24,7 +43,7 @@ function show_help(options){
 	});
 	$help_window.center();
 
-	$help_window.$content.css({
+	$main.css({
 		position: "relative", // for resizer
 	});
 
