@@ -1,18 +1,13 @@
 
 var programs_being_loaded = 0;
 
-function $IframeWindow(options){
-	
-	var $win = new $Window(options);
-	$win.$content.html("<iframe allowfullscreen sandbox='allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-popups allow-downloads'>");
-	
-	var $iframe = $win.$iframe = $win.$content.find("iframe");
-	var iframe = $win.iframe = $iframe[0];
-	iframe.$window = $win;
+function $Iframe(){
+	var $iframe = $("<iframe allowfullscreen sandbox='allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-popups allow-downloads'>");
+	var iframe = $iframe[0];
 
 	var disable_delegate_pointerup = false;
 	
-	var focus_window_contents = function(){
+	$iframe.focus_contents = function(){
 		if (!iframe.contentWindow) {
 			return;
 		}
@@ -27,7 +22,6 @@ function $IframeWindow(options){
 			disable_delegate_pointerup = false;
 		});
 	};
-	$win.onFocus(focus_window_contents);
 	
 	// Let the iframe to handle mouseup events outside itself
 	var delegate_pointerup = function(){
@@ -45,12 +39,32 @@ function $IframeWindow(options){
 		}
 	};
 	$G.on("mouseup blur", delegate_pointerup);
-	$win.on("close", function(){
+	$iframe.destroy = ()=> {
 		$G.off("mouseup blur", delegate_pointerup);
-	});
+	};
 	
 	// @TODO: delegate pointermove events too?
+
+	return $iframe;
+}
+
+function $IframeWindow(options){
 	
+	var $win = new $Window(options);
+	
+	var $iframe = $win.$iframe = $Iframe();
+	$win.$content.append($iframe);
+	var iframe = $win.iframe = $iframe[0];
+	// TODO: should I instead of having iframe.$window, have a get$Window type of dealio?
+	// where all is $window needed?
+	// I know it's used from within the iframe contents as frameElement.$window
+	iframe.$window = $win;
+
+	$win.on("close", function(){
+		$iframe.destroy();
+	});
+	$win.onFocus($iframe.focus_contents);
+
 	$("body").addClass("loading-program");
 	programs_being_loaded += 1;
 	
@@ -62,7 +76,7 @@ function $IframeWindow(options){
 			}
 			$win.show();
 			$win.focus();
-			// focus_window_contents();
+			// $iframe.focus_contents();
 			
 			if (window.themeCSSProperties) {
 				applyTheme(themeCSSProperties, iframe.contentDocument.documentElement);
