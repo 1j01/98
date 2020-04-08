@@ -464,12 +464,14 @@ function openWinamp(file_path){
 			mustHaveMethods(winamp_interface, windowInterfaceMethods);
 
 			let raf_id;
+			let global_pointerdown;
 			
 			winamp_task = new Task(winamp_interface);
 			webamp.onClose(function(){
 				winamp_interface.close();
 				cancelAnimationFrame(raf_id);
 				visualizerOverlay.fadeOutAndCleanUp();
+				$G.off("pointerdown", global_pointerdown);
 			});
 			webamp.onMinimize(function(){
 				winamp_interface.minimize();
@@ -485,8 +487,7 @@ function openWinamp(file_path){
 				winamp_interface.focus();
 			});
 			// TODO: DRY
-			// TODO: clean up event listener, if it's not gonna be DRY'd with something globally
-			$G.on("pointerdown", (e)=> {
+			$G.on("pointerdown", global_pointerdown = (e)=> {
 				if (
 					e.target.closest("#webamp") !== $webamp[0] &&
 					!e.target.closest(".taskbar")
