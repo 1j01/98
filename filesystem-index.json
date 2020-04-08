@@ -88,6 +88,61 @@
       "fsex300.css": null
     }
   },
+  "help": {
+    "98.js.org.svg": null,
+    "cloud-mask.png": null,
+    "clouds.jpg": null,
+    "coUA.css": null,
+    "default.html": null,
+    "flag&clouds.gif": null,
+    "memcopy.html": null,
+    "minesweeper-help": {
+      "mine_object.htm": null,
+      "mine_play.htm": null,
+      "mine_tips.htm": null,
+      "winmine.hhc": null,
+      "winmine.hhk": null
+    },
+    "nobgcolor.css": null,
+    "notepad-help": {
+      "notepad.hhc": null,
+      "notepad.hhk": null,
+      "onestep.gif": null,
+      "win_notepad_delete_text.htm": null,
+      "win_notepad_finding_words.htm": null,
+      "win_notepad_header_footer.htm": null,
+      "win_notepad_time_date.htm": null,
+      "win_notepad_tracking_time.htm": null,
+      "win_notepad_wrapping_text.htm": null
+    },
+    "prettify-html.ahk": null,
+    "sound-recorder-help": {
+      "mm_forw.gif": null,
+      "mm_play.gif": null,
+      "mm_rec.gif": null,
+      "mm_rewd.gif": null,
+      "mm_stop.gif": null,
+      "onestep.gif": null,
+      "soundrec.hhc": null,
+      "soundrec.hhk": null,
+      "soundrec_add_echo.htm": null,
+      "soundrec_add_sound.htm": null,
+      "soundrec_change_speed.htm": null,
+      "soundrec_change_volume.htm": null,
+      "soundrec_convert_file.htm": null,
+      "soundrec_create.htm": null,
+      "soundrec_delete_sound.htm": null,
+      "soundrec_insert_sound.htm": null,
+      "soundrec_overlay_file.htm": null,
+      "soundrec_playing.htm": null,
+      "soundrec_pr_change_format.htm": null,
+      "soundrec_reverse.htm": null,
+      "soundrec_undo_changes.htm": null,
+      "windows_soundrec_insert.htm": null,
+      "windows_soundrec_link.htm": null
+    },
+    "vaporwave.js": null
+  },
   "images": {
     "3d.jpg": null,
     "clouds.jpg": null,
@@ -102,6 +157,7 @@
       "mstile-48x48-globe-outline.png": null,
       "safari-pinned-tab-16x16.png": null
     },
+    "help-icons.png": null,
     "icons": {
       "3d-mode-32x32.png": null,
       "aaronos-16x16.png": null,
@@ -109,6 +165,9 @@
       "aaronos-48x48.png": null,
       "audio-nope-16x16.png": null,
       "audio-okay-16x16.png": null,
+      "chm-16x16.png": null,
+      "chm-32x32.png": null,
+      "chm-48x48.png": null,
       "clouddesk-16x16.png": null,
       "convert-audio-16x16.png": null,
       "convert-audio-32x32.png": null,
@@ -386,17 +445,13 @@
       "CNAME": null,
       "CONTRIBUTING.md": null,
       "cypress": {
-        "fixtures": {},
         "integration": {
           "visual-tests.spec.js": null
         },
         "plugins": {
           "index.js": null
         },
-        "screenshots": {
-          "tool-tests.spec.js": {},
-          "visual-tests.spec.js": {}
-        },
+        "screenshots": {},
         "snapshots": {
           "visual-tests.spec.js": {
             "visual tests -- about window.snap.png": null,
@@ -639,9 +694,7 @@
           "gif.worker.js.map": null
         },
         "jquery-3.4.1.min.js": null,
-        "jquery-ui-1.12.1.custom": {
-          "external": {}
-        },
+        "jquery-ui-1.12.1.custom": {},
         "konami.js": null,
         "libtess.min.js": null,
         "os-gui": {
