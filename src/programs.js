@@ -189,6 +189,13 @@ function Paint(){
 				backgroundSize: "auto",
 			});
 		};
+		contentWindow.show_help = ()=> {
+			show_help({
+				title: "Paint Help",
+				contentsFile: "programs/jspaint/help/mspaint.hhc",
+				root: "programs/jspaint/help",
+			});
+		};
 	});
 	
 	return new Task($win);
