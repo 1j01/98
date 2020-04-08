@@ -241,11 +241,20 @@ function Paint(file_path){
 					}
 					const byte_array = new Uint8Array(buffer);
 					const blob = new Blob([byte_array]);
-					// TODO: file_path (File?)
-					contentWindow.open_from_File(blob, ()=> {});
+					const file_name = file_path.replace(/.*\//g, "");
+					const file = new File([blob], file_name);
+					contentWindow.open_from_File(file, ()=> {});
 				});
 			});
 		}
+
+		// TODO: hook into a title updating event
+		var iid = setInterval(()=> {
+			$win.title(contentWindow.document.title);
+		}, 100);
+		$win.on("close", ()=> {
+			clearInterval(iid);
+		});
 	});
 	
 	return new Task($win);
