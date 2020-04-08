@@ -168,7 +168,7 @@ function Notepad(file_path){
 }
 Notepad.acceptsFilePaths = true;
 
-function Paint(){
+function Paint(file_path){
 	var $win = new $IframeWindow({
 		src: "programs/jspaint/index.html",
 		icon: "paint",
@@ -215,6 +215,7 @@ function Paint(){
 				backgroundSize: "auto",
 			});
 		};
+
 		let $help_window;
 		contentWindow.show_help = ()=> {
 			if ($help_window) {
@@ -230,10 +231,26 @@ function Paint(){
 				$help_window = null;
 			});
 		};
+
+		if (file_path) {
+			withFilesystem(function(){
+				var fs = BrowserFS.BFSRequire("fs");
+				fs.readFile(file_path, function(err, buffer){
+					if(err){
+						return console.error(err);
+					}
+					const byte_array = new Uint8Array(buffer);
+					const blob = new Blob([byte_array]);
+					// TODO: file_path (File?)
+					contentWindow.open_from_File(blob, ()=> {});
+				});
+			});
+		}
 	});
 	
 	return new Task($win);
 }
+Paint.acceptsFilePaths = true;
 
 function Minesweeper(){
 	var $win = new $IframeWindow({
