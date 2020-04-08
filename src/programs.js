@@ -43,7 +43,9 @@ function show_help(options){
 		back_length += 1;
 	}, ()=> forward_length > 0);
 	add_toolbar_button("Options", 3, ()=> {}, ()=> false); // TODO: hotkey and underline on O
-	add_toolbar_button("Web Help", 4, ()=> {}, ()=> false);
+	add_toolbar_button("Web Help", 4, ()=> {
+		iframe.src = "help/online_support.htm";
+	}, ()=> true);
 	
 	const $iframe = $Iframe({src: "help/default.html"}).addClass("inset-deep");
 	const iframe = $iframe[0];
