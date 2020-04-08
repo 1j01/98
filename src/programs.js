@@ -248,13 +248,11 @@ function Paint(file_path){
 			});
 		}
 
-		// TODO: hook into a title updating event
-		var iid = setInterval(()=> {
+		var old_update_title = contentWindow.update_title;
+		contentWindow.update_title = ()=> {
+			old_update_title();
 			$win.title(contentWindow.document.title);
-		}, 100);
-		$win.on("close", ()=> {
-			clearInterval(iid);
-		});
+		};
 	});
 	
 	return new Task($win);
