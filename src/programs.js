@@ -5,21 +5,43 @@ function show_help(options){
 	})
 	$help_window.addClass("help-window");
 
+	let ignore_one_load = true;
+	let back_length = 0;
+	let forward_length = 0;
+
 	const $main = $(E("div")).addClass("main");
 	const $toolbar = $(E("div")).addClass("toolbar");
 	const add_toolbar_button = (name, sprite_n, action_fn, enabled_fn)=> {
-		$("<button class='lightweight'>")
+		const $button = $("<button class='lightweight'>")
 		.text(name)
 		.appendTo($toolbar)
 		.css({
 			backgroundImage: `url("images/help-viewer-toolbar-icons.png")`,
 			backgroundPosition: `${-sprite_n * 55}px 0px`,
 		})
-		.on("click", action_fn);
+		.on("click", ()=> {
+			action_fn();
+		});
+		const update_enabled = ()=> {
+			$button[0].disabled = !enabled_fn();
+		};
+		update_enabled();
+		$help_window.on("click", "*", update_enabled);
+		$help_window.on("update-buttons", update_enabled);
 	};
 	add_toolbar_button("Hide", 0, ()=> {}, ()=> false); // TODO: show/hide
-	add_toolbar_button("Back", 1, ()=> { $iframe[0].contentWindow.history.back(); }, ()=> $iframe[0].contentWindow.history);
-	add_toolbar_button("Forward", 2, ()=> { $iframe[0].contentWindow.history.forward(); }, ()=> $iframe[0].contentWindow.history);
+	add_toolbar_button("Back", 1, ()=> {
+		$iframe[0].contentWindow.history.back();
+		ignore_one_load = true;
+		back_length -= 1;
+		forward_length += 1;
+	}, ()=> back_length > 0);
+	add_toolbar_button("Forward", 2, ()=> {
+		$iframe[0].contentWindow.history.forward();
+		ignore_one_load = true;
+		forward_length -= 1;
+		back_length += 1;
+	}, ()=> forward_length > 0);
 	add_toolbar_button("Options", 3, ()=> {}, ()=> false); // TODO: hotkey and underline on O
 	add_toolbar_button("Web Help", 4, ()=> {}, ()=> false);
 	
@@ -28,6 +50,17 @@ function show_help(options){
 	iframe.$window = $help_window; // for focus handling integration
 	const $resizer = $(E("div")).addClass("resizer");
 	const $contents = $(E("ul")).addClass("contents inset-deep");
+
+	// TODO: fix race conditions
+	$iframe.on("load", ()=> {
+		if (!ignore_one_load) {
+			back_length += 1;
+			forward_length = 0;
+		}
+		iframe.contentWindow.location.href
+		ignore_one_load = false;
+		$help_window.triggerHandler("update-buttons");
+	});
 
 	$main.append($contents, $resizer, $iframe);
 	$help_window.$content.append($toolbar, $main);

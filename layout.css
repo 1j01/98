@@ -207,6 +207,10 @@ html, body {
 	/* TODO: different spritesheet */
 	filter: saturate(0%);
 }
+.help-window .toolbar button[disabled] {
+	/* TODO: disabled effect */
+	filter: saturate(0%) opacity(50%);
+}
 .help-window .contents {
 	background: white;
 	background: var(--Window);
