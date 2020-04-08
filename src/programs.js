@@ -119,6 +119,7 @@ function show_help(options){
 	// 			break;
 	// 	}
 	// });
+	return new Task($help_window);
 }
 
 function Notepad(file_path){
