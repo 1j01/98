@@ -33,7 +33,9 @@ function applyTheme(cssProperties, documentElement=document.documentElement) {
 	});
 	
 	var win = documentElement.ownerDocument.defaultView;
-	win.$(win).trigger("theme-changed");
+	if (win.$) {
+		win.$(win).trigger("theme-changed");
+	}
 }
 function loadThemeFromText(fileText) {
 	var cssProperties = parseThemeFileString(fileText);
