@@ -1,14 +1,14 @@
 function show_help(options){
-	var $help_window = $Window({
+	const $help_window = $Window({
 		title: options.title || "Help Topics",
 		icon: "chm",
 	})
 	$help_window.addClass("help-window");
-	// $toolbar = $(E("div")).addClass("toolbar");
+	// const $toolbar = $(E("div")).addClass("toolbar");
 	// $help_window.$content.append($toolbar);
 	
-	$iframe = $(E("iframe"));
-	$contents = $(E("ul")).addClass("contents");
+	const $iframe = $(E("iframe"));
+	const $contents = $(E("ul")).addClass("contents");
 	$help_window.$content.append($contents, $iframe);
 	$help_window.css({width: 800, height: 600});
 	$iframe.attr({name: "help-frame", src: "help/default.html"});
