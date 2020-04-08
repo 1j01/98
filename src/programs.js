@@ -24,20 +24,43 @@ function show_help(options){
 	});
 	$help_window.center();
 
+	$help_window.$content.css({
+		position: "relative", // for resizer
+	});
+
+	const resizer_width = 4;
 	$resizer.css({
 		cursor: "ew-resize",
-		width: "4px",
+		width: resizer_width,
+		boxSizing: "border-box",
+		background: "var(--ButtonFace)",
+		borderLeft: "1px solid var(--ButtonShadow)",
+		boxShadow: "inset 1px 0 0 var(--ButtonHilight)",
+		top: 0,
+		bottom: 0,
+		zIndex: 1,
 	});
 	$resizer.on("pointerdown", (e)=> {
 		let pointermove, pointerup;
 		$G.on("pointermove", pointermove = (e)=> {
-			// TODO: preview
+			$resizer.css({
+				position: "absolute",
+				left: e.clientX - $help_window.$content.offset().left
+			});
+			$contents.css({
+				marginRight: resizer_width,
+			});
 		});
 		$G.on("pointerup", pointerup = (e)=> {
 			$G.off("pointermove", pointermove);
 			$G.off("pointerup", pointerup);
+			$resizer.css({
+				position: "",
+				left: ""
+			});
 			$contents.css({
-				flexBasis: e.clientX - $help_window.$content.offset().left - 10
+				flexBasis: e.clientX - $help_window.$content.offset().left - resizer_width,
+				marginRight: "",
 			});
 		});
 	});
