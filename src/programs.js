@@ -7,23 +7,25 @@ function show_help(options){
 
 	const $main = $(E("div")).addClass("main");
 	const $toolbar = $(E("div")).addClass("toolbar");
-	const add_toolbar_button = (name, sprite_n, )=> {
+	const add_toolbar_button = (name, sprite_n, action_fn, enabled_fn)=> {
 		$("<button class='lightweight'>")
 		.text(name)
 		.appendTo($toolbar)
 		.css({
 			backgroundImage: `url("images/help-viewer-toolbar-icons.png")`,
 			backgroundPosition: `${-sprite_n * 55}px 0px`,
-		});
+		})
+		.on("click", action_fn);
 	};
-	add_toolbar_button("Show", 0); // TODO: show/hide
-	add_toolbar_button("Back", 1);
-	add_toolbar_button("Forward", 2);
-	add_toolbar_button("Options", 3); // TODO: hotkey and underline on O
-	add_toolbar_button("Web Help", 4);
+	add_toolbar_button("Hide", 0, ()=> {}, ()=> false); // TODO: show/hide
+	add_toolbar_button("Back", 1, ()=> { $iframe[0].contentWindow.history.back(); }, ()=> $iframe[0].contentWindow.history);
+	add_toolbar_button("Forward", 2, ()=> { $iframe[0].contentWindow.history.forward(); }, ()=> $iframe[0].contentWindow.history);
+	add_toolbar_button("Options", 3, ()=> {}, ()=> false); // TODO: hotkey and underline on O
+	add_toolbar_button("Web Help", 4, ()=> {}, ()=> false);
 	
 	const $iframe = $Iframe({src: "help/default.html"}).addClass("inset-deep");
-	$iframe[0].$window = $help_window;
+	const iframe = $iframe[0];
+	iframe.$window = $help_window; // for focus handling integration
 	const $resizer = $(E("div")).addClass("resizer");
 	const $contents = $(E("ul")).addClass("contents inset-deep");
 
