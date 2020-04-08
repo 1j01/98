@@ -7,15 +7,19 @@ function show_help(options){
 	// const $toolbar = $(E("div")).addClass("toolbar");
 	// $help_window.$content.append($toolbar);
 	
-	const $iframe = $Iframe({src: "help/default.html"});
+	const $iframe = $Iframe({src: "help/default.html"}).addClass("inset-deep");
 	$iframe[0].$window = $help_window;
-	const $contents = $(E("ul")).addClass("contents");
+	const $contents = $(E("ul")).addClass("contents inset-deep");
 	$help_window.$content.append($contents, $iframe);
 	$help_window.css({width: 800, height: 600});
 	$iframe.attr({name: "help-frame"});
 	$iframe.css({
 		backgroundColor: "white",
 		border: "",
+		margin: "2px",
+	});
+	$contents.css({
+		margin: "2px",
 	});
 	$help_window.center();
 	
