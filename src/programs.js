@@ -42,10 +42,14 @@ function show_help(options){
 	});
 	$resizer.on("pointerdown", (e)=> {
 		let pointermove, pointerup;
+		const getPos = (e)=>
+			Math.min($help_window.width() - 100, Math.max(20,
+				e.clientX - $help_window.$content.offset().left
+			));
 		$G.on("pointermove", pointermove = (e)=> {
 			$resizer.css({
 				position: "absolute",
-				left: e.clientX - $help_window.$content.offset().left
+				left: getPos(e)
 			});
 			$contents.css({
 				marginRight: resizer_width,
@@ -59,7 +63,7 @@ function show_help(options){
 				left: ""
 			});
 			$contents.css({
-				flexBasis: e.clientX - $help_window.$content.offset().left - resizer_width,
+				flexBasis: getPos(e) - resizer_width,
 				marginRight: "",
 			});
 		});
