@@ -7,12 +7,16 @@ function show_help(options){
 	// const $toolbar = $(E("div")).addClass("toolbar");
 	// $help_window.$content.append($toolbar);
 	
-	const $iframe = $(E("iframe"));
+	const $iframe = $Iframe({src: "help/default.html"});
+	$iframe[0].$window = $help_window;
 	const $contents = $(E("ul")).addClass("contents");
 	$help_window.$content.append($contents, $iframe);
 	$help_window.css({width: 800, height: 600});
-	$iframe.attr({name: "help-frame", src: "help/default.html"});
-	$iframe.css({backgroundColor: "white"});
+	$iframe.attr({name: "help-frame"});
+	$iframe.css({
+		backgroundColor: "white",
+		border: "",
+	});
 	$help_window.center();
 	
 	const parse_object_params = $object => {
