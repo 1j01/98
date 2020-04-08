@@ -142,7 +142,9 @@ function show_help(options){
 	// 			break;
 	// 	}
 	// });
-	return new Task($help_window);
+	var task = new Task($help_window);
+	task.$help_window = $help_window;
+	return task;
 }
 
 function Notepad(file_path){
@@ -213,11 +215,19 @@ function Paint(){
 				backgroundSize: "auto",
 			});
 		};
+		let $help_window;
 		contentWindow.show_help = ()=> {
-			show_help({
+			if ($help_window) {
+				$help_window.focus();
+				return;
+			}
+			$help_window = show_help({
 				title: "Paint Help",
 				contentsFile: "programs/jspaint/help/mspaint.hhc",
 				root: "programs/jspaint/help",
+			}).$help_window;
+			$help_window.on("close", ()=> {
+				$help_window = null;
 			});
 		};
 	});
