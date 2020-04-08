@@ -9,19 +9,38 @@ function show_help(options){
 	
 	const $iframe = $Iframe({src: "help/default.html"}).addClass("inset-deep");
 	$iframe[0].$window = $help_window;
+	const $resizer = $(E("div")).addClass("resizer");
 	const $contents = $(E("ul")).addClass("contents inset-deep");
-	$help_window.$content.append($contents, $iframe);
+	$help_window.$content.append($contents, $resizer, $iframe);
 	$help_window.css({width: 800, height: 600});
 	$iframe.attr({name: "help-frame"});
 	$iframe.css({
 		backgroundColor: "white",
 		border: "",
-		margin: "2px",
+		margin: "1px",
 	});
 	$contents.css({
-		margin: "2px",
+		margin: "1px",
 	});
 	$help_window.center();
+
+	$resizer.css({
+		cursor: "ew-resize",
+		width: "4px",
+	});
+	$resizer.on("pointerdown", (e)=> {
+		let pointermove, pointerup;
+		$G.on("pointermove", pointermove = (e)=> {
+			// TODO: preview
+		});
+		$G.on("pointerup", pointerup = (e)=> {
+			$G.off("pointermove", pointermove);
+			$G.off("pointerup", pointerup);
+			$contents.css({
+				flexBasis: e.clientX - $help_window.$content.offset().left - 10
+			});
+		});
+	});
 	
 	const parse_object_params = $object => {
 		// parse an $(<object>) to a plain object of key value pairs
