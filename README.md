@@ -9,13 +9,15 @@ Includes:
 * ![](images/icons/paint-16x16.png) Paint ([separate repository](https://github.com/1j01/jspaint))
 * ![](images/icons/minesweeper-16x16.png) Minesweeper ([separate README](programs/minesweeper/README.md); [original repository](https://github.com/ziebelje/minesweeper)) by [Jon Ziebell](https://github.com/ziebelje/)
 * ![](images/icons/winamp2-16x16.png) Winamp 2.9 ([separate README](programs/winamp/README.md); [original repository](https://github.com/captbaritone/webamp)) by [Jordan Eldredge](https://jordaneldredge.com/)
-* A primitive hybrid ![](images/icons/folder-open-16x16.png) Windows Explorer / ![](images/icons/internet-explorer-16x16.png) Internet Explorer ([separate README](programs/explorer/README.md))
+* ![](images/icons/folder-open-16x16.png) Windows Explorer / ![](images/icons/internet-explorer-16x16.png) Internet Explorer ([separate README](programs/explorer/README.md))
+* ![](images/icons/chm-16x16.png) Help Viewer
 
 Features:
 * Drop files onto the desktop, and they'll be stored in a virtual filesystem
 * Load Windows themes! Many are included in the Themes folder on the desktop.
 * Easter eggs (try a famous cheat code 😉)
 * Meticulous detail in many areas (altho there's obviously lots "missing")
+* **Help > Help Topics** in Paint, Sound Recorder, Notepad, and Minesweeper
 * You can add the site to your homescreen on mobile
 
 ## Try it out
