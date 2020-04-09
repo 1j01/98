@@ -203,13 +203,24 @@ html, body {
 	font-size: 12px;
 	line-height: 60px;
 }
-.help-window .toolbar button:not(:hover) {
+.help-window .toolbar button {
+	position: relative;
+}
+.help-window .toolbar button .icon {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.help-window .toolbar button:not(:hover) .icon {
 	/* TODO: different spritesheet */
 	filter: saturate(0%);
 }
-.help-window .toolbar button[disabled] {
-	/* TODO: disabled effect */
-	filter: saturate(0%) opacity(50%);
+.help-window .toolbar button[disabled] .icon {
+	/* TODO: only apply where icon is black */
+	filter: saturate(0%) opacity(50%); /* fallback */
+	filter: url("#disabled-inset-filter");
 }
 .help-window .contents {
 	background: white;

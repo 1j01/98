@@ -15,12 +15,14 @@ function show_help(options){
 		const $button = $("<button class='lightweight'>")
 		.text(name)
 		.appendTo($toolbar)
+		.on("click", ()=> {
+			action_fn();
+		});
+		$("<div class='icon'/>")
+		.appendTo($button)
 		.css({
 			backgroundImage: `url("images/help-viewer-toolbar-icons.png")`,
 			backgroundPosition: `${-sprite_n * 55}px 0px`,
-		})
-		.on("click", ()=> {
-			action_fn();
 		});
 		const update_enabled = ()=> {
 			$button[0].disabled = enabled_fn && !enabled_fn();
