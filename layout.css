@@ -213,9 +213,11 @@ html, body {
 	top: 0;
 	left: 0;
 }
+.help-window .toolbar button .icon {
+	background-image: url("images/help-viewer-toolbar-icons.png");
+}
 .help-window .toolbar button:not(:hover) .icon {
-	/* TODO: different spritesheet */
-	filter: saturate(0%);
+	background-image: url("images/help-viewer-toolbar-icons-grayscale.png");
 }
 .help-window .toolbar button[disabled] .icon {
 	filter: saturate(0%) opacity(50%); /* fallback */

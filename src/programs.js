@@ -21,7 +21,6 @@ function show_help(options){
 		$("<div class='icon'/>")
 		.appendTo($button)
 		.css({
-			backgroundImage: `url("images/help-viewer-toolbar-icons.png")`,
 			backgroundPosition: `${-sprite_n * 55}px 0px`,
 		});
 		const update_enabled = ()=> {
