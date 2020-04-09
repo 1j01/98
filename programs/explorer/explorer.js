@@ -216,10 +216,18 @@ $(function(){
 	$("#forward").on("click", function(){
 		$iframe[0].contentWindow.history.forward();
 	});
+	var up_address = (address)=>
+		address.replace(/[^\/]*\/?$/, "").replace(/(https?|ftps?|sftp|file):\/\/\/?$/, "") || "/";
+
 	$("#up").on("click", function(){
 		// can't use $iframe[0].contentWindow.location (unless page is on the same domain)
-		go_to($("#address").val().replace(/[^\/]*\/?$/, "").replace(/(https?|ftps?|sftp|file):\/\/\/?$/, ""));
+		go_to(up_address($("#address").val()));
 	});
+
+	var $up_button = $("#up");
+	setInterval(()=> {
+		$up_button.attr("disabled", (up_address($("#address").val()) === $("#address").val()));
+	}, 100);
 
 	$(".toolbar button:not(#view-menu-button)").each((i, button)=> {
 		const $button = $(button);
