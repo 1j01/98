@@ -70,11 +70,22 @@
 		<svg>
 			<defs>
 				<filter id="disabled-inset-filter" x="0" y="0" width="200%" height="200%">
+					<feColorMatrix
+						in="SourceGraphic"
+						type="matrix"
+						values="
+							1 0 0 0 0
+							0 1 0 0 0
+							0 0 1 0 0
+							-1000 -1000 -1000 1 0
+						"
+						result="black-parts-isolated"
+					/>
 					<feFlood result="shadow-color" flood-color="var(--ButtonShadow)"/>
 					<feFlood result="hilight-color" flood-color="var(--ButtonHilight)"/>
-					<feOffset in="SourceAlpha" dx="1" dy="1" result="offset"/>
+					<feOffset in="black-parts-isolated" dx="1" dy="1" result="offset"/>
 					<feComposite in="hilight-color" in2="offset" operator="in" result="hilight-colored-offset"/>
-					<feComposite in="shadow-color" in2="SourceAlpha" operator="in" result="shadow-colored"/>
+					<feComposite in="shadow-color" in2="black-parts-isolated" operator="in" result="shadow-colored"/>
 					<feMerge>
 						<feMergeNode in="hilight-colored-offset"/>
 						<feMergeNode in="shadow-colored"/>

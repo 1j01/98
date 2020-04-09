@@ -218,7 +218,6 @@ html, body {
 	filter: saturate(0%);
 }
 .help-window .toolbar button[disabled] .icon {
-	/* TODO: only apply where icon is black */
 	filter: saturate(0%) opacity(50%); /* fallback */
 	filter: url("#disabled-inset-filter");
 }
