@@ -157,7 +157,8 @@ var go_to = function(address){
 			// 	set_title($iframe[0].contentDocument.title + " - Explorer"); // " - Microsoft Internet Explorer"
 			// });
 		}else{
-			$folder_view = $FolderView(address).appendTo("#content");
+			$folder_view = $FolderView(address);
+			$folder_view.appendTo("#content");
 		}
 	}
 };
@@ -216,6 +217,11 @@ $(function(){
 	$("#forward").on("click", function(){
 		$iframe[0].contentWindow.history.forward();
 	});
+
+	$("#delete").on("click", function(){
+		$folder_view.delete_selected();
+	});
+
 	var up_address = (address)=>
 		address.replace(/[^\/]*\/?$/, "").replace(/(https?|ftps?|sftp|file):\/\/\/?$/, "") || "/";
 

@@ -84,6 +84,61 @@ function $FolderView(folder_path) {
 		});
 	};
 
+	function deleteRecursiveSync(fs, itemPath) {
+		if (fs.statSync(itemPath).isDirectory()) {
+			for (const childItemName of fs.readdirSync(itemPath)) {
+				deleteRecursiveSync(itemPath + "/" + childItemName);
+			}
+			fs.rmdirSync(itemPath);
+		} else {
+			fs.unlinkSync(itemPath);
+		}
+	}
+
+	$folder_view.delete_selected = function(){
+		const selected_file_paths = $folder_view.find(".desktop-icon.selected")
+			.toArray().map((icon_el)=> icon_el.dataset.filePath);
+		if (selected_file_paths.length === 0) {
+			return;
+		}
+		// TODO: pluralization, and be more specific about folders vs files vs selected items
+		if (confirm(`Permanently delete ${selected_file_paths.length} items?`)) {
+			withFilesystem(function(){
+				const fs = BrowserFS.BFSRequire('fs');
+				let num_deleted = 0;
+				for (const file_path of selected_file_paths) {
+					let single_delete_success = false;
+					try {
+						deleteRecursiveSync(fs, file_path);
+						single_delete_success = true;
+						num_deleted += 1;
+					} catch(error) {
+						console.log("failed to delete", file_path, error);
+					}
+					if (single_delete_success) {
+						$folder_view.find(".desktop-icon").toArray().forEach((icon_el)=> {
+							if (icon_el.dataset.filePath === file_path) {
+								icon_el.remove();
+							}
+						});
+					}
+				}
+				// TODO: pluralization, and be more specific about folders vs files vs selected items, and total
+				if (num_deleted < selected_file_paths.length) {
+					alert(`Failed to delete ${selected_file_paths.length - num_deleted} items.`);
+				}
+				// $folder_view.refresh();
+			});
+		}
+	};
+
+	// // Refresh or initially render the icons
+	// function renderContents() {
+	// 	// TODO: preserve selection if applicable
+	// 	$folder_view.find(".desktop-icon").remove();
+
+	// 	// ...
+	// }
 	withFilesystem(function(){
 		var fs = BrowserFS.BFSRequire('fs');
 		fs.readdir(folder_path, function (error, contents) {
@@ -220,6 +275,10 @@ function $FolderView(folder_path) {
 				$folder_view.find(".desktop-icon.selected").trigger("dblclick");
 			}else if(e.ctrlKey && e.key == "a"){
 				$folder_view.find(".desktop-icon").addClass("selected");
+				e.preventDefault();
+			}else if(e.key == "Delete"){
+				$folder_view.delete_selected();
+				e.preventDefault();
 			}
 		}
 	});
