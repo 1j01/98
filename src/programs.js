@@ -53,6 +53,12 @@ function show_help(options){
 		const toggling_width = measure_sidebar_width();
 		$help_window.width($help_window.width() + toggling_width);
 		$help_window.css("left", $help_window.offset().left - toggling_width);
+		// $help_window.applyBounds() would push the window to fit (before trimming it only if needed)
+		// Trim the window to fit (especially for if maximized)
+		if ($help_window.offset().left < 0) {
+			$help_window.width($help_window.width() + $help_window.offset().left);
+			$help_window.css("left", 0);
+		}
 	}).hide();
 	add_toolbar_button("Back", 1, ()=> {
 		$iframe[0].contentWindow.history.back();
