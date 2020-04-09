@@ -67,7 +67,9 @@
 		<script src="src/$desktop.js"></script>
 		<script src="src/visualizer-overlay.js"></script>
 		<script src="src/programs.js"></script>
-		<svg>
+
+		<!-- TODO: DRY -->
+		<svg style="position: absolute; pointer-events: none; bottom: 100%;">
 			<defs>
 				<filter id="disabled-inset-filter" x="0" y="0" width="1px" height="1px">
 					<feColorMatrix
