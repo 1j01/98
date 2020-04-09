@@ -51,6 +51,7 @@ button {
 	background-image: url("../../images/browse-ui-icons.png");
 }
 .toolbar button[disabled] .icon {
+	background-image: url("../../images/browse-ui-icons-low-color-grayscale.png");
 	filter: saturate(0%) opacity(50%); /* fallback */
 	filter: url("#disabled-inset-filter");
 }
