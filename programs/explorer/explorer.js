@@ -221,9 +221,9 @@ $(function(){
 		go_to($("#address").val().replace(/[^\/]*\/?$/, "").replace(/(https?|ftps?|sftp|file):\/\/\/?$/, ""));
 	});
 
-	$(".toolbar button").each((i, button)=> {
+	$(".toolbar button:not(#view-menu-button)").each((i, button)=> {
 		const $button = $(button);
-		const sprite_n = i;
+		const sprite_n = [0, 1, 44, 21, 22, 23, 24, 26, 31, 38][i];
 		$("<div class='icon'/>")
 		.appendTo($button)
 		.css({
