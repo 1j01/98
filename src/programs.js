@@ -23,13 +23,39 @@ function show_help(options){
 			action_fn();
 		});
 		const update_enabled = ()=> {
-			$button[0].disabled = !enabled_fn();
+			$button[0].disabled = enabled_fn && !enabled_fn();
 		};
 		update_enabled();
 		$help_window.on("click", "*", update_enabled);
 		$help_window.on("update-buttons", update_enabled);
+		return $button;
 	};
-	add_toolbar_button("Hide", 0, ()=> {}, ()=> false); // TODO: show/hide
+	const $hide_button = add_toolbar_button("Hide", 0, ()=> {
+		const toggling_width =
+			$contents.outerWidth() +
+			parseFloat(getComputedStyle($contents[0]).getPropertyValue("margin-left")) +
+			parseFloat(getComputedStyle($contents[0]).getPropertyValue("margin-right")) +
+			$resizer.outerWidth();
+		$contents.hide();
+		$resizer.hide();
+		$hide_button.hide();
+		$show_button.show();
+		$help_window.width($help_window.width() - toggling_width);
+		$help_window.css("left", $help_window.offset().left + toggling_width);
+	});
+	const $show_button = add_toolbar_button("Show", 5, ()=> {
+		$contents.show();
+		$resizer.show();
+		$show_button.hide();
+		$hide_button.show();
+		const toggling_width =
+			$contents.outerWidth() +
+			parseFloat(getComputedStyle($contents[0]).getPropertyValue("margin-left")) +
+			parseFloat(getComputedStyle($contents[0]).getPropertyValue("margin-right")) +
+			$resizer.outerWidth();
+		$help_window.width($help_window.width() + toggling_width);
+		$help_window.css("left", $help_window.offset().left - toggling_width);
+	}).hide();
 	add_toolbar_button("Back", 1, ()=> {
 		$iframe[0].contentWindow.history.back();
 		ignore_one_load = true;
@@ -45,7 +71,7 @@ function show_help(options){
 	add_toolbar_button("Options", 3, ()=> {}, ()=> false); // TODO: hotkey and underline on O
 	add_toolbar_button("Web Help", 4, ()=> {
 		iframe.src = "help/online_support.htm";
-	}, ()=> true);
+	});
 	
 	const $iframe = $Iframe({src: "help/default.html"}).addClass("inset-deep");
 	const iframe = $iframe[0];
