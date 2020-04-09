@@ -66,26 +66,15 @@
 							1 0 0 0 0
 							0 1 0 0 0
 							0 0 1 0 0
-							-1.1 -1.1 -1.1 1 0
+							-2 -2 -2 4 0
 						"
-						result="not-contrasty-enough-of-a-mask"
-					/>
-					<feColorMatrix
-						in="not-contrasty-enough-of-a-mask"
-						type="matrix"
-						values="
-							1 0 0 0 0
-							0 1 0 0 0
-							0 0 1 0 0
-							0 0 0 100 0
-						"
-						result="black-parts-isolated"
+						result="dark-parts-isolated"
 					/>
 					<feFlood result="shadow-color" flood-color="var(--ButtonShadow)"/>
 					<feFlood result="hilight-color" flood-color="var(--ButtonHilight)"/>
-					<feOffset in="black-parts-isolated" dx="1" dy="1" result="offset"/>
+					<feOffset in="dark-parts-isolated" dx="1" dy="1" result="offset"/>
 					<feComposite in="hilight-color" in2="offset" operator="in" result="hilight-colored-offset"/>
-					<feComposite in="shadow-color" in2="black-parts-isolated" operator="in" result="shadow-colored"/>
+					<feComposite in="shadow-color" in2="dark-parts-isolated" operator="in" result="shadow-colored"/>
 					<feMerge>
 						<feMergeNode in="hilight-colored-offset"/>
 						<feMergeNode in="shadow-colored"/>
