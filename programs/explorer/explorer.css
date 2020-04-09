@@ -45,10 +45,10 @@ button {
 	left: 0;
 }
 .toolbar button .icon {
-	background-image: url("../../images/browse-ui-icons.png");
-}
-.toolbar button:not(:hover) .icon {
 	background-image: url("../../images/browse-ui-icons-grayscale.png");
+}
+.toolbar button:not([disabled]):hover .icon {
+	background-image: url("../../images/browse-ui-icons.png");
 }
 .toolbar button[disabled] .icon {
 	filter: saturate(0%) opacity(50%); /* fallback */
