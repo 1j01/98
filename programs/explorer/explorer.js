@@ -220,4 +220,14 @@ $(function(){
 		// can't use $iframe[0].contentWindow.location (unless page is on the same domain)
 		go_to($("#address").val().replace(/[^\/]*\/?$/, "").replace(/(https?|ftps?|sftp|file):\/\/\/?$/, ""));
 	});
+
+	$(".toolbar button").each((i, button)=> {
+		const $button = $(button);
+		const sprite_n = i;
+		$("<div class='icon'/>")
+		.appendTo($button)
+		.css({
+			backgroundPosition: `${-sprite_n * 20}px 0px`,
+		});
+	});
 });

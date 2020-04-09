@@ -27,6 +27,33 @@ button {
 .toolbar button:disabled::after {
 	display: none;
 }
+.toolbar button {
+	width: 55px;
+	height: 40px;
+	padding: 0;
+	font-size: 12px;
+	line-height: 60px;
+}
+.toolbar button {
+	position: relative;
+}
+.toolbar button .icon {
+	width: 20px;
+	height: 20px;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.toolbar button .icon {
+	background-image: url("../../images/browse-ui-icons.png");
+}
+.toolbar button:not(:hover) .icon {
+	background-image: url("../../images/browse-ui-icons-grayscale.png");
+}
+.toolbar button[disabled] .icon {
+	filter: saturate(0%) opacity(50%); /* fallback */
+	filter: url("#disabled-inset-filter");
+}
 #content {
 	flex: 1;
 	display: flex;
