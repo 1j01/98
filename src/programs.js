@@ -31,12 +31,13 @@ function show_help(options){
 		$help_window.on("update-buttons", update_enabled);
 		return $button;
 	};
+	const measure_sidebar_width = ()=>
+		$contents.outerWidth() +
+		parseFloat(getComputedStyle($contents[0]).getPropertyValue("margin-left")) +
+		parseFloat(getComputedStyle($contents[0]).getPropertyValue("margin-right")) +
+		$resizer.outerWidth();
 	const $hide_button = add_toolbar_button("Hide", 0, ()=> {
-		const toggling_width =
-			$contents.outerWidth() +
-			parseFloat(getComputedStyle($contents[0]).getPropertyValue("margin-left")) +
-			parseFloat(getComputedStyle($contents[0]).getPropertyValue("margin-right")) +
-			$resizer.outerWidth();
+		const toggling_width = measure_sidebar_width();
 		$contents.hide();
 		$resizer.hide();
 		$hide_button.hide();
@@ -49,11 +50,7 @@ function show_help(options){
 		$resizer.show();
 		$show_button.hide();
 		$hide_button.show();
-		const toggling_width =
-			$contents.outerWidth() +
-			parseFloat(getComputedStyle($contents[0]).getPropertyValue("margin-left")) +
-			parseFloat(getComputedStyle($contents[0]).getPropertyValue("margin-right")) +
-			$resizer.outerWidth();
+		const toggling_width = measure_sidebar_width();
 		$help_window.width($help_window.width() + toggling_width);
 		$help_window.css("left", $help_window.offset().left - toggling_width);
 	}).hide();
