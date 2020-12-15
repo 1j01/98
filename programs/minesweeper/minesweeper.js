@@ -150,6 +150,7 @@ minesweeper.prototype.lose = function() {
 minesweeper.prototype.win = function() {
   if(!this.game_over) {
     clearInterval(this.timer_interval);
+    this.face.set_state("sunglasses");
     this.game_over = true;
     // alert('You win!');
   }
