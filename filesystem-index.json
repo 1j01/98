@@ -7,7 +7,7 @@
   "CNAME": null,
   "CONTRIBUTING.md": null,
   "desktop": {
-    "CREDITS.txt": null,
+    "README.txt": null,
     "Themes": {
       "Ash.themepack": null,
       "Blue.themepack": null,
@@ -827,9 +827,15 @@
         "webamp.bundle.min.js.map": null
       },
       "mp3": {
-        "llama-2.91.mp3": null
+        "llama-2.91.mp3": null,
+	"Sweet Love.mp3": null,
+	"Want Something.mp3": null,
+	"xRip_Lib-2.mp3": null,
+	"xRip_Lib-3.mp3": null,
+	"xRip_Lib-4.mp3": null
       },
-      "README.md": null,
+
+       "README.md": null,
       "skins": {
         "base-2.91.wsz": null
       }
