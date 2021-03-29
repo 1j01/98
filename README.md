@@ -81,6 +81,7 @@ See [CONTRIBUTING](CONTRIBUTING.md)
 
 - Install [Git](https://git-scm.com/) if you don't already have it.
 - Install [Node.js](https://nodejs.org/) if you don't already have it.
+- [Clone the repository.](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository)
 - Open up a terminal / command prompt in the project directory, and run `npm install` to install dependencies.
 - Run `npm start` to start up a live-reloading development web server.
 
