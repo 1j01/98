@@ -494,13 +494,48 @@ function openWinamp(file_path){
 	load_winamp_bundle_if_not_loaded(includeButterchurn, function(){
 		const webamp_options = {
 			initialTracks: [{
-				metaData: {
-					artist: "DJ Mike Llama",
-					title: "Llama Whippin' Intro",
+			metaData: {
+					artist: "The Acid Panel",
+					title: "xRiP_Lib-3",
 				},
-				url: "programs/winamp/mp3/llama-2.91.mp3",
-				duration: 5.322286,
-			}],
+				url: "programs/winamp/mp3/xRIP_Lib-3.mp3",
+				duration: 164,
+				},
+{
+				metaData: {
+					artist: "The Acid Panel",
+					title: "xRiP_Lib-2",
+				},
+				url: "programs/winamp/mp3/xRIP_Lib-2.mp3",
+				duration: 205,
+				},
+{
+				metaData: {
+					artist: "The Acid Panel",
+					title: "xRiP_Lib-4",
+				},
+				url: "programs/winamp/mp3/xRIP_Lib-4.mp3",
+				duration: 312,
+				},
+{
+				metaData: {
+					artist: "The Acid Panel",
+					title: "Want Something",
+				},
+				url: "programs/winamp/mp3/Want Something.mp3",
+				duration: 210,
+				},
+{
+				metaData: {
+					artist: "The Acid Panel",
+					title: "Sweet Love",
+				},
+				url: "programs/winamp/mp3/Sweet Love.mp3",
+				duration: 210,
+				}
+						
+				
+],
 			// initialSkin: {
 			// 	url: "programs/winamp/skins/base-2.91.wsz",
 			// },
