@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link href="../../lib/os-gui/layout.css" rel="stylesheet" type="text/css">
+    <link href="../../lib/os-gui/windows-98.css" rel="stylesheet" type="text/css">
+    <link href="src/solitaire.css" rel="stylesheet" type="text/css">
+    <link rel="icon" href="../../images/icons/solitaire-16x16.png" sizes="16x16" type="image/png">
+    <link rel="icon" href="../../images/icons/solitaire-32x32.png" sizes="32x32" type="image/png">
+    <link rel="icon" href="../../images/icons/solitaire-48x48.png" sizes="48x48" type="image/png">
+    <title>Solitaire</title>
+</head>
+<body>
+    <div class="window__content">
+        <div class="window__content-inner">
+            <div class="solitaire" id="js-solitaire">
+                <div id="js-finish" class="finish-deck"></div>
+                <div id="js-board" class="board-deck"></div>
+
+                <div class="deck">
+                    <div id="js-deck-pile" class="deck__pile"></div>
+                    <div id="js-deck-deal" class="deck__deal"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="../../lib/jquery.min.js"></script>
+    <script src="../../lib/pep.js"></script>
+    <script src="../../lib/os-gui/$MenuBar.js"></script>
+    <script type="module" src="src/index.js"></script>
+</body>
+</html>

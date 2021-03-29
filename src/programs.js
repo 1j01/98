@@ -378,7 +378,7 @@ SoundRecorder.acceptsFilePaths = true;
 
 function Solitaire() {
 	var $win = new $IframeWindow({
-		src: "programs/js-solitaire/src/index.html",
+		src: "programs/js-solitaire/index.html",
 		icon: "solitaire",
 		title: "Solitaire",
 		// innerWidth: 585,
