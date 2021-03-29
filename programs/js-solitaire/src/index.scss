@@ -1,0 +1,292 @@
+$card-w: 71px;
+$card-h: 96px;
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background: #008080;
+    display: block !important;
+}
+
+.solitaire {
+    width: 660px;
+    background-color: green;
+    height: 440px;
+    position: relative;
+}
+
+.card {
+    width: $card-w;
+    height: $card-h;
+    background-color: #fff;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-repeat: no-repeat;
+    background-position: center center;
+    border: 1px solid #000;
+    border-radius: 4px;
+    user-select: none;
+    margin: -1px;
+    box-shadow: 1px -1px 0px #000;
+
+    // clubs (♣), diamonds (♦), hearts (♥) and spades (♠)
+    $type: s d h c;
+    $type: (
+        h: 1,
+        c: 2,
+        d: 3,
+        s: 4
+    );
+    @each $t, $v in $type {
+        @for $i from 1 through 13 {
+            &--#{$t}-#{$i} {
+                background-position: -#{($card-w * $v - $card-w + 1)} -#{($card-h * $i - $card-h + 1)};
+            }
+        }
+    }
+
+    &--back {
+        background-position: 0 0;
+        background-repeat: repeat;
+        background-color: #02027f;
+        background-size: 4px 4px;
+        background-image: linear-gradient(45deg,
+            rgba(255,255,255, 0) 0%,
+            rgba(255,255,255, 0) 44.9%,
+            rgba(255,255,255, 1) 45%,
+            rgba(255,255,255, 1) 55%,
+            rgba(255,255,255, 0) 55.1%,
+            rgba(255,255,255, 0)
+        ), linear-gradient(-45deg,
+            rgba(255,255,255, 0) 0%,
+            rgba(255,255,255, 0) 44.9%,
+            rgba(255,255,255, 1) 45%,
+            rgba(255,255,255, 1) 55%,
+            rgba(255,255,255, 0) 55.1%,
+            rgba(255,255,255, 0)
+        );
+    }
+
+    &--front {
+        cursor: pointer;
+    }
+
+    &--moving {
+        position: fixed;
+        z-index: 1;
+    }
+}
+
+.deck {
+    width: 250px;
+    position: absolute;
+    left: 20px;
+    top: 20px;
+
+    &__pile {
+        width: $card-w;
+        height: $card-h;
+        top: 0;
+        position: absolute;
+        border: 1px dotted;
+        border-radius: 4px;
+        cursor: pointer;
+        background-image: radial-gradient(green 30%,white 30.1%,white 40%,green 40.1%, green 100%);
+        background-size: 90px 90px;
+        background-position: center;
+        background-repeat: no-repeat;
+
+        .card + .card {
+            margin-top: 4px;
+            margin-left: 2px;
+
+            + .card {
+                margin-left: 4px;
+                margin-top: 8px;
+            }
+        }
+    }
+
+    &__deal {
+        left: 95px;
+        top: 0;
+        position: absolute;
+
+        .card:last-child {
+            left: 20px;
+        }
+
+        .card:last-child {
+            left: 20px;
+        }
+
+        .card:nth-last-child(2) {
+            left: 10px;
+        }
+
+        .card:first-child {
+            left: 0;
+        }
+
+        .card:first-child + .card:last-child {
+            left: 10px;
+        }
+    }
+}
+
+.finish-deck {
+    position: absolute;
+    left: 274px;
+    top: 20px;
+}
+
+.board-deck {
+    position: absolute;
+    top: 150px;
+
+    .card--front > .card--front {
+        top: 15px;
+    }
+
+    .card--back {
+        > .card--front,
+        > .card--back {
+            top: 5px;
+        }
+    }
+}
+
+/* seven deck */
+.seven {
+    position: relative;
+    float: left;
+    width: $card-w;
+    top: 0;
+    margin-left: 20px;
+    height: $card-h;
+    border: 1px dotted;
+    border-radius: 4px;
+}
+
+.aces {
+    width: $card-w;
+    position: relative;
+    margin-left: 20px;
+    height: $card-h;
+    border: 1px dotted;
+    border-radius: 4px;
+    float: left;
+
+    background-size: 4px 4px;
+    background-image: linear-gradient(45deg,
+        rgba(0,0,0, 0) 0%,
+        rgba(0,0,0, 0) 44.9%,
+        rgba(0,0,0, 1) 45%,
+        rgba(0,0,0, 1) 55%,
+        rgba(0,0,0, 0) 55.1%,
+        rgba(0,0,0, 0)
+    ),linear-gradient(-45deg,
+        rgba(0,0,0, 0) 0%,
+        rgba(0,0,0, 0) 44.9%,
+        rgba(0,0,0, 1) 45%,
+        rgba(0,0,0, 1) 55%,
+        rgba(0,0,0, 0) 55.1%,
+        rgba(0,0,0, 0)
+    );
+}
+
+.new-game {
+    background-color: transparent;
+    border-radius: 0;
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+    white-space: nowrap;
+    outline: 0;
+
+    &:active {
+        background-color: #999;
+    }
+}
+
+.finish-dest {
+    box-shadow: 0 0 0 1px #03ffff;
+}
+
+.window {
+    margin: 20px auto;
+    width: 671px;
+    color: #000;
+    font-family: 'Arial',sans-serif;
+    background: #c0c0c0;
+    border: 1px solid;
+    border-top-color: #dfdfdf;
+    border-left-color: #dfdfdf;
+    border-right-color: #000;
+    border-bottom-color: #000;
+
+    &__inner {
+        border: 1px solid;
+        border-top-color: #fff;
+        border-left-color: #fff;
+        border-right-color: #808080;
+        border-bottom-color: #808080;
+    }
+
+    &__heading {
+        margin: 2px 2px 0;
+        padding: 1px 2px;
+        color: #fff;
+        background: linear-gradient(to right, #000080, #1084d0);
+        font-weight: bold;
+        font-size: 12px;
+        line-height: 16px;
+    }
+
+    &__heading-icon {
+        background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAABGdBTUEAALGPC/xhBQAAACBjSFJNAAB6JgAAgIQAAPoAAACA6AAAdTAAAOpgAAA6mAAAF3CculE8AAAAFVBMVEUAAAAAAAD///+AgIDAwMCAAAAAAIAAY5KrAAAAAXRSTlMAQObYZgAAAAFiS0dEAmYLfGQAAAAHdElNRQfhDAoMHRkpnFJaAAAAgElEQVQoz2NgwAoEIQDOZ1SCAAG4gDEEGMKViLiAgSOaESaOaEYIIwSCgFxVJAHVUKBAaBCmgCCaFkFjAbglTkpAQhhqDaOIi6OLEtApii4QFSIigoIijkCsDDWDUUQsLVEsLU1EGeZ0oAAIjBQBSLSIKMOiEhpvLopoEScIVgAAic47kFb3MSkAAAAldEVYdGRhdGU6Y3JlYXRlADIwMTctMTItMTBUMTI6Mjk6MjUtMDU6MDAhZWq4AAAAJXRFWHRkYXRlOm1vZGlmeQAyMDE3LTEyLTEwVDEyOjI5OjI1LTA1OjAwUDjSBAAAAABJRU5ErkJggg==');
+        background-size: 16px 16px;
+        background-repeat: no-repeat;
+        margin-right: 4px;
+        width: 16px;
+        height: 16px;
+        float: left;
+    }
+
+    &__actions {
+        padding: 4px 8px;
+        font-size: 11px;
+    }
+
+    &__content {
+        margin: 0 2px 2px 2px;
+        border: 1px solid;
+        border-top-color: #808080;
+        border-left-color: #808080;
+        border-bottom-color: #fff;
+        border-right-color: #fff;
+        font-size: 13px;
+    }
+
+    &__content-inner {
+        background: #fff;
+        border: 1px solid;
+        border-top-color: #000;
+        border-left-color: #000;
+        border-bottom-color: #dfdfdf;
+        border-right-color: #dfdfdf;
+    }
+}
