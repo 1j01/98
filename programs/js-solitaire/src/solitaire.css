@@ -22,11 +22,14 @@ body,
     background-color: green;
     position: relative;
     overflow: hidden; /* important for win effect */
+
+    --card-width: 71px;
+    --card-height: 96px;
 }
 
 .card {
-    width: 71px;
-    height: 96px;
+    width: var(--card-width);
+    height: var(--card-height);
     background-image: url("./spritesheet.png");
     position: absolute;
     left: 0;
@@ -51,13 +54,13 @@ body,
     top: 20px;
 }
 .deck__pile {
-    width: 71px;
-    height: 96px;
+    width: var(--card-width);
+    height: var(--card-height);
     top: 0;
     position: absolute;
     cursor: pointer;
     background-image: url("./spritesheet.png");
-    background-position: calc(71px * -1) calc(-96px * 5);
+    background-position: calc(var(--card-width) * -1) calc(var(--card-height) * -5);
 }
 .deck__pile .card + .card {
     margin-top: 4px;
@@ -108,10 +111,10 @@ body,
 .aces {
     position: relative;
     margin-left: 20px;
-    width: 71px;
-    height: 96px;
+    width: var(--card-width);
+    height: var(--card-height);
     background-image: url("./spritesheet.png");
-    background-position: calc(71px * -0) calc(96px * -4);
+    background-position: calc(var(--card-width) * -0) calc(var(--card-height) * -4);
 }
 /* the seven columns that cards are dealt to */
 .seven {
