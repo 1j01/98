@@ -1,7 +1,7 @@
 const gameEl = document.getElementById('js-solitaire');
 const dealPileEl = document.getElementById('js-deck-pile');
 const dealEl = document.getElementById('js-deck-deal');
-const finishContainerEl = document.getElementById('js-finish');
+const upperContainerEl = document.getElementById('js-upper');
 const deskContainerEl = document.getElementById('js-board');
 const deckPileEl = document.getElementById('js-deck-pile');
 
@@ -702,7 +702,7 @@ function initSolitaire() {
             el: el,
             cards: []
         });
-        finishContainerEl.appendChild(el);
+        upperContainerEl.appendChild(el);
     }
 
     // create desk decks

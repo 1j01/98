@@ -48,16 +48,11 @@ body,
     z-index: 1;
 }
 
-.deck {
-    position: absolute;
-    left: 20px;
-    top: 20px;
-}
 .deck__pile {
+    flex-shrink: 0; /* for small viewport */
+    position: relative;
     width: var(--card-width);
     height: var(--card-height);
-    top: 0;
-    position: absolute;
     cursor: pointer;
     background-image: url("./spritesheet.png");
     background-position: calc(var(--card-width) * -1) calc(var(--card-height) * -5);
@@ -71,9 +66,7 @@ body,
     margin-top: 8px;
 }
 .deck__deal {
-    left: 95px;
-    top: 0;
-    position: absolute;
+    position: relative;
 }
 .deck__deal .card:last-child {
     left: 20px;
@@ -89,14 +82,23 @@ body,
 }
 
 .finish-deck {
-    position: absolute;
-    left: 274px;
-    top: 20px;
+    flex: 4;
+    display: flex;
+    justify-content: center;
 }
 
+.upper {
+    display: flex;
+    padding-top: 5px;
+    justify-content: space-evenly;
+}
+.upper__spacer {
+    width: var(--card-width);
+}
 .board-deck {
-    position: absolute;
-    top: 150px;
+    display: flex;
+    padding-top: 6px;
+    justify-content: space-evenly;
 }
 .board-deck .card--front > .card--front {
     top: 15px;
@@ -110,20 +112,10 @@ body,
 .seven,
 .aces {
     position: relative;
-    margin-left: 20px;
     width: var(--card-width);
     height: var(--card-height);
     background-image: url("./spritesheet.png");
     background-position: calc(var(--card-width) * -0) calc(var(--card-height) * -4);
-}
-/* the seven columns that cards are dealt to */
-.seven {
-    float: left;
-    top: 0;
-}
-/* the four cells you need to get all the cards into to win */
-.aces {
-    float: left;
 }
 
 .finish-dest {

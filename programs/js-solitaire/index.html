@@ -13,13 +13,12 @@
 </head>
 <body>
     <div class="solitaire inset-deep" id="js-solitaire">
-        <div id="js-finish" class="finish-deck"></div>
-        <div id="js-board" class="board-deck"></div>
-
-        <div class="deck">
-            <div id="js-deck-pile" class="deck__pile"></div>
-            <div id="js-deck-deal" class="deck__deal"></div>
+        <div class="upper" id="js-upper">
+            <div id="js-deck-pile" class="deck__pile upper__spacer"></div>
+            <div id="js-deck-deal" class="deck__deal upper__spacer"></div>
+            <div class="upper__spacer"></div>
         </div>
+        <div id="js-board" class="board-deck"></div>
     </div>
     <script src="../../lib/jquery.min.js"></script>
     <script src="../../lib/pep.js"></script>
