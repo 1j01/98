@@ -31,6 +31,7 @@ body,
     width: 71px;
     height: 96px;
     background-color: #fff;
+    background-image: url("./spritesheet.png");
     position: absolute;
     left: 0;
     top: 0;

@@ -1,6 +1,3 @@
-import "./menus.js";
-import spriteImg from './sprite.js';
-
 const gameEl = document.getElementById('js-solitaire');
 const dealPileEl = document.getElementById('js-deck-pile');
 const dealEl = document.getElementById('js-deck-deal');
@@ -554,7 +551,8 @@ window.win = () => {
 
 const win = (canvasWidth, canvasHeight, canvasLeft, canvasTop) => {
     const image = document.createElement('img');
-    image.src = spriteImg;
+    image.src = "./src/spritesheet.png";
+
     const canvas = document.createElement('canvas');
     canvas.style.position = 'absolute';
     canvas.width = canvasWidth;
@@ -581,8 +579,8 @@ const win = (canvasWidth, canvasHeight, canvasLeft, canvasTop) => {
 
     const Particle = function (id, x, y, sx, sy) {
         if (sx === 0) sx = 2;
-        const spriteX = ( id % 4 ) * cardWidth;
-        const spriteY = Math.floor(id / 4) * cardHeight;
+        const spriteX = Math.floor(id / 4) * cardWidth;
+        const spriteY = ( id % 4 ) * cardHeight;
 
         // initial position of the card
         drawCard(x, y, spriteX, spriteY);
@@ -660,12 +658,6 @@ const win = (canvasWidth, canvasHeight, canvasLeft, canvasTop) => {
 };
 
 function initSolitaire() {
-    // add sprite
-    const css = document.createElement('style');
-    const styles = `.card--front { background-image: url("${spriteImg}"); }`;
-    css.appendChild(document.createTextNode(styles));
-    document.head.appendChild(css);
-
     // create all cards
     for (let i = 0; i < 4; i++) {
         for (let j = 1; j <= 13; j++) {
@@ -675,7 +667,7 @@ function initSolitaire() {
                 `card--${state.types[i]}-${j}`,
                 'card--back'
             );
-            el.style.backgroundPosition = `${-(cardWidth * (i + 1) - cardWidth + 1)}px ${-(cardHeight * j - cardHeight + 1)}px`;
+            el.style.backgroundPosition = `${-(cardWidth * j - cardWidth + 1)}px ${-(cardHeight * (i + 1) - cardHeight + 1)}px`;
 
             state.cards.push({
                 el: el,
