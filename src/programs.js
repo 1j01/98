@@ -376,6 +376,19 @@ function SoundRecorder(file_path){
 }
 SoundRecorder.acceptsFilePaths = true;
 
+function Solitaire() {
+	var $win = new $IframeWindow({
+		src: "programs/js-solitaire/src/index.html",
+		icon: "solitaire",
+		title: "Solitaire",
+		// innerWidth: 585,
+		// innerHeight: 384,
+		innerWidth: 668,
+		innerHeight: 448,
+	});
+	return new Task($win);
+}
+
 function Explorer(address){
 	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in $IframeWindow)
 	var document_title = address;
@@ -870,6 +883,12 @@ add_icon_not_via_filesystem({
 	title: "Sound Recorder",
 	icon: "speaker",
 	open: SoundRecorder,
+	shortcut: true
+});
+add_icon_not_via_filesystem({
+	title: "Solitaire",
+	icon: "solitaire",
+	open: Solitaire,
 	shortcut: true
 });
 add_icon_not_via_filesystem({

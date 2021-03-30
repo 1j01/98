@@ -1,0 +1,331 @@
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.solitaire {
+    width: 660px;
+    background-color: green;
+    height: 440px;
+    position: relative;
+}
+
+.card {
+    width: 71px;
+    height: 96px;
+    background-color: #fff;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-repeat: no-repeat;
+    background-position: center center;
+    border: 1px solid #000;
+    border-radius: 4px;
+    user-select: none;
+    margin: -1px;
+    box-shadow: 1px -1px 0px #000;
+}
+.card--h-1 {
+    background-position: -1px -1px;
+}
+.card--h-2 {
+    background-position: -1px -97px;
+}
+.card--h-3 {
+    background-position: -1px -193px;
+}
+.card--h-4 {
+    background-position: -1px -289px;
+}
+.card--h-5 {
+    background-position: -1px -385px;
+}
+.card--h-6 {
+    background-position: -1px -481px;
+}
+.card--h-7 {
+    background-position: -1px -577px;
+}
+.card--h-8 {
+    background-position: -1px -673px;
+}
+.card--h-9 {
+    background-position: -1px -769px;
+}
+.card--h-10 {
+    background-position: -1px -865px;
+}
+.card--h-11 {
+    background-position: -1px -961px;
+}
+.card--h-12 {
+    background-position: -1px -1057px;
+}
+.card--h-13 {
+    background-position: -1px -1153px;
+}
+.card--c-1 {
+    background-position: -72px -1px;
+}
+.card--c-2 {
+    background-position: -72px -97px;
+}
+.card--c-3 {
+    background-position: -72px -193px;
+}
+.card--c-4 {
+    background-position: -72px -289px;
+}
+.card--c-5 {
+    background-position: -72px -385px;
+}
+.card--c-6 {
+    background-position: -72px -481px;
+}
+.card--c-7 {
+    background-position: -72px -577px;
+}
+.card--c-8 {
+    background-position: -72px -673px;
+}
+.card--c-9 {
+    background-position: -72px -769px;
+}
+.card--c-10 {
+    background-position: -72px -865px;
+}
+.card--c-11 {
+    background-position: -72px -961px;
+}
+.card--c-12 {
+    background-position: -72px -1057px;
+}
+.card--c-13 {
+    background-position: -72px -1153px;
+}
+.card--d-1 {
+    background-position: -143px -1px;
+}
+.card--d-2 {
+    background-position: -143px -97px;
+}
+.card--d-3 {
+    background-position: -143px -193px;
+}
+.card--d-4 {
+    background-position: -143px -289px;
+}
+.card--d-5 {
+    background-position: -143px -385px;
+}
+.card--d-6 {
+    background-position: -143px -481px;
+}
+.card--d-7 {
+    background-position: -143px -577px;
+}
+.card--d-8 {
+    background-position: -143px -673px;
+}
+.card--d-9 {
+    background-position: -143px -769px;
+}
+.card--d-10 {
+    background-position: -143px -865px;
+}
+.card--d-11 {
+    background-position: -143px -961px;
+}
+.card--d-12 {
+    background-position: -143px -1057px;
+}
+.card--d-13 {
+    background-position: -143px -1153px;
+}
+.card--s-1 {
+    background-position: -214px -1px;
+}
+.card--s-2 {
+    background-position: -214px -97px;
+}
+.card--s-3 {
+    background-position: -214px -193px;
+}
+.card--s-4 {
+    background-position: -214px -289px;
+}
+.card--s-5 {
+    background-position: -214px -385px;
+}
+.card--s-6 {
+    background-position: -214px -481px;
+}
+.card--s-7 {
+    background-position: -214px -577px;
+}
+.card--s-8 {
+    background-position: -214px -673px;
+}
+.card--s-9 {
+    background-position: -214px -769px;
+}
+.card--s-10 {
+    background-position: -214px -865px;
+}
+.card--s-11 {
+    background-position: -214px -961px;
+}
+.card--s-12 {
+    background-position: -214px -1057px;
+}
+.card--s-13 {
+    background-position: -214px -1153px;
+}
+.card--back {
+    background-position: 0 0;
+    background-repeat: repeat;
+    background-color: #02027f;
+    background-size: 4px 4px;
+    background-image: linear-gradient(45deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 44.9%, white 45%, white 55%, rgba(255, 255, 255, 0) 55.1%, rgba(255, 255, 255, 0)), linear-gradient(-45deg, rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 0) 44.9%, white 45%, white 55%, rgba(255, 255, 255, 0) 55.1%, rgba(255, 255, 255, 0));
+}
+.card--front {
+    cursor: pointer;
+}
+.card--moving {
+    position: fixed;
+    z-index: 1;
+}
+
+.deck {
+    width: 250px;
+    position: absolute;
+    left: 20px;
+    top: 20px;
+}
+.deck__pile {
+    width: 71px;
+    height: 96px;
+    top: 0;
+    position: absolute;
+    border: 1px dotted;
+    border-radius: 4px;
+    cursor: pointer;
+    background-image: radial-gradient(green 30%, white 30.1%, white 40%, green 40.1%, green 100%);
+    background-size: 90px 90px;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+.deck__pile .card + .card {
+    margin-top: 4px;
+    margin-left: 2px;
+}
+.deck__pile .card + .card + .card {
+    margin-left: 4px;
+    margin-top: 8px;
+}
+.deck__deal {
+    left: 95px;
+    top: 0;
+    position: absolute;
+}
+.deck__deal .card:last-child {
+    left: 20px;
+}
+.deck__deal .card:last-child {
+    left: 20px;
+}
+.deck__deal .card:nth-last-child(2) {
+    left: 10px;
+}
+.deck__deal .card:first-child {
+    left: 0;
+}
+.deck__deal .card:first-child + .card:last-child {
+    left: 10px;
+}
+
+.finish-deck {
+    position: absolute;
+    left: 274px;
+    top: 20px;
+}
+
+.board-deck {
+    position: absolute;
+    top: 150px;
+}
+.board-deck .card--front > .card--front {
+    top: 15px;
+}
+.board-deck .card--back > .card--front,
+.board-deck .card--back > .card--back {
+    top: 5px;
+}
+
+/* seven deck */
+.seven {
+    position: relative;
+    float: left;
+    width: 71px;
+    top: 0;
+    margin-left: 20px;
+    height: 96px;
+    border: 1px dotted;
+    border-radius: 4px;
+}
+
+.aces {
+    width: 71px;
+    position: relative;
+    margin-left: 20px;
+    height: 96px;
+    border: 1px dotted;
+    border-radius: 4px;
+    float: left;
+    background-size: 4px 4px;
+    background-image: linear-gradient(45deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 44.9%, black 45%, black 55%, rgba(0, 0, 0, 0) 55.1%, rgba(0, 0, 0, 0)), linear-gradient(-45deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0) 44.9%, black 45%, black 55%, rgba(0, 0, 0, 0) 55.1%, rgba(0, 0, 0, 0));
+}
+
+.new-game {
+    background-color: transparent;
+    border-radius: 0;
+    padding: 0;
+    border: 0;
+    cursor: pointer;
+    white-space: nowrap;
+    outline: 0;
+}
+.new-game:active {
+    background-color: #999;
+}
+
+.finish-dest {
+    box-shadow: 0 0 0 1px #03ffff;
+}
+
+.window__content {
+    margin: 0 2px 2px 2px;
+    border: 1px solid;
+    border-top-color: #808080;
+    border-left-color: #808080;
+    border-bottom-color: #fff;
+    border-right-color: #fff;
+    font-size: 13px;
+}
+.window__content-inner {
+    background: #fff;
+    border: 1px solid;
+    border-top-color: #000;
+    border-left-color: #000;
+    border-bottom-color: #dfdfdf;
+    border-right-color: #dfdfdf;
+}

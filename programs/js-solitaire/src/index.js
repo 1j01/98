@@ -1,5 +1,5 @@
-import spriteImg from './sprite';
-import './index.scss';
+import "./menus.js";
+import spriteImg from './sprite.js';
 
 const gameEl = document.getElementById('js-solitaire');
 const dealPileEl = document.getElementById('js-deck-pile');
@@ -7,7 +7,6 @@ const dealEl = document.getElementById('js-deck-deal');
 const finishContainerEl = document.getElementById('js-finish');
 const deskContainerEl = document.getElementById('js-board');
 const deckPileEl = document.getElementById('js-deck-pile');
-const resetEl = document.getElementById('js-reset');
 
 const cardWidth = 71;
 const cardHeight = 96;
@@ -715,7 +714,6 @@ function initSolitaire() {
     }
 
     dealPileEl.onclick = restartDeal;
-    resetEl.onclick = resetGame;
     window.onmousemove = handleMove;
     window.onmouseup = releaseMove;
 
@@ -723,3 +721,4 @@ function initSolitaire() {
 }
 
 window.onload = initSolitaire;
+window.resetGame = resetGame;

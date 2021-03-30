@@ -9,6 +9,9 @@ Apps
 Minesweeper by Jon Ziebell
 	https://github.com/ziebelje/minesweeper
 
+Solitaire by Radovan Janjic
+	https://github.com/rjanjic/js-solitaire
+
 Webamp by Jordan Eldredge
 	https://github.com/captbaritone/webamp
 	
