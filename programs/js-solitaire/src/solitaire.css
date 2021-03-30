@@ -110,7 +110,7 @@ body,
 }
 .board-deck .card--back > .card--front,
 .board-deck .card--back > .card--back {
-    top: 5px;
+    top: 3px;
 }
 
 /* card cells */
