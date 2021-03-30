@@ -1,8 +1,3 @@
-*,
-*::before,
-*::after {
-    box-sizing: border-box;
-}
 
 html,
 body {
@@ -23,6 +18,7 @@ body,
 .solitaire {
     width: 100%;
     height: 100%;
+    box-sizing: border-box;
     background-color: green;
     position: relative;
     overflow: hidden; /* important for win effect */
@@ -35,12 +31,9 @@ body,
     position: absolute;
     left: 0;
     top: 0;
-    background-repeat: no-repeat;
     user-select: none;
 }
 .card--back {
-    background-position: 0 0;
-    background-repeat: repeat;
     background-position: var(--background-position-facing-down);
 }
 .card--front {
@@ -53,7 +46,6 @@ body,
 }
 
 .deck {
-    width: 250px;
     position: absolute;
     left: 20px;
     top: 20px;
@@ -79,9 +71,6 @@ body,
     left: 95px;
     top: 0;
     position: absolute;
-}
-.deck__deal .card:last-child {
-    left: 20px;
 }
 .deck__deal .card:last-child {
     left: 20px;
@@ -117,6 +106,7 @@ body,
 /* card cells */
 .seven,
 .aces {
+    position: relative;
     margin-left: 20px;
     width: 71px;
     height: 96px;
@@ -125,13 +115,11 @@ body,
 }
 /* the seven columns that cards are dealt to */
 .seven {
-    position: relative;
     float: left;
     top: 0;
 }
 /* the four cells you need to get all the cards into to win */
 .aces {
-    position: relative;
     float: left;
 }
 
