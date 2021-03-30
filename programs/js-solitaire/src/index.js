@@ -658,6 +658,13 @@ const win = (canvasWidth, canvasHeight, canvasLeft, canvasTop) => {
 };
 
 function initSolitaire() {
+
+    const backStyleIndex = Math.floor(Math.random() * 12) + 1;
+    document.body.style.setProperty(
+        "--background-position-facing-down",
+        `${cardWidth * -backStyleIndex}px ${cardHeight * -4}px`
+    );
+
     // create all cards
     for (let i = 0; i < 4; i++) {
         for (let j = 1; j <= 13; j++) {
@@ -667,7 +674,11 @@ function initSolitaire() {
                 `card--${state.types[i]}-${j}`,
                 'card--back'
             );
-            el.style.backgroundPosition = `${-(cardWidth * j - cardWidth + 1)}px ${-(cardHeight * (i + 1) - cardHeight + 1)}px`;
+            el.style.setProperty(
+                "--background-position-facing-up",
+                `${cardWidth * -(j - 1)}px ${cardHeight * -i}px`
+            );
+
 
             state.cards.push({
                 el: el,
