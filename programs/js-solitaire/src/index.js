@@ -540,23 +540,18 @@ const gameFinish = () => {
         if (l < 13) return;
     }
 
-    const { width, height, left, top } = gameEl.getBoundingClientRect();
-    win(width, height, left, top);
+    win();
 };
 
-window.win = () => {
-    const { width, height, left, top } = gameEl.getBoundingClientRect();
-    win(width, height, left, top);
-};
+const spritesheetImage = document.createElement('img');
+spritesheetImage.src = "./src/spritesheet.png";
 
-const win = (canvasWidth, canvasHeight, canvasLeft, canvasTop) => {
-    const image = document.createElement('img');
-    image.src = "./src/spritesheet.png";
-
+const win = () => {
+    const boundingRect = gameEl.getBoundingClientRect();
     const canvas = document.createElement('canvas');
     canvas.style.position = 'absolute';
-    canvas.width = canvasWidth;
-    canvas.height = canvasHeight;
+    canvas.width = boundingRect.width;
+    canvas.height = boundingRect.height;
     gameEl.appendChild(canvas);
 
     const context = canvas.getContext('2d');
@@ -565,7 +560,7 @@ const win = (canvasWidth, canvasHeight, canvasLeft, canvasTop) => {
 
     const drawCard = (x, y, spriteX, spriteY) => {
         context.drawImage(
-            image,
+            spritesheetImage,
             spriteX,
             spriteY,
             cardWidth,
@@ -632,9 +627,9 @@ const win = (canvasWidth, canvasHeight, canvasLeft, canvasTop) => {
     for (let i = 0; i < 4; i++) {
         const { left, top } = state.finish[i].el.getBoundingClientRect();
         throwInterval[i] = setInterval(function () {
-            throwCard(left - canvasLeft, top - canvasTop);
+            throwCard(left - boundingRect.left, top - boundingRect.top);
         }, 1000);
-        // throwCard(left - canvasLeft, top - canvasTop);
+        // throwCard(left - boundingRect.left, top - boundingRect.top);
     }
 
     const updateInterval = setInterval(function () {

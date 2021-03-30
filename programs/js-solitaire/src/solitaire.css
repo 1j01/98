@@ -25,6 +25,7 @@ body,
     height: 100%;
     background-color: green;
     position: relative;
+    overflow: hidden; /* important for win effect */
 }
 
 .card {
