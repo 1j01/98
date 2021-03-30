@@ -223,6 +223,13 @@ function dealCards() {
     }
 }
 
+function shuffleInPlace(a) {
+    for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+    }
+}
+
 function resetGame() {
     // clear decks
     for (let i = 0; i < 7; i++) {
@@ -234,8 +241,8 @@ function resetGame() {
     state.deal.pile.cards = [];
     state.deal.deal.cards = [];
 
-    // randomise cards
-    state.cards.sort(() => (Math.random() < .5) ? -1 : 1);
+    // shuffle cards
+    shuffleInPlace(state.cards);
 
     // re-assign indexes
     requestAnimationFrame(() => {
