@@ -675,6 +675,7 @@ function initSolitaire() {
                 `card--${state.types[i]}-${j}`,
                 'card--back'
             );
+            el.style.backgroundPosition = `${-(cardWidth * (i + 1) - cardWidth + 1)}px ${-(cardHeight * j - cardHeight + 1)}px`;
 
             state.cards.push({
                 el: el,
