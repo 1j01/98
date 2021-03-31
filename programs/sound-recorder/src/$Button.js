@@ -40,9 +40,24 @@ function renderDisabledStateIcons() {
 	});
 }
 
+function waitFor(condition, callback) {
+	if (condition()) {
+		callback();
+	} else {
+		setTimeout(waitFor.bind(null, condition, callback), 50);
+	}
+}
+
 $(sprite_sheet).load(function(){
-	renderDisabledStateIcons();
-	$(window).on("theme-changed", renderDisabledStateIcons);
+	// Wait for stylesheet to be loaded
+	waitFor(()=> {
+		var style = getComputedStyle(document.documentElement);
+		var hilight = style.getPropertyValue("--ButtonHilight");
+		return !!hilight;
+	}, ()=> {
+		renderDisabledStateIcons();
+		$(window).on("theme-changed", renderDisabledStateIcons);
+	});
 });
 
 var $Button = function(title, n){
