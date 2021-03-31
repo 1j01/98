@@ -7,6 +7,7 @@ Includes:
 * ![](images/icons/notepad-16x16.png) Notepad ([separate README](programs/notepad/README.md))
 * ![](images/icons/speaker-16x16.png) Sound Recorder ([separate README](programs/sound-recorder/README.md))
 * ![](images/icons/paint-16x16.png) Paint ([separate repository](https://github.com/1j01/jspaint))
+* ![](images/icons/pipes-16x16.png) 3D Pipes ([separate repository](https://github.com/1j01/pipes))
 * ![](images/icons/minesweeper-16x16.png) Minesweeper ([separate README](programs/minesweeper/README.md); [original repository](https://github.com/ziebelje/minesweeper)) by [Jon Ziebell](https://github.com/ziebelje/)
 * ![](images/icons/solitaire-16x16.png) Solitaire ([original repository](https://github.com/rjanjic/js-solitaire)) by [Radovan Janjic](https://github.com/rjanjic)
 * ![](images/icons/winamp2-16x16.png) Winamp 2.9 ([separate README](programs/winamp/README.md); [original repository](https://github.com/captbaritone/webamp)) by [Jordan Eldredge](https://jordaneldredge.com/)
@@ -35,7 +36,6 @@ This project is currently [source-available / shared source](https://en.wikipedi
 ## Related Projects
 
 Apps that it would be nice to integrate:
-* [![](images/icons/pipes-16x16.png) Pipes](https://github.com/1j01/pipes)
 * [![](images/icons/pipes-16x16.png) 3D FlowerBox](https://github.com/kevin-shannon/3D-FlowerBox)
 * [![](images/icons/settings-16x16.png) Windows Classic theme designer](https://github.com/tpenguinltg/winclassic)
 * [![](images/icons/media-player-16x16.png) Win95 Media Player](https://benwiley4000.github.io/win95-media-player/)

@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>3D Pipes Screensaver</title>
+    <link
+      rel="icon"
+      href="images/meta/icon-16x16.png"
+      type="image/png"
+      sizes="16x16"
+    />
+    <link
+      rel="icon"
+      href="images/meta/icon-32x32.png"
+      type="image/png"
+      sizes="32x32"
+    />
+    <link
+      rel="icon"
+      href="images/meta/favicon.ico"
+      type="image/x-icon"
+      sizes="16x16 32x32"
+    />
+    <!--
+      Note: chrome does not display the 16px icon in its 16px space in this case
+    -->
+    <!-- but the 16px icon isn't objectively better, so whatever -->
+    <style>
+      html,
+      body {
+        border: 0;
+        margin: 0;
+        padding: 0;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        background: #000;
+        color: white;
+        font-family: sans-serif;
+      }
+      #canvas-container {
+        position: relative;
+      }
+      canvas {
+        position: absolute;
+        left: 0;
+        top: 0;
+      }
+      .controls {
+        padding: 10px;
+        background: rgba(0, 0, 0, 0.4);
+        text-shadow: 0 0 2px black;
+        position: absolute;
+        top: 0;
+        left: 0;
+      }
+      .controls,
+      .fork-me {
+        z-index: 1;
+      }
+      .controls th {
+        text-align: left;
+      }
+      .controls th,
+      .controls td {
+        padding: 10px;
+      }
+      .controls > button,
+      .controls > label {
+        margin: 10px;
+      }
+      button {
+        border: 1px solid gray;
+        background: rgba(128, 128, 128, 0.4);
+        color: inherit;
+        display: flex;
+        padding: 5px 10px;
+      }
+      button svg {
+        margin-right: 5px;
+        height: 1em;
+      }
+      button svg path {
+        fill: currentColor;
+      }
+    </style>
+    <script src="lib/sri-fallback.js"></script>
+    <script
+      x-sri-fallback="lib/three.min.js"
+      src="https://cdnjs.cloudflare.com/ajax/libs/three.js/98/three.min.js"
+      integrity="sha256-MbIcpOhIEGLabqntH1B7ZgE7a6V0TrocmKouz1npT1g="
+      crossorigin="anonymous"
+    ></script>
+    <script src="lib/OrbitControls.js"></script>
+    <script src="lib/TeapotBufferGeometry.js"></script>
+    <meta name="viewport" content="width=device-width, user-scalable=no" />
+  </head>
+  <body>
+    <a href="https://github.com/1j01/pipes" class="ui-container"
+      ><img
+        class="fork-me"
+        style="position: absolute; top: 0; right: 0; border: 0;"
+        src="https://camo.githubusercontent.com/52760788cde945287fbb584134c4cbc2bc36f904/68747470733a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f77686974655f6666666666662e706e67"
+        alt="Fork me on GitHub"
+        data-canonical-src="https://s3.amazonaws.com/github/ribbons/forkme_right_white_ffffff.png"
+    /></a>
+    <div class="controls ui-container">
+      <button id="fullscreen-button">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 438.543 438.543">
+          <path
+            d="M407.42 159.029c3.62 3.616 7.898 5.428 12.847 5.428 2.282 0 4.668-.476 7.139-1.429 7.426-3.235 11.136-8.853 11.136-16.846V18.276c0-4.949-1.807-9.231-5.428-12.847-3.61-3.617-7.898-5.424-12.847-5.424H292.36c-7.991 0-13.607 3.805-16.848 11.419-3.23 7.423-1.902 13.99 4 19.698l41.111 41.112-101.352 101.355L117.917 72.231l41.112-41.112c5.901-5.708 7.232-12.275 3.999-19.698C159.789 3.807 154.175 0 146.182 0H18.276C13.324 0 9.041 1.809 5.425 5.426 1.808 9.042.001 13.324.001 18.273V146.18c0 7.996 3.809 13.61 11.419 16.846 2.285.948 4.57 1.429 6.855 1.429 4.948 0 9.229-1.812 12.847-5.427l41.112-41.109 101.354 101.354L72.234 320.622l-41.112-41.113c-5.711-5.903-12.275-7.231-19.702-4.001C3.806 278.749.001 284.364.001 292.362v127.906c0 4.948 1.807 9.229 5.424 12.847 3.619 3.614 7.902 5.421 12.851 5.421h127.906c7.996 0 13.61-3.806 16.846-11.416 3.234-7.427 1.903-13.99-3.999-19.705l-41.112-41.106L219.271 264.95l101.353 101.361-41.114 41.11c-5.899 5.708-7.228 12.279-3.997 19.698 3.237 7.617 8.856 11.423 16.851 11.423h127.907c4.948 0 9.232-1.813 12.847-5.428 3.613-3.613 5.42-7.898 5.42-12.847V292.362c0-7.994-3.709-13.613-11.136-16.851-7.802-3.23-14.462-1.903-19.985 4.004l-41.106 41.106-101.359-101.35L366.31 117.917l41.11 41.112z"
+            fill="#FFF"
+          />
+        </svg>
+        Enter Fullscreen
+      </button>
+      <label>
+        Joint Type:
+        <select id="joint-types">
+          <option value="elbow">Elbow</option>
+          <option value="ball">Ball</option>
+          <option value="mixed" selected>Mixed</option>
+          <option value="cycle">Cycle</option>
+        </select>
+      </label>
+      <button id="toggle-controls">
+        <span class="normal-controls-enabled">Control Camera</span>
+        <span hidden class="orbit-controls-enabled">Relinquish Camera</span>
+      </button>
+      <table>
+        <thead>
+          <tr>
+            <th>Mouse button</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="normal-controls-enabled">
+            <td>Primary</td>
+            <td>Change view</td>
+          </tr>
+          <tr class="normal-controls-enabled">
+            <td>Secondary</td>
+            <td>Clear pipes and restart</td>
+          </tr>
+          <tr hidden class="orbit-controls-enabled">
+            <td>Primary (Drag)</td>
+            <td>Rotate view</td>
+          </tr>
+          <tr hidden class="orbit-controls-enabled">
+            <td>Secondary (Drag) (or arrow keys)</td>
+            <td>Pan around</td>
+          </tr>
+          <tr hidden class="orbit-controls-enabled">
+            <td>Middle (Drag or Wheel)</td>
+            <td>Zoom</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div id="canvas-container">
+      <canvas id="canvas-webgl"></canvas>
+      <canvas id="canvas-2d" style="pointer-events: none"></canvas>
+    </div>
+    <script src="screensaver.js"></script>
+  </body>
+</html>

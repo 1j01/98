@@ -387,6 +387,51 @@ function Solitaire() {
 	return new Task($win);
 }
 
+function Pipes() {
+	const mouseDistanceToExit = 15;
+	const options = {hideUI: true};
+	const $iframe = $("<iframe>").attr("src", `programs/pipes/index.html#${encodeURIComponent(JSON.stringify(options))}`);
+	const $backing = $("<div>");
+	$backing.css({
+		position: "fixed",
+		left: 0,
+		top: 0,
+		width: "100%",
+		height: "100%",
+		zIndex: 999,
+		cursor: "none",
+	});
+	$iframe.css({
+		position: "fixed",
+		left: 0,
+		top: 0,
+		width: "100%",
+		height: "100%",
+		zIndex: 1000,
+		border: 0,
+		pointerEvents: "none",
+	});
+	$backing.appendTo("body");
+	$iframe.appendTo("body");
+	const cleanUp = ()=> {
+		$backing.remove();
+		$iframe.remove();
+	};
+	let startMouseX, startMouseY;
+	$backing.on("mousemove", (event)=> {
+		if (startMouseX === undefined) {
+			startMouseX = event.pageX;
+			startMouseY = event.pageY;
+		}
+		if (Math.hypot(startMouseX - event.pageX, startMouseY - event.pageY) > mouseDistanceToExit) {
+			cleanUp();
+		}
+	});
+	$backing.on("mousedown", ()=> {
+		cleanUp();
+	});
+}
+
 function Explorer(address){
 	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in $IframeWindow)
 	var document_title = address;
@@ -899,6 +944,12 @@ add_icon_not_via_filesystem({
 	title: "Winamp",
 	icon: "winamp2",
 	open: openWinamp,
+	shortcut: true
+});
+add_icon_not_via_filesystem({
+	title: "3D Pipes",
+	icon: "pipes",
+	open: Pipes,
 	shortcut: true
 });
 
