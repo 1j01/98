@@ -434,7 +434,7 @@ function showScreensaver(iframeSrc) {
 		}
 	};
 	let startMouseX, startMouseY;
-	$backing.on("mousemove", (event)=> {
+	$backing.on("mousemove pointermove", (event)=> {
 		if (startMouseX === undefined) {
 			startMouseX = event.pageX;
 			startMouseY = event.pageY;
@@ -443,7 +443,7 @@ function showScreensaver(iframeSrc) {
 			cleanUp();
 		}
 	});
-	$backing.on("mousedown", (event)=> {
+	$backing.on("mousedown pointerdown touchstart", (event)=> {
 		event.preventDefault();
 		cleanUp();
 	});
