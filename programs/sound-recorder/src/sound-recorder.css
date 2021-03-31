@@ -41,6 +41,7 @@ body,
 	height: 100%;
 	box-sizing: border-box;
 	display: table;
+	white-space: nowrap;
 }
 .position .center-me,
 .length .center-me {
