@@ -33,12 +33,16 @@ body,
 	margin: 0 9px;
 	box-sizing: border-box;
 }
+.wave canvas {
+	/* Fix for Firefox bug where Position and Length boxes would shrink sometimes (and inspecting with the devtools would sometimes fix it; it's a heisenbug) */
+	position: absolute;
+}
 .position,
 .length {
+	/* Must not have height: 100%, to fix Firefox bug */
 	width: 60px;
 	flex-grow: 0;
 	flex-shrink: 0;
-	height: 100%;
 	box-sizing: border-box;
 	display: flex;
 	justify-content: center;
