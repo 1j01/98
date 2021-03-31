@@ -18,15 +18,6 @@ body {
 button {
 	padding: 5px;
 }
-/* TODO: simpler button style, same as for menu buttons (also needed for tasks, start button, etc.) */
-.toolbar button:not(:hover),
-.toolbar button:disabled {
-	border-color: transparent;
-}
-.toolbar button:not(:hover)::after,
-.toolbar button:disabled::after {
-	display: none;
-}
 .toolbar button:not(#view-menu-button) {
 	width: 55px;
 	height: 40px;
