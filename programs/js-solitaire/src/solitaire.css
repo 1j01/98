@@ -65,27 +65,29 @@ body,
     background-position: calc(var(--card-width) * -1) calc(var(--card-height) * -5);
 }
 .deck__pile .card + .card {
-    margin-top: 4px;
+    margin-top: 1px;
     margin-left: 2px;
 }
 .deck__pile .card + .card + .card {
     margin-left: 4px;
-    margin-top: 8px;
+    margin-top: 2px;
 }
 .deck__deal {
     position: relative;
 }
 .deck__deal .card:last-child {
-    left: 20px;
+    left: 28px;
+    top: 2px;
 }
 .deck__deal .card:nth-last-child(2) {
-    left: 10px;
+    left: 14px;
+    top: 1px;
 }
 .deck__deal .card:first-child {
     left: 0;
 }
 .deck__deal .card:first-child + .card:last-child {
-    left: 10px;
+    left: 14px;
 }
 
 .finish-deck {
