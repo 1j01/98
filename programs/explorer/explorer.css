@@ -32,7 +32,10 @@ button {
 	height: 40px;
 	padding: 0;
 	font-size: 12px;
-	line-height: 60px;
+	line-height: 12px;
+}
+.toolbar button .label-text {
+	margin-top: 24px;
 }
 #view-menu-button {
 	padding: 0;
