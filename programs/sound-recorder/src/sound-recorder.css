@@ -40,14 +40,14 @@ body,
 	flex-shrink: 0;
 	height: 100%;
 	box-sizing: border-box;
-	display: table;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 	white-space: nowrap;
 }
 .position .center-me,
 .length .center-me {
-	display: table-cell;
 	text-align: center;
-	vertical-align: middle;
 }
 
 .controls {
