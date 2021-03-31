@@ -381,10 +381,8 @@ function Solitaire() {
 		src: "programs/js-solitaire/index.html",
 		icon: "solitaire",
 		title: "Solitaire",
-		// innerWidth: 585,
-		// innerHeight: 384,
-		innerWidth: 668,
-		innerHeight: 448,
+		innerWidth: 585,
+		innerHeight: 384,
 	});
 	return new Task($win);
 }
