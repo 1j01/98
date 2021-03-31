@@ -416,6 +416,13 @@ function Pipes() {
 	const cleanUp = ()=> {
 		$backing.remove();
 		$iframe.remove();
+		const prevent = (event)=> {
+			event.preventDefault();
+		};
+		$(window).on("contextmenu", prevent);
+		setTimeout(()=> {
+			$(window).off("contextmenu", prevent);
+		}, 500);
 	};
 	let startMouseX, startMouseY;
 	$backing.on("mousemove", (event)=> {
@@ -427,7 +434,8 @@ function Pipes() {
 			cleanUp();
 		}
 	});
-	$backing.on("mousedown", ()=> {
+	$backing.on("mousedown", (event)=> {
+		event.preventDefault();
 		cleanUp();
 	});
 }
