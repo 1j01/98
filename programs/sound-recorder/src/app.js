@@ -354,7 +354,7 @@ if(file_path){
 	});
 }
 
-if(frameElement){
+if(frameElement && frameElement.$window){
 	frameElement.$window.on("close", function(e){
 		if(saved){
 			return;

@@ -12,14 +12,14 @@ function parse_query_string(queryString) {
 function set_title(title){
 	document.title = title;
 
-	if(frameElement){
+	if(frameElement && frameElement.$window){
 		frameElement.$window.title(document.title);
 	}
 }
 
 function set_icon(icon_id) {
 	document.querySelector("link[rel~=icon]").href = getIconPath(icon_id, 16)
-	if(frameElement){
+	if(frameElement && frameElement.$window){
 		// frameElement.$window.$icon.attr("src", getIconPath(icon_id, TITLEBAR_ICON_SIZE));
 		frameElement.$window.setIconByID(icon_id);
 	}

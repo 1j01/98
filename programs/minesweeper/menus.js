@@ -7,7 +7,7 @@ var difficulty_levels = [
 var set_difficulty = function(difficulty){
 	minesweeper_.new_game.apply(minesweeper_, difficulty);
 	
-	if(frameElement){
+	if(frameElement && frameElement.$window){
 		// TODO: um why not just use the computed width <punctuation="thinking-emoji"/> </sentence>
 		var tile_size = 16;
 		var extra_width = 24;
