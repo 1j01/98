@@ -422,7 +422,17 @@ function Pipes() {
 		$(window).on("contextmenu", prevent);
 		setTimeout(()=> {
 			$(window).off("contextmenu", prevent);
+			window.removeEventListener("keydown", keydownHandler, true);
 		}, 500);
+	};
+	const keydownHandler = (event)=> {
+		// Trying to let you change the display or capture the output
+		// not allowing Ctrl+Printscreen etc. because no modifiers
+		if (!(["F11", "F12", "ZoomToggle", "PrintScreen", "MediaRecord", "BrightnessDown", "BrightnessUp", "Dimmer"].includes(event.key))) {
+			event.preventDefault();
+			event.stopPropagation();
+			cleanUp();
+		}
 	};
 	let startMouseX, startMouseY;
 	$backing.on("mousemove", (event)=> {
@@ -438,6 +448,9 @@ function Pipes() {
 		event.preventDefault();
 		cleanUp();
 	});
+	// useCapture needed for scenario where you hit Enter, with a desktop icon selected
+	// (If it relaunches the screensaver, it's like you can't exit it!)
+	window.addEventListener("keydown", keydownHandler, true);
 }
 
 function Explorer(address){
