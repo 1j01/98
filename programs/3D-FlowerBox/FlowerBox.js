@@ -146,6 +146,17 @@ var nBuffer;
 var vNormal;
 var iBuffer;
 
+function resize() {
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+
+  aspect_ratio = canvas.width / canvas.height;
+
+  gl.viewport(0, 0, canvas.width, canvas.height);
+}
+
+window.onresize = resize;
+
 // Graphics Initialization
 window.onload = function init() {
   // Set up canvas
@@ -155,12 +166,8 @@ window.onload = function init() {
   const ext = gl.getExtension('OES_element_index_uint');
   if (!gl) { alert("WebGL isn't available"); }
 
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+  resize();
 
-  aspect_ratio = canvas.width / canvas.height;
-
-  gl.viewport(0, 0, canvas.width, canvas.height);
   gl.clearColor(0.0, 0.0, 0.0, 1.0);
 
   gl.enable(gl.DEPTH_TEST);
