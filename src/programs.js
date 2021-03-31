@@ -387,10 +387,9 @@ function Solitaire() {
 	return new Task($win);
 }
 
-function Pipes() {
+function showScreensaver(iframeSrc) {
 	const mouseDistanceToExit = 15;
-	const options = {hideUI: true};
-	const $iframe = $("<iframe>").attr("src", `programs/pipes/index.html#${encodeURIComponent(JSON.stringify(options))}`);
+	const $iframe = $("<iframe>").attr("src", iframeSrc);
 	const $backing = $("<div>");
 	$backing.css({
 		position: "fixed",
@@ -451,6 +450,15 @@ function Pipes() {
 	// useCapture needed for scenario where you hit Enter, with a desktop icon selected
 	// (If it relaunches the screensaver, it's like you can't exit it!)
 	window.addEventListener("keydown", keydownHandler, true);
+}
+
+function Pipes() {
+	const options = {hideUI: true};
+	showScreensaver(`programs/pipes/index.html#${encodeURIComponent(JSON.stringify(options))}`);
+}
+
+function FlowerBox() {
+	showScreensaver("programs/3D-FlowerBox/index.html");
 }
 
 function Explorer(address){
@@ -971,6 +979,12 @@ add_icon_not_via_filesystem({
 	title: "3D Pipes",
 	icon: "pipes",
 	open: Pipes,
+	shortcut: true
+});
+add_icon_not_via_filesystem({
+	title: "3D Flower Box",
+	icon: "pipes",
+	open: FlowerBox,
 	shortcut: true
 });
 

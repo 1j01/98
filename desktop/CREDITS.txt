@@ -19,6 +19,9 @@ Webamp by Jordan Eldredge
 	Butterchurn Visualizer by Jordan Berg
 		https://github.com/jberg/butterchurn
 
+3D Flower Box by Kevin Shannon
+	https://github.com/kevin-shannon/3D-FlowerBox
+
 Paint, Sound Recorder, Notepad, 3D Pipes, and the 98.js.org desktop by Isaiah Odhner
 	https://github.com/1j01/98
 	https://github.com/1j01/jspaint
