@@ -9,7 +9,8 @@ body {
 
 html,
 body,
-.solitaire {
+.solitaire,
+.size-limit {
     display: flex;
     flex: 1;
     flex-direction: column;
@@ -25,6 +26,12 @@ body,
 
     --card-width: 71px;
     --card-height: 96px;
+}
+
+.size-limit {
+    --max-width: 1200px;
+    max-width: var(--max-width);
+    margin-left: max(calc(50vw - var(--max-width) / 2), 0px);
 }
 
 .card {
