@@ -467,8 +467,8 @@ function CommandPrompt() {
 		icon: "msdos",
 		title: "MS-DOS Prompt",
 		// TODO: default dimensions
-		innerWidth: 500,
-		innerHeight: 500,
+		innerWidth: 640,
+		innerHeight: 400 - 21, // HACK: remove `+ 21` added for menubar in $IframeWindow.js
 	});
 	return new Task($win);
 }
