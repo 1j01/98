@@ -23,12 +23,13 @@
 	</head>
 	<body>
 		<div id="app-wrapper" class="inset-shallow">
-			<div id="terminal"></div>
+			<div id="dosbox" hidden></div>
+			<!-- <div id="terminal"></div> -->
 		</div>
 		<!-- <script src="../../lib/browserfs.js"></script>
 		<script src="../../src/filesystem-setup.js"></script> -->
 		<!-- <script src="../../src/helpers.js"></script> -->
-		<script src="../../lib/xterm.js"></script>
+		<!-- <script src="../../lib/xterm.js"></script> -->
 		<script src="command.js"></script>
 		<style>
 			/* there's some unecessary complexity to these styles for sure */
@@ -54,6 +55,26 @@
 				mix-blend-mode: exclusion;
 			}
 
+			.dosbox-container { width: 640px; height: 400px; }
 		</style>
+		<script src="https://js-dos.com/cdn/js-dos-api.js"></script>
+		<script>
+		var dosbox = new Dosbox({
+			id: "dosbox",
+			onload: function (dosbox) {
+				dosbox.run("command-message.zip", "./msg.bat");
+			},
+			onrun: function (dosbox, app) {
+				document.querySelector("#dosbox .dosbox-loader").hidden = true;
+				document.querySelector("#dosbox .dosbox-loader").style.display = "none";
+				document.getElementById("dosbox").hidden = false;
+				console.log("App '" + app + "' is runned");
+			},
+			onprogress: (stage, total, loaded) => {
+				console.log(stage, loaded * 100 / total + "%");
+			},
+		});
+		dosbox.ui.start.click();
+		</script>
 	</body>
 </html>
