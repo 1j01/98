@@ -472,7 +472,6 @@ function CommandPrompt() {
 	});
 	return new Task($win);
 }
-CommandPrompt();
 
 function Explorer(address){
 	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in $IframeWindow)
