@@ -461,6 +461,19 @@ function FlowerBox() {
 	showScreensaver("programs/3D-FlowerBox/index.html");
 }
 
+function CommandPrompt() {
+	var $win = new $IframeWindow({
+		src: "programs/command/index.html",
+		icon: "msdos",
+		title: "MS-DOS Prompt",
+		// TODO: default dimensions
+		innerWidth: 500,
+		innerHeight: 500,
+	});
+	return new Task($win);
+}
+CommandPrompt();
+
 function Explorer(address){
 	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in $IframeWindow)
 	var document_title = address;
@@ -985,6 +998,12 @@ add_icon_not_via_filesystem({
 	title: "3D Flower Box",
 	icon: "pipes",
 	open: FlowerBox,
+	shortcut: true
+});
+add_icon_not_via_filesystem({
+	title: "MS-DOS Prompt",
+	icon: "msdos",
+	open: CommandPrompt,
 	shortcut: true
 });
 
