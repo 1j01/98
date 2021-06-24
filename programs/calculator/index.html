@@ -4,11 +4,20 @@
 <head>
     <meta charset="utf-8" />
 
-    <title>Uno Calculator</title>
-    <meta name="description"
-        content="The Uno Calculator, a WebAssembly application developed with the Uno Platform, also available for iOS and Android.">
+    <title>Calculator</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+    <!-- Note: some stuff must come before require.js -->
+    <link href="../../lib/os-gui/layout.css" rel="stylesheet" type="text/css">
+    <link href="../../lib/os-gui/windows-98.css" rel="stylesheet" type="text/css">
+    <link rel="icon" href="../../images/icons/calculator-16x16.png" sizes="16x16" type="image/png">
+    <link rel="icon" href="../../images/icons/calculator-32x32.png" sizes="32x32" type="image/png">
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+    <script src="../../lib/jquery.min.js"></script>
+    <script src="../../lib/pep.js"></script>
+    <script src="../../lib/os-gui/$MenuBar.js"></script>
+    <script src="menus.js"></script>
+    <link href="windows-98-calc.css" rel="stylesheet" type="text/css">
 
     <script type="text/javascript" src="./package_7e9d289fd8698720a9205356bf09da895df1a921/require.js"></script>
     <script type="text/javascript" src="./package_7e9d289fd8698720a9205356bf09da895df1a921/mono-config.js"></script>
@@ -21,11 +30,8 @@
     <link rel="stylesheet" type="text/css" href="./package_7e9d289fd8698720a9205356bf09da895df1a921/Uno.UI.css" />
     <link rel="stylesheet" type="text/css" href="./package_7e9d289fd8698720a9205356bf09da895df1a921/Fonts.css" />
     <link rel="manifest" href="./package_7e9d289fd8698720a9205356bf09da895df1a921/manifest.json" />
-    <link rel="script" href="./package_7e9d289fd8698720a9205356bf09da895df1a921/service-worker.js" />
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <link rel="apple-touch-icon"
-        href="./package_7e9d289fd8698720a9205356bf09da895df1a921/./images/584ac61e-9c58-97cb-2da8-ab58f63345a3.webPlatform.png" />
-    <meta name="theme-color" content="#0078D7" />
+    <!-- <link rel="script" href="./package_7e9d289fd8698720a9205356bf09da895df1a921/service-worker.js" /> -->
+
 
 </head>
 

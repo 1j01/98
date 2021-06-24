@@ -1,0 +1,6 @@
+.uno-bannercontrol {
+	display: none !important;
+}
+.uno-root-element {
+	top: 20px !important; /* make room for menu bar */
+}
