@@ -21,7 +21,7 @@ UI is very responsive and fluent and loads super fast even on slower connections
 
 App now can be installed like native app and is available offline, thanks to @NWylynko. On mobile devices use "Add to homescreen" and on desktop use plus icon in address bar to install (new link).
 
-![responsive example](./engine/docs/Images/calc-resposive.gif)
+![responsive example](./engine/docs/Images/calc-responsive.gif)
 
 # Current development
 As of now only Standard mode is available in this build 😜(#reduces to more of a POC 😊). But i am working on Scientific Mode which will be pushed in few days 🤗. Offline mode and Native app is also soon. Further development is subjected to interests and contributions of you guys (whoever reads this or just for myself 🥴😭)
