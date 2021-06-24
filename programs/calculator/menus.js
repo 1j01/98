@@ -67,7 +67,7 @@ var menus = {
 			item: "&About Calculator",
 			action: function(){
 				// TODO: about dialog
-				// window.open("");
+				window.open("https://github.com/muzam1l/mcalculator");
 			},
 		}
 	],
