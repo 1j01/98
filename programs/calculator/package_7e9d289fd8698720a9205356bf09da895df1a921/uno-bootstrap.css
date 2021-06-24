@@ -1,0 +1,131 @@
+﻿.uno-loader {
+    /* Main container of the loader */
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--bg-color, white);
+}
+
+    .uno-loader .logo {
+        width: auto;
+        height: auto;
+        /* Protect the width and height of the logo to fit the screen */
+        max-width: 70vw;
+        max-height: 70vh;
+        /* Center the logo */
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .uno-loader progress {
+        /* Reset the default appearance */
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        /* Get rid of default border in Firefox. */
+        border: none;
+        /* Dimensions */
+        width: 100%;
+        height: 6px;
+        position: absolute;
+        /* Position */
+        bottom: 0;
+        left: 0;
+        right: 0;
+    }
+
+    .uno-loader img[src=''] {
+        visibility: collapse;
+    }
+
+    .uno-loader progress::-moz-progress-bar {
+        /* Firefox */
+        background-color: var(--accent-color, #f85977);
+    }
+
+    .uno-loader progress::-webkit-progress-value {
+        /* Chrome & Safari */
+        background-color: var(--accent-color, #f85977);
+    }
+
+    .uno-loader[loading-position='top'] progress {
+        bottom: auto;
+        top: 0;
+        color: var(--accent-color, #f85977);
+    }
+
+    .uno-loader[loading-position='top'] .alert {
+        bottom: auto;
+        top: 10px;
+    }
+
+    .uno-loader[loading-alert] .alert {
+        /* Position */
+        display: block;
+        position: absolute;
+        bottom: 10px;
+        height: 32px;
+        font-weight: normal;
+        font-size: 14px;
+        font-family: monospace;
+        color: var(--accent-color, #f85977);
+        width: 32px;
+        background: whitesmoke;
+        border-radius: 50%;
+        transition: all 400ms ease;
+        transform-origin: 50% 50%;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+
+        .uno-loader[loading-alert] .alert:after {
+            text-align: center;
+            display: block;
+            width: 100%;
+            position: absolute;
+            top: 0;
+        }
+
+    .uno-loader[loading-alert='none'] .alert {
+        display: none;
+    }
+
+    .uno-loader[loading-alert='error'] .alert:after {
+        animation-name: pulse;
+        animation-duration: 2500ms;
+        animation-iteration-count: infinite;
+        animation-timing-function: linear;
+    }
+
+    .uno-loader[loading-alert='warning'] .alert:after,
+    .uno-loader[loading-alert='error'] .alert:after {
+        top: 2px;
+        font-size: 26px;
+        content: '\26A0';
+    }
+
+    .uno-loader[loading-alert='warning'] .alert:after {
+        color: DarkGoldenRod;
+    }
+
+    .uno-loader[loading-alert='error'] .alert:after {
+        color: DarkRed;
+    }
+
+@keyframes pulse {
+    0% {
+        transform: scale(0.85);
+    }
+
+    50% {
+        transform: scale(1.15);
+    }
+
+    100% {
+        transform: scale(0.85);
+    }
+}

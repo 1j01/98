@@ -1,0 +1,1 @@
+emcc (Emscripten gcc/clang-like replacement + linker emulating GNU ld) 2.0.12 (d0e647bf266caad50943e78c9841e05e9c499a5d)

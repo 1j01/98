@@ -1,0 +1,123 @@
+{
+  "dir": "ltr",
+  "lang": "en",
+  "name": "Uno Calculator",
+  "scope": "/",
+  "display": "standalone",
+  "start_url": "/",
+  "short_name": "Uno Calculator",
+  "theme_color": "#0078D7",
+  "description": "The Uno Calculator, a WebAssembly application developed with the Uno Platform, also available for iOS and Android.",
+  "orientation": "any",
+  "background_color": "transparent",
+  "related_applications": [
+    {
+      "platform": "play",
+      "url": "https://play.google.com/store/apps/details?id=uno.platform.calculator",
+      "id": "uno.platform.calculator"
+    },
+    {
+      "platform": "itunes",
+      "url": "https://apps.apple.com/app/id1464736591"
+    }
+  ],
+  "prefer_related_applications": true,
+  "icons": [
+    {
+      "src": "./images/1d791011-0377-b9ee-0c10-0c9109b5f990.webPlatform.png",
+      "sizes": "44x44",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/186865bc-a9f1-2fc5-85ad-771c0f769465.webPlatform.png",
+      "sizes": "48x48",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/85569023-3ada-e7e7-37b5-2f70602e8174.webPlatform.png",
+      "sizes": "1240x600",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/461f212d-3d9c-ebd0-10ea-9f018790bf41.webPlatform.png",
+      "sizes": "300x300",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/1f49feab-8d53-c30d-d12a-1baa22ce9359.webPlatform.png",
+      "sizes": "150x150",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/6e0938c4-c8e0-400b-c2ad-0f362980c4fc.webPlatform.png",
+      "sizes": "88x88",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/273c497b-5343-3ed6-8eb3-52c08a0e49d0.webPlatform.png",
+      "sizes": "24x24",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/99db1ba0-2c8e-8ccc-5495-8eb0172e6403.webPlatform.png",
+      "sizes": "50x50",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/733045d2-c642-67ec-eab1-003df3f5b54e.webPlatform.png",
+      "sizes": "620x300",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/7d03d5d9-99db-d5fe-af21-0a515336630a.webPlatform.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/72451061-e356-c953-1e3a-093548c0c3d4.webPlatform.png",
+      "sizes": "144x144",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/66fd2e61-0667-11e4-db12-fe1885d3fe42.webPlatform.png",
+      "sizes": "96x96",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/41aa8418-a87a-7790-f032-3c79031a52ca.webPlatform.png",
+      "sizes": "72x72",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/bfcbfca6-34eb-aeb7-b9a3-e3bea46983c1.webPlatform.png",
+      "sizes": "36x36",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/584ac61e-9c58-97cb-2da8-ab58f63345a3.webPlatform.png",
+      "sizes": "1024x1024",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/72e57919-a598-facb-ed52-99fa687b4791.webPlatform.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/f65e73c7-3cea-45bd-743e-87e6c8c45447.webPlatform.png",
+      "sizes": "152x152",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/8982c655-980e-4881-175c-4d72f73bdae8.webPlatform.png",
+      "sizes": "120x120",
+      "type": "image/png"
+    },
+    {
+      "src": "./images/f9d6a476-32a5-b850-64a6-16a23a83b326.webPlatform.png",
+      "sizes": "76x76",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": []
+}
