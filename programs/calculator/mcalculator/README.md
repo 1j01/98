@@ -7,19 +7,19 @@ This project exists to test the scope of porting Desktop utilities, written in n
 Try it here
 https://muzam1l.github.io/mcalculator/ (new link)(faster)
 
-https://mcalculator.herokuapp.com/ (old link)(slower)(still mantained)
+https://mcalculator.herokuapp.com/ (old link)(slower)(still maintained)
 
 ![screenshot](./engine/docs/Images/calc-screenshot.png)
 
 # Core
-Engine is written entirely in cpp with modern cpp17 and legacy code mixed with windows specific tools. However modifying it to make it work with other tools like gcc or clang   was not so diffcult thanks to efforts in last year by contributers of calculator on github. After adding my thin cpp View layer to interact with it, i compiled the [engine](./engine) to WebAssembly using [Emscripten](https://emscripten.org/) (which behaves like clang), adding my hooks here and there to make it interact with javascript in browser enviroment. So i was successful in getting engine.wasm to run locally in browser.
+Engine is written entirely in cpp with modern cpp17 and legacy code mixed with windows specific tools. However modifying it to make it work with other tools like gcc or clang   was not so difficult thanks to efforts in last year by contributors of calculator on github. After adding my thin cpp View layer to interact with it, i compiled the [engine](./engine) to WebAssembly using [Emscripten](https://emscripten.org/) (which behaves like clang), adding my hooks here and there to make it interact with javascript in browser environment. So i was successful in getting engine.wasm to run locally in browser.
 
 # UI
-UI layer was written in plane HTML, CSS, and vanilla Javascript to make it and whole app tiny sized to load and run fast. All the front-end tasks, like capturing Keyboard and button clicks and maping these to commands to be sent to engine are maintained at this layer. This layer then sends these commands to engine which does all the calcualtion and most of the error and state handling.
+UI layer was written in plane HTML, CSS, and vanilla Javascript to make it and whole app tiny sized to load and run fast. All the front-end tasks, like capturing Keyboard and button clicks and mapping these to commands to be sent to engine are maintained at this layer. This layer then sends these commands to engine which does all the calculation and most of the error and state handling.
 
-UI is very responsive and fluent and loads super fast even on slower connections and low-end mobile devices. Once loaded for first time, sebsequent loads are even faster thanks to caching of of files like wasm assets. 
+UI is very responsive and fluent and loads super fast even on slower connections and low-end mobile devices. Once loaded for first time, subsequent loads are even faster thanks to caching of of files like wasm assets. 
 
-App now can be installed like native app and is available offline, thanks to @NWylynko. On mobile devices use "Add to homescreen" and on desktop use plus icon in adress bar to install (new link).
+App now can be installed like native app and is available offline, thanks to @NWylynko. On mobile devices use "Add to homescreen" and on desktop use plus icon in address bar to install (new link).
 
 ![responsive example](./engine/docs/Images/calc-resposive.gif)
 
@@ -51,14 +51,14 @@ Then you may have emscripten installed on some path say /path/to/emscripten (for
 
     `</path/to/emscripten>/emcc -02 libEngine.a CalcManager/libCalcManager.a CalcModel/libCalcModel.a  -o engine.js`
 
-First two lines genrates cmake files and lib.a files respectively in their respective folders.
+First two lines generates cmake files and lib.a files respectively in their respective folders.
 All this behavior is controlled in respective CmakeFiles.txt
 
 Third one generates engine.js and engine.wasm in project root (-o flag), These files can be copied directly and pasted in public/js of server (which is not automated yet 😬)
 
 
 # Reporting Issues
-if you are not using this on daily basis, dont report anything, contribute instaed 😪.
+if you are not using this on daily basis, dont report anything, contribute instead 😪.
 
 
 
