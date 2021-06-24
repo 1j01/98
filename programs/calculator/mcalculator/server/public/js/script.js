@@ -12,37 +12,250 @@ function initialise() {
     }
     window.Module._load(); //TODO try to asyncify it
     revealCalc();
+    var commandIDs = {
+        // Commands for programmer calculators are omitted.
+        CommandDEG: 321,
+        CommandRAD: 322,
+        CommandGRAD: 323,
+        CommandDegrees: 324,
+        CommandHYP: 325,
+
+        CommandNULL: 0,
+
+        // No new command should not be added before CommandSign, 80
+        // If it is needed, the following two functions need to be revised too.
+        // CalculatorManager::MapCommandForSerialize(Command command);
+        // CalculatorManager::MapCommandForDeSerialize(unsigned char command);
+        CommandSIGN: 80,
+        CommandCLEAR: 81,
+        CommandCENTR: 82,
+        CommandBACK: 83,
+
+        CommandPNT: 84,
+
+        // Hole  85
+        // Unused commands defined in Command.h is omitted.
+        CommandXor: 88,
+        CommandLSHF: 89,
+        CommandRSHF: 90,
+        CommandDIV: 91,
+        CommandMUL: 92,
+        CommandADD: 93,
+        CommandSUB: 94,
+        CommandMOD: 95,
+        CommandROOT: 96,
+        CommandPWR: 97,
+
+        CommandCHOP: 98, // Unary operators must be between CommandCHOP and CommandEQU
+        CommandROL: 99,
+        CommandROR: 100,
+        CommandCOM: 101,
+
+        CommandSIN: 102,
+        CommandCOS: 103,
+        CommandTAN: 104,
+
+        CommandSINH: 105,
+        CommandCOSH: 106,
+        CommandTANH: 107,
+
+        CommandLN: 108,
+        CommandLOG: 109,
+        CommandSQRT: 110,
+        CommandSQR: 111,
+        CommandCUB: 112,
+        CommandFAC: 113,
+        CommandREC: 114,
+        CommandDMS: 115,
+        CommandCUBEROOT: 116, // x ^ 1/3
+        CommandPOW10: 117,    // 10 ^ x
+        CommandPERCENT: 118,
+
+        CommandFE: 119,
+        CommandPI: 120,
+        CommandEQU: 121,
+
+        CommandMCLEAR: 122,
+        CommandRECALL: 123,
+        CommandSTORE: 124,
+        CommandMPLUS: 125,
+        CommandMMINUS: 126,
+
+        CommandEXP: 127,
+
+        CommandOPENP: 128,
+        CommandCLOSEP: 129,
+
+        Command0: 130, // The controls for 0 through F must be consecutive and in order
+        Command1: 131,
+        Command2: 132,
+        Command3: 133,
+        Command4: 134,
+        Command5: 135,
+        Command6: 136,
+        Command7: 137,
+        Command8: 138,
+        Command9: 139,
+        CommandA: 140,
+        CommandB: 141,
+        CommandC: 142,
+        CommandD: 143,
+        CommandE: 144,
+        CommandF: 145, // this is last control ID which must match the string table
+        CommandINV: 146,
+        CommandSET_RESULT: 147,
+
+        CommandSEC: 400,
+        CommandASEC: 401,
+        CommandCSC: 402,
+        CommandACSC: 403,
+        CommandCOT: 404,
+        CommandACOT: 405,
+
+        CommandSECH: 406,
+        CommandASECH: 407,
+        CommandCSCH: 408,
+        CommandACSCH: 409,
+        CommandCOTH: 410,
+        CommandACOTH: 411,
+
+        CommandPOW2: 412,  // 2 ^ x
+        CommandAbs: 413,
+        CommandFloor: 414,
+        CommandCeil: 415,
+        CommandROLC: 416,
+        CommandRORC: 417,
+        CommandLogBaseX: 500,
+        CommandNand: 501,
+        CommandNor: 502,
+
+        CommandRSHFL: 505,
+        CommandRand: 600,
+        CommandEuler: 601,
+
+        CommandAnd: 86,
+        CommandOR: 87,
+        CommandNot: 101,
+
+        ModeBasic: 200,
+        ModeScientific: 201,
+
+        CommandASIN: 202,
+        CommandACOS: 203,
+        CommandATAN: 204,
+        CommandPOWE: 205,
+        CommandASINH: 206,
+        CommandACOSH: 207,
+        CommandATANH: 208,
+
+        ModeProgrammer: 209,
+        CommandHex: 313,
+        CommandDec: 314,
+        CommandOct: 315,
+        CommandBin: 316,
+        CommandQword: 317,
+        CommandDword: 318,
+        CommandWord: 319,
+        CommandByte: 320,
+
+        CommandBINEDITSTART: 700,
+        CommandBINPOS0: 700,
+        CommandBINPOS1: 701,
+        CommandBINPOS2: 702,
+        CommandBINPOS3: 703,
+        CommandBINPOS4: 704,
+        CommandBINPOS5: 705,
+        CommandBINPOS6: 706,
+        CommandBINPOS7: 707,
+        CommandBINPOS8: 708,
+        CommandBINPOS9: 709,
+        CommandBINPOS10: 710,
+        CommandBINPOS11: 711,
+        CommandBINPOS12: 712,
+        CommandBINPOS13: 713,
+        CommandBINPOS14: 714,
+        CommandBINPOS15: 715,
+        CommandBINPOS16: 716,
+        CommandBINPOS17: 717,
+        CommandBINPOS18: 718,
+        CommandBINPOS19: 719,
+        CommandBINPOS20: 720,
+        CommandBINPOS21: 721,
+        CommandBINPOS22: 722,
+        CommandBINPOS23: 723,
+        CommandBINPOS24: 724,
+        CommandBINPOS25: 725,
+        CommandBINPOS26: 726,
+        CommandBINPOS27: 727,
+        CommandBINPOS28: 728,
+        CommandBINPOS29: 729,
+        CommandBINPOS30: 730,
+        CommandBINPOS31: 731,
+        CommandBINPOS32: 732,
+        CommandBINPOS33: 733,
+        CommandBINPOS34: 734,
+        CommandBINPOS35: 735,
+        CommandBINPOS36: 736,
+        CommandBINPOS37: 737,
+        CommandBINPOS38: 738,
+        CommandBINPOS39: 739,
+        CommandBINPOS40: 740,
+        CommandBINPOS41: 741,
+        CommandBINPOS42: 742,
+        CommandBINPOS43: 743,
+        CommandBINPOS44: 744,
+        CommandBINPOS45: 745,
+        CommandBINPOS46: 746,
+        CommandBINPOS47: 747,
+        CommandBINPOS48: 748,
+        CommandBINPOS49: 749,
+        CommandBINPOS50: 750,
+        CommandBINPOS51: 751,
+        CommandBINPOS52: 752,
+        CommandBINPOS53: 753,
+        CommandBINPOS54: 754,
+        CommandBINPOS55: 755,
+        CommandBINPOS56: 756,
+        CommandBINPOS57: 757,
+        CommandBINPOS58: 758,
+        CommandBINPOS59: 759,
+        CommandBINPOS60: 760,
+        CommandBINPOS61: 761,
+        CommandBINPOS62: 762,
+        CommandBINPOS63: 763,
+        CommandBINEDITEND: 763
+    };
     var standardKeyboardMap = {
-        'Escape': '81', 'Esc': '81',
-        'Delete': '82', 'Del': '82',
-        'Backspace': '83',
-        '.': '84', 'Decimal': '84',
-        '/': '91', 'Divide': '91',
-        '*': '92', 'Multiply': '92',
-        '+': '93', 'Add': '93',
-        '-': '94', 'Subtract': '94',
-        '%': '118',
-        '=': '121', 'Enter': '121',
-        '0': '130',
-        '1': '131',
-        '2': '132',
-        '3': '133',
-        '4': '134',
-        '5': '135',
-        '6': '136',
-        '7': '137',
-        '8': '138',
-        '9': '139',
-        'r': '114', 'R': '114',
+        'Escape': 'CommandCLEAR', 'Esc': 'CommandCLEAR',
+        'Delete': 'CommandCENTR', 'Del': 'CommandCENTR',
+        'Backspace': 'CommandBACK',
+        '.': 'CommandPNT', 'Decimal': 'CommandPNT',
+        '/': 'CommandDIV', 'Divide': 'CommandDIV',
+        '*': 'CommandMUL', 'Multiply': 'CommandMUL',
+        '+': 'CommandADD', 'Add': 'CommandADD',
+        '-': 'CommandSUB', 'Subtract': 'CommandSUB',
+        '%': 'CommandPERCENT',
+        '=': 'CommandEQU', 'Enter': 'CommandEQU',
+        '0': 'Command0',
+        '1': 'Command1',
+        '2': 'Command2',
+        '3': 'Command3',
+        '4': 'Command4',
+        '5': 'Command5',
+        '6': 'Command6',
+        '7': 'Command7',
+        '8': 'Command8',
+        '9': 'Command9',
+        'r': 'CommandREC', 'R': 'CommandREC',
     }
-    function sendCommand(commandStr) {
-        window.Module._send(parseInt(commandStr));
+    function sendCommand(commandID) {
+        window.Module._send(commandID);
     }
-    function sendMemoryCommand(commandStr, itm) {
+    function sendMemoryCommand(commandID, itm) {
         let items = document.querySelectorAll('#panel > .mempanel > .memory-item:not(#skel)');//Hope that returns in order
         let idx = Array.from(items).indexOf(itm);
-        window._memComm(parseInt(commandStr), parseInt(idx));
-        if (commandStr == '3')/* MC*/ {
+        window._memComm(commandID, parseInt(idx));
+        if (commandID == 3) {
             let panel = document.querySelector('#panel > .mempanel');
             panel.removeChild(itm);
         }
@@ -54,9 +267,9 @@ function initialise() {
         button = filterOut(button);
         if (button) {
             button.addEventListener('click', (ev) => {
-                let commandStr = ev.target.id;
+                let commandID = commandIDs[ev.target.id];
                 //TODO do some more checks on commands
-                sendCommand(commandStr);
+                sendCommand(commandID);
             })
         }
 
@@ -212,22 +425,22 @@ function initialise() {
         delButton.style.display = 'block';
         panel.prepend(itemBox);
 
-        let commOf = {
+        const memoryCommandIDs = {
             'mp': '1',
             'mm': '2',
             'mc': '3'
-        }
+        };
         itemBox.querySelectorAll('.btns > *').forEach(btn => {
             btn.addEventListener('click', ev => {
-                let comm = commOf[ev.target.className];
-                sendMemoryCommand(this.parseInt(comm), itemBox);
+                let commandID = memoryCommandIDs[ev.target.className];
+                sendMemoryCommand(commandID, itemBox);
             });
         });
         this.document.querySelectorAll('button.onmem').forEach((btn) => {
             btn.classList.remove('disabled');
             btn.addEventListener('click', ev => {
                 let commandStr = ev.target.id;
-                if (commandStr == '122') {
+                if (commandStr == 'CommandMCLEAR') {
                     clearAllMemory();
                 }
                 sendCommand(commandStr);
@@ -256,7 +469,7 @@ function initialise() {
         * TODO room for more tests
         */
         //filter out disabled, menu or similar numbers
-        if (button.classList.contains('disabled') || isNaN(parseInt(button.id)))
+        if (button.classList.contains('disabled') || !commandIDs[button.id])
             return null;
         //return the ones which pass above tests
         return button;
