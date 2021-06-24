@@ -426,7 +426,7 @@ function showScreensaver(iframeSrc) {
 	};
 	const keydownHandler = (event)=> {
 		// Trying to let you change the display or capture the output
-		// not allowing Ctrl+Printscreen etc. because no modifiers
+		// not allowing Ctrl+PrintScreen etc. because no modifiers
 		if (!(["F11", "F12", "ZoomToggle", "PrintScreen", "MediaRecord", "BrightnessDown", "BrightnessUp", "Dimmer"].includes(event.key))) {
 			event.preventDefault();
 			event.stopPropagation();
@@ -508,7 +508,7 @@ var load_winamp_bundle_if_not_loaded = function(includeButterchurn, callback){
 	if(webamp_bundle_loaded){
 		callback();
 	}else{
-		// TODO: paralellize (if possible)
+		// TODO: parallelize (if possible)
 		$.getScript("programs/winamp/lib/webamp.bundle.min.js", ()=> {
 			if (includeButterchurn) {
 				$.getScript("programs/winamp/lib/butterchurn.min.js", ()=> {
@@ -716,7 +716,7 @@ function openWinamp(file_path){
 				$webamp.hide();
 			};
 			winamp_interface.unminimize = ()=> {
-				// more to the point does this work necsesarilyrdrfsF??
+				// more to the point does this work necessarily??
 				$webamp.show();
 				// $webamp.focus();
 			};

@@ -7,7 +7,7 @@ function initialise() {
         }
         document.querySelector('#display > #primary').innerHTML = displayStr;
     }
-    window.setExpressionDisplay = function setExpresionDisplayOverThePrimaryOne(displayStr) {
+    window.setExpressionDisplay = function setExpressionDisplayOverThePrimaryOne(displayStr) {
         this.document.querySelector('#display > #expression').textContent = displayStr;
     }
     window.Module._load(); //TODO try to asyncify it
@@ -66,7 +66,7 @@ function initialise() {
      * History and Memory unveiling in compact mode
      */
 
-    let sidebarUp = 0; //maybe stayes in closure or something
+    let sidebarUp = 0; //maybe stays in closure or something
     window.sidebarDown = function lowersTheSidebarToInitialState() {
         let sidebar = this.document.querySelector('#sidebar');
         sidebar.style.transform = 'translateY(0)';
@@ -186,7 +186,7 @@ function initialise() {
         panel.prepend(hItem);
 
     }
-    window.clearHistory = function clearHistoryOfEngineAndclearPanel() {
+    window.clearHistory = function clearHistoryOfEngineAndClearPanel() {
         this.window.Module._clearHs();
         let panel = this.document.querySelector('#panel .hspanel');
         removeFrom(panel, "button.history-item");
