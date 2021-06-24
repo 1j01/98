@@ -1,0 +1,63 @@
+html {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  height: 100%;
+  font-size: 15px;
+}
+body {
+  height: 100%;
+  margin: 0;
+  font-weight: 500;
+  background-color: rgb(230, 233, 238);
+}
+/*
+* Splash
+*/
+.splash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: rgb(230, 233, 238);
+}
+.splash > .msg {
+  text-align: center;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  font-weight: 600;
+  color: rgb(41, 62, 124);
+}
+.splash > .spinner {
+  width: 75px;
+  height: 75px;
+  background-color: rgb(63, 118, 221);
+  margin: 10em auto 2em;
+  -webkit-animation: sk-rotateplane 1.2s infinite ease-in-out;
+  animation: sk-rotateplane 1.2s infinite ease-in-out;
+}
+
+@-webkit-keyframes sk-rotateplane {
+  0% {
+    -webkit-transform: perspective(120px);
+  }
+  50% {
+    -webkit-transform: perspective(120px) rotateY(180deg);
+  }
+  100% {
+    -webkit-transform: perspective(120px) rotateY(180deg) rotateX(180deg);
+  }
+}
+
+@keyframes sk-rotateplane {
+  0% {
+    transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateX(0deg) rotateY(0deg);
+  }
+  50% {
+    transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
+    -webkit-transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg);
+  }
+  100% {
+    transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+    -webkit-transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg);
+  }
+}

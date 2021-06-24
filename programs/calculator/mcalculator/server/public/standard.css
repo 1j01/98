@@ -1,0 +1,356 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif,
+    "Segoe MDL2 Assets", "Calculator MDL2 Assets";
+  height: 100%;
+  font-size: 15px;
+}
+body {
+  height: 100%;
+  margin: 0;
+  font-weight: 500;
+  background-color: rgb(230, 233, 238);
+}
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.fluid {
+  width: 100%;
+  height: 100%;
+}
+.fluid-x {
+  width: 100%;
+}
+.fluid-yb6 {
+  height: 16.66666666667%;
+}
+button {
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  margin: 0;
+  background-color: transparent;
+  border: none;
+}
+button.active {
+  background-color: rgb(190, 195, 201) !important;/*for all buttons*/
+}
+button:active {
+  background-color: rgb(190, 195, 201) !important;/*for all buttons*/
+}
+button:active,
+button:focus {
+  background-color: transparent;
+  outline: none;
+  border: none;
+}
+button:hover {
+  outline: none;
+  border: none;
+  background-color: rgb(215, 220, 226);
+}
+button.disabled {
+  opacity: 0.2;
+}
+button.disabled:hover,
+button.disabled:active,
+button.disabled:focus {
+  background-color: transparent;
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  min-height: 300px;
+  margin: 0;
+  padding: 0.5em;
+  overflow: hidden;
+}
+#calc {
+  width: 60%;
+  height: 100%;
+  float: left;
+  user-select: none;
+}
+#sidebar {
+  width: 40%;
+  background-color: rgb(230, 233, 238);
+  transition: all .2s ease-in-out;
+}
+
+/*Top Bar*/
+#topbar {
+  height: 5%;
+}
+#topbar button {
+  padding: 1em;
+}
+#topbar .title {
+  display: flex;
+  align-items: center;
+}
+#topbar .title > div {
+  padding: 0 0.5em;
+  font-size: larger;
+  font-weight: 450;
+}
+#topbar .history {
+  display: none;
+}
+
+/*Display*/
+#display {
+  word-wrap: break-word;
+  text-align: right;
+  height: 20%;
+  width: 100%;
+  padding: 1.5em;
+}
+
+#display > #expression {
+  font-weight: 300;
+}
+#display > #primary {
+  user-select: text;
+  font-size: 2.5em;
+  font-weight: 600;
+}
+
+/*     */
+#funcs {
+  height: 7.5%;
+}
+#funcs .memory {
+  display: none;
+}
+#funcs button {
+  font-size: 0.75em;
+  font-weight: 550;
+  padding: 0.5em;
+  width: 20%;
+}
+#funcs button:focus {
+  background-color: transparent;
+}
+#inp {
+  height: 67.5%;
+  background-color: rgb(240, 240, 240);
+}
+#inp button {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif,
+    "Segoe MDL2 Assets", "Calculator MDL2 Assets";
+  font-weight: 400;
+  font-size: 1em;
+  border: 1.5px solid rgb(230, 233, 238);
+  padding: 0.5em;
+  height: 100%;
+  width: 25%;
+}
+#inp button:focus {
+  background-color: transparent;
+}
+#inp button.w {
+  background-color: rgb(255, 255, 255);
+}
+
+#inp button.w.b {
+  font-weight: 600;
+  font-size: 1.2em;
+}
+#inp button.w.b:focus {
+  background-color: rgb(255, 255, 255);
+}
+#inp button.p {
+  background-color: rgba(230, 134, 150, 0.678);
+}
+#inp button.p:hover {
+  background-color: rgb(230, 134, 150);
+}
+#inp button.p:focus {
+  background-color: rgba(230, 134, 150, 0.678);
+}
+#inp button.w:hover {
+  background-color: rgb(215, 220, 226);
+}
+#inp button.w:focus {
+  background-color: rgb(255, 255, 255);
+}
+
+#sidebar {
+  height: 100%;
+  width: 40%;
+  display: flex;
+  flex-direction: column;
+}
+#sidebar > #nav {
+  margin-top: 5%;
+  user-select: none;
+  height: 7.5%;
+  display: flex;
+  flex-direction: row;
+}
+#sidebar > #nav > .nav-item {
+  padding: 1em;
+  margin: auto 0;
+}
+
+#sidebar > #nav > .nav-item.active .barbelow {
+  position: relative;
+  top: 0.25em;
+  left: 0;
+  width: 100%;
+  height: 0.25em;
+  background-color: rgb(204, 77, 77);
+}
+#sidebar > #panel {
+  user-select: text;
+  overflow: hidden;
+  height: 92.5%;
+  margin: 5%;
+}
+#panel > * {
+  height: 100%;
+  width: 100%;
+  overflow-y: scroll;
+}
+
+#panel > *::-webkit-scrollbar {
+  display: none;
+}
+#panel::-webkit-scrollbar {
+  display: none;
+}
+
+#panel > .hspanel > .history-item {
+  padding: .4em .8em;
+  width: 100%;
+  text-align: right;
+  margin: .5em 0;
+}
+#panel > .hspanel > .history-item > .expression {
+  word-spacing: .6em;
+  font-weight: 350;
+}
+#panel > .hspanel > .history-item > .result {
+  font-weight: 600;
+  font-size: 1.8em;
+}
+
+#panel > .hspanel > .del {
+  font-size: 1.2em;
+  font-weight: 550;
+  padding: .8em;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+#panel > .mempanel > .memory-item {
+  padding: .4em 1.4em;
+  width: 100%;
+  text-align: right;
+  margin: .5em 0;
+}
+#panel > .mempanel > .memory-item > .value {
+  font-size: 1.6em;
+}
+#panel > .mempanel > .memory-item > .btns {
+  opacity: 0;
+  display: flex;
+  flex-direction: row-reverse;
+}
+#panel > .mempanel > .memory-item > .btns > * {
+  margin: 1px;
+  padding: .5em .6em;
+  font-weight: 500;
+  font-size: .8em;
+  background-color: white;
+}
+#panel > .mempanel > .memory-item:hover .btns {
+  opacity: 1;
+}
+
+#panel > .mempanel > .memory-item > .btns > *:hover {
+  background-color: rgb(214, 73, 73);
+}
+
+#panel > .mempanel > .del {
+  font-size: 1.2em;
+  font-weight: 550;
+  padding: .8em;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+@media (max-width: 325px) {
+  /*Feature Phones*/
+  #calc {
+    width: 100%;
+  }
+  #sidebar {
+    width: 100%;
+  }
+  #topbar .history {
+    display: block;
+  }
+  #funcs .memory {
+    display: block;
+  }
+  #display > #primary {
+    font-size: 1em;
+  }
+}
+
+@media (min-width: 325px) and (max-width: 615px) {
+  /*phones*/
+  #calc {
+    width: 100%;
+  }
+  #sidebar {
+    width: 100%;
+  }
+  #topbar .history {
+    display: block;
+  }
+  #funcs .memory {
+    display: block;
+  }
+  #display > #primary {
+    font-size: 1.8em;
+  }
+}
+@media (min-width: 576px) and (max-width: 1024px) {
+  /*Tablets*/
+  #display > #primary {
+    font-size: 2.2em;
+  }
+  @media (max-height: 615px) and (min-height: 525px) {
+    #display > #primary {
+      font-size: 1.8em;
+    }
+  }
+}
+@media (max-height: 615px) and (min-height: 525px) {
+  #display > #primary {
+    font-size: 2.0em;
+  }
+}
+@media (max-height: 525px) and (min-height: 400px) {
+  #display > #primary {
+    font-size: 1.2em;
+  }
+}
+@media (max-height: 400px) {
+  #display > #primary {
+    font-size: 1em;
+  }
+}

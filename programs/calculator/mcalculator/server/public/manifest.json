@@ -1,0 +1,113 @@
+{
+    "lang": "English",
+    "name": "MCalculator",
+    "scope": ".",
+    "display": "standalone",
+    "start_url": "https://mcalculator.herokuapp.com/",
+    "short_name": "calc",
+    "theme_color": "transparent",
+    "description": "",
+    "orientation": "any",
+    "background_color": "#e6e9ee",
+    "related_applications": [],
+    "prefer_related_applications": false,
+    "icons": [
+        {
+            "src": "Images/00c318bc-252c-0d61-9228-0611c9e72a0f.webPlatform.png",
+            "sizes": "44x44",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/808ab329-46e7-5e3d-a5a9-178d7c3949a1.webPlatform.png",
+            "sizes": "48x48",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/bf651140-2c68-35e4-c350-b52087ca6e38.webPlatform.png",
+            "sizes": "1240x600",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/8263746e-c6dc-56c4-0285-29aa069be483.webPlatform.png",
+            "sizes": "300x300",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/1f9fdcc5-6dd0-fb52-c49c-670bccd4bdf3.webPlatform.png",
+            "sizes": "150x150",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/107a9bca-be63-43bf-e1b2-d8de5b3e6533.webPlatform.png",
+            "sizes": "88x88",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/e8e8bd30-db70-43fc-26bd-e21571d511d7.webPlatform.png",
+            "sizes": "24x24",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/9b51305a-80ec-7735-fe39-52dfc09ffc3a.webPlatform.png",
+            "sizes": "50x50",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/d8ce1c7c-6af3-378e-ce5b-05f998ab3922.webPlatform.png",
+            "sizes": "620x300",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/c4760eee-35aa-b203-5714-6ca910ff839f.webPlatform.png",
+            "sizes": "192x192",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/eca1d252-e2aa-60bf-b92a-0c061bb25046.webPlatform.png",
+            "sizes": "144x144",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/c58c078a-cbaa-5b6e-ab1f-664818f3623d.webPlatform.png",
+            "sizes": "96x96",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/e50ae6dd-1227-10ce-b8b8-d004dd5bb1b1.webPlatform.png",
+            "sizes": "72x72",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/4a95d14c-a6dd-acef-95af-8ac55e003304.webPlatform.png",
+            "sizes": "36x36",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/a6060958-20eb-3f73-61a7-6358e1c0f454.webPlatform.png",
+            "sizes": "1024x1024",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/051ef8d6-8df0-e637-1800-5ddb88e77882.webPlatform.png",
+            "sizes": "180x180",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/a12fd612-f826-c43a-b85e-1a666b4a7caa.webPlatform.png",
+            "sizes": "152x152",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/928fc572-71e2-9ee5-88c6-d7fe4039bc09.webPlatform.png",
+            "sizes": "120x120",
+            "type": "image/png"
+        },
+        {
+            "src": "Images/e5f3afaa-d3d4-f912-91ae-017461f01e81.webPlatform.png",
+            "sizes": "76x76",
+            "type": "image/png"
+        }
+    ],
+    "url": "https://mcalculator.herokuapp.com",
+    "screenshots": []
+}

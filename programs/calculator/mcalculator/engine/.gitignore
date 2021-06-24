@@ -1,0 +1,14 @@
+build/
+DartConfiguration.tcl
+CTestTestfile.cmake
+CPackConfig.cmake
+CPackSourceConfig.cmake
+CMakeCache.txt
+cmake_install.cmake
+Testing/Temporary/
+CMakeFiles/
+Makefile
+engine
+CalcManager/libCalcManager.a
+CalcModel/libCalcModel.a
+libEngine.a

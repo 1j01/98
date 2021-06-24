@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/muzam1l/mcalculator.git
+	branch = master
+	commit = 53dba873640e5ad45a22593324fa65f53d25d7a6
+	parent = 163782f6606375892cbe9c1b4373aa235d3d87f2
+	method = merge
+	cmdver = 0.4.3
