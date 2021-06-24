@@ -12,6 +12,8 @@ function initialise() {
     }
     window.Module._load(); //TODO try to asyncify it
     revealCalc();
+
+    // Defined in Command.h
     var commandIDs = {
         // Commands for programmer calculators are omitted.
         CommandDEG: 321,
@@ -225,6 +227,13 @@ function initialise() {
         CommandBINPOS63: 763,
         CommandBINEDITEND: 763
     };
+    // Handled in StandardModel::MemoryCommand
+    const memoryCommandIDs = {
+        'mp': 1,
+        'mm': 2,
+        'mc': 3,
+    };
+
     var standardKeyboardMap = {
         'Escape': 'CommandCLEAR', 'Esc': 'CommandCLEAR',
         'Delete': 'CommandCENTR', 'Del': 'CommandCENTR',
@@ -254,8 +263,8 @@ function initialise() {
     function sendMemoryCommand(commandID, itm) {
         let items = document.querySelectorAll('#panel > .mempanel > .memory-item:not(#skel)');//Hope that returns in order
         let idx = Array.from(items).indexOf(itm);
-        window._memComm(commandID, parseInt(idx));
-        if (commandID == 3) {
+        window._memComm(commandID, idx);
+        if (commandID == memoryCommandIDs.mc) {
             let panel = document.querySelector('#panel > .mempanel');
             panel.removeChild(itm);
         }
@@ -425,11 +434,6 @@ function initialise() {
         delButton.style.display = 'block';
         panel.prepend(itemBox);
 
-        const memoryCommandIDs = {
-            'mp': '1',
-            'mm': '2',
-            'mc': '3'
-        };
         itemBox.querySelectorAll('.btns > *').forEach(btn => {
             btn.addEventListener('click', ev => {
                 let commandID = memoryCommandIDs[ev.target.className];

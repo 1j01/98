@@ -35,9 +35,9 @@ void StandardModel::send(int intCOMMAND)
 }
 void StandardModel::MemoryCommand(int comm, int idx) {
   /*
-  'mp': '1'
-  'mm': '2',
-  'mc': '3'
+  'mp': 1
+  'mm': 2
+  'mc': 3
   */
   if (comm == 1)
     m_standardCalculatorManager.MemorizedNumberAdd(idx);
