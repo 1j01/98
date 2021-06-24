@@ -473,6 +473,18 @@ function CommandPrompt() {
 	return new Task($win);
 }
 
+function Calculator() {
+	var $win = new $IframeWindow({
+		src: "programs/calculator/index.html",
+		icon: "calculator",
+		title: "Calculator",
+		// TODO: default dimensions
+		innerWidth: 640,
+		innerHeight: 400,
+	});
+	return new Task($win);
+}
+
 function Explorer(address){
 	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in $IframeWindow)
 	var document_title = address;
@@ -1003,6 +1015,12 @@ add_icon_not_via_filesystem({
 	title: "MS-DOS Prompt",
 	icon: "msdos",
 	open: CommandPrompt,
+	shortcut: true
+});
+add_icon_not_via_filesystem({
+	title: "Calculator",
+	icon: "calculator",
+	open: Calculator,
 	shortcut: true
 });
 
