@@ -89,6 +89,9 @@ if(frameElement){
 var $menu_bar = $MenuBar(menus);
 if(go_outside_frame){
 	$menu_bar.insertBefore(frameElement);
+	$(function () {
+		$("body").addClass("menu-bar-is-outside-frame");
+	});
 }else{
 	$(function(){
 		$menu_bar.prependTo(jQuery("body"));

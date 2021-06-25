@@ -38,58 +38,73 @@
     <!--Ids of buttons exactly match the Command enum names of CalculationManager namespace of engine-->
     <div style="display: none;" class="container">
         <div id="calc">
+
             <div id="display">
                 <div id="expression" hidden>expression panel</div>
-                <input id="primary" class="inset-deep" style="background: var(--Window); color: var(--WindowText)" readonly value="0">
-            </div>
-            <div id="funcs">
-                <div class="row fluid">
-                    <button id="CommandMCLEAR" class="red-text disabled onmem">MC</button>
-                    <button id="CommandRECALL" class="red-text disabled onmem">MR</button>
-                    <button id="CommandMPLUS" class="red-text">M+</button>
-                    <button id="CommandMMINUS" class="red-text">M-</button>
-                    <button id="CommandSTORE" class="red-text">MS</button>
-                    <button onclick="toggleMemory()" class="red-text memory disabled onmem">
-                        M^
-                    </button>
-                </div>
+                <input id="primary" class="inset-deep" style="background: var(--Window); color: var(--WindowText)"
+                    readonly value="0">
             </div>
             <div id="inp">
-                <div class="row fluid-yb6 fluid-x">
-                    <button id="CommandPERCENT" class="blue-text">&#xE94C;</button>
-                    <button id="CommandCENTR" class="red-text">CE</button>
-                    <button id="CommandCLEAR" class="red-text">C</button>
-                    <button id="CommandBACK" class="red-text">&#xE94F;</button>
+                <div class="row row-with-deletion-options">
+                    <div class="memory-column">
+                        <!-- TODO -->
+                        <!-- <div id="memory-indicator" class="inset-deep">M</div> -->
+                    </div>
+                    <div class="remaining-columns">
+                        <button id="CommandBACK" class="red-text">Backspace
+                            <!--&#xE94F;-->
+                        </button>
+                        <button id="CommandCENTR" class="red-text">CE</button>
+                        <button id="CommandCLEAR" class="red-text">C</button>
+                    </div>
                 </div>
-                <div class="row fluid-yb6 fluid-x">
-                    <button id="CommandREC" class="blue-text">&#xf7c9;</button>
-                    <button id="CommandSQR" class="blue-text">&#xf7c8;</button>
-                    <button id="CommandSQRT" class="blue-text">&#xF899;</button>
-                    <button id="CommandDIV" class="red-text">&#xE94A;</button>
+                <div class="row">
+                    <div class="memory-column">
+                        <button id="CommandMCLEAR" class="red-text disabled onmem">MC</button>
+                    </div>
+                    <div class="remaining-columns">
+                        <button id="Command7" class="blue-text">7</button>
+                        <button id="Command8" class="blue-text">8</button>
+                        <button id="Command9" class="blue-text">9</button>
+                        <button id="CommandDIV" class="red-text">&#xE94A;</button>
+                        <button id="CommandSQRT" class="blue-text">&#xF899;</button>
+                    </div>
                 </div>
-                <div class="row fluid-yb6 fluid-x">
-                    <button id="Command7" class="b blue-text">7</button>
-                    <button id="Command8" class="b blue-text">8</button>
-                    <button id="Command9" class="b blue-text">9</button>
-                    <button id="CommandMUL" class="red-text">&#xE947;</button>
+                <div class="row">
+                    <div class="memory-column">
+                        <button id="CommandRECALL" class="red-text disabled onmem">MR</button>
+                    </div>
+                    <div class="remaining-columns">
+                        <button id="Command4" class="blue-text">4</button>
+                        <button id="Command5" class="blue-text">5</button>
+                        <button id="Command6" class="blue-text">6</button>
+                        <button id="CommandMUL" class="red-text">&#xE947;</button>
+                        <button id="CommandPERCENT" class="blue-text">&#xE94C;</button>
+                    </div>
                 </div>
-                <div class="row fluid-yb6 fluid-x">
-                    <button id="Command4" class="b blue-text">4</button>
-                    <button id="Command5" class="b blue-text">5</button>
-                    <button id="Command6" class="b blue-text">6</button>
-                    <button id="CommandSUB" class="red-text">&#xE949;</button>
+                <div class="row">
+                    <div class="memory-column">
+                        <button id="CommandSTORE" class="red-text">MS</button>
+                    </div>
+                    <div class="remaining-columns">
+                        <button id="Command1" class="blue-text">1</button>
+                        <button id="Command2" class="blue-text">2</button>
+                        <button id="Command3" class="blue-text">3</button>
+                        <button id="CommandSUB" class="red-text">&#xE949;</button>
+                        <button id="CommandREC" class="blue-text">&#xf7c9;</button>
+                    </div>
                 </div>
-                <div class="row fluid-yb6 fluid-x">
-                    <button id="Command1" class="b blue-text">1</button>
-                    <button id="Command2" class="b blue-text">2</button>
-                    <button id="Command3" class="b blue-text">3</button>
-                    <button id="CommandADD" class="red-text">&#xE948;</button>
-                </div>
-                <div class="row fluid-yb6 fluid-x">
-                    <button id="CommandSIGN" class="blue-text">&#xF898;</button>
-                    <button id="Command0" class="b blue-text">0</button>
-                    <button id="CommandPNT" class="b blue-text">.</button>
-                    <button id="CommandEQU" class="red-text p">&#xE94E;</button>
+                <div class="row">
+                    <div class="memory-column">
+                        <button id="CommandMPLUS" class="red-text">M+</button>
+                    </div>
+                    <div class="remaining-columns">
+                        <button id="Command0" class="blue-text">0</button>
+                        <button id="CommandSIGN" class="blue-text">&#xF898;</button>
+                        <button id="CommandPNT" class="blue-text">.</button>
+                        <button id="CommandADD" class="red-text">&#xE948;</button>
+                        <button id="CommandEQU" class="red-text">&#xE94E;</button>
+                    </div>
                 </div>
             </div>
         </div>

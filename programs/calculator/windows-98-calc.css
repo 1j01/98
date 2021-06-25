@@ -13,24 +13,40 @@ html {
 body {
   height: 100%;
   margin: 0;
-  font-weight: 500;
-  /* background-color: rgb(230, 233, 238); */
+  background-color: var(--ButtonFace);
+  color: var(--ButtonText);
+}
+/* layout helper */
+body:active::after {
+  content: "";
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: url("./calculator-reference-screenshot.png") no-repeat;
+  /* opacity: 0.5; */
+}
+body.menu-bar-is-outside-frame::after {
+  background-position: 0 -20px;
 }
 
 .row {
   display: flex;
   flex-direction: row;
+  justify-content: space-between;
+  min-height: 33px;
 }
-
-.fluid {
-  width: 100%;
-  height: 100%;
+.memory-column {
+  flex: 1;
+  margin-right: 10px;
 }
-.fluid-x {
-  width: 100%;
-}
-.fluid-yb6 {
-  height: 16.66666666667%;
+.remaining-columns {
+  flex: 5;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 button.red-text {
@@ -63,33 +79,11 @@ button.purple-text {
   transition: all .2s ease-in-out;
 }
 
-/*Top Bar*/
-#topbar {
-  height: 5%;
-}
-#topbar button {
-  padding: 1em;
-}
-#topbar .title {
-  display: flex;
-  align-items: center;
-}
-#topbar .title > div {
-  padding: 0 0.5em;
-  font-size: larger;
-  font-weight: 450;
-}
-#topbar .history {
-  display: none;
-}
-
 /*Display*/
 #display {
   word-wrap: break-word;
   text-align: right;
-  height: 20%;
   width: 100%;
-  padding: 1.5em;
 }
 
 #display > #expression {
@@ -97,8 +91,7 @@ button.purple-text {
 }
 #display > #primary {
   user-select: text;
-  font-size: 2.5em;
-  font-weight: 600;
+  text-align: right;
 }
 
 /*     */
@@ -108,23 +101,17 @@ button.purple-text {
 #funcs .memory {
   display: none;
 }
-#funcs button {
-  font-size: 0.75em;
-  font-weight: 550;
-  padding: 0.5em;
-  width: 20%;
-}
-#inp {
-  height: 67.5%;
-}
 #inp button {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif,
     "Segoe MDL2 Assets", "Calculator MDL2 Assets";
   font-weight: 400;
-  font-size: 1em;
+  font-size: 10px;
   padding: 0.5em;
-  height: 100%;
-  width: 25%;
+  min-width: 36px;
+  height: 29px;
+}
+.row-with-deletion-options button {
+  width: 63px;
 }
 
 #sidebar {

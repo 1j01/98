@@ -478,9 +478,8 @@ function Calculator() {
 		src: "programs/calculator/index.html",
 		icon: "calculator",
 		title: "Calculator",
-		// TODO: default dimensions
-		innerWidth: 640,
-		innerHeight: 400,
+		innerWidth: 256,
+		innerHeight: 228,
 	});
 	return new Task($win);
 }
