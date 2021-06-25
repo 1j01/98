@@ -32,39 +32,16 @@ body {
 .fluid-yb6 {
   height: 16.66666666667%;
 }
-/* button {
-  font-family: inherit;
-  font-size: inherit;
-  font-weight: inherit;
-  margin: 0;
-  background-color: transparent;
-  border: none;
+
+button.red-text {
+	color: red;
 }
-button.active {
-  background-color: rgb(190, 195, 201) !important;for all buttons
+button.blue-text {
+	color: blue;
 }
-button:active {
-  background-color: rgb(190, 195, 201) !important;for all buttons
+button.purple-text {
+	color: fuchsia;
 }
-button:active,
-button:focus {
-  background-color: transparent;
-  outline: none;
-  border: none;
-}
-button:hover {
-  outline: none;
-  border: none;
-  background-color: rgb(215, 220, 226);
-}
-button.disabled {
-  opacity: 0.2;
-}
-button.disabled:hover,
-button.disabled:active,
-button.disabled:focus {
-  background-color: transparent;
-} */
 
 .container {
   width: 100%;
