@@ -1,8 +1,8 @@
 # Calc engine
 [CalcManager](./CalcManager/) folder is borrowed directly from Microsoft Calculator [repo](https://github.com/microsoft/calculator/tree/master/src/CalcManager)
-This contains the main engine, powering calculator calculations, seperated from UI or View layer, this portion was easily portable to other tools than Visual Studio like gcc, clang and emscripten especially to build to WebAssembly
+This contains the main engine, powering calculator calculations, separated from UI or View layer, this portion was easily portable to other tools than Visual Studio like gcc, clang and emscripten especially to build to WebAssembly
 
-Here is the README of main calculator featues from microsoft which this build will try to port.
+Here is the README of main calculator features from microsoft which this build will try to port.
 
 # Calculator
 The Windows Calculator app is a modern Windows app written in C++ that ships pre-installed with Windows.

@@ -15,7 +15,7 @@ https://mcalculator.herokuapp.com/ (old link)(slower)(still maintained)
 Engine is written entirely in cpp with modern cpp17 and legacy code mixed with windows specific tools. However modifying it to make it work with other tools like gcc or clang   was not so difficult thanks to efforts in last year by contributors of calculator on github. After adding my thin cpp View layer to interact with it, i compiled the [engine](./engine) to WebAssembly using [Emscripten](https://emscripten.org/) (which behaves like clang), adding my hooks here and there to make it interact with javascript in browser environment. So i was successful in getting engine.wasm to run locally in browser.
 
 # UI
-UI layer was written in plane HTML, CSS, and vanilla Javascript to make it and whole app tiny sized to load and run fast. All the front-end tasks, like capturing Keyboard and button clicks and mapping these to commands to be sent to engine are maintained at this layer. This layer then sends these commands to engine which does all the calculation and most of the error and state handling.
+UI layer was written in plain HTML, CSS, and vanilla Javascript to make it and whole app tiny sized to load and run fast. All the front-end tasks, like capturing Keyboard and button clicks and mapping these to commands to be sent to engine are maintained at this layer. This layer then sends these commands to engine which does all the calculation and most of the error and state handling.
 
 UI is very responsive and fluent and loads super fast even on slower connections and low-end mobile devices. Once loaded for first time, subsequent loads are even faster thanks to caching of of files like wasm assets. 
 

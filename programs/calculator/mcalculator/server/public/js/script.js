@@ -1,5 +1,5 @@
 function initialise() {
-    window.setPrimaryDisplay = function setPrrimaryDisplayToBeCalledFromEngineWithDisplayString(displayStr) {
+    window.setPrimaryDisplay = function setPrimaryDisplayToBeCalledFromEngineWithDisplayString(displayStr) {
         //fix for Ove<br>flow
         if (!displayStr === 'Overflow') /*TODO add some other cases*/ {
             displayStr = displayStr.replace("e", "e<br>");
@@ -332,7 +332,7 @@ function initialise() {
 
 
     /**
-    * listens to keyboard clicks amd map them to COMMAND
+    * listens to keyboard clicks and map them to COMMAND
     */
     document.addEventListener('keydown', (ev) => {
         if (ev.defaultPrevented)
