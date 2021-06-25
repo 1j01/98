@@ -17,8 +17,10 @@ bugs:
 - (I changed the #primary el to an input and changed the script.js to handle that forgetting about supporting the old version)
 - enter key triggers equals command and button at same time
 - is there a race condition where script.js loads to late to define initialise for engine.js to call? or is order guaranteed even with async somehow? is async really helping? probably not
-- memory-item btns aren't buttons
+- memory-item btns aren't buttons (and nesting buttons doesn't work in HTML and is a bad UI pattern)
 - MR (memory recall) button doesn't work
+- Edit > Copy and Paste don't work in 98.js desktop in Firefox because the "page isn't focused"
+
 
 todo:
 - Convert help topics (and automate the conversion/cleanup of HTML!) (I already have a help viewer)
@@ -29,5 +31,5 @@ todo:
 - for mcalculator, woff in addition to ttf (could steal from uno or convert from ttf), for 98.js.org, remove font and use shitty ASCII representation..?
 - drop commit with auto-run
 - squash stuff
-
+- Improve Copy/Paste function availability using older clipboard access APIs?
 
