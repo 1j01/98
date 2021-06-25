@@ -34,6 +34,9 @@ by Isaiah Odhner
 	https://github.com/1j01/jspaint
 	https://github.com/1j01/pipes
 
+Calculator by Isaiah Odhner, @muzam1l, and Windows Calculator engine developers
+(It uses the open-sourced calculation engine from Windows 10.)
+
 --------------------------------------
 Assets
 ======--------------------------------

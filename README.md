@@ -7,6 +7,7 @@ Includes:
 * ![](images/icons/notepad-16x16.png) Notepad ([separate README](programs/notepad/README.md))
 * ![](images/icons/speaker-16x16.png) Sound Recorder ([separate README](programs/sound-recorder/README.md))
 * ![](images/icons/paint-16x16.png) Paint ([separate repository](https://github.com/1j01/jspaint))
+* ![](images/icons/calculator-16x16.png) Calculator ([separate README](programs/calculator/README.md))
 * ![](images/icons/pipes-16x16.png) 3D Pipes ([separate repository](https://github.com/1j01/pipes))
 * ![](images/icons/pipes-16x16.png) 3D FlowerBox ([original repository](https://github.com/kevin-shannon/3D-FlowerBox)) by [Kevin Shannon](https://github.com/kevin-shannon)
 * ![](images/icons/minesweeper-16x16.png) Minesweeper ([separate README](programs/minesweeper/README.md); [original repository](https://github.com/ziebelje/minesweeper)) by [Jon Ziebell](https://github.com/ziebelje/)
