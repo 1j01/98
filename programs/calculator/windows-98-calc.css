@@ -114,19 +114,14 @@ button.purple-text {
   padding: 0.5em;
   width: 20%;
 }
-#funcs button:focus {
-  /* background-color: transparent; */
-}
 #inp {
   height: 67.5%;
-  /* background-color: rgb(240, 240, 240); */
 }
 #inp button {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif,
     "Segoe MDL2 Assets", "Calculator MDL2 Assets";
   font-weight: 400;
   font-size: 1em;
-  /* border: 1.5px solid rgb(230, 233, 238); */
   padding: 0.5em;
   height: 100%;
   width: 25%;
