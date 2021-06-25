@@ -1,10 +1,12 @@
 function initialise() {
     window.setPrimaryDisplay = function setPrimaryDisplayToBeCalledFromEngineWithDisplayString(displayStr) {
         //fix for Ove<br>flow
-        if (!displayStr === 'Overflow') /*TODO add some other cases*/ {
-            displayStr = displayStr.replace("e", "e<br>");
-        }
-        document.querySelector('#display > #primary').innerHTML = displayStr;
+        // if (!displayStr === 'Overflow') /*TODO add some other cases*/ {
+        //     displayStr = displayStr.replace("e", "e<br>");
+        // }
+        // document.querySelector('#display > #primary').innerHTML = displayStr;
+
+        document.querySelector('#display > #primary').value = displayStr;
     }
     window.setExpressionDisplay = function setExpressionDisplayOverThePrimaryOne(displayStr) {
         this.document.querySelector('#display > #expression').textContent = displayStr;
