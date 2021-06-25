@@ -17,18 +17,22 @@ var menus = {
 	"&Edit": [
 		{
 			item: "&Copy",
-			shortcut: "Ctrl+C", // TODO
-			enabled: false,
+			shortcut: "Ctrl+C",
+			enabled: () => {
+				return !!navigator.clipboard.writeText;
+			},
 			action: () => {
-				// TODO
+				copyResult();
 			},
 		},
 		{
 			item: "&Paste",
-			shortcut: "Ctrl+V", // TODO
-			enabled: false,
+			shortcut: "Ctrl+V",
+			enabled: () => {
+				return navigator.clipboard.readText;
+			},
 			action: () => {
-				// TODO
+				pasteResult();
 			},
 		},
 	],

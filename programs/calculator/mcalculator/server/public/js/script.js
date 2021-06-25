@@ -352,6 +352,13 @@ function initialise() {
 
             btn.click();
         }
+        if ((ev.ctrlKey || ev.metaKey) && !ev.shiftKey && !ev.altKey) {
+            if (ev.key === "c") {
+                copyResult();
+            } else if (ev.key === "v") {
+                pasteResult();
+            }
+        }
     })
     /**
     * Sidebar navigation // please rewrite this shitty code better
@@ -408,6 +415,9 @@ function initialise() {
         delButton.style.display = 'block';
         panel.prepend(hItem);
 
+        hItem.addEventListener('click', ev => {
+            setResult(hItemRes.textContent);
+        });
     }
     window.clearHistory = function clearHistoryOfEngineAndClearPanel() {
         this.window.Module._clearHs();
@@ -435,6 +445,10 @@ function initialise() {
         delButton.style.display = 'block';
         panel.prepend(itemBox);
 
+        itemBox.addEventListener('click', ev => {
+            // Don't use memStr as it may be outdated
+            setResult(itemBox.querySelector('.value').textContent);
+        });
         itemBox.querySelectorAll('.btns > *').forEach(btn => {
             btn.addEventListener('click', ev => {
                 let commandID = memoryCommandIDs[ev.target.className];
@@ -467,6 +481,61 @@ function initialise() {
             btn.classList.add('disabled');
             btn.addEventListener('click', ev => ev);//do nothing on click
         });
+    }
+
+    window.copyResult = function() {
+        navigator.clipboard.writeText(document.querySelector('#display > #primary').value)
+            .catch((error) => {
+                alert("Failed to copy to clipboard.\n\n" + error);
+            });
+    }
+    window.pasteResult = function() {
+        navigator.clipboard.readText().then(setResult, (error) => {
+            alert("Failed to paste text from clipboard.\n\n" + error);
+        });
+    }
+    window.setResult = function (text) {
+        text = text.trim();
+        const commands = [];
+        commands.push(commandIDs.CommandCENTR);
+        let numberIsNegative = text[0] === "-" || text[0] === "−";
+        let gotExponent = false;
+        let gotDigitAfterExponent = false;
+        let gotDecimalPoint = false; // . (TODO: handle comma? can be ambiguous.)
+        let gotExponentSign = false; // - or + (optional)
+        for (let i = numberIsNegative ? 1 : 0; i < text.length; i++) {
+            const char = text[i];
+            if (char === "." && !gotExponent && !gotDecimalPoint) {
+                commands.push(commandIDs.CommandPNT);
+                gotDecimalPoint = true;
+            } else if (char.match(/\d/)) {
+                commands.push(commandIDs[`Command${char}`]);
+                if (gotExponent) {
+                    gotDigitAfterExponent = true;
+                }
+            } else if ((char === "e" || char === "E") && !gotExponent) {
+                commands.push(commandIDs.CommandEXP);
+                gotExponent = true;
+            } else if ((char === "-" || char === "+") && gotExponent && !gotExponentSign && !gotDigitAfterExponent) {
+                // Note: negative sign for the whole number is already handled above, and the char skipped over.
+                // This is just for the sign of the exponent. Plus sign is optional and doesn't change the meaning.
+                if (char === "-") {
+                    commands.push(commandIDs.CommandSIGN);
+                }
+                gotExponentSign = true;
+            } else {
+                alert(`Invalid input. Unexpected '${char}'`);
+                return;
+            }
+        }
+        if (gotExponent && !gotDigitAfterExponent) {
+            alert("Invalid input. Expected digits after exponent indicator.");
+            return;
+        }
+        if (numberIsNegative) {
+            commands.push(commandIDs.CommandSIGN);
+        }
+        commands.map(sendCommand);
     }
 
     function filterOut(button) {
