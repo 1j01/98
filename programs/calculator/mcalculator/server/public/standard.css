@@ -57,12 +57,12 @@ button:hover {
   border: none;
   background-color: rgb(215, 220, 226);
 }
-button.disabled {
+button[disabled] {
   opacity: 0.2;
 }
-button.disabled:hover,
-button.disabled:active,
-button.disabled:focus {
+button[disabled]:hover,
+button[disabled]:active,
+button[disabled]:focus {
   background-color: transparent;
 }
 

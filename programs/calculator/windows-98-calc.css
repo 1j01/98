@@ -68,13 +68,13 @@ body.menu-bar-is-outside-frame::after {
 	justify-content: space-between;
 }
 
-button.red-text {
+button:enabled.red-text {
 	color: red;
 }
-button.blue-text {
+button:enabled.blue-text {
 	color: blue;
 }
-button.purple-text {
+button:enabled.purple-text {
 	color: fuchsia;
 }
 
