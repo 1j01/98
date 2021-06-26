@@ -358,6 +358,10 @@ function initialise() {
             }, 70);
 
             btn.click();
+
+            // Don't trigger buttons and equals command at same time when hitting Enter
+            // and don't open Quick Find in Firefox when pressing slash
+            ev.preventDefault();
         }
         if ((ev.ctrlKey || ev.metaKey) && !ev.shiftKey && !ev.altKey) {
             if (ev.key === "c") {
