@@ -442,6 +442,8 @@ function initialise() {
      * Memory related funcs
     */
     window.setMemoryItem = function appendToListOfMemoryItem(memStr) {
+        document.querySelector('#memory-indicator').classList.add("memory-exists");
+
         let itemBox = memoryItemTemplate.cloneNode(true);
         itemBox.querySelector('.value').textContent = memStr;
 
@@ -481,7 +483,8 @@ function initialise() {
     }
     window.clearAllMemory = function clearAllItemsInMemoryList() {
         this._clearMem();
-        let panel = this.document.querySelector('#panel > .mempanel');
+        document.querySelector('#memory-indicator').classList.remove("memory-exists");
+        let panel = document.querySelector('#panel > .mempanel');
         removeFrom(panel, '.memory-item');
         panel.querySelector('p').style.display = '';
         panel.querySelector('button.del').style.display = 'none';
