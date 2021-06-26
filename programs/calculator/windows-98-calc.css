@@ -54,6 +54,11 @@ body.menu-bar-is-outside-frame::after {
 	flex: 1;
 	margin-right: 10px;
 }
+.row-with-deletion-options .memory-column {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+}
 .remaining-columns {
 	gap: 3px;
 	flex: 5;
