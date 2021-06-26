@@ -14,6 +14,7 @@ improvements to port upstream:
 - copy and paste
 - prevent triggering focused button at the same time as Equals function when pressing Enter
 - prevent opening Quick Find in Firefox when pressing slash
+- handle M+ pressed before MS
 
 bugs:
 - (I changed the #primary el to an input and changed the script.js to handle that forgetting about supporting the old version)

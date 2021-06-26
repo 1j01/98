@@ -479,6 +479,11 @@ function initialise() {
     window.updateMemoryItem = function updatesTheMemoryItemInListAtDesiredIndex(mStr, mIdx) {
         let panel = this.document.querySelector('#panel > .mempanel');
         item = panel.querySelectorAll('.memory-item')[mIdx];
+        if (!item) {
+            // in case M+ is pressed before MS
+            setMemoryItem(mStr);
+            return;
+        }
         item.querySelector('.value').textContent = mStr;
     }
     window.clearAllMemory = function clearAllItemsInMemoryList() {
