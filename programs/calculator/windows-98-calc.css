@@ -93,7 +93,7 @@ button.purple-text {
 }
 #inp {
 	flex: 1;
-	gap: 4px;
+	gap: 5px;
 	display: flex;
 	flex-direction: column;
 }
@@ -126,8 +126,7 @@ button.purple-text {
 		"Segoe MDL2 Assets", "Calculator MDL2 Assets";
 	font-weight: 400;
 	font-size: 11px;
-	/* min-width: 36px;
-	min-height: 29px; */
+	min-width: 36px;
 	display: flex;
 	justify-content: center;
 	align-items: center;
@@ -138,7 +137,7 @@ button.purple-text {
 	width: 62px;
 }
 .row-with-deletion-options {
-	margin-bottom: 4px;
+	margin-bottom: 2px;
 }
 
 #sidebar {
