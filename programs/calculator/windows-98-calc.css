@@ -1,65 +1,65 @@
 *,
 *::before,
 *::after {
-  box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 html {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif,
-    "Segoe MDL2 Assets", "Calculator MDL2 Assets";
-  height: 100%;
-  font-size: 15px;
-  /* display: flex; */
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif,
+		"Segoe MDL2 Assets", "Calculator MDL2 Assets";
+	height: 100%;
+	font-size: 15px;
+	/* display: flex; */
 }
 body {
-  height: 100%;
-  margin: 0;
-  background-color: var(--ButtonFace);
-  color: var(--ButtonText);
-  /* display: flex;
-  flex: 1; */
+	height: 100%;
+	margin: 0;
+	background-color: var(--ButtonFace);
+	color: var(--ButtonText);
+	/* display: flex;
+	flex: 1; */
 }
 /* layout development helper */
 body:active::after {
-  content: "";
-  display: block;
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 100%;
-  height: 100%;
-  background: url("./calculator-reference-screenshot.png") no-repeat;
-  opacity: 0.5;
-  image-rendering: pixelated;
+	content: "";
+	display: block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 100%;
+	background: url("./calculator-reference-screenshot.png") no-repeat;
+	opacity: 0.5;
+	image-rendering: pixelated;
 }
 body.menu-bar-is-outside-frame::after {
-  background-position: 0 -19px;
+	background-position: 0 -19px;
 }
 
 .row {
-  flex: 1;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+	flex: 1;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
 #memory-indicator {
-  width: 27px;
-  height: 26px;
-  margin: 2px 3px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+	width: 27px;
+	height: 26px;
+	margin: 2px 3px;
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 .memory-column {
-  flex: 1;
-  margin-right: 8px;
+	flex: 1;
+	margin-right: 8px;
 }
 .remaining-columns {
-  gap: 4px;
-  flex: 5;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
+	gap: 4px;
+	flex: 5;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
 }
 
 button.red-text {
@@ -73,175 +73,175 @@ button.purple-text {
 }
 
 .container {
-  width: 100%;
-  height: 100%;
-  min-height: 208px;
-  margin: 0;
-  overflow: hidden;
-  display: flex;
+	width: 100%;
+	height: 100%;
+	min-height: 208px;
+	margin: 0;
+	overflow: hidden;
+	display: flex;
 }
 #calc {
-  width: 100%;
-  height: 100%;
-  float: left;
-  user-select: none;
-  padding-left: 10px;
-  padding-right: 8px;
-  display: flex;
+	width: 100%;
+	height: 100%;
+	float: left;
+	user-select: none;
+	padding-left: 10px;
+	padding-right: 8px;
+	display: flex;
 	flex-direction: column;
-  padding-bottom: 9px;
+	padding-bottom: 9px;
 }
 #inp {
 	flex: 1;
-  gap: 4px;
+	gap: 4px;
 	display: flex;
 	flex-direction: column;
 }
 #sidebar {
-  width: 40%;
-  /* background-color: rgb(230, 233, 238); */
-  transition: all .2s ease-in-out;
+	width: 40%;
+	/* background-color: rgb(230, 233, 238); */
+	transition: all .2s ease-in-out;
 }
 
 #display {
-  word-wrap: break-word;
-  text-align: right;
-  width: 100%;
-  margin-bottom: 11px;
+	word-wrap: break-word;
+	text-align: right;
+	width: 100%;
+	margin-bottom: 11px;
 }
 
 #display > #expression {
-  font-weight: 300;
+	font-weight: 300;
 }
 #display > #primary {
-  user-select: text;
-  text-align: right;
-  font-size: 11px;
-  height: 26px;
-  width: 100%;
+	user-select: text;
+	text-align: right;
+	font-size: 11px;
+	height: 26px;
+	width: 100%;
 }
 
 #inp button {
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif,
-    "Segoe MDL2 Assets", "Calculator MDL2 Assets";
-  font-weight: 400;
-  font-size: 11px;
-  /* min-width: 36px;
-  min-height: 29px; */
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex: 1;
-  height: 100%;
+	font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif,
+		"Segoe MDL2 Assets", "Calculator MDL2 Assets";
+	font-weight: 400;
+	font-size: 11px;
+	/* min-width: 36px;
+	min-height: 29px; */
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex: 1;
+	height: 100%;
 }
 .row-with-deletion-options button {
-  width: 62px;
+	width: 62px;
 }
 .row-with-deletion-options {
-  margin-bottom: 4px;
+	margin-bottom: 4px;
 }
 
 #sidebar {
-  height: 100%;
-  width: 40%;
-  display: flex;
-  flex-direction: column;
+	height: 100%;
+	width: 40%;
+	display: flex;
+	flex-direction: column;
 }
 #sidebar > #nav {
-  margin-top: 5%;
-  user-select: none;
-  height: 7.5%;
-  display: flex;
-  flex-direction: row;
+	margin-top: 5%;
+	user-select: none;
+	height: 7.5%;
+	display: flex;
+	flex-direction: row;
 }
 #sidebar > #nav > .nav-item {
-  padding: 1em;
-  margin: auto 0;
+	padding: 1em;
+	margin: auto 0;
 }
 
 
 #sidebar > #nav > .nav-item.active::after {
-  content: "";
-  display: block;
-  position: relative;
-  top: 0.25em;
-  left: 0;
-  width: 100%;
-  height: 0.25em;
-  background-color: rgb(204, 77, 77);
+	content: "";
+	display: block;
+	position: relative;
+	top: 0.25em;
+	left: 0;
+	width: 100%;
+	height: 0.25em;
+	background-color: rgb(204, 77, 77);
 }
 #sidebar > #panel {
-  user-select: text;
-  overflow: hidden;
-  height: 92.5%;
-  margin: 5%;
+	user-select: text;
+	overflow: hidden;
+	height: 92.5%;
+	margin: 5%;
 }
 #panel > * {
-  height: 100%;
-  width: 100%;
-  overflow-y: scroll;
+	height: 100%;
+	width: 100%;
+	overflow-y: scroll;
 }
 
 #panel > *::-webkit-scrollbar {
-  display: none;
+	display: none;
 }
 #panel::-webkit-scrollbar {
-  display: none;
+	display: none;
 }
 
 #panel > .hspanel > .history-item {
-  padding: .4em .8em;
-  width: 100%;
-  text-align: right;
-  margin: .5em 0;
+	padding: .4em .8em;
+	width: 100%;
+	text-align: right;
+	margin: .5em 0;
 }
 #panel > .hspanel > .history-item > .expression {
-  word-spacing: .6em;
-  font-weight: 350;
+	word-spacing: .6em;
+	font-weight: 350;
 }
 #panel > .hspanel > .history-item > .result {
-  font-weight: 600;
-  font-size: 1.8em;
+	font-weight: 600;
+	font-size: 1.8em;
 }
 
 #panel > .hspanel > .del {
-  font-size: 1.2em;
-  font-weight: 550;
-  padding: .8em;
-  position: absolute;
-  bottom: 0;
-  right: 0;
+	font-size: 1.2em;
+	font-weight: 550;
+	padding: .8em;
+	position: absolute;
+	bottom: 0;
+	right: 0;
 }
 
 #panel > .mempanel > .memory-item {
-  padding: .4em 1.4em;
-  width: 100%;
-  text-align: right;
-  margin: .5em 0;
+	padding: .4em 1.4em;
+	width: 100%;
+	text-align: right;
+	margin: .5em 0;
 }
 #panel > .mempanel > .memory-item > .value {
-  font-size: 1.6em;
+	font-size: 1.6em;
 }
 #panel > .mempanel > .memory-item > .btns {
-  opacity: 0;
-  display: flex;
-  flex-direction: row-reverse;
+	opacity: 0;
+	display: flex;
+	flex-direction: row-reverse;
 }
 #panel > .mempanel > .memory-item > .btns > * {
-  margin: 1px;
-  padding: .5em .6em;
-  font-weight: 500;
-  font-size: .8em;
+	margin: 1px;
+	padding: .5em .6em;
+	font-weight: 500;
+	font-size: .8em;
 }
 #panel > .mempanel > .memory-item:hover .btns {
-  opacity: 1;
+	opacity: 1;
 }
 
 #panel > .mempanel > .del {
-  font-size: 1.2em;
-  font-weight: 550;
-  padding: .8em;
-  position: absolute;
-  bottom: 0;
-  right: 0;
+	font-size: 1.2em;
+	font-weight: 550;
+	padding: .8em;
+	position: absolute;
+	bottom: 0;
+	right: 0;
 }
