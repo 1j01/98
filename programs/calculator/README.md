@@ -18,7 +18,6 @@ improvements to port upstream:
 - fixed bug where MS after MC wouldn't show memory stored, until you press it N times, where N increases if you repeat this
 
 bugs:
-- (I changed the `#primary` el to an input and changed the script.js to handle that forgetting about supporting the old version)
 - Is there a race condition where script.js loads too late to define `initialise` for `engine.js` to call? or is order guaranteed even with `async` somehow? is `async` really helping in some way?
 - `.memory-item` btns aren't `button`s (and nesting `button`s doesn't work in HTML and is a bad UI pattern)
 - Edit > Copy and Paste don't work in 98.js desktop in Firefox because the "page isn't focused"

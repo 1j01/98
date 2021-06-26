@@ -4,14 +4,18 @@ function initialise() {
     memoryItemTemplate.style.display = '';
     memoryItemTemplate.id = '';
 
-    window.setPrimaryDisplay = function setPrimaryDisplayToBeCalledFromEngineWithDisplayString(displayStr) {
-        //fix for Ove<br>flow
-        // if (!displayStr === 'Overflow') /*TODO add some other cases*/ {
-        //     displayStr = displayStr.replace("e", "e<br>");
-        // }
-        // document.querySelector('#display > #primary').innerHTML = displayStr;
+    const primaryDisplay = document.querySelector('#display > #primary');
 
-        document.querySelector('#display > #primary').value = displayStr;
+    window.setPrimaryDisplay = function setPrimaryDisplayToBeCalledFromEngineWithDisplayString(displayStr) {
+        if (primaryDisplay.tagName.match(/input/i)) {
+            primaryDisplay.value = displayStr;
+        } else {
+            //fix for Ove<br>flow
+            if (!displayStr === 'Overflow') /*TODO add some other cases*/ {
+                displayStr = displayStr.replace("e", "e<br>");
+            }
+            primaryDisplay.innerHTML = displayStr;
+        }
     }
     window.setExpressionDisplay = function setExpressionDisplayOverThePrimaryOne(displayStr) {
         document.querySelector('#display > #expression').textContent = displayStr;
@@ -443,7 +447,7 @@ function initialise() {
      * Memory related funcs
     */
     window.setMemoryItem = function appendToListOfMemoryItem(memStr) {
-        document.querySelector('#memory-indicator').classList.add("memory-exists");
+        document.querySelector('#memory-indicator')?.classList.add("memory-exists");
 
         let itemBox = memoryItemTemplate.cloneNode(true);
         itemBox.querySelector('.value').textContent = memStr;
@@ -489,7 +493,7 @@ function initialise() {
     }
     window.clearAllMemory = function clearAllItemsInMemoryList() {
         _clearMem();
-        document.querySelector('#memory-indicator').classList.remove("memory-exists");
+        document.querySelector('#memory-indicator')?.classList.remove("memory-exists");
         let panel = document.querySelector('#panel > .mempanel');
         removeFrom(panel, '.memory-item');
         panel.querySelector('p').style.display = '';
