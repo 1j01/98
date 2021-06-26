@@ -479,7 +479,7 @@ function Calculator() {
 		icon: "calculator",
 		title: "Calculator",
 		innerWidth: 256,
-		innerHeight: 228,
+		innerHeight: 208,
 	});
 	return new Task($win);
 }

@@ -9,12 +9,15 @@ html {
     "Segoe MDL2 Assets", "Calculator MDL2 Assets";
   height: 100%;
   font-size: 15px;
+  /* display: flex; */
 }
 body {
   height: 100%;
   margin: 0;
   background-color: var(--ButtonFace);
   color: var(--ButtonText);
+  /* display: flex;
+  flex: 1; */
 }
 /* layout development helper */
 body:active::after {
@@ -26,7 +29,7 @@ body:active::after {
   width: 100%;
   height: 100%;
   background: url("./calculator-reference-screenshot.png") no-repeat;
-  /* opacity: 0.5; */
+  opacity: 0.5;
   image-rendering: pixelated;
 }
 body.menu-bar-is-outside-frame::after {
@@ -34,10 +37,10 @@ body.menu-bar-is-outside-frame::after {
 }
 
 .row {
+  flex: 1;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  min-height: 33px;
 }
 #memory-indicator {
   width: 27px;
@@ -52,6 +55,7 @@ body.menu-bar-is-outside-frame::after {
   margin-right: 8px;
 }
 .remaining-columns {
+  gap: 4px;
   flex: 5;
   display: flex;
   flex-direction: row;
@@ -71,7 +75,7 @@ button.purple-text {
 .container {
   width: 100%;
   height: 100%;
-  min-height: 228px;
+  min-height: 208px;
   margin: 0;
   overflow: hidden;
   display: flex;
@@ -83,6 +87,15 @@ button.purple-text {
   user-select: none;
   padding-left: 10px;
   padding-right: 8px;
+  display: flex;
+	flex-direction: column;
+  padding-bottom: 9px;
+}
+#inp {
+	flex: 1;
+  gap: 4px;
+	display: flex;
+	flex-direction: column;
 }
 #sidebar {
   width: 40%;
@@ -113,15 +126,19 @@ button.purple-text {
     "Segoe MDL2 Assets", "Calculator MDL2 Assets";
   font-weight: 400;
   font-size: 11px;
-  min-width: 36px;
-  height: 29px;
+  /* min-width: 36px;
+  min-height: 29px; */
   display: flex;
   justify-content: center;
   align-items: center;
+  flex: 1;
+  height: 100%;
 }
 .row-with-deletion-options button {
   width: 62px;
-  margin-bottom: 7px;
+}
+.row-with-deletion-options {
+  margin-bottom: 4px;
 }
 
 #sidebar {
