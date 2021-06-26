@@ -1,4 +1,9 @@
 function initialise() {
+    const memoryItemTemplate = document.getElementById('memory-item-template');
+    memoryItemTemplate.remove();
+    memoryItemTemplate.style.display = '';
+    memoryItemTemplate.id = '';
+
     window.setPrimaryDisplay = function setPrimaryDisplayToBeCalledFromEngineWithDisplayString(displayStr) {
         //fix for Ove<br>flow
         // if (!displayStr === 'Overflow') /*TODO add some other cases*/ {
@@ -262,7 +267,7 @@ function initialise() {
         window.Module._send(commandID);
     }
     function sendMemoryCommand(commandID, itm) {
-        let items = document.querySelectorAll('#panel > .mempanel > .memory-item:not(#skel)');//Hope that returns in order
+        let items = document.querySelectorAll('#panel > .mempanel > .memory-item');
         let idx = Array.from(items).indexOf(itm);
         window._memComm(commandID, idx);
         if (commandID == memoryCommandIDs.mc) {
@@ -431,10 +436,7 @@ function initialise() {
      * Memory related funcs
     */
     window.setMemoryItem = function appendToListOfMemoryItem(memStr) {
-        let itemSkel = this.document.querySelector('#panel > .mempanel > button.memory-item#skel');
-        let itemBox = itemSkel.cloneNode(true);
-        itemBox.style.display = 'block';
-        itemBox.id = '';
+        let itemBox = memoryItemTemplate.cloneNode(true);
         itemBox.querySelector('.value').textContent = memStr;
 
         let panel = this.document.querySelector('#panel > .mempanel');
@@ -468,13 +470,13 @@ function initialise() {
     }
     window.updateMemoryItem = function updatesTheMemoryItemInListAtDesiredIndex(mStr, mIdx) {
         let panel = this.document.querySelector('#panel > .mempanel');
-        item = panel.querySelectorAll('button.memory-item:not(#skel)')[mIdx];
+        item = panel.querySelectorAll('.memory-item')[mIdx];
         item.querySelector('.value').textContent = mStr;
     }
     window.clearAllMemory = function clearAllItemsInMemoryList() {
         this._clearMem();
         let panel = this.document.querySelector('#panel > .mempanel');
-        removeFrom(panel, 'button.memory-item:not(#skel)');
+        removeFrom(panel, '.memory-item');
         panel.querySelector('p').style.display = 'block';
         panel.querySelector('button.del').style.display = 'none';
         this.document.querySelectorAll('button.onmem').forEach((btn) => {
