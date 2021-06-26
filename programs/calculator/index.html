@@ -33,8 +33,7 @@
     </script>
     <!--TODO: is there a race condition where script.js loads too late to define initialise for engine.js to call? or is order guaranteed even with async somehow?-->
     <script async src="mcalculator/server/public/js/script.js"></script>
-    <script async onload="show('loading your files<br>Please wait...');"
-        src="mcalculator/server/public/js/engine.js"></script>
+    <script async onload="show('Please wait...');" src="mcalculator/server/public/js/engine.js"></script>
     <!--Ids of buttons exactly match the Command enum names of CalculationManager namespace of engine-->
     <div style="display: none;" class="container">
         <div id="calc">
