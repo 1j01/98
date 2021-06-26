@@ -205,14 +205,9 @@ button.purple-text {
   padding: .5em .6em;
   font-weight: 500;
   font-size: .8em;
-  /* background-color: white; */
 }
 #panel > .mempanel > .memory-item:hover .btns {
   opacity: 1;
-}
-
-#panel > .mempanel > .memory-item > .btns > *:hover {
-  /* background-color: rgb(214, 73, 73); */
 }
 
 #panel > .mempanel > .del {
@@ -232,9 +227,6 @@ button.purple-text {
   #sidebar {
     width: 100%;
   }
-  #topbar .history {
-    display: block;
-  }
   #funcs .memory {
     display: block;
   }
@@ -250,9 +242,6 @@ button.purple-text {
   }
   #sidebar {
     width: 100%;
-  }
-  #topbar .history {
-    display: block;
   }
   #funcs .memory {
     display: block;
