@@ -53,6 +53,7 @@ body.menu-bar-is-outside-frame::after {
 .memory-column {
 	flex: 1;
 	margin-right: 10px;
+	display: flex;
 }
 .row-with-deletion-options .memory-column {
 	display: flex;
@@ -255,5 +256,15 @@ button.purple-text {
 @media (max-width: 400px) {
 	#sidebar {
 		display: none;
+	}
+}
+@media (min-width: 545px), (max-width: 400px) and (min-width: 300px) {
+	#inp button {
+		font-size: 15px;
+	}
+}
+@media (min-width: 800px) {
+	#inp button {
+		font-size: 25px;
 	}
 }
