@@ -52,10 +52,10 @@ body.menu-bar-is-outside-frame::after {
 }
 .memory-column {
 	flex: 1;
-	margin-right: 8px;
+	margin-right: 10px;
 }
 .remaining-columns {
-	gap: 4px;
+	gap: 3px;
 	flex: 5;
 	display: flex;
 	flex-direction: row;
