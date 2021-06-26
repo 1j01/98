@@ -472,7 +472,7 @@ function initialise() {
                 if (commandStr == 'CommandMCLEAR') {
                     clearAllMemory();
                 }
-                sendCommand(commandStr);
+                sendCommand(commandIDs[commandStr]);
             })
         });
     }
