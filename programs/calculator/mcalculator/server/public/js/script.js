@@ -244,6 +244,7 @@ function initialise() {
         'Escape': 'CommandCLEAR', 'Esc': 'CommandCLEAR',
         'Delete': 'CommandCENTR', 'Del': 'CommandCENTR',
         'Backspace': 'CommandBACK',
+        'ArrowLeft': 'CommandBACK',
         '.': 'CommandPNT', 'Decimal': 'CommandPNT',
         '/': 'CommandDIV', 'Divide': 'CommandDIV',
         '*': 'CommandMUL', 'Multiply': 'CommandMUL',

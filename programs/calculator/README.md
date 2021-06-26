@@ -26,7 +26,6 @@ bugs:
 
 todo:
 - Convert help topics (and automate the conversion/cleanup of HTML!) (I already have a help viewer)
-- Left arrow should be equivalent to backspace
 - For mCalculator, woff in addition to ttf (could steal from uno or convert from ttf), for 98.js.org, remove font and use shitty ASCII representation..?
 - Drop/revert commit with auto-run
 - Squash so much stuff!
