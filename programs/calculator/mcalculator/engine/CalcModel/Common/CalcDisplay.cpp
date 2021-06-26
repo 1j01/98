@@ -94,8 +94,8 @@ void CalcDisplay::SetMemorizedNumbers(const std::vector<std::wstring> &memorized
   sprintf(str, "%ls", num.c_str());
   if(len > nMemItems) {
     setMem(str);
-    nMemItems++;
   }
+  nMemItems = len;
 }
 void CalcDisplay::MemoryItemChanged(unsigned int indexOfMemory)
 {
