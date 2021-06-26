@@ -14,9 +14,9 @@ function initialise() {
         document.querySelector('#display > #primary').value = displayStr;
     }
     window.setExpressionDisplay = function setExpressionDisplayOverThePrimaryOne(displayStr) {
-        this.document.querySelector('#display > #expression').textContent = displayStr;
+        document.querySelector('#display > #expression').textContent = displayStr;
     }
-    window.Module._load(); //TODO try to asyncify it
+    Module._load(); //TODO try to asyncify it
     revealCalc();
 
     // Defined in Command.h
@@ -264,12 +264,12 @@ function initialise() {
         'r': 'CommandREC', 'R': 'CommandREC',
     }
     function sendCommand(commandID) {
-        window.Module._send(commandID);
+        Module._send(commandID);
     }
     function sendMemoryCommand(commandID, itm) {
         let items = document.querySelectorAll('#panel > .mempanel > .memory-item');
         let idx = Array.from(items).indexOf(itm);
-        window._memComm(commandID, idx);
+        _memComm(commandID, idx);
         if (commandID == memoryCommandIDs.mc) {
             let panel = document.querySelector('#panel > .mempanel');
             panel.removeChild(itm);
@@ -296,7 +296,7 @@ function initialise() {
 
     let sidebarUp = 0; //maybe stays in closure or something
     window.sidebarDown = function lowersTheSidebarToInitialState() {
-        let sidebar = this.document.querySelector('#sidebar');
+        let sidebar = document.querySelector('#sidebar');
         sidebar.style.transform = 'translateY(0)';
         sidebarUp = 0;
         sidebar.style.height = '100%';
@@ -306,7 +306,7 @@ function initialise() {
     }
     sidebarDown();
     function toggleSidebar() {
-        let sidebar = this.document.querySelector('#sidebar');
+        let sidebar = document.querySelector('#sidebar');
         if (!sidebarUp) {
             sidebar.style.transform = 'translateY(-100%)';
             sidebar.style.height = '70%';
@@ -322,18 +322,18 @@ function initialise() {
 
     window.onresize = function () {
         if (sidebarUp) {
-            this.sidebarDown();
+            sidebarDown();
             sidebarUp = 0;
         }
     }
     window.toggleHistory = function togglesHistoryPanelUpDown() {
         toggleSidebar();
-        let historyMenu = this.document.querySelector('#sidebar > #nav > #hspanel');
+        let historyMenu = document.querySelector('#sidebar > #nav > #hspanel');
         makeActive(historyMenu);
     }
     window.toggleMemory = function togglesMemoryPanel() {
         toggleSidebar();
-        let memoryMenu = this.document.querySelector('#sidebar > #nav > #mempanel');
+        let memoryMenu = document.querySelector('#sidebar > #nav > #mempanel');
         makeActive(memoryMenu);
     }
 
@@ -405,22 +405,22 @@ function initialise() {
     * History related funcs
     */
     window.setHistoryItem = function setHistoryItemAddingOneMoreItemToList(hEx, hRes) {
-        let hItem = this.document.createElement('button');
+        let hItem = document.createElement('button');
         hItem.className = 'history-item';
-        let hItemEx = this.document.createElement('div');
+        let hItemEx = document.createElement('div');
         hItemEx.className = 'expression';
         hItem.appendChild(hItemEx);
-        let hItemRes = this.document.createElement('div');
+        let hItemRes = document.createElement('div');
         hItemRes.className = 'result';
         hItem.appendChild(hItemRes);
         //created an empty dom node 
         hItemEx.textContent = hEx;
         hItemRes.textContent = hRes;
 
-        let panel = this.document.querySelector('#panel > .hspanel');
+        let panel = document.querySelector('#panel > .hspanel');
         //if placeholder
-        let placeholder = this.document.querySelector('#panel > .hspanel > p');
-        let delButton = this.document.querySelector('#panel > .hspanel > button.del');
+        let placeholder = document.querySelector('#panel > .hspanel > p');
+        let delButton = document.querySelector('#panel > .hspanel > button.del');
 
         placeholder.style.display = 'none'; //maybe check first
         delButton.style.display = '';
@@ -431,8 +431,8 @@ function initialise() {
         });
     }
     window.clearHistory = function clearHistoryOfEngineAndClearPanel() {
-        this.window.Module._clearHs();
-        let panel = this.document.querySelector('#panel .hspanel');
+        Module._clearHs();
+        let panel = document.querySelector('#panel .hspanel');
         removeFrom(panel, "button.history-item");
         panel.querySelector('p').style.display = '';
         panel.querySelector('button.del').style.display = 'none';
@@ -447,7 +447,7 @@ function initialise() {
         let itemBox = memoryItemTemplate.cloneNode(true);
         itemBox.querySelector('.value').textContent = memStr;
 
-        let panel = this.document.querySelector('#panel > .mempanel');
+        let panel = document.querySelector('#panel > .mempanel');
         let placeholder = panel.querySelector('p');
         let delButton = panel.querySelector('button.del');
 
@@ -465,7 +465,7 @@ function initialise() {
                 sendMemoryCommand(commandID, itemBox);
             });
         });
-        this.document.querySelectorAll('button.onmem').forEach((btn) => {
+        document.querySelectorAll('button.onmem').forEach((btn) => {
             btn.classList.remove('disabled');
             btn.addEventListener('click', ev => {
                 let commandStr = ev.target.id;
@@ -477,7 +477,7 @@ function initialise() {
         });
     }
     window.updateMemoryItem = function updatesTheMemoryItemInListAtDesiredIndex(mStr, mIdx) {
-        let panel = this.document.querySelector('#panel > .mempanel');
+        let panel = document.querySelector('#panel > .mempanel');
         item = panel.querySelectorAll('.memory-item')[mIdx];
         if (!item) {
             // in case M+ is pressed before MS
@@ -487,13 +487,13 @@ function initialise() {
         item.querySelector('.value').textContent = mStr;
     }
     window.clearAllMemory = function clearAllItemsInMemoryList() {
-        this._clearMem();
+        _clearMem();
         document.querySelector('#memory-indicator').classList.remove("memory-exists");
         let panel = document.querySelector('#panel > .mempanel');
         removeFrom(panel, '.memory-item');
         panel.querySelector('p').style.display = '';
         panel.querySelector('button.del').style.display = 'none';
-        this.document.querySelectorAll('button.onmem').forEach((btn) => {
+        document.querySelectorAll('button.onmem').forEach((btn) => {
             btn.classList.add('disabled');
             btn.addEventListener('click', ev => ev);//do nothing on click
         });
