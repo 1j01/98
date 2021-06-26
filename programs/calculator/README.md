@@ -32,4 +32,7 @@ todo:
 - drop commit with auto-run
 - squash stuff
 - Improve Copy/Paste function availability using older clipboard access APIs?
+- remove focus indicators
+- use disabled attribute
+- increase limit of digits you can enter, as it was longer in old Windows
 
