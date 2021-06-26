@@ -17,9 +17,9 @@ improvements to port upstream:
 - handle M+ pressed before MS
 
 bugs:
-- (I changed the #primary el to an input and changed the script.js to handle that forgetting about supporting the old version)
-- is there a race condition where script.js loads to late to define initialise for engine.js to call? or is order guaranteed even with async somehow? is async really helping? probably not
-- memory-item btns aren't buttons (and nesting buttons doesn't work in HTML and is a bad UI pattern)
+- (I changed the `#primary` el to an input and changed the script.js to handle that forgetting about supporting the old version)
+- Is there a race condition where script.js loads too late to define `initialise` for `engine.js` to call? or is order guaranteed even with `async` somehow? is `async` really helping in some way?
+- `.memory-item` btns aren't `button`s (and nesting `button`s doesn't work in HTML and is a bad UI pattern)
 - MS after MC doesn't show memory stored, until you press it N times, where N increases if you repeat this
 - Edit > Copy and Paste don't work in 98.js desktop in Firefox because the "page isn't focused"
 
@@ -27,11 +27,11 @@ bugs:
 todo:
 - Convert help topics (and automate the conversion/cleanup of HTML!) (I already have a help viewer)
 - Left arrow should be equivalent to backspace
-- for mcalculator, woff in addition to ttf (could steal from uno or convert from ttf), for 98.js.org, remove font and use shitty ASCII representation..?
-- drop commit with auto-run
-- squash stuff
+- For mCalculator, woff in addition to ttf (could steal from uno or convert from ttf), for 98.js.org, remove font and use shitty ASCII representation..?
+- Drop/revert commit with auto-run
+- Squash so much stuff!
 - Improve Copy/Paste function availability using older clipboard access APIs?
-- remove focus indicators
-- use disabled attribute
-- increase limit of digits you can enter, as it was longer in old Windows
+- Remove focus indicators
+- Use disabled attribute instead of a class
+- Increase limit of digits you can enter, as it was longer in old Windows
 
