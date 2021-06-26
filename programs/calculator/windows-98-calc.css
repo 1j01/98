@@ -9,18 +9,15 @@ html {
 		"Segoe MDL2 Assets", "Calculator MDL2 Assets";
 	height: 100%;
 	font-size: 15px;
-	/* display: flex; */
 }
 body {
 	height: 100%;
 	margin: 0;
 	background-color: var(--ButtonFace);
 	color: var(--ButtonText);
-	/* display: flex;
-	flex: 1; */
 }
 /* layout development helper */
-body:active::after {
+/* body:active::after {
 	content: "";
 	display: block;
 	position: absolute;
@@ -34,7 +31,7 @@ body:active::after {
 }
 body.menu-bar-is-outside-frame::after {
 	background-position: 0 -19px;
-}
+} */
 
 .row {
 	flex: 1;
