@@ -312,7 +312,7 @@ function initialise() {
             sidebar.style.height = '70%';
             sidebarUp = 1;
             sidebar.querySelectorAll('.del').forEach(d => {
-                d.style.display = 'block';
+                d.style.display = '';
             })
         }
         else {
@@ -379,7 +379,7 @@ function initialise() {
         });
         menuItem.classList.add('active');
         let id = menuItem.id;
-        document.querySelector('#panel > .' + id).style.display = 'block';
+        document.querySelector('#panel > .' + id).style.display = '';
     }
 
     document.querySelectorAll('#sidebar > #nav > .nav-item').forEach((item) => {
@@ -419,7 +419,7 @@ function initialise() {
         let delButton = this.document.querySelector('#panel > .hspanel > button.del');
 
         placeholder.style.display = 'none'; //maybe check first
-        delButton.style.display = 'block';
+        delButton.style.display = '';
         panel.prepend(hItem);
 
         hItem.addEventListener('click', ev => {
@@ -430,7 +430,7 @@ function initialise() {
         this.window.Module._clearHs();
         let panel = this.document.querySelector('#panel .hspanel');
         removeFrom(panel, "button.history-item");
-        panel.querySelector('p').style.display = 'block';
+        panel.querySelector('p').style.display = '';
         panel.querySelector('button.del').style.display = 'none';
     }
 
@@ -446,7 +446,7 @@ function initialise() {
         let delButton = panel.querySelector('button.del');
 
         placeholder.style.display = 'none';
-        delButton.style.display = 'block';
+        delButton.style.display = '';
         panel.prepend(itemBox);
 
         itemBox.addEventListener('click', ev => {
@@ -479,7 +479,7 @@ function initialise() {
         this._clearMem();
         let panel = this.document.querySelector('#panel > .mempanel');
         removeFrom(panel, '.memory-item');
-        panel.querySelector('p').style.display = 'block';
+        panel.querySelector('p').style.display = '';
         panel.querySelector('button.del').style.display = 'none';
         this.document.querySelectorAll('button.onmem').forEach((btn) => {
             btn.classList.add('disabled');
