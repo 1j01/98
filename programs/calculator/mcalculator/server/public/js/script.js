@@ -351,9 +351,11 @@ function initialise() {
 
             /* for that flicking effect */
             btn.classList.add('active');
+            btn.style.borderImage = "var(--inset-deep-border-image)";
             setTimeout(() => {
                 btn.classList.remove('active');
-            }, 100);
+                btn.style.borderImage = "";
+            }, 70);
 
             btn.click();
         }
