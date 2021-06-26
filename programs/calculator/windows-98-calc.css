@@ -126,6 +126,7 @@ button:enabled.purple-text {
 	font-size: 11px;
 	height: 26px;
 	width: 100%;
+	outline: 0;
 }
 
 #inp button {
@@ -139,6 +140,13 @@ button:enabled.purple-text {
 	align-items: center;
 	flex: 1;
 	height: 100%;
+}
+#inp button::-moz-focus-inner {
+	border: 0;
+}
+#inp button:focus::before {
+	/* remove dotted outline from os-gui */
+	display: none;
 }
 .row-with-deletion-options button {
 	width: 62px;

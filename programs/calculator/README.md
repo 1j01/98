@@ -30,6 +30,5 @@ todo:
 - Drop/revert commit with auto-run
 - Squash so much stuff!
 - Improve Copy/Paste function availability using older clipboard access APIs?
-- Remove focus indicators
 - Increase limit of digits you can enter, as it was longer in old Windows
 
