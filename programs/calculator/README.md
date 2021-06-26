@@ -26,9 +26,10 @@ bugs:
 
 todo:
 - Convert help topics (and automate the conversion/cleanup of HTML!) (I already have a help viewer)
+- Right click -> What's this?
 - For mCalculator, woff in addition to ttf (could steal from uno or convert from ttf), for 98.js.org, remove font and use shitty ASCII representation..?
 - Drop/revert commit with auto-run
 - Squash so much stuff!
 - Improve Copy/Paste function availability using older clipboard access APIs?
 - Increase limit of digits you can enter, as it was longer in old Windows
-
+- Handle operators when pasting, not just numbers
