@@ -104,6 +104,7 @@ button.purple-text {
 }
 #sidebar {
 	width: 40%;
+	min-width: 200px;
 	/* background-color: rgb(230, 233, 238); */
 	transition: all .2s ease-in-out;
 }
@@ -248,4 +249,11 @@ button.purple-text {
 	position: absolute;
 	bottom: 0;
 	right: 0;
+}
+
+
+@media (max-width: 400px) {
+	#sidebar {
+		display: none;
+	}
 }
