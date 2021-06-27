@@ -237,6 +237,8 @@ function initialise() {
         CommandBINPOS63: 763,
         CommandBINEDITEND: 763
     };
+    var commandNames = Object.fromEntries(Object.entries(commandIDs).map(entry => entry.reverse()));
+
     // Handled in StandardModel::MemoryCommand
     const memoryCommandIDs = {
         'mp': 1,
@@ -268,8 +270,20 @@ function initialise() {
         '9': 'Command9',
         'r': 'CommandREC', 'R': 'CommandREC',
     }
-    function sendCommand(commandID) {
+    function sendCommand(commandID, animate) {
         Module._send(commandID);
+
+        /* for that flicking effect */
+        if (animate) {
+            const commandStr = commandNames[commandID];
+            const btn = document.getElementById(commandStr);
+            btn.classList.add('active');
+            btn.style.borderImage = "var(--inset-deep-border-image)";
+            setTimeout(() => {
+                btn.classList.remove('active');
+                btn.style.borderImage = "";
+            }, 70);
+        }
     }
     function sendMemoryCommand(commandID, itm) {
         let items = document.querySelectorAll('#panel > .mempanel > .memory-item');
@@ -289,7 +303,7 @@ function initialise() {
             button.addEventListener('click', (ev) => {
                 let commandID = commandIDs[ev.target.id];
                 //TODO do some more checks on commands
-                sendCommand(commandID);
+                sendCommand(commandID, false);
             })
         }
 
@@ -353,17 +367,7 @@ function initialise() {
             //just standard for now
             let commandStr = standardKeyboardMap[ev.key];
             if (commandStr != undefined) {
-                let btn = document.getElementById(commandStr);
-
-                /* for that flicking effect */
-                btn.classList.add('active');
-                btn.style.borderImage = "var(--inset-deep-border-image)";
-                setTimeout(() => {
-                    btn.classList.remove('active');
-                    btn.style.borderImage = "";
-                }, 70);
-
-                btn.click();
+                sendCommand(commandIDs[commandStr], true);
 
                 // Don't trigger buttons and equals command at same time when hitting Enter
                 // and don't open Quick Find in Firefox when pressing slash
@@ -434,7 +438,7 @@ function initialise() {
         panel.prepend(hItem);
 
         hItem.addEventListener('click', ev => {
-            setResult(hItemRes.textContent);
+            clearAndTypeInput(hItemRes.textContent);
         });
     }
     window.clearHistory = function clearHistoryOfEngineAndClearPanel() {
@@ -464,7 +468,7 @@ function initialise() {
 
         itemBox.addEventListener('click', ev => {
             // Don't use memStr as it may be outdated
-            setResult(itemBox.querySelector('.value').textContent);
+            clearAndTypeInput(itemBox.querySelector('.value').textContent);
         });
         itemBox.querySelectorAll('.btns > *').forEach(btn => {
             btn.addEventListener('click', ev => {
@@ -479,7 +483,7 @@ function initialise() {
                 if (commandStr == 'CommandMCLEAR') {
                     clearAllMemory();
                 }
-                sendCommand(commandIDs[commandStr]);
+                sendCommand(commandIDs[commandStr], false);
             })
         });
     }
@@ -513,11 +517,11 @@ function initialise() {
             });
     }
     window.pasteResult = function() {
-        navigator.clipboard.readText().then(setResult, (error) => {
+        navigator.clipboard.readText().then(clearAndTypeInput, (error) => {
             alert("Failed to paste text from clipboard.\n\n" + error);
         });
     }
-    window.setResult = function (text) {
+    window.clearAndTypeInput = async function (text, keystrokeDelay=30) {
         text = text.trim();
         const commands = [];
         commands.push(commandIDs.CommandCENTR);
@@ -558,7 +562,17 @@ function initialise() {
         if (numberIsNegative) {
             commands.push(commandIDs.CommandSIGN);
         }
-        commands.map(sendCommand);
+        if (keystrokeDelay) {
+            const iid = setInterval(() => {
+                const command = commands.shift();
+                if (!command) {
+                    clearInterval(iid);
+                }
+                sendCommand(command, true);
+            }, keystrokeDelay);
+        } else {
+            commands.map((command)=> sendCommand(command, false));
+        }
     }
 
     function filterOut(button) {
