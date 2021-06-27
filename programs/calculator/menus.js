@@ -1,5 +1,5 @@
 
-// TODO: bullet point style radio button menu items 
+// TODO: bullet point style radio button menu items (instead of check marks)
 var checkbox_for_view_mode = function(view_mode){
 	return {
 		check: function(){
@@ -22,6 +22,7 @@ var menus = {
 				return !!navigator.clipboard.writeText;
 			},
 			action: () => {
+				window.focus(); // needed for clipboard access in some browsers
 				copyResult();
 			},
 		},
@@ -29,9 +30,10 @@ var menus = {
 			item: "&Paste",
 			shortcut: "Ctrl+V",
 			enabled: () => {
-				return navigator.clipboard.readText;
+				return !!navigator.clipboard.readText;
 			},
 			action: () => {
+				window.focus(); // needed for clipboard access in some browsers
 				pasteResult();
 			},
 		},

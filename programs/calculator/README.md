@@ -20,8 +20,7 @@ improvements to port upstream:
 bugs:
 - Is there a race condition where script.js loads too late to define `initialise` for `engine.js` to call? or is order guaranteed even with `async` somehow? is `async` really helping in some way?
 - `.memory-item` btns aren't `button`s (and nesting `button`s doesn't work in HTML and is a bad UI pattern)
-- Edit > Copy and Paste don't work in 98.js desktop in Firefox because the "page isn't focused"
-
+- There's a layout bug where the Backspace/CE/C buttons can be the wrong size and then they snap back to the right size when clicking or trying to inspect the elements. I think it only happens when changing the CSS with live-server though, so probably not a problem in production.
 
 todo:
 - Convert help topics (and automate the conversion/cleanup of HTML!) (I already have a help viewer)
