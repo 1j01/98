@@ -349,24 +349,26 @@ function initialise() {
     document.addEventListener('keydown', (ev) => {
         if (ev.defaultPrevented)
             return;
-        //just standard for now
-        let commandStr = standardKeyboardMap[ev.key];
-        if (commandStr != undefined) {
-            let btn = document.getElementById(commandStr);
+        if (!ev.ctrlKey && !ev.metaKey && !ev.altKey) {
+            //just standard for now
+            let commandStr = standardKeyboardMap[ev.key];
+            if (commandStr != undefined) {
+                let btn = document.getElementById(commandStr);
 
-            /* for that flicking effect */
-            btn.classList.add('active');
-            btn.style.borderImage = "var(--inset-deep-border-image)";
-            setTimeout(() => {
-                btn.classList.remove('active');
-                btn.style.borderImage = "";
-            }, 70);
+                /* for that flicking effect */
+                btn.classList.add('active');
+                btn.style.borderImage = "var(--inset-deep-border-image)";
+                setTimeout(() => {
+                    btn.classList.remove('active');
+                    btn.style.borderImage = "";
+                }, 70);
 
-            btn.click();
+                btn.click();
 
-            // Don't trigger buttons and equals command at same time when hitting Enter
-            // and don't open Quick Find in Firefox when pressing slash
-            ev.preventDefault();
+                // Don't trigger buttons and equals command at same time when hitting Enter
+                // and don't open Quick Find in Firefox when pressing slash
+                ev.preventDefault();
+            }
         }
         if ((ev.ctrlKey || ev.metaKey) && !ev.shiftKey && !ev.altKey) {
             if (ev.key === "c") {
