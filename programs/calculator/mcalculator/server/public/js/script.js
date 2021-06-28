@@ -252,11 +252,13 @@ function initialise() {
         'Backspace': 'CommandBACK',
         'ArrowLeft': 'CommandBACK',
         '.': 'CommandPNT', 'Decimal': 'CommandPNT',
+        ',': 'CommandPNT',
         '/': 'CommandDIV', 'Divide': 'CommandDIV',
         '*': 'CommandMUL', 'Multiply': 'CommandMUL',
         '+': 'CommandADD', 'Add': 'CommandADD',
         '-': 'CommandSUB', 'Subtract': 'CommandSUB',
-        '%': 'CommandPERCENT',
+        '%': 'CommandPERCENT', // (std, different command in sci mode)
+        '@': 'CommandSQRT', // (std, different command in sci mode)
         '=': 'CommandEQU', 'Enter': 'CommandEQU',
         '0': 'Command0',
         '1': 'Command1',
@@ -269,7 +271,54 @@ function initialise() {
         '8': 'Command8',
         '9': 'Command9',
         'r': 'CommandREC', 'R': 'CommandREC',
+
+        // '%': 'Mod', // (sci)
+        // '@': 'x^2', // (sci)
+        'h': 'CommandHYP',
+        'p': 'CommandPI',
+        '(': 'CommandOPENP',
+        'F8': 'CommandBin',
+        'n': 'CommandLN',
+        'F3': 'CommandRAD',
+        ')': 'CommandCLOSEP',
+        'F4': 'CommandByte',
+        // ';': 'Int',
+        // 'Ctrl+D': 's',
+        'i': 'CommandINV',
+        's': 'CommandSIN',
+        'l': 'CommandLOG',
+        'F9': 'CommandSIGN',
+        'o': 'CommandCOS',
+        '<': 'CommandLSHF',
+        // 'Ctrl+S': 'Sta',
+        // 'INS': 'Dat',
+        'Ctrl+P': 'CommandMPLUS',
+        // 'Ctrl+T': 'Sum',
+        'F6': 'CommandDec',
+        'Ctrl+L': 'CommandMCLEAR',
+        't': 'CommandTAN',
+        // 'F2': 'Deg',
+        // 'F3': 'Word',
+        'm': 'CommandDMS',
+        'Ctrl+R': 'CommandRECALL',
+        '^': 'CommandXor',
+        'r': 'CommandREC',
+        // 'F2': 'Dword',
+        'Ctrl+M': 'CommandSTORE',
+        'x': 'CommandEXP',
+        '!': 'CommandFAC',
+        '#': 'CommandCUB',
+        'v': 'CommandFE',
+        '~': 'CommandNot',
+        'y': 'CommandPWR',
+        '&': 'CommandAnd',
+        'F4': 'CommandGRAD',
+        // 'F7': 'Oct',
+        // 'Ctrl+A': 'Ave',
+        // 'F5': 'Hex',
+        '|': 'CommandOR',
     }
+
     function sendCommand(commandID, animate) {
         Module._send(commandID);
 
@@ -363,9 +412,10 @@ function initialise() {
     document.addEventListener('keydown', (ev) => {
         if (ev.defaultPrevented)
             return;
-        if (!ev.ctrlKey && !ev.metaKey && !ev.altKey) {
+        const ctrlOrMeta = ev.ctrlKey || ev.metaKey; // macOS has meta key used similarly to ctrl key on Windows
+        if (!ev.altKey) {
             //just standard for now
-            let commandStr = standardKeyboardMap[ev.key];
+            let commandStr = standardKeyboardMap[ctrlOrMeta ? `Ctrl+${ev.key.toUpperCase()}` : ev.key];
             if (commandStr != undefined) {
                 sendCommand(commandIDs[commandStr], true);
 
@@ -374,7 +424,7 @@ function initialise() {
                 ev.preventDefault();
             }
         }
-        if ((ev.ctrlKey || ev.metaKey) && !ev.shiftKey && !ev.altKey) {
+        if (ctrlOrMeta && !ev.shiftKey && !ev.altKey) {
             if (ev.key === "c") {
                 copyResult();
             } else if (ev.key === "v") {

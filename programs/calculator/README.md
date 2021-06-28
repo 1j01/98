@@ -16,6 +16,7 @@ improvements to port upstream:
 - prevent opening Quick Find in Firefox when pressing slash
 - handle M+ pressed before MS
 - fixed bug where MS after MC wouldn't show memory stored, until you press it N times, where N increases if you repeat this
+- more keyboard inputs supported
 
 bugs:
 - Is there a race condition where script.js loads too late to define `initialise` for `engine.js` to call? or is order guaranteed even with `async` somehow? is `async` really helping in some way?
