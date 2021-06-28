@@ -23,7 +23,6 @@ bugs:
 - There's a layout bug where the Backspace/CE/C buttons can be the wrong size and then they snap back to the right size when clicking or trying to inspect the elements. I think it only happens when changing the CSS with live-server though, so probably not a problem in production.
 
 todo:
-- Convert help topics (and automate the conversion/cleanup of HTML!) (I already have a help viewer)
 - Right click -> What's this?
 - For mCalculator, woff in addition to ttf (could steal from uno or convert from ttf), for 98.js.org, remove font and use shitty ASCII representation..?
 - Drop/revert commit with auto-run
