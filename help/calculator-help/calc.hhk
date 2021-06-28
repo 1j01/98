@@ -1,0 +1,504 @@
+<HTML>
+<HEAD>
+<!-- Sitemap 1.0 -->
+</HEAD>
+<BODY>
+<OBJECT type="text/site properties">
+	<param name="FrameName" value="current">
+</OBJECT>
+
+<UL>
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="- (subtraction operator)">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="* (multiplication operator)">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="/ (division operator)">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="\ (backslash)">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="+ (addition operator)">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="accuracy of Calculator">
+	<param name="Name" value="Understanding extended precision">
+	<param name="Local" value="calc_precision.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="adding">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+	<param name="Name" value="To work with numbers stored in memory">
+	<param name="Local" value="calc_memory.htm">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="asterisk (multiplication operator)">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="backslash">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="binary calculations">
+	<param name="Name" value="To convert a value to another number system">
+	<param name="Local" value="calc_number_system.htm">
+	<param name="Name" value="To perform a scientific calculation">
+	<param name="Local" value="calc_scientific.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="buttons">
+	<param name="Name" value="To see what a Calculator button does">
+	<param name="Local" value="calc_buttons.htm">
+	<param name="Name" value="Using keyboard equivalents of Calculator buttons">
+	<param name="Local" value="calc_list_equiv.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="calculations">
+	<param name="Name" value="To work with numbers stored in memory">
+	<param name="Local" value="calc_memory.htm">
+	<param name="Name" value="To convert a value to another number system">
+	<param name="Local" value="calc_number_system.htm">
+	<param name="Name" value="Understanding extended precision">
+	<param name="Local" value="calc_precision.htm">
+	<param name="Name" value="To perform a scientific calculation">
+	<param name="Local" value="calc_scientific.htm">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+	<param name="Name" value="To perform a statistical calculation">
+	<param name="Local" value="calc_statistics.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="clearing values">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+	<param name="Name" value="To work with numbers stored in memory">
+	<param name="Local" value="calc_memory.htm">
+	<param name="Name" value="To transfer numbers between Standard and Scientific view">
+	<param name="Local" value="calc_transfer.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="converting values">
+	<param name="Name" value="To convert a value to another number system">
+	<param name="Local" value="calc_number_system.htm">
+	<param name="Name" value="To transfer numbers between Standard and Scientific view">
+	<param name="Local" value="calc_transfer.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="copying data">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="decimal calculations">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+	<param name="Name" value="To convert a value to another number system">
+	<param name="Local" value="calc_number_system.htm">
+	<param name="Name" value="To perform a scientific calculation">
+	<param name="Local" value="calc_scientific.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="display area">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="displaying numbers from memory">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+	<param name="Name" value="To work with numbers stored in memory">
+	<param name="Local" value="calc_memory.htm">
+	<param name="Name" value="To transfer numbers between Standard and Scientific view">
+	<param name="Local" value="calc_transfer.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="dividing">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="entering numbers">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="equals sign">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="extended precision">
+	<param name="Name" value="Understanding extended precision">
+	<param name="Local" value="calc_precision.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="functions">
+	<param name="Name" value="To see what a Calculator button does">
+	<param name="Local" value="calc_buttons.htm">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+	<param name="Name" value="To perform a scientific calculation">
+	<param name="Local" value="calc_scientific.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="Help on buttons">
+	<param name="Name" value="To see what a Calculator button does">
+	<param name="Local" value="calc_buttons.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="hexadecimal calculations">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+	<param name="Name" value="To convert a value to another number system">
+	<param name="Local" value="calc_number_system.htm">
+	<param name="Name" value="To perform a scientific calculation">
+	<param name="Local" value="calc_scientific.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="irrational numbers, accuracy">
+	<param name="Name" value="Understanding extended precision">
+	<param name="Local" value="calc_precision.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="keyboard equivalents">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+	<param name="Name" value="Using keyboard equivalents of Calculator buttons">
+	<param name="Local" value="calc_list_equiv.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="keyboard sequences">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="keypad">
+	<param name="Name" value="To perform a scientific calculation">
+	<param name="Local" value="calc_scientific.htm">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+	<param name="Name" value="To perform a statistical calculation">
+	<param name="Local" value="calc_statistics.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="memory">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+	<param name="Name" value="To work with numbers stored in memory">
+	<param name="Local" value="calc_memory.htm">
+	<param name="Name" value="To transfer numbers between Standard and Scientific view">
+	<param name="Local" value="calc_transfer.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="minus sign">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="multiplying">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="NUM LOCK key">
+	<param name="Name" value="To perform a scientific calculation">
+	<param name="Local" value="calc_scientific.htm">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+	<param name="Name" value="To perform a statistical calculation">
+	<param name="Local" value="calc_statistics.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="numbers">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+	<param name="Name" value="To work with numbers stored in memory">
+	<param name="Local" value="calc_memory.htm">
+	<param name="Name" value="To convert a value to another number system">
+	<param name="Local" value="calc_number_system.htm">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+	<UL>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="adding">
+		<param name="Name" value="Using key sequences as functions">
+		<param name="Local" value="calc_keyboard_seq.htm">
+		<param name="Name" value="To work with numbers stored in memory">
+		<param name="Local" value="calc_memory.htm">
+		<param name="Name" value="To perform a simple calculation">
+		<param name="Local" value="calc_simple.htm">
+	</OBJECT>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="clearing">
+		<param name="Name" value="Using key sequences as functions">
+		<param name="Local" value="calc_keyboard_seq.htm">
+		<param name="Name" value="To work with numbers stored in memory">
+		<param name="Local" value="calc_memory.htm">
+	</OBJECT>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="converting">
+		<param name="Name" value="To convert a value to another number system">
+		<param name="Local" value="calc_number_system.htm">
+		<param name="Name" value="To transfer numbers between Standard and Scientific view">
+		<param name="Local" value="calc_transfer.htm">
+	</OBJECT>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="dividing">
+		<param name="Name" value="To perform a simple calculation">
+		<param name="Local" value="calc_simple.htm">
+	</OBJECT>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="in memory">
+		<param name="Name" value="Using key sequences as functions">
+		<param name="Local" value="calc_keyboard_seq.htm">
+		<param name="Name" value="To work with numbers stored in memory">
+		<param name="Local" value="calc_memory.htm">
+		<param name="Name" value="To transfer numbers between Standard and Scientific view">
+		<param name="Local" value="calc_transfer.htm">
+	</OBJECT>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="multiplying">
+		<param name="Name" value="To perform a simple calculation">
+		<param name="Local" value="calc_simple.htm">
+	</OBJECT>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="subtracting">
+		<param name="Name" value="To perform a simple calculation">
+		<param name="Local" value="calc_simple.htm">
+	</OBJECT>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="systems">
+		<param name="Name" value="To convert a value to another number system">
+		<param name="Local" value="calc_number_system.htm">
+	</OBJECT>
+	</UL>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="numeric keypad">
+	<param name="Name" value="To perform a scientific calculation">
+	<param name="Local" value="calc_scientific.htm">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+	<param name="Name" value="To perform a statistical calculation">
+	<param name="Local" value="calc_statistics.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="octal calculations">
+	<param name="Name" value="To convert a value to another number system">
+	<param name="Local" value="calc_number_system.htm">
+	<param name="Name" value="To perform a scientific calculation">
+	<param name="Local" value="calc_scientific.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="operators">
+	<param name="Name" value="To perform a scientific calculation">
+	<param name="Local" value="calc_scientific.htm">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+	<param name="Name" value="To perform a statistical calculation">
+	<param name="Local" value="calc_statistics.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="pasting data">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="plus sign">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="precision">
+	<param name="Name" value="Understanding extended precision">
+	<param name="Local" value="calc_precision.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="rational numbers">
+	<param name="Name" value="Understanding extended precision">
+	<param name="Local" value="calc_precision.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="recalling numbers from memory">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+	<param name="Name" value="To work with numbers stored in memory">
+	<param name="Local" value="calc_memory.htm">
+	<param name="Name" value="To transfer numbers between Standard and Scientific view">
+	<param name="Local" value="calc_transfer.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="scientific calculations">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+	<param name="Name" value="To convert a value to another number system">
+	<param name="Local" value="calc_number_system.htm">
+	<param name="Name" value="To perform a scientific calculation">
+	<param name="Local" value="calc_scientific.htm">
+	<param name="Name" value="To perform a statistical calculation">
+	<param name="Local" value="calc_statistics.htm">
+	<param name="Name" value="To transfer numbers between Standard and Scientific view">
+	<param name="Local" value="calc_transfer.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="showing numbers in memory">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+	<param name="Name" value="To work with numbers stored in memory">
+	<param name="Local" value="calc_memory.htm">
+	<param name="Name" value="To transfer numbers between Standard and Scientific view">
+	<param name="Local" value="calc_transfer.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="simple calculations">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="slash (division operator)">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="standard view">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+	<param name="Name" value="To transfer numbers between Standard and Scientific view">
+	<param name="Local" value="calc_transfer.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="statistical calculations">
+	<param name="Name" value="To see what a Calculator button does">
+	<param name="Local" value="calc_buttons.htm">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+	<param name="Name" value="To perform a statistical calculation">
+	<param name="Local" value="calc_statistics.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="storing numbers in memory">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+	<param name="Name" value="To work with numbers stored in memory">
+	<param name="Local" value="calc_memory.htm">
+	<param name="Name" value="To transfer numbers between Standard and Scientific view">
+	<param name="Local" value="calc_transfer.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="subtracting">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="systems, number">
+	<param name="Name" value="To convert a value to another number system">
+	<param name="Local" value="calc_number_system.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="tips on buttons">
+	<param name="Name" value="To see what a Calculator button does">
+	<param name="Local" value="calc_buttons.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="transferring numbers between views">
+	<param name="Name" value="To transfer numbers between Standard and Scientific view">
+	<param name="Local" value="calc_transfer.htm">
+</OBJECT>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="values">
+	<param name="Name" value="Using key sequences as functions">
+	<param name="Local" value="calc_keyboard_seq.htm">
+	<param name="Name" value="To work with numbers stored in memory">
+	<param name="Local" value="calc_memory.htm">
+	<param name="Name" value="To convert a value to another number system">
+	<param name="Local" value="calc_number_system.htm">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+</OBJECT>
+	<UL>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="adding">
+		<param name="Name" value="Using key sequences as functions">
+		<param name="Local" value="calc_keyboard_seq.htm">
+		<param name="Name" value="To work with numbers stored in memory">
+		<param name="Local" value="calc_memory.htm">
+		<param name="Name" value="To perform a simple calculation">
+		<param name="Local" value="calc_simple.htm">
+	</OBJECT>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="clearing">
+		<param name="Name" value="Using key sequences as functions">
+		<param name="Local" value="calc_keyboard_seq.htm">
+		<param name="Name" value="To work with numbers stored in memory">
+		<param name="Local" value="calc_memory.htm">
+	</OBJECT>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="converting">
+		<param name="Name" value="To convert a value to another number system">
+		<param name="Local" value="calc_number_system.htm">
+		<param name="Name" value="To transfer numbers between Standard and Scientific view">
+		<param name="Local" value="calc_transfer.htm">
+	</OBJECT>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="dividing">
+		<param name="Name" value="To perform a simple calculation">
+		<param name="Local" value="calc_simple.htm">
+	</OBJECT>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="in memory">
+		<param name="Name" value="Using key sequences as functions">
+		<param name="Local" value="calc_keyboard_seq.htm">
+		<param name="Name" value="To work with numbers stored in memory">
+		<param name="Local" value="calc_memory.htm">
+		<param name="Name" value="To transfer numbers between Standard and Scientific view">
+		<param name="Local" value="calc_transfer.htm">
+	</OBJECT>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="multiplying">
+		<param name="Name" value="To perform a simple calculation">
+		<param name="Local" value="calc_simple.htm">
+	</OBJECT>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="subtracting">
+		<param name="Name" value="To perform a simple calculation">
+		<param name="Local" value="calc_simple.htm">
+	</OBJECT>
+	<LI><OBJECT type="Text/sitemap">
+		<param name="Name" value="systems">
+		<param name="Name" value="To convert a value to another number system">
+		<param name="Local" value="calc_number_system.htm">
+	</OBJECT>
+	</UL>
+<LI><OBJECT type="Text/sitemap">
+	<param name="Name" value="views">
+	<param name="Name" value="To perform a scientific calculation">
+	<param name="Local" value="calc_scientific.htm">
+	<param name="Name" value="To perform a simple calculation">
+	<param name="Local" value="calc_simple.htm">
+	<param name="Name" value="To perform a statistical calculation">
+	<param name="Local" value="calc_statistics.htm">
+	<param name="Name" value="To transfer numbers between Standard and Scientific view">
+	<param name="Local" value="calc_transfer.htm">
+</OBJECT>
+</UL>
+</HTML>

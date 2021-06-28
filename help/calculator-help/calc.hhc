@@ -1,0 +1,62 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<HTML>
+<HEAD>
+<meta name="GENERATOR" content="Microsoft&reg; HTML Help Workshop 4.00">
+<!-- Sitemap 1.0 -->
+</HEAD><BODY>
+<OBJECT type="text/site properties">
+	<param name="Window Styles" value="0x800624">
+</OBJECT>
+<UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Performing Calculations">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Perform a simple calculation ">
+			<param name="Local" value="calc_simple.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Perform a statistical calculation ">
+			<param name="Local" value="calc_statistics.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Perform a scientific calculation ">
+			<param name="Local" value="calc_scientific.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Convert values to other number systems ">
+			<param name="Local" value="calc_number_system.htm">
+			</OBJECT>
+	</UL>
+	<LI> <OBJECT type="text/sitemap">
+		<param name="Name" value="Tips and Tricks">
+		</OBJECT>
+	<UL>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Find out what a Calculator button does">
+			<param name="Local" value="calc_buttons.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Work with numbers stored in memory">
+			<param name="Local" value="calc_memory.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Use keyboard equivalents of Calculator buttons">
+			<param name="Local" value="calc_list_equiv.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Use key sequences as functions">
+			<param name="Local" value="calc_keyboard_seq.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Understanding extended precision">
+			<param name="Local" value="calc_precision.htm">
+			</OBJECT>
+		<LI> <OBJECT type="text/sitemap">
+			<param name="Name" value="Transfer numbers between standard and scientific view">
+			<param name="Local" value="calc_transfer.htm">
+			</OBJECT>
+	</UL>
+</UL>
+</BODY></HTML>
