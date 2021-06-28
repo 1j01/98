@@ -30,4 +30,4 @@ todo:
 - Squash so much stuff!
 - Improve Copy/Paste function availability using older clipboard access APIs?
 - Increase limit of digits you can enter, as it was longer in old Windows
-- Handle operators when pasting, not just numbers
+- Handle operators when pasting, not just numbers; and special colon commands
