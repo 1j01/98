@@ -282,8 +282,8 @@ function initialise() {
         'F3': 'CommandRAD',
         ')': 'CommandCLOSEP',
         'F4': 'CommandByte',
-        // ';': 'Int',
-        // 'Ctrl+D': 's',
+        ';': 'CommandFloor',
+        // 'Ctrl+D': 's', // statistics function: standard deviation
         'i': 'CommandINV',
         's': 'CommandSIN',
         'l': 'CommandLOG',
@@ -291,19 +291,19 @@ function initialise() {
         'o': 'CommandCOS',
         '<': 'CommandLSHF',
         // 'Ctrl+S': 'Sta',
-        // 'INS': 'Dat',
+        // 'INS': 'Dat', // statistics function: add to dataset
         'Ctrl+P': 'CommandMPLUS',
-        // 'Ctrl+T': 'Sum',
+        // 'Ctrl+T': 'Sum',// statistics function: sum
         'F6': 'CommandDec',
         'Ctrl+L': 'CommandMCLEAR',
         't': 'CommandTAN',
-        // 'F2': 'Deg',
-        // 'F3': 'Word',
+        'F2': 'CommandDEG', // or CommandDegrees? I think it's CommandDEG
+        'F3': 'CommandWord',
         'm': 'CommandDMS',
         'Ctrl+R': 'CommandRECALL',
         '^': 'CommandXor',
         'r': 'CommandREC',
-        // 'F2': 'Dword',
+        'F2': 'CommandDword',
         'Ctrl+M': 'CommandSTORE',
         'x': 'CommandEXP',
         '!': 'CommandFAC',
@@ -313,9 +313,9 @@ function initialise() {
         'y': 'CommandPWR',
         '&': 'CommandAnd',
         'F4': 'CommandGRAD',
-        // 'F7': 'Oct',
-        // 'Ctrl+A': 'Ave',
-        // 'F5': 'Hex',
+        // 'F7': 'Oct', // number system: oct
+        // 'Ctrl+A': 'Ave', // statistics function: average
+        // 'F5': 'Hex', // number system: hexadecimal
         '|': 'CommandOR',
     }
 
@@ -560,18 +560,18 @@ function initialise() {
         });
     }
 
-    window.copyResult = function() {
+    window.copyResult = function () {
         navigator.clipboard.writeText(document.querySelector('#display > #primary').value)
             .catch((error) => {
                 alert("Failed to copy to clipboard.\n\n" + error);
             });
     }
-    window.pasteResult = function() {
+    window.pasteResult = function () {
         navigator.clipboard.readText().then(clearAndTypeInput, (error) => {
             alert("Failed to paste text from clipboard.\n\n" + error);
         });
     }
-    window.clearAndTypeInput = async function (text, keystrokeDelay=30) {
+    window.clearAndTypeInput = async function (text, keystrokeDelay = 30) {
         text = text.trim();
         const commands = [];
         commands.push(commandIDs.CommandCENTR);
@@ -621,7 +621,7 @@ function initialise() {
                 sendCommand(command, true);
             }, keystrokeDelay);
         } else {
-            commands.map((command)=> sendCommand(command, false));
+            commands.map((command) => sendCommand(command, false));
         }
     }
 
