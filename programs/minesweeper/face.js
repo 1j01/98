@@ -15,7 +15,7 @@ minesweeper.face.prototype.get_element = function() {
     this.element = $.createElement("div")
       .style({"width": 26, "height": 26, "margin": "auto", "background-image": minesweeper.sprite, "background-repeat": "no-repeat"})
       .addEventListener("mousedown", function() {
-        if(self.state === "smile") self.set_state("depressed_smile");
+        self.set_state("depressed_smile");
       })
       .addEventListener("mouseup", function() {
         if(self.state === "depressed_smile") {
