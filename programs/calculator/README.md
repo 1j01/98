@@ -45,4 +45,4 @@ Todo:
 - woff in addition to ttf (could steal from uno or convert from ttf), or remove font and use shitty ASCII representation..?
 - Improve Copy/Paste function availability using older clipboard access APIs? Like handle paste event? (keyboard only)
 - Increase limit of digits you can enter, as it was longer in old Windows
-- When pasting, handle operators and special colon commands, not just numbers
+- When pasting, handle operators, not just numbers and special colon commands

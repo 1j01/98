@@ -590,7 +590,7 @@ function initialise() {
                 if (gotExponent) {
                     gotDigitAfterExponent = true;
                 }
-            } else if ((char === "e" || char === "E") && !gotExponent) {
+            } else if ((char === "e" || char === "E" || char === "x" || char === "X") && !gotExponent) {
                 commands.push(commandIDs.CommandEXP);
                 gotExponent = true;
             } else if ((char === "-" || char === "+") && gotExponent && !gotExponentSign && !gotDigitAfterExponent) {
@@ -600,7 +600,37 @@ function initialise() {
                     commands.push(commandIDs.CommandSIGN);
                 }
                 gotExponentSign = true;
-            } else {
+            } else if (char.match(/[*/+\-()%|&]/)) {
+                if (standardKeyboardMap[char]) {
+                    commands.push(commandIDs[standardKeyboardMap[char]]);
+                }
+            } else if (char === ":") {
+                // :c	Clears memory.
+                // :e	Enables you to enter scientific notation numbers in decimal form. Also specifies the number E in hexadecimal.
+                // :m	Stores the displayed number in memory.
+                // :p	Adds the displayed number to the number in memory.
+                // :q	Clears the current calculation.
+                // :r	Displays the number stored in memory.
+
+                i += 1;
+                const char = text[i];
+                if (char === "c") {
+                    commands.push(commandIDs.CommandMCLEAR);
+                } else if (char === "e") {
+                    commands.push(commandIDs.CommandEXP);
+                } else if (char === "m") {
+                    commands.push(commandIDs.CommandSTORE);
+                } else if (char === "p") {
+                    commands.push(commandIDs.CommandMPLUS);
+                } else if (char === "q") {
+                    commands.push(commandIDs.CommandCLEAR);
+                } else if (char === "r") {
+                    commands.push(commandIDs.CommandRECALL);
+                }
+            } else if (char === "\\") {
+                // \	Functions the same as Dat. Click Sta before using this key.
+                // TODO: statistics functionality
+            } else if (char !== " ") {
                 alert(`Invalid input. Unexpected '${char}'`);
                 return;
             }
