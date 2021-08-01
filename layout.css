@@ -200,8 +200,17 @@ html, body {
 	width: 55px;
 	height: 40px;
 	padding: 0;
+}
+.help-window .toolbar button span {
+	display: inline-flex;
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	/* flex centering + preventing overflow wrap means the font can be too big and it'll still stay centered */
 	font-size: 12px;
-	line-height: 60px;
+	white-space: pre;
+	justify-content: center;
 }
 .help-window .toolbar button {
 	position: relative;
