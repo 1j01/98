@@ -91,6 +91,21 @@
   },
   "help": {
     "98.js.org.svg": null,
+    "calculator-help": {
+      "calc.hhc": null,
+      "calc.hhk": null,
+      "calc_buttons.htm": null,
+      "calc_keyboard_seq.htm": null,
+      "calc_list_equiv.htm": null,
+      "calc_memory.htm": null,
+      "calc_number_system.htm": null,
+      "calc_precision.htm": null,
+      "calc_scientific.htm": null,
+      "calc_simple.htm": null,
+      "calc_statistics.htm": null,
+      "calc_transfer.htm": null,
+      "onestep.gif": null
+    },
     "cloud-mask.png": null,
     "clouds.jpg": null,
     "coUA.css": null,
@@ -458,6 +473,7 @@
     "calculator": {
       "README.md": null,
       "calculator-reference-screenshot.png": null,
+      "calculator-remake-screenshot.png": null,
       "index.html": null,
       "mcalculator": {
         "LICENSE": null,
