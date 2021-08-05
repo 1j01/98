@@ -73,7 +73,7 @@ Libraries:
 * [![](images/icons/folder-16x16.png) BrowserFS](https://github.com/jvilk/BrowserFS), a filesystem abstraction library powering 98.js
 
 Also:
-* [Awesome Attwood's Law](https://github.com/captbaritone/awesome-attwoods-law), a curated list of JavaScript reimplementations, similar to [/r/atwoodslaw/](https://www.reddit.com/r/atwoodslaw/)
+* [Awesome Atwood's Law](https://github.com/captbaritone/awesome-attwoods-law), a curated list of JavaScript reimplementations, similar to [/r/atwoodslaw/](https://www.reddit.com/r/atwoodslaw/)
 
 ## Contributing
 
@@ -91,6 +91,12 @@ When pulling changes from git, run `npm install` again in case there are any new
 (If you know `package-lock.json` hasn't changed, you shouldn't need to do this.)
 
 Some dependencies are versioned with npm, but pulled into the repo with `npm run pull-libs`
+
+To update subrepos, or push changes to them, install [git-subrepo](https://github.com/ingydotnet/git-subrepo). You don't need this tool to clone the project and get up and running, as subrepos are just normal subdirectories with a `.gitrepo` metadata file.
+Note that the metadata file references specific commit hashes, including between repositories, so it's best to avoid rebasing when subrepo updates are involved, i.e. once you do a subrepo command, it makes a commit, and should leave it (and earlier commits) alone, and you should leave commits in the subrepo alone, before and up to any commits referenced by the containing project.
+I'd recommend phrasing commit messages to apply to the subrepo, primarily, rather than the containing project.
+If you so much as edit the commit message for a `git subrepo push`ed commit, you'd have to update the `.gitrepo` metadata file manually,
+OR you could drop the commit you pushed and the `git subrepo push` commit (which updates the metadata) and do `git subrepo pull` instead (which btw gives you an option to rename the commit; and I think renaming that commit would be safe after the fact anyways as long as it's the last commit and not pushed).
 
 ## TODO
 
