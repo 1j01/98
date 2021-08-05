@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/1j01/pipes.git
+	branch = master
+	commit = e6707fa9cb21e5e7be3e28c26cdd44520d347722
+	parent = f59e2aeeba321cca52a37afb86f3d65428b890c0
+	method = merge
+	cmdver = 0.4.3
