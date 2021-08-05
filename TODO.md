@@ -13,15 +13,11 @@
 
 * File save and open dialogs
 
-* Integrate [js-solitaire](https://github.com/uzi88/js-solitaire)
-
 * Integrate Paint better
 
 	* Windows that pop out; will need to display graphics via data URIs or canvases, and rely only on inline styles (or `<style scoped>`?) and the shared styles
 
 		* Could *maybe* use [`<base>`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base) for `<img>`s, but all styles (that aren't shared) would have to be inline, and I think it would be better just to try to make everything canvases
-
-* Integrate [Pipes screensaver](https://github.com/1j01/pipes)
 
 * Integrate Blue Screen of Death similar to http://fakebsod.com/generic
 
