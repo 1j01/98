@@ -29,7 +29,7 @@ if(query.path){
 	var file_path = query.path;
 	var file_name = file_name_from_path(file_path);
 }else if(location.search.length > 1){
-	var localstorage_document_id = location.search.replace("?", "");
+	var local_storage_document_id = location.search.replace("?", "");
 	var file_name = location.search.replace("?", "");
 }
 var default_file_name_for_title = "Untitled";
@@ -88,7 +88,7 @@ function file_new(){
 		saved = true;
 		file_path = null;
 		file_name = null;
-		localstorage_document_id = null;
+		local_storage_document_id = null;
 		update_title();
 	});
 }
@@ -104,7 +104,7 @@ function load_from_blob(blob){
 		saved = true;
 		file_path = null;
 		file_name = blob.name;
-		localstorage_document_id = null;
+		local_storage_document_id = null;
 		update_title();
 	};
 	file_reader.readAsText(blob);
@@ -180,9 +180,9 @@ function update_print_helper(){
 $textarea.on("input", function(e){
 	update_print_helper();
 	saved = false;
-	if(localstorage_document_id){
+	if(local_storage_document_id){
 		try {
-			localStorage["notepad:" + localstorage_document_id] = $textarea.val();
+			localStorage["notepad:" + local_storage_document_id] = $textarea.val();
 		} catch(e) {}
 	}
 });
@@ -202,9 +202,9 @@ if(file_path){
 			update_print_helper();
 		});
 	});
-}else if(localstorage_document_id){
+}else if(local_storage_document_id){
 	try {
-		$textarea.val(localStorage["notepad:" + localstorage_document_id] || "");
+		$textarea.val(localStorage["notepad:" + local_storage_document_id] || "");
 	} catch(e) {}
 	update_print_helper();
 }

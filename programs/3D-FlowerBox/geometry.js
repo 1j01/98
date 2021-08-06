@@ -1,5 +1,5 @@
 // Author: Kevin Shannon
-// This file generates arrays for indicies, normals, and vertices.
+// This file generates arrays for indices, normals, and vertices.
 
 var indices = [];
 var normals = [];

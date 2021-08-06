@@ -165,7 +165,7 @@ var go_to = function(address){
 
 // called from $FolderView
 function executeFile(file_path){
-	// I don't think this withfs is necessary
+	// I don't think this withFilesystem is necessary
 	withFilesystem(function(){
 		var fs = BrowserFS.BFSRequire("fs");
 		fs.stat(file_path, function(err, stats){

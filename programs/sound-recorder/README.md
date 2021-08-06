@@ -10,7 +10,7 @@ Try it [as part of 98](https://98.js.org/) or [standalone](https://98.js.org/pro
 
 ### TODO
 
-* Keep track of file savedness and warn about losing changes
+* Keep track of whether the file is saved and warn about losing changes
 
 * Integrate with the virtual filesystem
 

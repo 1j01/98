@@ -58,7 +58,7 @@ html, body {
 .taskbar-divider {
 	margin-right: 0px;
 	margin-left: 0px;
-	/* TODO: maybe make that 2px rule padding on the taskbar instead and avoid reseting this */
+	/* TODO: maybe make that 2px rule padding on the taskbar instead and avoid resetting this */
 }
 .taskbar button {
 	line-height: 14px;
@@ -159,7 +159,7 @@ html, body {
 	line-height: 13px;
 	font-size: 9px;
 	overflow: hidden;
-	text-overflow: ellipsis; /* TODO: make this work with multiline text! This is apparently a limitation of this CSS property and ther are various crazy CSS hacks and JS libs to solve this. */
+	text-overflow: ellipsis; /* TODO: make this work with multiline text! This is apparently a limitation of this CSS property and there are various crazy CSS hacks and JS libs to solve this. */
 	word-wrap: break-word; /* All browsers since IE 5.5+ */
 	overflow-wrap: break-word; /* Renamed property in CSS3 draft spec */
 }

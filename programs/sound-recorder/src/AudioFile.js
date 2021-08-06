@@ -150,7 +150,7 @@ function AudioFile(){
 	};
 	
 	// We have to connect the script processing node to the output
-	// or else we don't recieve any audioprocess events :(
+	// or else we don't receive any audioprocess events :(
 	// We don't want that to actually take effect,
 	// so we pass it through a gain node to mute it
 	var work_around = audio_context.createGain();
