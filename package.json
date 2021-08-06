@@ -44,7 +44,7 @@
 		"recursive-copy": "^2.0.9",
 		"rimraf": "^2.6.2",
 		"send": "^0.17.1",
-		"webamp": "1.4.0"
+		"webamp": "1.5.0"
 	},
 	"scripts": {
 		"start": "run-p watch-fs-index start-server",
