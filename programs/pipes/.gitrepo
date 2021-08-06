@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/1j01/pipes.git
 	branch = master
-	commit = e6707fa9cb21e5e7be3e28c26cdd44520d347722
-	parent = f59e2aeeba321cca52a37afb86f3d65428b890c0
+	commit = 86e8eb1418f937ef43f9acbd871085c5160714fc
+	parent = 266f7b60aeaadee49d28a5b87ecc199b2c1ea1a6
 	method = merge
 	cmdver = 0.4.3
