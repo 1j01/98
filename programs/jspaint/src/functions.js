@@ -1,4 +1,98 @@
 
+// expresses order in the URL as well as type
+const param_types = {
+	// settings
+	"eye-gaze-mode": "bool",
+	"vertical-color-box-mode": "bool",
+	"speech-recognition-mode": "bool",
+	// sessions
+	"local": "string",
+	"session": "string",
+	"load": "string",
+};
+
+const exclusive_params = [
+	"local",
+	"session",
+	"load",
+];
+
+function get_all_url_params() {
+	const params = {};
+	location.hash.replace(/^#/, "").split(/,/).forEach((param_decl)=> {
+		// colon is used in param value for URLs so split(":") isn't good enough
+		const colon_index = param_decl.indexOf(":");
+		if (colon_index === -1) {
+			// boolean value, implicitly true because it's in the URL
+			const param_name = param_decl;
+			params[param_name] = true;
+		} else {
+			const param_name = param_decl.slice(0, colon_index);
+			const param_value = param_decl.slice(colon_index + 1);
+			params[param_name] = decodeURIComponent(param_value);
+		}
+	});
+	for (const [param_name, param_type] of Object.entries(param_types)) {
+		if (param_type === "bool" && !params[param_name]) {
+			params[param_name] = false;
+		}
+	}
+	return params;
+}
+
+function get_url_param(param_name) {
+	return get_all_url_params()[param_name];
+}
+
+function change_url_param(param_name, value, {replace_history_state=false}={}) {
+	change_some_url_params({[param_name]: value}, {replace_history_state});
+}
+
+function change_some_url_params(updates, {replace_history_state=false}={}) {
+	for (const exclusive_param of exclusive_params) {
+		if (updates[exclusive_param]) {
+			exclusive_params.forEach((param)=> {
+				if (param !== exclusive_param) {
+					updates[param] = null; // must be enumerated (for Object.assign) but falsey, to get removed from the URL
+				}
+			});
+		}
+	}
+	set_all_url_params(Object.assign({}, get_all_url_params(), updates), {replace_history_state});
+}
+
+function set_all_url_params(params, {replace_history_state=false}={}) {
+
+	let new_hash = "";
+	for (const [param_name, param_type] of Object.entries(param_types)) {
+		if (params[param_name]) {
+			if (new_hash.length) {
+				new_hash += ",";
+			}
+			new_hash += encodeURIComponent(param_name);
+			if (param_type !== "bool") {
+				new_hash += ":" + encodeURIComponent(params[param_name]);
+			}
+		}
+	}
+	// Note: gets rid of query string (?) portion of the URL
+	// This is desired for upgrading backwards compatibility URLs;
+	// may not be desired for future cases.
+	const new_url = `${location.origin}${location.pathname}#${new_hash}`;
+	try {
+		// can fail when running from file: protocol
+		if (replace_history_state) {
+			history.replaceState(null, document.title, new_url);
+		} else {
+			history.pushState(null, document.title, new_url);
+		}
+	} catch(error) {
+		location.hash = new_hash;
+	}
+
+	$G.triggerHandler("change-url-params");
+}
+
 function update_magnified_canvas_size(){
 	$canvas.css("width", canvas.width * magnification);
 	$canvas.css("height", canvas.height * magnification);
@@ -56,6 +150,12 @@ function update_helper_layer_immediately() {
 
 	const margin = 15;
 	const viewport_x = Math.floor(Math.max($canvas_area.scrollLeft() / magnification - margin, 0));
+	// Nevermind, canvas, isn't aligned to the right in RTL layout!
+	// const viewport_x =
+	// 	get_direction() === "rtl" ?
+	// 		// Note: $canvas_area.scrollLeft() can return negative numbers for RTL layout
+	// 		Math.floor(Math.max(($canvas_area.scrollLeft() - $canvas_area.innerWidth()) / magnification + canvas.width - margin, 0)) :
+	// 		Math.floor(Math.max($canvas_area.scrollLeft() / magnification - margin, 0));
 	const viewport_y = Math.floor(Math.max($canvas_area.scrollTop() / magnification - margin, 0));
 	const viewport_x2 = Math.floor(Math.min(viewport_x + $canvas_area.width() / magnification + margin*2, canvas.width));
 	const viewport_y2 = Math.floor(Math.min(viewport_y + $canvas_area.height() / magnification + margin*2, canvas.height));
@@ -176,18 +276,18 @@ function show_custom_zoom_window() {
 	if ($custom_zoom_window) {
 		$custom_zoom_window.close();
 	}
-	const $w = new $FormToolWindow("Custom Zoom");
+	const $w = new $FormToolWindow(localize("Custom Zoom"));
 	$custom_zoom_window = $w;
 
-	// TODO: show Current zoom: blah% ?
+	// @TODO: show Current zoom: blah% ?
 	const $fieldset = $(E("fieldset")).appendTo($w.$main);
-	$fieldset.append("<legend>Zoom to</legend>");
+	$fieldset.append("<legend/>").text(localize("Zoom to"));
 	$fieldset.append("<label><input type='radio' name='custom-zoom-radio' value='1'/>100%</label>");
 	$fieldset.append("<label><input type='radio' name='custom-zoom-radio' value='2'/>200%</label>");
 	$fieldset.append("<label><input type='radio' name='custom-zoom-radio' value='4'/>400%</label>");
 	$fieldset.append("<label><input type='radio' name='custom-zoom-radio' value='6'/>600%</label>");
 	$fieldset.append("<label><input type='radio' name='custom-zoom-radio' value='8'/>800%</label>");
-	$fieldset.append("<label><input type='radio' name='custom-zoom-radio' value='really-custom'/><input type='number' min='10' max='1000' name='really-custom-zoom-input' value=''/>%</label>");
+	$fieldset.append("<label><input type='radio' name='custom-zoom-radio' value='really-custom'/><input type='number' min='10' max='1000' name='really-custom-zoom-input' class='inset-deep' value=''/>%</label>");
 	let is_custom = true;
 	$fieldset.find("input[type=radio]").get().forEach((el)=> {
 		if (parseFloat(el.value) === magnification) {
@@ -210,7 +310,7 @@ function show_custom_zoom_window() {
 
 	$fieldset.find("label").css({display: "block"});
 
-	$w.$Button("Okay", () => {
+	$w.$Button(localize("OK"), () => {
 		let option_val = $fieldset.find("input[name='custom-zoom-radio']:checked").val();
 		let mag;
 		if(option_val === "really-custom"){
@@ -222,8 +322,9 @@ function show_custom_zoom_window() {
 			}
 			if(isNaN(mag)){
 				const $msgw = new $FormToolWindow("Invalid Value").addClass("dialogue-window");
-				$msgw.$main.text("The value specified for custom zoom was invalid.");
-				$msgw.$Button("Okay", () => {
+				// $msgw.$main.text("The value specified for custom zoom was invalid.");
+				$msgw.$main.text(localize("Please enter a number."));
+				$msgw.$Button(localize("OK"), () => {
 					$msgw.close();
 				});
 				return;
@@ -236,12 +337,13 @@ function show_custom_zoom_window() {
 
 		$w.close();
 	})[0].focus();
-	$w.$Button("Cancel", () => {
+	$w.$Button(localize("Cancel"), () => {
 		$w.close();
 	});
 
 	$w.center();
 }
+
 
 function toggle_grid() {
 	show_grid = !show_grid;
@@ -260,7 +362,8 @@ function reset_colors(){
 
 function reset_file(){
 	document_file_path = null;
-	file_name = "untitled";
+	file_name = localize("untitled");
+	file_name_chosen = false;
 	update_title();
 	saved = true;
 }
@@ -269,7 +372,7 @@ function reset_canvas_and_history(){
 	undos.length = 0;
 	redos.length = 0;
 	current_history_node = root_history_node = make_history_node({
-		name: "New Document",
+		name: localize("New"),
 		icon: get_help_folder_icon("p_blank.png"),
 	});
 	history_node_to_cancel_to = null;
@@ -333,7 +436,7 @@ function make_history_node({
 }
 
 function update_title(){
-	document.title = `${file_name} - ${is_pride_month ? "Gay es " : ""}Paint`;
+	document.title = `${file_name} - ${is_pride_month ? "Gay es " : ""}${localize("Paint")}`;
 
 	if (is_pride_month) {
 		$("link[rel~='icon']").attr("href", "./images/icons/gay-es-paint-16x16-light-outline.png");
@@ -352,9 +455,9 @@ function create_and_trigger_input(attrs, callback){
 	return $input;
 }
 
-// TODO: rename these functions to lowercase (and maybe say "files" in this case)
+// @TODO: rename these functions to lowercase (and maybe say "files" in this case)
 function get_FileList_from_file_select_dialog(callback){
-	// TODO: specify mime types?
+	// @TODO: specify mime types?
 	create_and_trigger_input({type: "file"}, input => {
 		callback(input.files);
 	});
@@ -362,11 +465,11 @@ function get_FileList_from_file_select_dialog(callback){
 
 function open_from_Image(img, callback, canceled){
 	are_you_sure(() => {
-		// TODO: shouldn't open_from_* start a new session?
+		// @TODO: shouldn't open_from_* start a new session?
 
 		deselect();
 		cancel();
-		saved = false;
+		saved = false; // ??
 
 		reset_file();
 		reset_colors();
@@ -377,9 +480,9 @@ function open_from_Image(img, callback, canceled){
 		detect_transparency();
 		$canvas_area.trigger("resize");
 
-		current_history_node.name = "Load Document";
+		current_history_node.name = localize("Open");
 		current_history_node.image_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
-		current_history_node.icon = null; // TODO
+		current_history_node.icon = null; // @TODO
 
 		$G.triggerHandler("session-update"); // autosave
 		$G.triggerHandler("history-update"); // update history view
@@ -407,40 +510,159 @@ function get_URIs(text) {
 	return uris;
 }
 function load_image_from_URI(uri, callback){
-	// TODO: if URI is not blob: or data:, show dialog with progress bar and this string from mspaint.exe: "Downloading picture"
-	fetch(uri)
-	.then(response => response.blob()).then(blob => {
-		const img = new Image();
-		img.crossOrigin = "Anonymous";
-		img.onload = ()=> {
-			if (!img.complete || typeof img.naturalWidth == "undefined" || img.naturalWidth === 0) {
-				return callback && callback(new Error(`Image failed to load; naturalWidth == ${img.naturalWidth}`));
+	const is_blob_uri = uri.match(/^blob:/);
+	const is_download = !uri.match(/^(blob|data):/);
+
+	if (is_blob_uri && uri.indexOf(`blob:${location.origin}`) === -1) {
+		const error = new Error("can't load blob: URI from another domain");
+		error.code = "cors-blob-uri";
+		callback(error);
+		return;
+	}
+
+	const uris_to_try = is_download ? [
+		uri,
+		// work around CORS headers not sent by whatever server
+		`https://jspaint-cors-proxy.herokuapp.com/${uri}`,
+		// if the image isn't available on the live web, see if it's archived
+		`https://web.archive.org/${uri}`,
+	] : [uri];
+
+	let index = 0;
+	const try_next_uri = ()=> {
+		const uri_to_try = uris_to_try[index];
+		if (is_download) {
+			$status_text.text("Downloading picture...");
+		}
+
+		const handle_fetch_fail = ()=> {
+			index += 1;
+			if (index >= uris_to_try.length) {
+				if (is_download) {
+					$status_text.text("Failed to download picture.");
+				}
+				callback && callback(new Error(`failed to download image from any of three URIs (${JSON.stringify(uris_to_try)}).`));
+			} else {
+				try_next_uri();
 			}
-			callback(null, img);
 		};
-		img.onerror = ()=> {
-			callback && callback(new Error("Image failed to load"));
+		const show_progress = ({loaded, total})=> {
+			if (is_download) {
+				$status_text.text(`Downloading picture... (${Math.round(loaded/total*100)}%)`);
+			}
 		};
-		img.src = window.URL.createObjectURL(blob);
-	}).catch((/*error*/) => {
-		callback && callback(new Error("Image failed to load"));
-	});
+
+		if (is_download) {
+			console.log(`Try loading image from URI (${index + 1}/${uris_to_try.length}): "${uri_to_try}"`);
+		}
+		fetch(uri_to_try)
+		.then(response => {
+			if (!response.ok) {
+				throw Error(`${response.status} ${response.statusText}`);
+			}
+			if (!response.body) {
+				if (is_download) {
+					console.log("ReadableStream not yet supported in this browser. Progress won't be shown for image requests.");
+				}
+				return response;
+			}
+	
+			// to access headers, server must send CORS header "Access-Control-Expose-Headers: content-encoding, content-length x-file-size"
+			// server must send custom x-file-size header if gzip or other content-encoding is used
+			const contentEncoding = response.headers.get("content-encoding");
+			const contentLength = response.headers.get(contentEncoding ? "x-file-size" : "content-length");
+			if (contentLength === null) {
+				if (is_download) {
+					console.log("Response size header unavailable. Progress won't be shown for this image request.");
+				}
+				return response;
+			}
+	
+			const total = parseInt(contentLength, 10);
+			let loaded = 0;
+	
+			return new Response(
+				new ReadableStream({
+					start(controller) {
+						const reader = response.body.getReader();
+	
+						read();
+						function read() {
+							reader.read().then(({done, value}) => {
+								if (done) {
+									controller.close();
+									return; 
+								}
+								loaded += value.byteLength;
+								show_progress({loaded, total})
+								controller.enqueue(value);
+								read();
+							}).catch(error => {
+								console.error(error);
+								controller.error(error)									
+							})
+						}
+					}
+				})
+			);
+		})
+		.then(response => response.blob())
+		.then(blob => {
+			if (is_download) {
+				console.log("Download complete.");
+				$status_text.text("Download complete.");
+			}
+			const img = new Image();
+			img.crossOrigin = "Anonymous";
+			const handle_decode_fail = ()=> {
+				// @TODO: use headers to detect HTML instead, since a doctype is not guaranteed
+				// @TODO: fall back to WayBack Machine still for decode errors,
+				// since a website might start redirecting swathes of URLs regardless of what they originally pointed to,
+				// at which point they would likely point to a web page instead of an image.
+				// (But still show an error about it not being an image, if WayBack also fails.)
+				var fr = new FileReader();
+				fr.onerror = ()=> {
+					const error = new Error("failed to decode blob as image or text");
+					error.code = "decode-fail";
+					callback(error);
+				};
+				fr.onload = (e)=> {
+					const error = new Error("failed to decode blob as an image");
+					error.code = e.target.result.match(/^\s*<!doctype\s+html/i) ? "html-not-image" : "decode-fail";
+					callback(error);
+				};
+				fr.readAsText(blob);
+			};
+			img.onload = ()=> {
+				if (!img.complete || typeof img.naturalWidth == "undefined" || img.naturalWidth === 0) {
+					handle_decode_fail();
+					return;
+				}
+				callback(null, img);
+			};
+			img.onerror = handle_decode_fail;
+			img.src = window.URL.createObjectURL(blob);
+		})
+		.catch(handle_fetch_fail);
+	};
+	try_next_uri();
 }
 function open_from_URI(uri, callback, canceled){
-	load_image_from_URI(uri, (err, img) => {
-		if(err){ return callback(err); }
+	load_image_from_URI(uri, (error, img) => {
+		if(error){ return callback(error); }
 		open_from_Image(img, callback, canceled);
 	});
 }
 function open_from_File(file, callback, canceled){
 	const blob_url = URL.createObjectURL(file);
-	load_image_from_URI(blob_url, (err, img) => {
+	load_image_from_URI(blob_url, (error, img) => {
 		// revoke object URL regardless of error
 		URL.revokeObjectURL(file);
-		if(err){ return callback(err); }
+		if(error){ return callback(error); }
 
 		open_from_Image(img, () => {
 			file_name = file.name;
+			file_name_chosen = false; // ?
 			document_file_path = file.path; // available in Electron
 			update_title();
 			saved = true;
@@ -448,7 +670,9 @@ function open_from_File(file, callback, canceled){
 		}, canceled);
 	});
 }
-function open_from_FileList(files, user_input_method_verb_past_tense){
+async function open_from_FileList(files, user_input_method_verb_past_tense){
+	let loaded = false;
+	const fails = [];
 	for (const file of files) {
 		if (file.type.match(/^image/)) {
 			open_from_File(file, err => {
@@ -458,12 +682,21 @@ function open_from_FileList(files, user_input_method_verb_past_tense){
 		} else if (file.name.match(/\.theme(pack)?$/i)) {
 			loadThemeFile(file);
 			return;
+		} else {
+			AnyPalette.loadPalette(file, (error, new_palette)=> {
+				if (loaded) {
+					return;
+				}
+				if (error) {
+					fails.push({file, error});
+					return;
+				}
+				loaded = true;
+				palette = new_palette.map((color)=> color.toString());
+				$colorbox.rebuild_palette();
+				window.console && console.log(`Loaded palette: ${palette.map(()=> `%c█`).join("")}`, ...palette.map((color)=> `color: ${color};`));
+			});
 		}
-	}
-	if(files.length > 1){
-		show_error_message(`None of the files ${user_input_method_verb_past_tense} appear to be images.`);
-	}else{
-		show_error_message(`File ${user_input_method_verb_past_tense} does not appear to be an image.`);
 	}
 }
 
@@ -486,13 +719,15 @@ function loadThemeFromText(fileText) {
 			console.log("error applying theme to iframe", iframe, error);
 		}
 	})
+
+	$G.triggerHandler("theme-load");
 }
 
 function file_new(){
 	are_you_sure(() => {
 		deselect();
 		cancel();
-		saved = false;
+		saved = false; // ??
 
 		reset_file();
 		reset_colors();
@@ -503,7 +738,7 @@ function file_new(){
 	});
 }
 
-// TODO: factor out open_select/choose_file_dialog or get_file_from_file_select_dialog or whatever
+// @TODO: factor out open_select/choose_file_dialog or get_file_from_file_select_dialog or whatever
 // all these open_from_* things are done backwards, basically
 // there's this little thing called Inversion of Control...
 // also paste_from_file_select_dialog
@@ -521,55 +756,79 @@ function file_load_from_url(){
 	const $w = new $FormToolWindow().addClass("dialogue-window");
 	$file_load_from_url_window = $w;
 	$w.title("Load from URL");
-	// TODO: URL validation (input has to be in a form (and we don't want the form to submit))
-	$w.$main.html("<label>URL: <input type='url' required value='' class='url-input'/></label>");
+	// @TODO: URL validation (input has to be in a form (and we don't want the form to submit))
+	$w.$main.html("<label>URL: <input type='url' required value='' class='url-input inset-deep'/></label>");
 	const $input = $w.$main.find(".url-input");
 	$w.$Button("Load", () => {
 		const uris = get_URIs($input.val());
 		if (uris.length > 0) {
-			// TODO: retry loading if same URL entered
+			// @TODO: retry loading if same URL entered
 			// actually, make it change the hash only after loading successfully
 			// (but still load from the hash when necessary)
 			// make sure it doesn't overwrite the old session before switching
 			$w.close();
-			location.hash = `load:${encodeURIComponent(uris[0])}`;
+			change_url_param("load", uris[0]);
 		} else {
 			show_error_message("Invalid URL. It must include a protocol (https:// or http://)");
 		}
 	});
-	$w.$Button("Cancel", () => {
+	$w.$Button(localize("Cancel"), () => {
 		$w.close();
 	});
 	$w.center();
 	$input[0].focus();
 }
 
-function file_save(){
+function file_save(maybe_saved_callback=()=>{}){
 	deselect();
-	if(file_name.match(/\.svg$/)){
-		//TODO: only affect suggested name in save dialog, don't change file_name
-		file_name = `${file_name.replace(/\.svg$/, "")}.png`;
-		return file_save_as();
-	}
 	if(document_file_path){
-		// TODO: save as JPEG by default if the previously opened/saved file was a JPEG?
-		return save_to_file_path(document_file_path, "PNG", (saved_file_path, saved_file_name) => {
+		if(file_name.match(/\.svg$/i)){
+			return file_save_as(maybe_saved_callback);
+		}
+		// TODO: DRY file extension / mime type / format ID / format name handling
+		const ext_match = document_file_path.match(/\.([^.]+)$/);
+		const ext = ext_match[1].toLowerCase(); // excluding dot
+		const type = (ext === "jpeg" || ext === "jpg") ? "JPEG" : ext === "webp" ? "WebP" : ext.toUpperCase();
+		return save_to_file_path(document_file_path, type, (saved_file_path, saved_file_name) => {
 			saved = true;
 			document_file_path = saved_file_path;
 			file_name = saved_file_name;
+			file_name_chosen = true; // I guess.. should already be true
 			update_title();
+			maybe_saved_callback();
 		});
 	}
-	file_save_as();
+	if (!file_name_chosen) {
+		return file_save_as(maybe_saved_callback);
+	}
+	// TODO: DRY file extension / mime type / format ID / format name handling
+	const ext_match = file_name.match(/\.([^.]+)$/);
+	const ext = ext_match[1].toLowerCase(); // excluding dot
+	const file_type = (ext === "jpeg" || ext === "jpg") ? "image/jpeg" : `image/${ext}`;
+	canvas.toBlob(blob => {
+		// TODO: unify/DRY with blob.type (mime type) checking in save_to_file_path
+		const png_magic_bytes = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+		sanity_check_blob(blob, () => {
+			const file_saver = saveAs(blob, file_name);
+			// file_saver.onwriteend = () => {
+			// 	// this won't fire in chrome
+			// 	maybe_saved_callback(undefined, file_name);
+			// };
+			// hopefully if the page reloads/closes the save dialog/download will persist and succeed?
+			maybe_saved_callback(undefined, file_name);
+		}, png_magic_bytes, file_type === "image/png");
+	}, file_type);
 }
 
-function file_save_as(){
+function file_save_as(maybe_saved_callback=()=>{}){
 	deselect();
-	save_canvas_as(canvas, `${file_name.replace(/\.(bmp|dib|a?png|gif|jpe?g|jpe|jfif|tiff?|webp|raw)$/, "")}.png`, (saved_file_path, saved_file_name) => {
+	save_canvas_as(canvas, `${file_name.replace(/\.(bmp|dib|a?png|gif|jpe?g|jpe|jfif|tiff?|webp|raw)$/i, "")}.png`, (saved_file_path, saved_file_name) => {
 		saved = true;
 		document_file_path = saved_file_path;
 		file_name = saved_file_name;
+		file_name_chosen = true;
 		update_title();
+		maybe_saved_callback();
 	});
 }
 
@@ -579,18 +838,19 @@ function are_you_sure(action, canceled){
 		action();
 	}else{
 		const $w = new $FormToolWindow().addClass("dialogue-window");
-		$w.title("Paint");
-		$w.$main.text(`Save changes to ${file_name}?`);
-		$w.$Button("Save", () => {
+		$w.title(localize("Paint"));
+		$w.$main.text(localize("Save changes to %1?", file_name));
+		$w.$Button(localize("Save"), () => {
 			$w.close();
-			file_save();
-			action();
+			file_save(()=> {
+				action();
+			});
 		})[0].focus();
 		$w.$Button("Discard", () => {
 			$w.close();
 			action();
 		});
-		$w.$Button("Cancel", () => {
+		$w.$Button(localize("Cancel"), () => {
 			$w.close();
 			canceled && canceled();
 		});
@@ -602,7 +862,7 @@ function are_you_sure(action, canceled){
 }
 
 function show_error_message(message, error){
-	const $w = $FormToolWindow().title("Error").addClass("dialogue-window");
+	const $w = $FormToolWindow().title(localize("Paint")).addClass("dialogue-window squish");
 	$w.$main.text(message);
 	$w.$main.css("max-width", "600px");
 	if(error){
@@ -619,7 +879,7 @@ function show_error_message(message, error){
 			overflow: "auto",
 		});
 	}
-	$w.$Button("OK", () => {
+	$w.$Button(localize("OK"), () => {
 		$w.close();
 	});
 	$w.center();
@@ -630,20 +890,38 @@ function show_error_message(message, error){
 	}
 }
 
-// TODO: close are_you_sure windows and these Error windows when switching sessions
+// @TODO: close are_you_sure windows and these Error windows when switching sessions
 // because it can get pretty confusing
-function show_resource_load_error_message(){
-	// NOTE: apparently distinguishing cross-origin errors is disallowed
-	const $w = $FormToolWindow().title("Error").addClass("dialogue-window");
-	$w.$main.html(
-		"<p>Failed to load image from URL.</p>" +
-		"<p>Check your browser's devtools for details.</p>" +
-		"<p>Make sure to use an image host that supports " +
-		"<a href='https://en.wikipedia.org/wiki/Cross-origin_resource_sharing'>Cross-Origin Resource Sharing</a>" +
-		", such as <a href='https://imgur.com/'>Imgur</a>."
-	);
+function show_resource_load_error_message(error){
+	const $w = $FormToolWindow().title(localize("Paint")).addClass("dialogue-window");
+	const firefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
+	if (error.code === "cors-blob-uri") {
+		$w.$main.html(`
+			<p>Can't load image from address starting with "blob:".</p>
+			${
+				firefox ?
+					`<p>Try "Copy Image" instead of "Copy Image Location".</p>` :
+					`<p>Try "Copy image" instead of "Copy image address".</p>`
+			}
+		`);
+	} else if (error.code === "html-not-image") {
+		$w.$main.html(`
+			<p>Address points to a web page, not an image file.</p>
+			<p>Try copying and pasting an image instead of a URL.</p>
+		`);
+	} else if (error.code === "decode-fail") {
+		$w.$main.html(`
+			<p>Address doesn't point to an image file of a supported format.</p>
+			<p>Try copying and pasting an image instead of a URL.</p>
+		`);
+	} else {
+		$w.$main.html(`
+			<p>Failed to load image from URL.</p>
+			<p>Check your browser's devtools for details.</p>
+		`);
+	}
 	$w.$main.css({maxWidth: "500px"});
-	$w.$Button("OK", () => {
+	$w.$Button(localize("OK"), () => {
 		$w.close();
 	});
 	$w.center();
@@ -669,7 +947,8 @@ function show_about_paint(){
 	if($about_paint_window){
 		$about_paint_window.close();
 	}
-	$about_paint_window = $ToolWindow().title("About Paint");
+	$about_paint_window = $ToolWindow().title(localize("About Paint"));
+	$about_paint_window.addClass("about-paint squish");
 	if (is_pride_month) {
 		$("#paint-32x32").attr("src", "./images/icons/gay-es-paint-32x32-light-outline.png");
 	}
@@ -682,7 +961,7 @@ function show_about_paint(){
 	$("#outdated").attr("hidden", "hidden");
 
 	$about_paint_window.center();
-	$about_paint_window.center(); // XXX - but it helps tho
+	$about_paint_window.center(); // @XXX - but it helps tho
 
 	$("#refresh-to-update").on("click", (event)=> {
 		event.preventDefault();
@@ -720,7 +999,7 @@ function show_about_paint(){
 			);
 		}
 
-		// TODO: visibly mark entries that overlap
+		// @TODO: visibly mark entries that overlap
 		entries_newer_than_this_version =
 			$latest_entries.get().filter((el_from_latest)=>
 				!entries_contains_update($this_version_entries, el_from_latest.id)
@@ -772,6 +1051,8 @@ function show_news(){
 		$news_window.close();
 	}
 	$news_window = $ToolWindow().title("Project News");
+	$news_window.addClass("news-window squish");
+
 
 	// const $latest_entries = $latest_news.find(".news-entry");
 	// const latest_entry = $latest_entries[$latest_entries.length - 1];
@@ -785,11 +1066,11 @@ function show_news(){
 	$news_window.$content.append($latest_news.removeAttr("hidden"));
 
 	$news_window.center();
-	$news_window.center(); // XXX - but it helps tho
+	$news_window.center(); // @XXX - but it helps tho
 }
 
 
-// TODO: DRY between these functions and open_from_* functions further?
+// @TODO: DRY between these functions and open_from_* functions further?
 
 // function paste_image_from_URI(uri, callback){
 // 	load_image_from_URI(uri, (err, img)=> {
@@ -801,9 +1082,8 @@ function show_news(){
 function paste_image_from_file(file){
 	const blob_url = URL.createObjectURL(file);
 	// paste_image_from_URI(blob_url);
-	load_image_from_URI(blob_url, (err, img) => {
-		// TODO: this shouldn't really have the CORS error message, if it's from a blob URI
-		if(err){ return show_resource_load_error_message(); }
+	load_image_from_URI(blob_url, (error, img) => {
+		if(error){ return show_resource_load_error_message(error); }
 		paste(img);
 		URL.revokeObjectURL(blob_url);
 	});
@@ -829,18 +1109,22 @@ function paste(img){
 
 	if(img.width > canvas.width || img.height > canvas.height){
 		const $w = new $FormToolWindow().addClass("dialogue-window");
-		$w.title("Paint");
-		$w.$main.html(
-			"The image is bigger than the canvas.<br>" +
-			"Would you like the canvas to be enlarged?<br>"
-		);
+		$w.title(localize("Paint"));
+		$w.$main.html(`
+			${localize("The image in the clipboard is larger than the bitmap.")}<br>
+			${localize("Would you like the bitmap enlarged?")}<br>
+		`);
 		$w.$Button("Enlarge", () => {
 			$w.close();
 			// The resize gets its own undoable, as in mspaint
-			resize_canvas_and_save_dimensions(img.width, img.height, {
-				name: "Enlarge Canvas For Paste",
-				icon: get_help_folder_icon("p_stretch_both.png"),
-			});
+			resize_canvas_and_save_dimensions(
+				Math.max(canvas.width, img.width),
+				Math.max(canvas.height, img.height),
+				{
+					name: "Enlarge Canvas For Paste",
+					icon: get_help_folder_icon("p_stretch_both.png"),
+				}
+			);
 			do_the_paste();
 			$canvas_area.trigger("resize");
 		})[0].focus();
@@ -848,7 +1132,7 @@ function paste(img){
 			$w.close();
 			do_the_paste();
 		});
-		$w.$Button("Cancel", () => {
+		$w.$Button(localize("Cancel"), () => {
 			$w.close();
 		});
 		$w.center();
@@ -858,12 +1142,23 @@ function paste(img){
 
 	function do_the_paste(){
 		deselect();
-		select_tool(get_tool_by_name("Select"));
+		select_tool(get_tool_by_id(TOOL_SELECT));
+		
 		const x = Math.max(0, Math.ceil($canvas_area.scrollLeft() / magnification));
-		const y = Math.max(0, Math.ceil($canvas_area.scrollTop() / magnification));
+		const y = Math.max(0, Math.ceil(($canvas_area.scrollTop()) / magnification));
+		// Nevermind, canvas, isn't aligned to the right in RTL layout!
+		// let x = Math.max(0, Math.ceil($canvas_area.scrollLeft() / magnification));
+		// if (get_direction() === "rtl") {
+		// 	// magic number 8 is a guess, I guess based on the scrollbar width which shows on the left in RTL layout
+		// 	// TODO: detect scrollbar width
+		// 	// x = Math.max(0, Math.ceil(($canvas_area.innerWidth() - canvas.width + $canvas_area.scrollLeft() + 8) / magnification));
+		// 	const scrollbar_width = $canvas_area[0].offsetWidth - $canvas_area[0].clientWidth;
+		// 	console.log("scrollbar_width", scrollbar_width);
+		// 	x = Math.max(0, Math.ceil((-$canvas_area.innerWidth() + $canvas_area.scrollLeft() + scrollbar_width) / magnification + canvas.width));
+		// }
 
 		undoable({
-			name: "Paste",
+			name: localize("Paste"),
 			icon: get_help_folder_icon("p_paste.png"),
 			soft: true,
 		}, ()=> {
@@ -924,10 +1219,10 @@ function render_history_as_gif(){
 					show_imgur_uploader(blob);
 				});
 			});
-			$win.$Button("Save", () => {
+			$win.$Button(localize("Save"), () => {
 				$win.close();
 				sanity_check_blob(blob, () => {
-					saveAs(blob, `${file_name.replace(/\.(bmp|dib|a?png|gif|jpe?g|jpe|jfif|tiff?|webp|raw)$/, "")} history.gif`);
+					saveAs(blob, `${file_name.replace(/\.(bmp|dib|a?png|gif|jpe?g|jpe|jfif|tiff?|webp|raw)$/i, "")} history.gif`);
 				});
 			});
 			$cancel.appendTo($win.$buttons);
@@ -981,13 +1276,13 @@ function go_to_history_node(target_history_node, canceling) {
 		if (selection) {
 			selection.destroy();
 		}
-		// TODO maybe: could store whether a selection is from Free-Form Select
+		// @TODO maybe: could store whether a selection is from Free-Form Select
 		// so it selects Free-Form Select when you jump to e.g. Move Selection
 		// (or could traverse history to figure it out)
-		if (target_history_node.name === "Free-Form Select") {
-			select_tool(get_tool_by_name("Free-Form Select"));
+		if (target_history_node.name === localize("Free-Form Select")) {
+			select_tool(get_tool_by_id(TOOL_FREE_FORM_SELECT));
 		} else {
-			select_tool(get_tool_by_name("Select"));
+			select_tool(get_tool_by_id(TOOL_SELECT));
 		}
 		selection = new OnCanvasSelection(
 			target_history_node.selection_x,
@@ -1011,7 +1306,7 @@ function go_to_history_node(target_history_node, canceling) {
 		tool_transparent_mode = target_history_node.tool_transparent_mode;
 		$G.trigger("option-changed");
 
-		select_tool(get_tool_by_name("Text"));
+		select_tool(get_tool_by_id(TOOL_TEXT));
 		textbox = new OnCanvasTextBox(
 			target_history_node.textbox_x,
 			target_history_node.textbox_y,
@@ -1176,6 +1471,7 @@ function get_history_ancestors(node) {
 }
 
 let $document_history_window;
+// setTimeout(show_document_history, 100);
 function show_document_history() {
 	if ($document_history_prompt_window) {
 		$document_history_prompt_window.close();
@@ -1184,10 +1480,11 @@ function show_document_history() {
 		$document_history_window.close();
 	}
 	const $w = $document_history_window = new $ToolWindow();
+	// $w.prependTo("body").css({position: ""});
 	$w.title("Document History");
+	$w.addClass("history-window squish");
 	$w.$content.html(`
 		<div class="history-view"></div>
-		<p>Press <b>Ctrl+Shift+Y</b> at any time to open this window.</p>
 	`);
 
 	const $history_view = $w.$content.find(".history-view");
@@ -1204,13 +1501,21 @@ function show_document_history() {
 			</div>
 		`);
 		// $entry.find(".history-entry-name").text((node.name || "Unknown") + (node.soft ? " (soft)" : ""));
-		$entry.find(".history-entry-name").text(node.name || "Unknown");
+		$entry.find(".history-entry-name").text((node.name || "Unknown") + (node === root_history_node ? " (Start of History)" : ""));
 		$entry.find(".history-entry-icon-area").append(node.icon);
 		if (node === current_history_node) {
 			$entry.addClass("current");
 			requestAnimationFrame(()=> {
-				$history_view.scrollTop(previous_scroll_position);
-				$entry[0].scrollIntoView({block: "nearest"});
+				// scrollIntoView causes <html> to scroll when the window is partially offscreen,
+				// despite overflow: hidden on html and body, so it's not an option.
+				$history_view[0].scrollTop =
+					Math.min(
+						$entry[0].offsetTop,
+						Math.max(
+							previous_scroll_position,
+							$entry[0].offsetTop - $history_view[0].clientHeight + $entry.outerHeight()
+						)
+					);
 			});
 		} else {
 			const history_ancestors = get_history_ancestors(current_history_node);
@@ -1278,8 +1583,8 @@ function meld_selection_into_canvas(going_to_history_node) {
 	if (!going_to_history_node) {
 		undoable({
 			name: "Deselect",
-			icon: get_icon_for_tool(get_tool_by_name("Select")),
-			use_loose_canvas_changes: true, // HACK; TODO: make OnCanvasSelection not change the canvas outside undoable, same rules as tools
+			icon: get_icon_for_tool(get_tool_by_id(TOOL_SELECT)),
+			use_loose_canvas_changes: true, // HACK; @TODO: make OnCanvasSelection not change the canvas outside undoable, same rules as tools
 		}, ()=> { });
 	}
 }
@@ -1287,13 +1592,13 @@ function meld_textbox_into_canvas(going_to_history_node) {
 	const text = textbox.$editor.val();
 	if (text && !going_to_history_node) {
 		undoable({
-			name: "Text",
-			icon: get_icon_for_tool(get_tool_by_name("Text")),
+			name: localize("Text"),
+			icon: get_icon_for_tool(get_tool_by_id(TOOL_TEXT)),
 			soft: true,
 		}, ()=> { });
 		undoable({
 			name: "Finish Text",
-			icon: get_icon_for_tool(get_tool_by_name("Text")),
+			icon: get_icon_for_tool(get_tool_by_id(TOOL_TEXT)),
 		}, () => {
 			ctx.drawImage(textbox.canvas, textbox.x, textbox.y);
 			textbox.destroy();
@@ -1318,9 +1623,9 @@ function deselect(going_to_history_node){
 function delete_selection(meta={}){
 	if(selection){
 		undoable({
-			name: meta.name || "Delete",
+			name: meta.name || localize("Clear Selection"), //"Delete", (I feel like "Clear Selection" is unclear, could mean "Deselect")
 			icon: meta.icon || get_help_folder_icon("p_delete.png"),
-			// soft: TODO: conditionally soft?,
+			// soft: @TODO: conditionally soft?,
 		}, ()=> {
 			selection.destroy();
 			selection = null;
@@ -1329,11 +1634,11 @@ function delete_selection(meta={}){
 }
 function select_all(){
 	deselect();
-	select_tool(get_tool_by_name("Select"));
+	select_tool(get_tool_by_id(TOOL_SELECT));
 
 	undoable({
-		name: "Select All",
-		icon: get_icon_for_tool(get_tool_by_name("Select")),
+		name: localize("Select All"),
+		icon: get_icon_for_tool(get_tool_by_id(TOOL_SELECT)),
 		soft: true,
 	}, ()=> {
 		selection = new OnCanvasSelection(0, 0, canvas.width, canvas.height);
@@ -1376,7 +1681,8 @@ async function edit_copy(execCommandFallback){
 			if (execCommandFallback) {
 				return try_exec_command("copy");
 			} else {
-				throw new Error(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
+				throw new Error(`${localize("Error getting the Clipboard Data!")} ${browserRecommendationForClipboardAccess}`);
+				// throw new Error(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
 			}
 		}
 		navigator.clipboard.writeText(text);
@@ -1385,7 +1691,8 @@ async function edit_copy(execCommandFallback){
 			if (execCommandFallback) {
 				return try_exec_command("copy");
 			} else {
-				throw new Error(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
+				throw new Error(`${localize("Error getting the Clipboard Data!")} ${browserRecommendationForClipboardAccess}`);
+				// throw new Error(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
 			}
 		}
 		selection.canvas.toBlob(blob => {
@@ -1409,12 +1716,13 @@ function edit_cut(execCommandFallback){
 		if (execCommandFallback) {
 			return try_exec_command("cut");
 		} else {
-			throw new Error(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
+			throw new Error(`${localize("Error getting the Clipboard Data!")} ${browserRecommendationForClipboardAccess}`);
+			// throw new Error(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
 		}
 	}
 	edit_copy();
 	delete_selection({
-		name: "Cut",
+		name: localize("Cut"),
 		icon: get_help_folder_icon("p_cut.png"),
 	});
 }
@@ -1427,7 +1735,8 @@ async function edit_paste(execCommandFallback){
 			if (execCommandFallback) {
 				return try_exec_command("paste");
 			} else {
-				throw new Error(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
+				throw new Error(`${localize("Error getting the Clipboard Data!")} ${browserRecommendationForClipboardAccess}`);
+				// throw new Error(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
 			}
 		}
 		const clipboardText = await navigator.clipboard.readText();
@@ -1438,7 +1747,8 @@ async function edit_paste(execCommandFallback){
 		if (execCommandFallback) {
 			return try_exec_command("paste");
 		} else {
-			throw new Error(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
+			throw new Error(`${localize("Error getting the Clipboard Data!")} ${browserRecommendationForClipboardAccess}`);
+			// throw new Error(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
 		}
 	}
 	try {
@@ -1452,8 +1762,8 @@ async function edit_paste(execCommandFallback){
 				if(clipboardText) {
 					const uris = get_URIs(clipboardText);
 					if (uris.length > 0) {
-						load_image_from_URI(uris[0], (err, img) => {
-							if(err){ return show_resource_load_error_message(); }
+						load_image_from_URI(uris[0], (error, img) => {
+							if(error){ return show_resource_load_error_message(error); }
 							paste(img);
 						});
 					} else {
@@ -1473,7 +1783,7 @@ async function edit_paste(execCommandFallback){
 
 function image_invert_colors(){
 	apply_image_transformation({
-		name: "Invert Colors",
+		name: localize("Invert Colors"),
 		icon: get_help_folder_icon("p_invert.png"),
 	}, (original_canvas, original_ctx, new_canvas, new_ctx) => {
 		invert_rgb(original_ctx, new_ctx);
@@ -1484,7 +1794,7 @@ function clear(){
 	deselect();
 	cancel();
 	undoable({
-		name: "Clear Image",
+		name: localize("Clear Image"),
 		icon: get_help_folder_icon("p_blank.png"),
 	}, () => {
 		saved = false;
@@ -1503,14 +1813,14 @@ function view_bitmap(){
 	if(canvas.webkitRequestFullscreen){ canvas.webkitRequestFullscreen(); }
 }
 
-function get_tool_by_name(name){
+function get_tool_by_id(id){
 	for(let i=0; i<tools.length; i++){
-		if(tools[i].name == name){
+		if(tools[i].id == id){
 			return tools[i];
 		}
 	}
 	for(let i=0; i<extra_tools.length; i++){
-		if(extra_tools[i].name == name){
+		if(extra_tools[i].id == id){
 			return extra_tools[i];
 		}
 	}
@@ -1583,7 +1893,7 @@ function detect_transparency(){
 	transparency = has_any_transparency(ctx);
 }
 
-function is_all_black_and_white(ctx) { 
+function is_all_black_and_white(ctx) {
 	const id = ctx.getImageData(0, 0, canvas.width, canvas.height);
 	for(let i=0, l=id.data.length; i<l; i+=4){
 		if(id.data[i+3] < 255){
@@ -1744,22 +2054,26 @@ function image_attributes(){
 	if(image_attributes.$window){
 		image_attributes.$window.close();
 	}
-	const $w = image_attributes.$window = new $FormToolWindow("Attributes");
+	const $w = image_attributes.$window = new $FormToolWindow(localize("Attributes"));
+	$w.addClass("attributes-window");
 
 	const $main = $w.$main;
 
 	// Information
 
 	const table = {
-		"File last saved": "Not available", // @TODO
-		"Size on disk": "Not available", // @TODO
-		"Resolution": "72 x 72 dots per inch",
+		[localize("File last saved:")]: localize("Not Available"), // @TODO: make available?
+		[localize("Size on disk:")]: localize("Not Available"), // @TODO: make available?
+		[localize("Resolution:")]: "72 x 72 dots per inch", // if localizing this, remove "direction" setting below
 	};
 	const $table = $(E("table")).appendTo($main);
 	for(const k in table){
 		const $tr = $(E("tr")).appendTo($table);
-		const $key = $(E("td")).appendTo($tr).text(`${k}:`);
+		const $key = $(E("td")).appendTo($tr).text(k);
 		const $value = $(E("td")).appendTo($tr).text(table[k]);
+		if (table[k].indexOf("72") !== -1) {
+			$value.css("direction", "ltr");
+		}
 	}
 
 	// Dimensions
@@ -1769,10 +2083,10 @@ function image_attributes(){
 	let width_in_px = canvas.width;
 	let height_in_px = canvas.height;
 
-	const $width_label = $(E("label")).appendTo($main).text("Width:");
-	const $height_label = $(E("label")).appendTo($main).text("Height:");
-	const $width = $(E("input")).appendTo($width_label);
-	const $height = $(E("input")).appendTo($height_label);
+	const $width_label = $(E("label")).appendTo($main).text(localize("Width:"));
+	const $height_label = $(E("label")).appendTo($main).text(localize("Height:"));
+	const $width = $(E("input")).attr({type: "number", min: 1}).addClass("no-spinner inset-deep").appendTo($width_label);
+	const $height = $(E("input")).attr({type: "number", min: 1}).addClass("no-spinner inset-deep").appendTo($height_label);
 
 	$main.find("input")
 		.css({width: "40px"})
@@ -1783,10 +2097,10 @@ function image_attributes(){
 
 	// Fieldsets
 
-	const $units = $(E("fieldset")).appendTo($main).append('<legend>Units</legend>');
-	$units.append('<label><input type="radio" name="units" value="in">Inches</label>');
-	$units.append('<label><input type="radio" name="units" value="cm">Cm</label>');
-	$units.append('<label><input type="radio" name="units" value="px">Pixels</label>');
+	const $units = $(E("fieldset")).appendTo($main).append(`<legend>${localize("Units")}</legend>`);
+	$units.append(`<label><input type="radio" name="units" value="in">${localize("Inches")}</label>`);
+	$units.append(`<label><input type="radio" name="units" value="cm">${localize("Cm")}</label>`);
+	$units.append(`<label><input type="radio" name="units" value="px">${localize("Pixels")}</label>`);
 	$units.find(`[value=${current_unit}]`).attr({checked: true});
 	$units.on("change", () => {
 		const new_unit = $units.find(":checked").val();
@@ -1795,19 +2109,19 @@ function image_attributes(){
 		current_unit = new_unit;
 	}).triggerHandler("change");
 
-	const $colors = $(E("fieldset")).appendTo($main).append('<legend>Colors</legend>');
-	$colors.append('<label><input type="radio" name="colors" value="monochrome">Black and White</label>');
-	$colors.append('<label><input type="radio" name="colors" value="polychrome">Color</label>');
+	const $colors = $(E("fieldset")).appendTo($main).append(`<legend>${localize("Colors")}</legend>`);
+	$colors.append(`<label><input type="radio" name="colors" value="monochrome">${localize("Black and white")}</label>`);
+	$colors.append(`<label><input type="radio" name="colors" value="polychrome">${localize("Colors")}</label>`);
 	$colors.find(`[value=${monochrome ? "monochrome" : "polychrome"}]`).attr({checked: true});
 
-	const $transparency = $(E("fieldset")).appendTo($main).append('<legend>Transparency</legend>');
-	$transparency.append('<label><input type="radio" name="transparency" value="transparent">Transparent</label>');
-	$transparency.append('<label><input type="radio" name="transparency" value="opaque">Opaque</label>');
+	const $transparency = $(E("fieldset")).appendTo($main).append(`<legend>${localize("Transparency")}</legend>`);
+	$transparency.append(`<label><input type="radio" name="transparency" value="transparent">${localize("Transparent")}</label>`);
+	$transparency.append(`<label><input type="radio" name="transparency" value="opaque">${localize("Opaque")}</label>`);
 	$transparency.find(`[value=${transparency ? "transparent" : "opaque"}]`).attr({checked: true});
 
 	// Buttons on the right
 
-	$w.$Button("Okay", () => {
+	$w.$Button(localize("OK"), () => {
 		const transparency_option = $transparency.find(":checked").val();
 		const colors_option = $colors.find(":checked").val();
 		const unit = $units.find(":checked").val();
@@ -1844,11 +2158,11 @@ function image_attributes(){
 		image_attributes.$window.close();
 	})[0].focus();
 
-	$w.$Button("Cancel", () => {
+	$w.$Button(localize("Cancel"), () => {
 		image_attributes.$window.close();
 	});
 
-	$w.$Button("Default", () => {
+	$w.$Button(localize("Default"), () => {
 		width_in_px = default_canvas_width;
 		height_in_px = default_canvas_height;
 		$width.val(width_in_px / unit_sizes_in_px[current_unit]);
@@ -1863,7 +2177,7 @@ function image_attributes(){
 function show_convert_to_black_and_white() {
 	const $w = new $FormToolWindow("Convert to Black and White");
 	$w.addClass("convert-to-black-and-white");
-	$w.$main.append("<fieldset><legend>Threshold</legend><input type='range' min='0' max='1' step='0.01' value='0.5'></fieldset>");
+	$w.$main.append("<fieldset><legend>Threshold:</legend><input type='range' min='0' max='1' step='0.01' value='0.5'></fieldset>");
 	const $slider = $w.$main.find("input[type='range']");
 	const original_canvas = make_canvas(canvas);
 	let threshold;
@@ -1881,10 +2195,10 @@ function show_convert_to_black_and_white() {
 	update_threshold();
 	$slider.on("input", debounce(update_threshold, 100));
 
-	$w.$Button("Okay", ()=> {
+	$w.$Button(localize("OK"), ()=> {
 		$w.close();
 	});
-	$w.$Button("Cancel", ()=> {
+	$w.$Button(localize("Cancel"), ()=> {
 		if (current_history_node.name === "Make Monochrome") {
 			undo();
 		} else {
@@ -1901,21 +2215,26 @@ function show_convert_to_black_and_white() {
 }
 
 function image_flip_and_rotate(){
-	const $w = new $FormToolWindow("Flip and Rotate");
+	const $w = new $FormToolWindow(localize("Flip and Rotate"));
 	$w.addClass("flip-and-rotate");
 
 	const $fieldset = $(E("fieldset")).appendTo($w.$main);
-	$fieldset.append("<legend>Flip or rotate</legend>");
-	$fieldset.append("<label><input type='radio' name='flip-or-rotate' value='flip-horizontal' checked/>Flip horizontal</label>");
-	$fieldset.append("<label><input type='radio' name='flip-or-rotate' value='flip-vertical'/>Flip vertical</label>");
-	$fieldset.append("<label><input type='radio' name='flip-or-rotate' value='rotate-by-angle'/>Rotate by angle<div></div></label>");
+	// TODO: accelerators (hotkeys)
+	$fieldset.append(`
+		<legend>${localize("Flip or rotate")}</legend>
+		<label><input type="radio" name="flip-or-rotate" value="flip-horizontal" checked/>${localize("Flip horizontal")}</label>
+		<label><input type="radio" name="flip-or-rotate" value="flip-vertical"/>${localize("Flip vertical")}</label>
+		<label><input type="radio" name="flip-or-rotate" value="rotate-by-angle"/>${localize("Rotate by angle")}</label>
+	`);
 
-	const $rotate_by_angle = $fieldset.find("div");
-	$rotate_by_angle.css({paddingLeft: "30px"});
-	$rotate_by_angle.append("<label><input type='radio' name='rotate-by-angle' value='90' checked/>90°</label>");
-	$rotate_by_angle.append("<label><input type='radio' name='rotate-by-angle' value='180'/>180°</label>");
-	$rotate_by_angle.append("<label><input type='radio' name='rotate-by-angle' value='270'/>270°</label>");
-	$rotate_by_angle.append("<label><input type='radio' name='rotate-by-angle' value='arbitrary'/><input type='number' min='-360' max='360' name='rotate-by-arbitrary-angle' value=''/> Degrees</label>");
+	const $rotate_by_angle = $(E("div")).appendTo($fieldset);
+	$rotate_by_angle.addClass("sub-options");
+	$rotate_by_angle.append(`
+		<label><input type="radio" name="rotate-by-angle" value="90" checked/>90°</label>
+		<label><input type="radio" name="rotate-by-angle" value="180"/>180°</label>
+		<label><input type="radio" name="rotate-by-angle" value="270"/>270°</label>
+		<label><input type="radio" name="rotate-by-angle" value="arbitrary"/><input type="number" min="-360" max="360" name="rotate-by-arbitrary-angle" value="" class="no-spinner inset-deep" style="width: 50px"/> ${localize("Degrees")}</label>
+	`);
 	$rotate_by_angle.find("input").attr({disabled: true});
 
 	$fieldset.find("input").on("change", () => {
@@ -1942,24 +2261,8 @@ function image_flip_and_rotate(){
 
 	$fieldset.find("label").css({display: "block"});
 
-	$w.$Button("Okay", () => {
+	$w.$Button(localize("OK"), () => {
 		const action = $fieldset.find("input[name='flip-or-rotate']:checked").val();
-		let angle_val = $fieldset.find("input[name='rotate-by-angle']:checked").val();
-		if(angle_val === "arbitrary"){
-			angle_val = $fieldset.find("input[name='rotate-by-arbitrary-angle']").val();
-		}
-		const angle_deg = parseFloat(angle_val);
-		const angle = angle_deg / 360 * TAU;
-
-		if(isNaN(angle)){
-			const $msgw = new $FormToolWindow("Invalid Value").addClass("dialogue-window");
-			$msgw.$main.text("The value specified for Degrees was invalid.");
-			$msgw.$Button("Okay", () => {
-				$msgw.close();
-			});
-			return;
-		}
-
 		switch(action){
 			case "flip-horizontal":
 				flip_horizontal();
@@ -1967,16 +2270,33 @@ function image_flip_and_rotate(){
 			case "flip-vertical":
 				flip_vertical();
 				break;
-			case "rotate-by-angle":
+			case "rotate-by-angle": {
+				let angle_val = $fieldset.find("input[name='rotate-by-angle']:checked").val();
+				if(angle_val === "arbitrary"){
+					angle_val = $fieldset.find("input[name='rotate-by-arbitrary-angle']").val();
+				}
+				const angle_deg = parseFloat(angle_val);
+				const angle = angle_deg / 360 * TAU;
+		
+				if(isNaN(angle)){
+					const $msgw = new $FormToolWindow("Invalid Value").addClass("dialogue-window");
+					// $msgw.$main.text("The value specified for Degrees was invalid.");
+					$msgw.$main.text(localize("Please enter a number."));
+					$msgw.$Button(localize("OK"), () => {
+						$msgw.close();
+					});
+					return;
+				}
 				rotate(angle);
 				break;
+			}
 		}
 
 		$canvas_area.trigger("resize");
 
 		$w.close();
 	})[0].focus();
-	$w.$Button("Cancel", () => {
+	$w.$Button(localize("Cancel"), () => {
 		$w.close();
 	});
 
@@ -1984,14 +2304,15 @@ function image_flip_and_rotate(){
 }
 
 function image_stretch_and_skew(){
-	const $w = new $FormToolWindow("Stretch and Skew");
+	const $w = new $FormToolWindow(localize("Stretch and Skew"));
+	$w.addClass("stretch-and-skew");
 
 	const $fieldset_stretch = $(E("fieldset")).appendTo($w.$main);
-	$fieldset_stretch.append("<legend>Stretch</legend><table></table>");
+	$fieldset_stretch.append(`<legend>${localize("Stretch")}</legend><table></table>`);
 	const $fieldset_skew = $(E("fieldset")).appendTo($w.$main);
-	$fieldset_skew.append("<legend>Skew</legend><table></table>");
+	$fieldset_skew.append(`<legend>${localize("Skew")}</legend><table></table>`);
 
-	const $RowInput = ($table, img_src, label_text, default_value, label_unit) => {
+	const $RowInput = ($table, img_src, label_text, default_value, label_unit, min, max) => {
 		const $tr = $(E("tr")).appendTo($table);
 		const $img = $(E("img")).attr({
 			src: `images/transforms/${img_src}.png`,
@@ -2000,25 +2321,30 @@ function image_stretch_and_skew(){
 		}).css({
 			marginRight: "20px"
 		});
+		const input_id = ("input" + Math.random() + Math.random()).replace(/\./, "");
 		const $input = $(E("input")).attr({
-			value: default_value
+			type: "number",
+			min,
+			max,
+			value: default_value,
+			id: input_id,
 		}).css({
 			width: "40px"
-		});
+		}).addClass("no-spinner inset-deep");
 		$(E("td")).appendTo($tr).append($img);
-		$(E("td")).appendTo($tr).text(label_text);
+		$(E("td")).appendTo($tr).append($(E("label")).text(label_text).attr("for", input_id));
 		$(E("td")).appendTo($tr).append($input);
 		$(E("td")).appendTo($tr).text(label_unit);
 
 		return $input;
 	};
 
-	const stretch_x = $RowInput($fieldset_stretch.find("table"), "stretch-x", "Horizontal:", 100, "%");
-	const stretch_y = $RowInput($fieldset_stretch.find("table"), "stretch-y", "Vertical:", 100, "%");
-	const skew_x = $RowInput($fieldset_skew.find("table"), "skew-x", "Horizontal:", 0, "Degrees");
-	const skew_y = $RowInput($fieldset_skew.find("table"), "skew-y", "Vertical:", 0, "Degrees");
+	const stretch_x = $RowInput($fieldset_stretch.find("table"), "stretch-x", localize("Horizontal:"), 100, "%", 1, 5000);
+	const stretch_y = $RowInput($fieldset_stretch.find("table"), "stretch-y", localize("Vertical:"), 100, "%", 1, 5000);
+	const skew_x = $RowInput($fieldset_skew.find("table"), "skew-x", localize("Horizontal:"), 0, localize("Degrees"), -90, 90);
+	const skew_y = $RowInput($fieldset_skew.find("table"), "skew-y", localize("Vertical:"), 0, localize("Degrees"), -90, 90);
 
-	$w.$Button("Okay", () => {
+	$w.$Button(localize("OK"), () => {
 		const xscale = parseFloat(stretch_x.val())/100;
 		const yscale = parseFloat(stretch_y.val())/100;
 		const hskew = parseFloat(skew_x.val())/360*TAU;
@@ -2028,29 +2354,154 @@ function image_stretch_and_skew(){
 		$w.close();
 	})[0].focus();
 
-	$w.$Button("Cancel", () => {
+	$w.$Button(localize("Cancel"), () => {
 		$w.close();
 	});
 
 	$w.center();
 }
 
-// TODO: establish a better pattern for this (platform-specific functions, with browser-generic fallbacks)
+function choose_file_name_and_type(dialog_name, file_name, types, callback) {
+	// file_name = `${file_name.replace(/\.(bmp|dib|a?png|gif|jpe?g|jpe|jfif|tiff?|webp|raw)$/i, "")}.png`;
+
+	const $w = new $FormToolWindow(dialog_name);
+	$w.addClass("save-as");
+
+	// TODO: hotkeys (N, T, S, Enter, Esc)
+	$w.$main.append(`
+		<label>
+			File name:
+			<input type="text" class="file-name inset-deep"/>
+		</label>
+		<label>
+			Save as type:
+			<select class="file-type-select inset-deep"></select>
+		</label>
+	`);
+	const $file_type = $w.$main.find(".file-type-select");
+	const $file_name = $w.$main.find(".file-name");
+
+	const ext_to_type_ids = {};
+	const type_id_to_exts = {};
+	for (const [type_id, type_name] of Object.entries(types)) {
+		const regexp = /\*\.([^);,]+)/g;
+		let option_html = type_name;
+		if (get_direction() === "rtl") {
+			// option_html = type_name.replace(regexp, "<bdi>$&</bdi>"); // not allowed
+			// option_html = type_name.replace(regexp, "<span dir='ltr'>$&</span>"); // not allowed
+			// option_html = type_name.replace(regexp, "<bdo dir='ltr'>$&</bdo>"); // not allowed
+			// option_html = type_name.replace(regexp, "&lrm;$&&rlm;"); // not what we really want
+			option_html = type_name.replace(regexp, "&rlm;*.&lrm;$1&rlm;");
+		}
+		$file_type.append($("<option>").val(type_id).html(option_html));
+
+		let match;
+		// eslint-disable-next-line no-cond-assign
+		while (match = regexp.exec(type_name)) {
+			ext_to_type_ids[match[1]] = ext_to_type_ids[match[1]] || [];
+			ext_to_type_ids[match[1]].push(type_id);
+			type_id_to_exts[type_id] = type_id_to_exts[type_id] || [];
+			type_id_to_exts[type_id].push(match[1]);
+		}
+	}
+
+	$file_name.val(file_name);
+
+	// Select file type when typing file name
+	const select_file_type_from_file_name = ()=> {
+		const extension_match = $file_name.val().match(/\.([\w\d]+)$/);
+		if (extension_match) {
+			if (type_id_to_exts[$file_type.val()].indexOf(extension_match[1].toLowerCase()) > -1) {
+				// File extension already matches selected file type.
+				// Don't select a different file type with the same extension.
+				return;
+			}
+			for (const [extension, type_ids] of Object.entries(ext_to_type_ids)) {
+				if (extension_match[1].toLowerCase() === extension.toLowerCase()) {
+					$file_type.val(type_ids[0]);
+				}
+			}
+		}
+	};
+	$file_name.on("input", select_file_type_from_file_name);
+	// and initially
+	select_file_type_from_file_name();
+
+	// Change file extension when selecting file type
+	// allowing non-default extension like .dib vs .bmp, .jpg vs .jpeg to stay
+	const update_extension_from_file_type = (add_extension_if_absent)=> {
+		file_name = $file_name.val();
+		const extensions_for_type = type_id_to_exts[$file_type.val()];
+		const primary_extension_for_type = extensions_for_type[0];
+		// This way of removing the file extension doesn't scale very well! But I don't want to delete text the user wanted like in case of a version number...
+		const without_extension = file_name.replace(/\.(\w{1,3}|apng|jpeg|jfif|tiff|webp|psppalette|sketchpalette|gimp|colors|scss|sass|less|styl|html|theme|themepack)$/i, "");
+		const extension_present = without_extension !== file_name;
+		const extension = file_name.slice(without_extension.length + 1).toLowerCase(); // without dot
+		if (
+			(add_extension_if_absent || extension_present) &&
+			extensions_for_type.indexOf(extension) === -1
+		) {
+			file_name = `${without_extension}.${primary_extension_for_type}`;
+			$file_name.val(file_name);
+		}
+	};
+	$file_type.on("change", ()=> {
+		update_extension_from_file_type(false);
+	});
+	// and initially
+	update_extension_from_file_type(false);
+
+	$w.$Button(localize("Save"), () => {
+		$w.close();
+		file_name = $file_name.val();
+		update_extension_from_file_type(true);
+		callback(file_name, $file_type.val());
+	});
+	$w.$Button(localize("Cancel"), () => {
+		$w.close();
+	});
+
+	$w.center();
+	// For mobile devices with on-screen keyboards, move the window to the top
+	if (window.innerWidth < 500 || window.innerHeight < 700) {
+		$w.css({ top: 20 });
+	}
+
+	$file_name.focus().select();
+}
+
+// @TODO: establish a better pattern for this (platform-specific functions, with browser-generic fallbacks)
 // Note: we can't just poke in a different save_canvas_as function in electron-injected.js because electron-injected.js is loaded first
 function save_canvas_as(canvas, fileName, savedCallbackUnreliable){
 	if(window.systemSaveCanvasAs){
 		return systemSaveCanvasAs(canvas, fileName, savedCallbackUnreliable);
 	}
 
-	// TODO: file name + type dialog
-	canvas.toBlob(blob => {
-		sanity_check_blob(blob, () => {
-			const file_saver = saveAs(blob, `${file_name.replace(/\.(bmp|dib|a?png|gif|jpe?g|jpe|jfif|tiff?|webp|raw)$/, "")}.png`);
-			file_saver.onwriteend = () => {
-				// this won't fire in chrome
-				savedCallbackUnreliable();
-			};
-		});
+	const image_types = {
+		"image/png": localize("PNG (*.png)"),
+		"image/jpeg": localize("JPEG (*.jpg;*.jpeg)"),
+		"image/webp": localize("WebP (*.webp)"),
+		"image/bitmap": localize("24-bit Bitmap (*.bmp;*.dib)"),
+		// would need to restructure this to handle:
+		// "Monochrome Bitmap (*.bmp;*.dib)": "image/bitmap",
+		// "16 Color Bitmap (*.bmp;*.dib)": "image/bitmap",
+		// "256 Color Bitmap (*.bmp;*.dib)": "image/bitmap",
+		// "24-bit Bitmap (*.bmp;*.dib)": "image/bitmap",
+	};
+	choose_file_name_and_type(localize("Save As"), file_name, image_types, (new_file_name, file_type)=> {
+		canvas.toBlob(blob => {
+			// TODO: unify/DRY with blob.type (mime type) checking in save_to_file_path
+			const png_magic_bytes = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
+			sanity_check_blob(blob, () => {
+				const file_saver = saveAs(blob, new_file_name);
+				// file_saver.onwriteend = () => {
+				// 	// this won't fire in chrome
+				// 	savedCallbackUnreliable(undefined, new_file_name);
+				// };
+				// hopefully if the page reloads/closes the save dialog/download will persist and succeed?
+				savedCallbackUnreliable(undefined, new_file_name);
+			}, png_magic_bytes, file_type === "image/png");
+		}, file_type);
 	});
 }
 
@@ -2076,7 +2527,7 @@ function set_as_wallpaper_centered(c = canvas) {
 
 	c.toBlob(blob => {
 		sanity_check_blob(blob, () => {
-			saveAs(blob, `${file_name.replace(/\.(bmp|dib|a?png|gif|jpe?g|jpe|jfif|tiff?|webp|raw)$/, "")} wallpaper.png`);
+			saveAs(blob, `${file_name.replace(/\.(bmp|dib|a?png|gif|jpe?g|jpe|jfif|tiff?|webp|raw)$/i, "")} wallpaper.png`);
 		});
 	});
 }
@@ -2115,37 +2566,92 @@ function save_selection_to_file(){
 	}
 }
 
-function sanity_check_blob(blob, okay_callback){
+function sanity_check_blob(blob, okay_callback, magic_number_bytes, magic_wanted=true){
 	if(blob.size > 0){
-		okay_callback();
+		if (magic_number_bytes) {
+			const reader = new FileReader();
+			reader.onerror = ()=> {
+				show_error_message(localize("An unknown error has occurred."), reader.error);
+			};
+			reader.onload = ()=> {
+				const file_bytes = new Uint8Array(reader.result);
+				const magic_found = magic_number_bytes.every((byte, index)=> byte === file_bytes[index]);
+				// console.log(file_bytes, magic_number_bytes, magic_found, magic_wanted);
+				if (magic_found === magic_wanted) {
+					okay_callback();
+				} else {
+					const $w = $FormToolWindow().title(localize("Paint")).addClass("dialogue-window");
+					// hackily combining messages that are already localized
+					// you have to do some deduction to understand this message
+					$w.$main.html(`
+						<p>${localize("Unexpected file format.")}</p>
+						<p>${localize("An unsupported operation was attempted.")}</p>
+					`);
+					$w.$main.css({maxWidth: "500px"});
+					$w.$Button(localize("OK"), () => {
+						$w.close();
+					});
+					$w.center();
+				}
+			};
+			reader.readAsArrayBuffer(blob);
+		} else {
+			okay_callback();
+		}
 	}else{
-		const $w = $FormToolWindow().title("Warning").addClass("dialogue-window");
-		$w.$main.html(
-			"<p>Tried to save file, but file was empty.</p>" +
-			"<p>Try again, or if the problem persists, report here: " +
-			"<a href='https://github.com/1j01/jspaint/issues/118'>Issue #118</a>"
-		);
-		$w.$main.css({maxWidth: "500px"});
-		$w.$Button("OK", () => {
-			$w.close();
-		});
-		$w.center();
+		show_error_message(localize("Failed to save document."));
 	}
 }
 
-function blob_to_buffer(blob, callback) {
-	const file_reader = new FileReader()
+function show_multi_user_setup_dialog(from_current_document){
+	const $w = $FormToolWindow().title("Multi-User Setup").addClass("dialogue-window");
+	$w.$main.html(`
+		${from_current_document ? "<p>This will make the current document public.</p>" : ""}
+		<p>
+			<!-- Choose a name for the multi-user session, included in the URL for sharing: -->
+			Enter the session name that will be used in the URL for sharing:
+		</p>
+		<p>
+			<label>
+				<span class="partial-url-label">jspaint.app/#session:</span>
+				<input
+					type="text"
+					id="session-name"
+					aria-label="session name"
+					pattern="[-0-9A-Za-z\\u00c0-\\u00d6\\u00d8-\\u00f6\\u00f8-\\u02af\\u1d00-\\u1d25\\u1d62-\\u1d65\\u1d6b-\\u1d77\\u1d79-\\u1d9a\\u1e00-\\u1eff\\u2090-\\u2094\\u2184-\\u2184\\u2488-\\u2490\\u271d-\\u271d\\u2c60-\\u2c7c\\u2c7e-\\u2c7f\\ua722-\\ua76f\\ua771-\\ua787\\ua78b-\\ua78c\\ua7fb-\\ua7ff\\ufb00-\\ufb06]+"
+					title="Numbers, letters, and hyphens are allowed."
+					class="inset-deep"
+				>
+			</label>
+		</p>
+	`);
+	const $session_name = $w.$main.find("#session-name");
+	$w.$main.css({maxWidth: "500px"});
+	$w.$Button("Start", () => {
+		let name = $session_name.val().trim();
 
-	file_reader.addEventListener("loadend", () => {
-		if (file_reader.error) {
-			callback(file_reader.error)
-		} else {
-			callback(null, new Buffer(file_reader.result))
+		if(name == ""){
+			show_error_message("The session name cannot be empty.");
+		// }else if(name.match(/[./[\]#$]/)){
+		// 	show_error_message("The session name cannot contain any of ./[]#$");
+		// }else if(name.match(/\s/)){
+		// 	show_error_message("The session name cannot contain spaces.");
+		}else if($session_name.is(":invalid")){
+			show_error_message("The session name must be made from only numbers, letters, and hyphens.");
+		}else{
+			if (from_current_document) {
+				change_url_param("session", name);
+			} else {
+				// @TODO: load new empty session in the same browser tab
+				// (or at least... keep settings like vertical-color-box-mode?)
+				window.open(`${location.origin}${location.pathname}#session:${name}`);
+			}
+			$w.close();
 		}
-	}, false)
-
-	// Read the blob as a typed array.
-	file_reader.readAsArrayBuffer(blob)
-
-	return file_reader
+	});
+	$w.$Button(localize("Cancel"), () => {
+		$w.close();
+	});
+	$w.center();
+	$session_name.focus();
 }

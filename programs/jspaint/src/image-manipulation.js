@@ -1,7 +1,8 @@
+const fill_threshold = 1; // 1 is just enough for a workaround for Brave browser's farbling: https://github.com/1j01/jspaint/issues/184
 
 function get_brush_canvas_size(brush_size, brush_shape){
 	// brush_shape optional, only matters if it's circle
-	// TODO: does it actually still matter? the ellipse drawing code has changed
+	// @TODO: does it actually still matter? the ellipse drawing code has changed
 	
 	// round to nearest even number in order for the canvas to be drawn centered at a point reasonably
 	return Math.ceil(brush_size * (brush_shape === "circle" ? 2.1 : 1) / 2) * 2;
@@ -20,7 +21,7 @@ function render_brush(ctx, shape, size){
 	const bottom = Math.round(mid_y + size/2);
 	
 	if(shape === "circle"){
-		// TODO: ideally _without_pattern_support
+		// @TODO: ideally _without_pattern_support
 		draw_ellipse(ctx, left, top, size, size, false, true);
 		// was useful for testing:
 		// ctx.fillStyle = "red";
@@ -117,7 +118,7 @@ function draw_rounded_rectangle(ctx, x, y, width, height, radius_x, radius_y, st
 }
 
 // USAGE NOTE: must be called outside of any other usage of op_canvas (because of render_brush)
-// TODO: protect against browser clearing canvases, invalidate cache
+// @TODO: protect against browser clearing canvases, invalidate cache
 const get_brush_canvas = memoize_synchronous_function((brush_shape, brush_size)=> {
 	const canvas_size = get_brush_canvas_size(brush_size, brush_shape);
 
@@ -258,10 +259,10 @@ function brosandham_line(x1, y1, x2, y2, callback){
 
 function draw_fill_without_pattern_support(ctx, start_x, start_y, fill_r, fill_g, fill_b, fill_a){
 	
-	// TODO: split up processing in case it takes too long?
+	// @TODO: split up processing in case it takes too long?
 	// progress bar and abort button (outside of image-manipulation.js)
 	// or at least just free up the main thread every once in a while
-	// TODO: speed up with typed arrays? https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
+	// @TODO: speed up with typed arrays? https://hacks.mozilla.org/2011/12/faster-canvas-pixel-manipulation-with-typed-arrays/
 	// could avoid endianness issues if only copying colors
 	// the jsperf only shows ~15% improvement
 	// maybe do something fancier like special-casing large chunks of single-color image
@@ -344,10 +345,10 @@ function draw_fill_without_pattern_support(ctx, start_x, start_y, fill_r, fill_g
 	function should_fill_at(pixel_pos){
 		return (
 			// matches start color (i.e. region to fill)
-			id.data[pixel_pos+0] === start_r &&
-			id.data[pixel_pos+1] === start_g &&
-			id.data[pixel_pos+2] === start_b &&
-			id.data[pixel_pos+3] === start_a
+			Math.abs(id.data[pixel_pos+0] - start_r) <= fill_threshold &&
+			Math.abs(id.data[pixel_pos+1] - start_g) <= fill_threshold &&
+			Math.abs(id.data[pixel_pos+2] - start_b) <= fill_threshold &&
+			Math.abs(id.data[pixel_pos+3] - start_a) <= fill_threshold
 		);
 	}
 
@@ -445,10 +446,10 @@ function draw_fill_separately(source_ctx, dest_ctx, start_x, start_y, fill_r, fi
 			dest_id.data[pixel_pos+3] === 0 &&
 			// and matches start color (i.e. region to fill)
 			(
-				source_id.data[pixel_pos+0] === start_r &&
-				source_id.data[pixel_pos+1] === start_g &&
-				source_id.data[pixel_pos+2] === start_b &&
-				source_id.data[pixel_pos+3] === start_a
+				Math.abs(source_id.data[pixel_pos+0] - start_r) <= fill_threshold &&
+				Math.abs(source_id.data[pixel_pos+1] - start_g) <= fill_threshold &&
+				Math.abs(source_id.data[pixel_pos+2] - start_b) <= fill_threshold &&
+				Math.abs(source_id.data[pixel_pos+3] - start_a) <= fill_threshold
 			)
 		);
 	}
@@ -473,10 +474,10 @@ function replace_color_globally(image_data, from_r, from_g, from_b, from_a, to_r
 	const {data} = image_data;
 	for(let i = 0; i < data.length; i += 4){
 		if(
-			data[i+0] === from_r &&
-			data[i+1] === from_g &&
-			data[i+2] === from_b &&
-			data[i+3] === from_a
+			Math.abs(data[i+0] - from_r) <= fill_threshold &&
+			Math.abs(data[i+1] - from_g) <= fill_threshold &&
+			Math.abs(data[i+2] - from_b) <= fill_threshold &&
+			Math.abs(data[i+3] - from_a) <= fill_threshold
 		){
 			data[i+0] = to_r;
 			data[i+1] = to_g;
@@ -491,10 +492,10 @@ function find_color_globally(source_image_data, dest_image_data, find_r, find_g,
 	const dest_data = dest_image_data.data;
 	for(let i = 0; i < source_data.length; i += 4){
 		if(
-			source_data[i+0] === find_r &&
-			source_data[i+1] === find_g &&
-			source_data[i+2] === find_b &&
-			source_data[i+3] === find_a
+			Math.abs(source_data[i+0] - find_r) <= fill_threshold &&
+			Math.abs(source_data[i+1] - find_g) <= fill_threshold &&
+			Math.abs(source_data[i+2] - find_b) <= fill_threshold &&
+			Math.abs(source_data[i+3] - find_a) <= fill_threshold
 		){
 			dest_data[i+0] = 255;
 			dest_data[i+1] = 255;
@@ -524,13 +525,13 @@ function draw_noncontiguous_fill(ctx, x, y, swatch){
 	} else {
 		const source_canvas = ctx.canvas;
 		const fill_canvas = make_canvas(source_canvas.width, source_canvas.height);
-		draw_noncontiguous_fill_separately(source_canvas.ctx, fill_canvas.ctx, x, y, 255, 255, 255, 255);
+		draw_noncontiguous_fill_separately(source_canvas.ctx, fill_canvas.ctx, x, y);
 		replace_colors_with_swatch(fill_canvas.ctx, swatch, 0, 0);
 		ctx.drawImage(fill_canvas, 0, 0);
 	}
 }
 
-function draw_noncontiguous_fill_separately(source_ctx, dest_ctx, x, y, fill_r, fill_g, fill_b, fill_a){
+function draw_noncontiguous_fill_separately(source_ctx, dest_ctx, x, y){
 	const source_image_data = source_ctx.getImageData(0, 0, source_ctx.canvas.width, source_ctx.canvas.height);
 	const dest_image_data = dest_ctx.getImageData(0, 0, dest_ctx.canvas.width, dest_ctx.canvas.height);
 	const start_index = (y*source_image_data.width + x) * 4;
@@ -581,7 +582,7 @@ function apply_image_transformation(meta, fn){
 
 function flip_horizontal(){
 	apply_image_transformation({
-		name: "Flip Horizontal",
+		name: localize("Flip horizontal"),
 		icon: get_help_folder_icon("p_fliph.png"),
 	}, (original_canvas, original_ctx, new_canvas, new_ctx) => {
 		new_ctx.translate(new_canvas.width, 0);
@@ -592,7 +593,7 @@ function flip_horizontal(){
 
 function flip_vertical(){
 	apply_image_transformation({
-		name: "Flip Vertical",
+		name: localize("Flip vertical"),
 		icon: get_help_folder_icon("p_flipv.png"),
 	}, (original_canvas, original_ctx, new_canvas, new_ctx) => {
 		new_ctx.translate(0, new_canvas.height);
@@ -603,7 +604,7 @@ function flip_vertical(){
 
 function rotate(angle){
 	apply_image_transformation({
-		name: `Rotate ${angle / TAU * 360} degrees`,
+		name: `${localize("Rotate by angle")} ${angle / TAU * 360} ${localize("Degrees")}`,
 		icon: get_help_folder_icon(`p_rotate_${angle >= 0 ? "cw" : "ccw"}.png`),
 	}, (original_canvas, original_ctx, new_canvas, new_ctx) => {
 		new_ctx.save();
@@ -680,8 +681,8 @@ function stretch_and_skew(xscale, yscale, hsa, vsa){
 	apply_image_transformation({
 		name:
 			(hsa !== 0 || vsa !== 0) ? (
-				(xscale !== 1 || yscale !== 1) ? "Stretch/Skew" : "Skew"
-			) : "Stretch",
+				(xscale !== 1 || yscale !== 1) ? localize("Stretch and Skew") : localize("Skew")
+			) : localize("Stretch"),
 		icon: get_help_folder_icon(
 			(hsa !== 0) ? "p_skew_h.png" :
 			(vsa !== 0) ? "p_skew_v.png" :
@@ -761,7 +762,7 @@ function threshold_black_and_white(ctx, threshold) {
 	ctx.putImageData(image_data, 0, 0);
 }
 
-function replace_colors_with_swatch(ctx, swatch, x_offset_from_global_canvas, y_offset_from_global_canvas){
+function replace_colors_with_swatch(ctx, swatch, x_offset_from_global_canvas=0, y_offset_from_global_canvas=0){
 	// USAGE NOTE: Context MUST be untranslated! (for the rectangle to cover the exact area of the canvas, and presumably for the pattern alignment as well)
 	// This function is mainly for patterns support (for black & white mode) but naturally handles solid colors as well.
 	ctx.globalCompositeOperation = "source-in";
@@ -797,7 +798,7 @@ function draw_bezier_curve_without_pattern_support(ctx, start_x, start_y, contro
 	let point_a = {x: start_x, y: start_y};
 	for(let t=0; t<1; t+=1/steps){
 		const point_b = compute_bezier(t, start_x, start_y, control_1_x, control_1_y, control_2_x, control_2_y, end_x, end_y);
-		// TODO: carry "error" from Bresenham line algorithm between iterations? and/or get a proper Bezier drawing algorithm
+		// @TODO: carry "error" from Bresenham line algorithm between iterations? and/or get a proper Bezier drawing algorithm
 		draw_line_without_pattern_support(ctx, point_a.x, point_a.y, point_b.x, point_b.y, stroke_size);
 		point_a = point_b;
 	}
@@ -831,7 +832,7 @@ function draw_line(ctx, x1, y1, x2, y2, stroke_size){
 
 let grid_pattern;
 function draw_grid(ctx, scale) {
-	const pattern_size = Math.floor(scale); // TODO: try ceil too
+	const pattern_size = Math.floor(scale); // @TODO: try ceil too
 	if (!grid_pattern || grid_pattern.width !== pattern_size || grid_pattern.height !== pattern_size) {
 		const grid_pattern_canvas = make_canvas(pattern_size, pattern_size);
 		const dark_gray = "#808080";
@@ -852,7 +853,7 @@ function draw_grid(ctx, scale) {
 	if (scale !== pattern_size) {
 		ctx.translate(-0.5, -0.75); // hand picked to look "good" at 110% in chrome
 		// might be better to just hide the grid in some more cases tho
-		// ...TODO: if I can get helper layer to be pixel aligned, I can probably remove this
+		// ...@TODO: if I can get helper layer to be pixel aligned, I can probably remove this
 	}
 	ctx.scale(scale / pattern_size, scale / pattern_size);
 	ctx.enable_image_smoothing();
@@ -998,6 +999,11 @@ function draw_grid(ctx, scale) {
 	function initWebGL(canvas) {
 		gl = canvas.getContext('webgl', { antialias: false });
 
+		if (!gl) {
+			show_error_message("Failed to get WebGL context. You may need to refresh the web page, or restart your computer.");
+			return;
+		}
+
 		window.WEBGL_lose_context = gl.getExtension("WEBGL_lose_context");
 		
 		const program = createShaderProgram();
@@ -1092,7 +1098,7 @@ function draw_grid(ctx, scale) {
 		// invalidate the cache(s) so that brushes will be re-rendered now that WebGL is restored
 		$G.triggerHandler("invalidate-brush-canvases");
 
-		$G.triggerHandler("redraw-tool-options");
+		$G.triggerHandler("redraw-tool-options-because-webglcontextrestored");
 	}, false);
 
 	function clamp_brush_sizes() {
@@ -1161,7 +1167,7 @@ function draw_grid(ctx, scale) {
 		for (let i = 0; i < numPoints; i++) {
 			coords[i*2+0] = (points[i].x - x_min) / op_canvas_webgl.width * 2 - 1;
 			coords[i*2+1] = 1 - (points[i].y - y_min) / op_canvas_webgl.height * 2;
-			// TODO: investigate: does this cause resolution/information loss? can we change the coordinate system?
+			// @TODO: investigate: does this cause resolution/information loss? can we change the coordinate system?
 		}
 
 		if(fill){
@@ -1225,7 +1231,7 @@ function draw_grid(ctx, scale) {
 		const width = x_max - x_min;
 		const height = y_max - y_min;
 		
-		// TODO: maybe have the cutout only the width/height of the bounds
+		// @TODO: maybe have the cutout only the width/height of the bounds
 		// const cutout = make_canvas(width, height);
 		const cutout = make_canvas(canvas);
 
@@ -1240,7 +1246,7 @@ function draw_grid(ctx, scale) {
 		return cutout_crop;
 	}
 
-	// TODO: maybe shouldn't be external...
+	// @TODO: maybe shouldn't be external...
 	window.draw_with_swatch = (ctx, x_min, y_min, x_max, y_max, swatch, callback) => {
 		const stroke_margin = ~~(stroke_size * 1.1);
 		

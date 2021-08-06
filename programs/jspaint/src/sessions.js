@@ -68,7 +68,7 @@
 		$G.on("session-update.session-hook", update_buttons_disabled);
 		update_buttons_disabled();
 
-		$w.$Button("Close", ()=> {
+		$w.$Button(localize("Close"), ()=> {
 			$w.close();
 		});
 		$w.center();
@@ -112,7 +112,7 @@
 						else {
 							// e.g. localStorage is disabled
 							// (or there's some other error?)
-							// TODO: show warning with "Don't tell me again" type option
+							// @TODO: show warning with "Don't tell me again" type option
 						}
 					}
 				});
@@ -123,7 +123,7 @@
 						show_error_message("Failed to retrieve image from local storage:", err);
 					}
 					else {
-						// TODO: DRY with storage manager message
+						// @TODO: DRY with storage manager message
 						show_error_message("Please enable local storage in your browser's settings for local backup. It may be called Cookies, Storage, or Site Data.");
 					}
 				}
@@ -168,7 +168,7 @@
 			away: true,
 		},
 		// Currently selected tool (@TODO)
-		tool: "Pencil",
+		tool: localize("Pencil"),
 		// Color components
 		hue: ~~(Math.random() * 360),
 		saturation: ~~(Math.random() * 50) + 50,
@@ -179,7 +179,7 @@
 	user.color = `hsla(${user.hue}, ${user.saturation}%, ${user.lightness}%, 1)`;
 	// Unused
 	user.color_transparent = `hsla(${user.hue}, ${user.saturation}%, ${user.lightness}%, 0.5)`;
-	// (@TODO) The color used in the toolbar indicating to other users it is selected by this user
+	// (@TODO) The color (that may be) used in the toolbar indicating to other users it is selected by this user
 	user.color_desaturated = `hsla(${user.hue}, ${~~(user.saturation*0.4)}%, ${user.lightness}%, 0.8)`;
 
 
@@ -194,9 +194,11 @@
 			this._fb_listeners = [];
 
 			file_name = `[Loading ${this.id}]`;
+			file_name_chosen = false;
 			update_title();
 			const on_firebase_loaded = () => {
 				file_name = `[${this.id}]`;
+				file_name_chosen = false;
 				update_title();
 				this.start();
 			};
@@ -218,6 +220,7 @@
 					.fail(() => {
 						show_error_message("Failed to load Firebase; the document will not load, and changes will not be saved.");
 						file_name = `[Failed to load ${this.id}]`;
+						file_name_chosen = false;
 						update_title();
 					});
 			}
@@ -226,8 +229,8 @@
 			}
 		}
 		start() {
-			// TODO: how do you actually detect if it's failing???
-			const $w = $FormToolWindow().title("Warning").addClass("dialogue-window");
+			// @TODO: how do you actually detect if it's failing???
+			const $w = $FormToolWindow().title(localize("Paint")).addClass("dialogue-window");
 			$w.$main.html("<p>The document may not load. Changes may not save.</p>" +
 				"<p>Multiuser sessions are public. There is no security.</p>"
 				// "<p>The document may not load. Changes may not save. If it does save, it's public. There is no security.</p>"// +
@@ -237,7 +240,7 @@
 				// "<a href='https://github.com/1j01/jspaint/issues/68'>this issue</a> to show interest, and/or subscribe for updates.</p>"
 			);
 			$w.$main.css({ maxWidth: "500px" });
-			$w.$Button("OK", () => {
+			$w.$Button(localize("OK"), () => {
 				$w.close();
 			});
 			$w.center();
@@ -369,7 +372,7 @@
 				}
 				else {
 					previous_uri = uri;
-					saved = true; // hopefully
+					// saved = true; // hopefully // what is the idea here??
 					// Load the new image data
 					const img = new Image();
 					img.onload = () => {
@@ -414,6 +417,7 @@
 			}, error => {
 				show_error_message("Failed to retrieve data from Firebase. The document will not load, and changes will not be saved.", error);
 				file_name = `[Failed to load ${this.id}]`;
+				file_name_chosen = false;
 				update_title();
 			});
 			// Update the cursor status
@@ -496,8 +500,8 @@
 	};
 	const generate_session_id = () => (Math.random()*(2 ** 32)).toString(16).replace(".", "");
 	const update_session_from_location_hash = () => {
-		const session_match = location.hash.match(/^#?(session|local):(.*)$/i);
-		const load_from_url_match = location.hash.match(/^#?(load):(.*)$/i);
+		const session_match = location.hash.match(/^#?(?:.*,)?(session|local):(.*)$/i);
+		const load_from_url_match = location.hash.match(/^#?(?:.*,)?(load):(.*)$/i);
 		if(session_match){
 			const local = session_match[1].toLowerCase() === "local";
 			const session_id = session_match[2];
@@ -528,44 +532,28 @@
 			}
 		}else if(load_from_url_match){
 			const url = decodeURIComponent(load_from_url_match[2]);
-			const hash_loading_url_from = location.hash;
 
 			const uris = get_URIs(url);
 			if (uris.length === 0) {
 				show_error_message("Invalid URL to load (after #load: in the address bar). It must include a protocol (https:// or http://)");
 				return;
 			}
-			end_current_session();
 
-			// TODO: fix loading duplicately, from popstate and hashchange
-			open_from_URI(url, err => {
-				if(err){
-					show_resource_load_error_message();
+			log("Switching to new session from #load: URL (to #local: URL with session ID)");
+			end_current_session();
+			change_url_param("local", generate_session_id());
+
+			open_from_URI(url, error => {
+				if (error) {
+					show_resource_load_error_message(error);
 				}
-				// TODO: saved = false;?
-				// NOTE: the following is intended to run regardless of error (as opposed to returning if there's an error)
-				// FIXME: race condition (make the timeout long and try to fix it with a flag or something )
-				setTimeout(() => {
-					// NOTE: this "change" event doesn't *guarantee* there was a change :/
-					// let alone that there was a user interaction with the currently loaded document
-					// that is, it also triggers for session changes, which I'm trying to avoid here
-					$canvas.one("change", () => {
-						if(location.hash === hash_loading_url_from){
-							log("Switching to new session from #load: URL (to #local: URL with session ID) because of user interaction");
-							end_current_session();
-							const new_session_id = generate_session_id();
-							location.hash = `local:${new_session_id}`;
-						}
-					});
-				}, 100);
 			});
 
 		}else{
 			log("No session ID in hash");
 			const old_hash = location.hash;
 			end_current_session();
-			const new_session_id = generate_session_id();
-			history.replaceState(null, document.title, `#local:${new_session_id}`);
+			change_url_param("local", generate_session_id(), {replace_history_state: true});
 			log("After replaceState:", location.hash);
 			if (old_hash === location.hash) {
 				// e.g. on Wayback Machine
@@ -576,7 +564,7 @@
 		}
 	};
 
-	$G.on("hashchange popstate", e => {
+	$G.on("hashchange popstate change-url-params", e => {
 		log(e.type, location.hash);
 		update_session_from_location_hash();
 	});

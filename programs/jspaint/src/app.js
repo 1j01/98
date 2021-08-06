@@ -1,6 +1,6 @@
 
 const default_magnification = 1;
-const default_tool = get_tool_by_name("Pencil");
+const default_tool = get_tool_by_id(TOOL_PENCIL);
 
 const default_canvas_width = 683;
 const default_canvas_height = 384;
@@ -19,19 +19,109 @@ canvas.classList.add("main-canvas");
 const ctx = canvas.ctx;
 
 const default_palette = [
-	"#000000","#787878","#790300","#757A01","#007902","#007778","#0A0078","#7B0077","#767A38","#003637","#286FFE","#083178","#4C00FE","#783B00",
-	"#FFFFFF","#BBBBBB","#FF0E00","#FAFF08","#00FF0B","#00FEFF","#3400FE","#FF00FE","#FBFF7A","#00FF7B","#76FEFF","#8270FE","#FF0677","#FF7D36",
+	"rgb(0,0,0)", // Black
+	"rgb(128,128,128)", // Dark Gray
+	"rgb(128,0,0)", // Dark Red
+	"rgb(128,128,0)", // Pea Green
+	"rgb(0,128,0)", // Dark Green
+	"rgb(0,128,128)", // Slate
+	"rgb(0,0,128)", // Dark Blue
+	"rgb(128,0,128)", // Lavender
+	"rgb(128,128,64)", //
+	"rgb(0,64,64)", //
+	"rgb(0,128,255)", //
+	"rgb(0,64,128)", //
+	"rgb(64,0,255)", //
+	"rgb(128,64,0)", //
+
+	"rgb(255,255,255)", // White
+	"rgb(192,192,192)", // Light Gray
+	"rgb(255,0,0)", // Bright Red
+	"rgb(255,255,0)", // Yellow
+	"rgb(0,255,0)", // Bright Green
+	"rgb(0,255,255)", // Cyan
+	"rgb(0,0,255)", // Bright Blue
+	"rgb(255,0,255)", // Magenta
+	"rgb(255,255,128)", //
+	"rgb(0,255,128)", //
+	"rgb(128,255,255)", //
+	"rgb(128,128,255)", //
+	"rgb(255,0,128)", //
+	"rgb(255,128,64)", //
+];
+const monochrome_palette_as_colors = [
+	"rgb(0,0,0)",
+	"rgb(9,9,9)",
+	"rgb(18,18,18)",
+	"rgb(27,27,27)",
+	"rgb(37,37,37)",
+	"rgb(46,46,46)",
+	"rgb(55,55,55)",
+	"rgb(63,63,63)",
+	"rgb(73,73,73)",
+	"rgb(82,82,82)",
+	"rgb(92,92,92)",
+	"rgb(101,101,101)",
+	"rgb(110,110,110)",
+	"rgb(119,119,119)",
+
+	"rgb(255,255,255)",
+	"rgb(250,250,250)",
+	"rgb(242,242,242)",
+	"rgb(212,212,212)",
+	"rgb(201,201,201)",
+	"rgb(191,191,191)",
+	"rgb(182,182,182)",
+	"rgb(159,159,159)",
+	"rgb(128,128,128)",
+	"rgb(173,173,173)",
+	"rgb(164,164,164)",
+	"rgb(155,155,155)",
+	"rgb(146,146,146)",
+	"rgb(137,137,137)",
 ];
 let palette = default_palette;
 let polychrome_palette = palette;
 let monochrome_palette = make_monochrome_palette();
 
-let brush_shape = "circle";
-let brush_size = 4;
-let eraser_size = 8;
-let airbrush_size = 9;
-let pencil_size = 1;
-let stroke_size = 1; // lines, curves, shape outlines
+// https://github.com/kouzhudong/win2k/blob/ce6323f76d5cd7d136b74427dad8f94ee4c389d2/trunk/private/shell/win16/comdlg/color.c#L38-L43
+// These are a fallback in case colors are not recieved from some driver.
+// const default_basic_colors = [
+// 	"#8080FF", "#80FFFF", "#80FF80", "#80FF00", "#FFFF80", "#FF8000", "#C080FF", "#FF80FF",
+// 	"#0000FF", "#00FFFF", "#00FF80", "#40FF00", "#FFFF00", "#C08000", "#C08080", "#FF00FF",
+// 	"#404080", "#4080FF", "#00FF00", "#808000", "#804000", "#FF8080", "#400080", "#8000FF",
+// 	"#000080", "#0080FF", "#008000", "#408000", "#FF0000", "#A00000", "#800080", "#FF0080",
+// 	"#000040", "#004080", "#004000", "#404000", "#800000", "#400000", "#400040", "#800040",
+// 	"#000000", "#008080", "#408080", "#808080", "#808040", "#C0C0C0", "#400040", "#FFFFFF",
+// ];
+// Grabbed with Color Cop from the screen with Windows 98 SE running in VMWare
+const basic_colors = [
+	"#FF8080", "#FFFF80", "#80FF80", "#00FF80", "#80FFFF", "#0080FF", "#FF80C0", "#FF80FF",
+	"#FF0000", "#FFFF00", "#80FF00", "#00FF40", "#00FFFF", "#0080C0", "#8080C0", "#FF00FF",
+	"#804040", "#FF8040", "#00FF00", "#008080", "#004080", "#8080FF", "#800040", "#FF0080",
+	"#800000", "#FF8000", "#008000", "#008040", "#0000FF", "#0000A0", "#800080", "#8000FF",
+	"#400000", "#804000", "#004000", "#004040", "#000080", "#000040", "#400040", "#400080",
+	"#000000", "#808000", "#808040", "#808080", "#408080", "#C0C0C0", "#400040", "#FFFFFF",
+];
+let custom_colors = [
+	"#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF",
+	"#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF",
+];
+
+// declared like this for Cypress tests
+window.default_brush_shape = "circle";
+window.default_brush_size = 4;
+window.default_eraser_size = 8;
+window.default_airbrush_size = 9;
+window.default_pencil_size = 1;
+window.default_stroke_size = 1; // applies to lines, curves, shape outlines
+// declared like this for Cypress tests
+window.brush_shape = default_brush_shape;
+window.brush_size = default_brush_size
+window.eraser_size = default_eraser_size;
+window.airbrush_size = default_airbrush_size;
+window.pencil_size = default_pencil_size;
+window.stroke_size = default_stroke_size; // applies to lines, curves, shape outlines
 let tool_transparent_mode = false;
 
 let stroke_color;
@@ -42,7 +132,7 @@ let fill_color_k = "background"; // enum of "foreground", "background", "ternary
 let selected_tool = default_tool;
 let selected_tools = [selected_tool];
 let return_to_tools = [selected_tool];
-let colors = {
+window.colors = { // declared like this for Cypress tests
 	foreground: "",
 	background: "",
 	ternary: "",
@@ -75,9 +165,14 @@ let redos = [];
 let file_name;
 let document_file_path;
 let saved = true;
+let file_name_chosen = false;
 
-/** canvas coords */
-let pointer, pointer_start, pointer_previous;
+/** works in canvas coordinates */
+let pointer;
+/** works in canvas coordinates */
+let pointer_start;
+/** works in canvas coordinates */
+let pointer_previous;
 
 let pointer_active = false;
 let pointer_type, pointer_buttons;
@@ -87,8 +182,56 @@ let button;
 let pointer_over_canvas = false;
 let update_helper_layer_on_pointermove_active = false;
 
-/** client coords */
+/** works in client coordinates */
 let pointers = [];
+
+const update_from_url_params = ()=> {
+	if (location.hash.match(/eye-gaze-mode/i)) {
+		if (!$("body").hasClass("eye-gaze-mode")) {
+			$("body").addClass("eye-gaze-mode");
+			$G.triggerHandler("eye-gaze-mode-toggled");
+			$G.triggerHandler("theme-load"); // signal layout change
+		}
+	} else {
+		if ($("body").hasClass("eye-gaze-mode")) {
+			$("body").removeClass("eye-gaze-mode");
+			$G.triggerHandler("eye-gaze-mode-toggled");
+			$G.triggerHandler("theme-load"); // signal layout change
+		}
+	}
+
+	if (location.hash.match(/vertical-color-box-mode|eye-gaze-mode/i)) {
+		if (!$("body").hasClass("vertical-color-box-mode")) {
+			$("body").addClass("vertical-color-box-mode");
+			$G.triggerHandler("vertical-color-box-mode-toggled");
+			$G.triggerHandler("theme-load"); // signal layout change
+		}
+	} else {
+		if ($("body").hasClass("vertical-color-box-mode")) {
+			$("body").removeClass("vertical-color-box-mode");
+			$G.triggerHandler("vertical-color-box-mode-toggled");
+			$G.triggerHandler("theme-load"); // signal layout change
+		}
+	}
+
+	if (location.hash.match(/speech-recognition-mode/i)) {
+		window.enable_speech_recognition && enable_speech_recognition();
+	} else {
+		window.disable_speech_recognition && disable_speech_recognition();
+	}
+};
+update_from_url_params();
+$G.on("hashchange popstate change-url-params", update_from_url_params);
+
+// handle backwards compatibility URLs
+if (location.search.match(/eye-gaze-mode/)) {
+	change_url_param("eye-gaze-mode", true, {replace_history_state: true});
+	update_from_url_params();
+}
+if (location.search.match(/vertical-colors?-box/)) {
+	change_url_param("vertical-color-box", true, {replace_history_state: true});
+	update_from_url_params();
+}
 
 const $app = $(E("div")).addClass("jspaint").appendTo("body");
 
@@ -116,6 +259,11 @@ const $top = $(E("div")).addClass("component-area").prependTo($V);
 const $bottom = $(E("div")).addClass("component-area").appendTo($V);
 const $left = $(E("div")).addClass("component-area").prependTo($H);
 const $right = $(E("div")).addClass("component-area").appendTo($H);
+// there's also probably a CSS solution alternative to this
+if (get_direction() === "rtl") {
+	$left.appendTo($H);
+	$right.prependTo($H);
+}
 
 const $status_area = $(E("div")).addClass("status-area").appendTo($V);
 const $status_text = $(E("div")).addClass("status-text").appendTo($status_area);
@@ -125,8 +273,10 @@ const $status_size = $(E("div")).addClass("status-coordinates").appendTo($status
 const $news_indicator = $(`
 	<a class='news-indicator' href='#project-news'>
 		<img src='images/winter/present.png' width='24' height='22' alt=''/>
-		<span class='not-the-icon'>
-			<strong>New!</strong>&nbsp;Holiday theme, multitouch panning, and revamped history
+		<span class='marquee' dir='ltr' style='--text-width: 52ch; --animation-duration: 5s;'>
+			<span>
+				<strong>New!</strong>&nbsp;Localization, Eye Gaze Mode, and Speech Recognition!
+			</span>
 		</span>
 	</a>
 `);
@@ -134,14 +284,14 @@ $news_indicator.on("click auxclick", (event)=> {
 	event.preventDefault();
 	show_news();
 });
-// TODO: use localstorage to show until clicked, if available
+// @TODO: use localstorage to show until clicked, if available
 // and show for a longer period of time after the update, if available
-if (Date.now() < Date.parse("Jan 5 2020 23:42:42 GMT-0500")) {
+if (Date.now() < Date.parse("Jan 5 2021 23:42:42 GMT-0500")) {
 	$status_area.append($news_indicator);
 }
 
 $status_text.default = () => {
-	$status_text.text("For Help, click Help Topics on the Help Menu.");
+	$status_text.text(localize("For Help, click Help Topics on the Help Menu."));
 };
 $status_text.default();
 
@@ -171,13 +321,33 @@ $menu_bar.on("default-info", ()=> {
 });
 // </menu bar>
 
-const $toolbox = $ToolBox(tools);
-// const $toolbox2 = $ToolBox(extra_tools, true);//.hide();
+let $toolbox = $ToolBox(tools);
+// let $toolbox2 = $ToolBox(extra_tools, true);//.hide();
 // Note: a second $ToolBox doesn't work because they use the same tool options (which could be remedied)
-// and also the UI isn't designed for multiple vertical components (or horizontal ones)
 // If there's to be extra tools, they should probably get a window, with different UI
 // so it can display names of the tools, and maybe authors and previews (and not necessarily icons)
-const $colorbox = $ColorBox();
+
+let $colorbox = $ColorBox($("body").hasClass("vertical-color-box-mode"));
+
+$G.on("vertical-color-box-mode-toggled", ()=> {
+	$colorbox.destroy();
+	$colorbox = $ColorBox($("body").hasClass("vertical-color-box-mode"));
+	prevent_selection($colorbox);
+});
+$G.on("eye-gaze-mode-toggled", ()=> {
+	$colorbox.destroy();
+	$colorbox = $ColorBox($("body").hasClass("vertical-color-box-mode"));
+	prevent_selection($colorbox);
+	
+	$toolbox.destroy();
+	$toolbox = $ToolBox(tools);
+	prevent_selection($toolbox);
+
+	// $toolbox2.destroy();
+	// $toolbox2 = $ToolBox(extra_tools, true);
+	// prevent_selection($toolbox2);
+});
+
 
 $canvas_area.on("user-resized", (_event, _x, _y, unclamped_width, unclamped_height) => {
 	resize_canvas_and_save_dimensions(unclamped_width, unclamped_height);
@@ -192,6 +362,17 @@ $canvas_area.on("scroll", () => {
 });
 $canvas_area.on("resize", () => {
 	update_magnified_canvas_size();
+});
+
+// Despite overflow:hidden on html and body,
+// focusing elements that are partially offscreen can still scroll the page.
+// For example, with Edit Colors dialog partially offscreen, navigating the color grid.
+// We need to prevent (reset) scroll on focus, and also avoid scrollIntoView().
+// Listening for scroll here is mainly in case a case is forgotten, like scrollIntoView,
+// in which case it will flash sometimes but at least not end up with part of
+// the application scrolled off the screen with no scrollbar to get it back.
+$G.on("scroll focusin", (event) => {
+	window.scrollTo(0, 0);
 });
 
 $("body").on("dragover dragenter", e => {
@@ -232,7 +413,7 @@ $G.on("keydown", e => {
 		e.preventDefault();
 		return;
 	}
-	// TODO: return if menus/menubar focused or focus in dialog window
+	// @TODO: return if menus/menubar focused or focus in dialog window
 	// or maybe there's a better way to do this that works more generally
 	// maybe it should only handle the event if document.activeElement is the body or html element?
 	// (or $app could have a tabIndex and no focus style and be focused under various conditions,
@@ -244,7 +425,7 @@ $G.on("keydown", e => {
 		return;
 	}
 
-	// TODO: preventDefault in all cases where the event is handled
+	// @TODO: preventDefault in all cases where the event is handled
 	// also, ideally check that modifiers *aren't* pressed
 	// probably best to use a library at this point!
 	
@@ -280,7 +461,8 @@ $G.on("keydown", e => {
 		}else{
 			cancel();
 		}
-		stopSimulatingGestures();
+		window.stopSimulatingGestures && window.stopSimulatingGestures();
+		window.trace_and_sketch_stop && window.trace_and_sketch_stop();
 	}else if(e.keyCode === 13){ //Enter
 		if(selection){
 			deselect();
@@ -297,20 +479,27 @@ $G.on("keydown", e => {
 		if(selection){
 			selection.scale(2 ** delta);
 		}else{
-			if(selected_tool.name === "Brush"){
+			if(selected_tool.id === TOOL_BRUSH){
 				brush_size = Math.max(1, Math.min(brush_size + delta, 500));
-			}else if(selected_tool.name === "Eraser/Color Eraser"){
+			}else if(selected_tool.id === TOOL_ERASER){
 				eraser_size = Math.max(1, Math.min(eraser_size + delta, 500));
-			}else if(selected_tool.name === "Airbrush"){
+			}else if(selected_tool.id === TOOL_AIRBRUSH){
 				airbrush_size = Math.max(1, Math.min(airbrush_size + delta, 500));
-			}else if(selected_tool.name === "Pencil"){
+			}else if(selected_tool.id === TOOL_PENCIL){
 				pencil_size = Math.max(1, Math.min(pencil_size + delta, 50));
-			}else if(selected_tool.name.match(/Line|Curve|Rectangle|Ellipse|Polygon/)){
+			}else if(
+				selected_tool.id === TOOL_LINE ||
+				selected_tool.id === TOOL_CURVE ||
+				selected_tool.id === TOOL_RECTANGLE ||
+				selected_tool.id === TOOL_ROUNDED_RECTANGLE ||
+				selected_tool.id === TOOL_ELLIPSE ||
+				selected_tool.id === TOOL_POLYGON
+			) {
 				stroke_size = Math.max(1, Math.min(stroke_size + delta, 500));
 			}
 
 			$G.trigger("option-changed");
-			if(button !== undefined){
+			if(button !== undefined && pointer){ // pointer may only be needed for tests
 				selected_tools.forEach((selected_tool)=> {
 					tool_go(selected_tool);
 				});
@@ -410,7 +599,7 @@ $G.on("cut copy paste", e => {
 				cd.setData("URL", data_url);
 				if(e.type === "cut"){
 					delete_selection({
-						name: "Cut",
+						name: localize("Cut"),
 						icon: get_help_folder_icon("p_cut.png"),
 					});
 				}
@@ -434,8 +623,8 @@ $G.on("cut copy paste", e => {
 				item.getAsString(text => {
 					const uris = get_URIs(text);
 					if (uris.length > 0) {
-						load_image_from_URI(uris[0], (err, img) => {
-							if(err){ return show_resource_load_error_message(); }
+						load_image_from_URI(uris[0], (error, img) => {
+							if(error){ return show_resource_load_error_message(error); }
 							paste(img);
 						});
 					} else {
@@ -456,7 +645,7 @@ reset_colors();
 reset_canvas_and_history(); // (with newly reset colors)
 set_magnification(default_magnification);
 
-// this is synchronous for now, but TODO: handle possibility of loading a document before callback
+// this is synchronous for now, but @TODO: handle possibility of loading a document before callback
 // when switching to asynchronous storage, e.g. with localforage
 storage.get({
 	width: default_canvas_width,
@@ -467,8 +656,8 @@ storage.get({
 	my_canvas_height = stored_values.height;
 	
 	make_or_update_undoable({
-		match: (history_node)=> history_node.name === "New Document",
-		name: "Resize New Document Canvas",
+		match: (history_node)=> history_node.name === localize("New"),
+		name: "Resize Canvas For New Document",
 		icon: get_help_folder_icon("p_stretch_both.png"),
 	}, ()=> {
 		canvas.width = Math.max(1, my_canvas_width);
@@ -660,7 +849,10 @@ function canvas_pointer_move(e){
 	}
 
 	if(e.shiftKey){
-		if(selected_tool.name.match(/Line|Curve/)){
+		if(
+			selected_tool.id === TOOL_LINE ||
+			selected_tool.id === TOOL_CURVE
+		) {
 			// snap to eight directions
 			const dist = Math.sqrt(
 				(pointer.y - pointer_start.y) * (pointer.y - pointer_start.y) +
@@ -722,6 +914,459 @@ $canvas.on("pointerleave", ()=> {
 	}
 });
 
+let clean_up_eye_gaze_mode = ()=> {};
+$G.on("eye-gaze-mode-toggled", ()=> {
+	if ($("body").hasClass("eye-gaze-mode")) {
+		init_eye_gaze_mode();
+	} else {
+		clean_up_eye_gaze_mode();
+	}
+});
+if ($("body").hasClass("eye-gaze-mode")) {
+	init_eye_gaze_mode();
+}
+
+function init_eye_gaze_mode() {
+	const circle_radius_max = 50; // dwell indicator size in pixels
+	const hover_timespan = 500; // how long between the dwell indicator appearing and triggering a click
+	const averaging_window_timespan = 500;
+	const inactive_at_startup_timespan = 1500; // (should be at least averaging_window_timespan, but more importantly enough to make it not awkward when enabling eye gaze mode)
+	const inactive_after_release_timespan = 1000; // after click or drag release (from dwell or otherwise)
+	const inactive_after_hovered_timespan = 1000; // after dwell click indicator appears; does not control the time to finish that dwell click, only to click on something else after this is canceled (but it doesn't control that directly)
+	const inactive_after_invalid_timespan = 1000; // after a dwell click is canceled due to an element popping up in front, or existing in front at the center of the other element
+	const inactive_after_focused_timespan = 1000; // after page becomes focused after being unfocused
+	let recent_points = [];
+	let inactive_until_time = Date.now();
+	let paused = false;
+	let $pause_button;
+	let hover_candidate;
+	let gaze_dragging = null;
+
+	const deactivate_for_at_least = (timespan)=> {
+		inactive_until_time = Math.max(inactive_until_time, Date.now() + timespan);
+	};
+	deactivate_for_at_least(inactive_at_startup_timespan);
+
+	const $halo = $("<div class='hover-halo'>").appendTo("body").hide();
+	const $dwell_indicator = $("<div class='dwell-indicator'>").css({
+		width: circle_radius_max,
+		height: circle_radius_max,
+	}).appendTo("body").hide();
+
+	const on_pointer_move = (e)=> {
+		recent_points.push({x: e.clientX, y: e.clientY, time: Date.now()});
+	};
+	const on_pointer_up_or_cancel = (e)=> {
+		deactivate_for_at_least(inactive_after_release_timespan);
+		gaze_dragging = null;
+	};
+
+	let page_focused = document.visibilityState === "visible"; // guess/assumption
+	let mouse_inside_page = true; // assumption
+	const on_focus = ()=> {
+		page_focused = true;
+		deactivate_for_at_least(inactive_after_focused_timespan);
+	};
+	const on_blur = ()=> {
+		page_focused = false;
+	};
+	const on_mouse_leave_page = ()=> {
+		mouse_inside_page = false;
+	};
+	const on_mouse_enter_page = ()=> {
+		mouse_inside_page = true;
+	};
+
+	$G.on("pointermove", on_pointer_move);
+	$G.on("pointerup pointercancel", on_pointer_up_or_cancel);
+	$G.on("focus", on_focus);
+	$G.on("blur", on_blur);
+	$(document).on("mouseleave", on_mouse_leave_page);
+	$(document).on("mouseenter", on_mouse_enter_page);
+
+	const get_hover_candidate = (clientX, clientY)=> {
+
+		if (!page_focused || !mouse_inside_page) return null;
+
+		let target = document.elementFromPoint(clientX, clientY);
+		if (!target) {
+			return null;
+		}
+		
+		let hover_candidate = {
+			x: clientX,
+			y: clientY,
+			time: Date.now(),
+		};
+		
+		// top level menus are just immediately switched between for now
+		// prevent awkward hover clicks on top level menu buttons while menus are open
+		if(
+			(target.closest(".menu-button") || target.matches(".menu-container")) &&
+			$(".menu-button.active").length
+		) {
+			return null;
+		}
+
+		const target_selector = `
+			button:not([disabled]),
+			input,
+			textarea,
+			label,
+			a,
+			.current-colors,
+			.color-button,
+			.edit-colors-window .swatch,
+			.edit-colors-window .rainbow-canvas,
+			.edit-colors-window .luminosity-canvas,
+			.tool:not(.selected),
+			.chooser-option,
+			.menu-button:not(.active),
+			.menu-item,
+			.main-canvas,
+			.selection canvas,
+			.handle,
+			.window:not(.maximized) .window-titlebar,
+			.history-entry,
+			.canvas-area
+		`;
+		// .canvas-area is handled specially below
+		// (it's not itself a desired target)
+
+		target = target.closest(target_selector);
+
+		if (!target) {
+			return null;
+		}
+
+		// if (target.matches(".help-window li")) {
+		// 	target = target.querySelector(".item");
+		// }
+
+		if (target === $canvas_area[0]) {
+			// Nudge hovers near the edges of the canvas onto the canvas
+			const margin = 50;
+			if (
+				hover_candidate.x > canvas_bounding_client_rect.left - margin &&
+				hover_candidate.y > canvas_bounding_client_rect.top - margin &&
+				hover_candidate.x < canvas_bounding_client_rect.right + margin &&
+				hover_candidate.y < canvas_bounding_client_rect.bottom + margin
+			) {
+				target = canvas;
+				hover_candidate.x = Math.min(
+					canvas_bounding_client_rect.right - 1,
+					Math.max(
+						canvas_bounding_client_rect.left,
+						hover_candidate.x,
+					),
+				);
+				hover_candidate.y = Math.min(
+					canvas_bounding_client_rect.bottom - 1,
+					Math.max(
+						canvas_bounding_client_rect.top,
+						hover_candidate.y,
+					),
+				);
+			} else {
+				return null;
+			}
+		}else if(!target.matches(".main-canvas, .selection canvas, .window-titlebar, .rainbow-canvas, .luminosity-canvas")){
+			// Nudge hover previews to the center of buttons and things
+			const rect = target.getBoundingClientRect();
+			hover_candidate.x = rect.left + rect.width / 2;
+			hover_candidate.y = rect.top + rect.height / 2;
+		}
+		hover_candidate.target = target;
+		return hover_candidate;
+	};
+
+	const get_event_options = ({x, y, target=document.body})=> {
+		const rect = target.getBoundingClientRect();
+		return {
+			pageX: x,
+			pageY: y,
+			clientX: x,
+			clientY: y,
+			// handling CSS transform scaling but not rotation
+			offsetX: (x - rect.left) * target.offsetWidth / rect.width,
+			offsetY: (y - rect.top) * target.offsetHeight / rect.height,
+			pointerId: 1234567890,
+			pointerType: "mouse",
+			isPrimary: true,
+		};
+	};
+
+	const update = ()=> {
+		const time = Date.now();
+		recent_points = recent_points.filter((point_record)=> time < point_record.time + averaging_window_timespan);
+		if (recent_points.length) {
+			const latest_point = recent_points[recent_points.length - 1];
+			recent_points.push({x: latest_point.x, y: latest_point.y, time});
+			const average_point = average_points(recent_points);
+			// debug
+			// const canvas_point = to_canvas_coords({clientX: average_point.x, clientY: average_point.y});
+			// ctx.fillStyle = "red";
+			// ctx.fillRect(canvas_point.x, canvas_point.y, 10, 10);
+			const recent_movement_amount = Math.hypot(latest_point.x - average_point.x, latest_point.y - average_point.y);
+
+			// Invalidate in case an element pops up in front of the element you're hovering over, e.g. a submenu
+			if (hover_candidate && !gaze_dragging) {
+				const apparent_hover_candidate = get_hover_candidate(hover_candidate.x, hover_candidate.y);
+				if (apparent_hover_candidate) {
+					if (
+						apparent_hover_candidate.target !== hover_candidate.target &&
+						apparent_hover_candidate.target.closest("label") !== hover_candidate.target
+					) {
+						hover_candidate = null;
+						deactivate_for_at_least(inactive_after_invalid_timespan);
+					}
+				} else {
+					hover_candidate = null;
+					deactivate_for_at_least(inactive_after_invalid_timespan);
+				}
+			}
+			
+			let circle_position = latest_point;
+			let circle_opacity = 0;
+			let circle_radius = 0;
+			if (hover_candidate) {
+				circle_position = hover_candidate;
+				circle_opacity = 0.4;
+				circle_radius =
+					(hover_candidate.time - time + hover_timespan) / hover_timespan
+					* circle_radius_max;
+				if (time > hover_candidate.time + hover_timespan) {
+					if (pointer_active || gaze_dragging) {
+						$(hover_candidate.target).trigger($.Event("pointerup", Object.assign(get_event_options(hover_candidate), {
+							button: 0,
+							buttons: 0,
+						})));
+					} else {
+						pointers = []; // prevent multi-touch panning
+						$(hover_candidate.target).trigger($.Event("pointerdown", Object.assign(get_event_options(hover_candidate), {
+							button: 0,
+							buttons: 1,
+						})));
+						const is_drag =
+							hover_candidate.target.matches(".window-titlebar, .window-titlebar *:not(button)") ||
+							hover_candidate.target.matches(".selection, .selection *, .handle") ||
+							(
+								hover_candidate.target === canvas &&
+								selected_tool.id !== TOOL_PICK_COLOR &&
+								selected_tool.id !== TOOL_FILL &&
+								selected_tool.id !== TOOL_MAGNIFIER &&
+								selected_tool.id !== TOOL_POLYGON &&
+								selected_tool.id !== TOOL_CURVE
+							);
+						if (is_drag) {
+							gaze_dragging = hover_candidate.target;
+						} else {
+							$(hover_candidate.target).trigger($.Event("pointerup", Object.assign(get_event_options(hover_candidate), {
+								button: 0,
+								buttons: 0,
+							})));
+							if (hover_candidate.target.matches("button:not(.toggle)")) {
+								((button)=> {
+									button.style.borderImage = "var(--inset-deep-border-image)";
+									setTimeout(()=> {
+										button.style.borderImage = "";
+										// delay the button click to here so the pressed state is
+										// visible even when the button closes a dialog
+										button.click();
+									}, 100);
+								})(hover_candidate.target);
+							} else {
+								hover_candidate.target.click();
+								if (hover_candidate.target.matches("input, textarea")) {
+									hover_candidate.target.focus();
+								}
+							}
+						}
+					}
+					hover_candidate = null;
+					deactivate_for_at_least(inactive_after_hovered_timespan);
+				}
+			}
+
+			if (gaze_dragging) {
+				$dwell_indicator.addClass("for-release");
+			} else {
+				$dwell_indicator.removeClass("for-release");
+			}
+			$dwell_indicator.show().css({
+				opacity: circle_opacity,
+				transform: `scale(${circle_radius / circle_radius_max})`,
+				left: circle_position.x - circle_radius_max/2,
+				top: circle_position.y - circle_radius_max/2,
+			});
+
+			let halo_target =
+				gaze_dragging ||
+				(hover_candidate || get_hover_candidate(latest_point.x, latest_point.y) || {}).target;
+			
+			if (halo_target && (!paused || $pause_button.is(halo_target))) {
+				let rect = halo_target.getBoundingClientRect();
+				// Clamp to visible region if in scrollable area
+				// (could generalize to look for overflow: auto parents in the future)
+				if (halo_target.closest(".canvas-area")) {
+					const scroll_area_rect = $canvas_area[0].getBoundingClientRect();
+					rect = {
+						left: Math.max(rect.left, scroll_area_rect.left),
+						top: Math.max(rect.top, scroll_area_rect.top),
+						right: Math.min(rect.right, scroll_area_rect.right),
+						bottom: Math.min(rect.bottom, scroll_area_rect.bottom),
+					};
+					rect.width = rect.right - rect.left;
+					rect.height = rect.bottom - rect.top;
+				}
+				// this is so overkill just for border radius mimicry
+				const computed_style = getComputedStyle(halo_target);
+				const border_radius_scale = parseInt(
+					(
+						$(halo_target).closest(".component").css("transform") || ""
+					).match(/\d+/) || 1
+				);
+				$halo.css({
+					display: "block",
+					position: "fixed",
+					left: rect.left,
+					top: rect.top,
+					width: rect.width,
+					height: rect.height,
+					// shorthand properties might not work in all browsers (not tested)
+					// this is so overkill...
+					borderTopRightRadius: parseFloat(computed_style.borderTopRightRadius) * border_radius_scale,
+					borderTopLeftRadius: parseFloat(computed_style.borderTopLeftRadius) * border_radius_scale,
+					borderBottomRightRadius: parseFloat(computed_style.borderBottomRightRadius) * border_radius_scale,
+					borderBottomLeftRadius: parseFloat(computed_style.borderBottomLeftRadius) * border_radius_scale,
+				});
+			} else {
+				$halo.hide();
+			}
+
+			if (time < inactive_until_time) {
+				return;
+			}
+			if (recent_movement_amount < 5) {
+				if (!hover_candidate) {
+					hover_candidate = {
+						x: average_point.x,
+						y: average_point.y,
+						time: Date.now(),
+						target: gaze_dragging || null,
+					};
+					if (!gaze_dragging) {
+						hover_candidate = get_hover_candidate(hover_candidate.x, hover_candidate.y);
+					}
+					if (hover_candidate && (paused && !$pause_button.is(hover_candidate.target))) {
+						hover_candidate = null;
+					}
+				}
+			}
+			if (recent_movement_amount > 100) {
+				if (gaze_dragging) {
+					$G.trigger($.Event("pointerup", Object.assign(get_event_options(average_point), {
+						button: 0,
+						buttons: 0,
+					})));
+					pointers = []; // prevent multi-touch panning
+				}
+			}
+			if (recent_movement_amount > 60) {
+				hover_candidate = null;
+			}
+		}
+	};
+	let raf_id;
+	const animate = ()=> {
+		raf_id = requestAnimationFrame(animate);
+		update();
+	};
+	raf_id = requestAnimationFrame(animate);
+
+	const $floating_buttons =
+		$("<div/>")
+		.appendTo("body")
+		.css({
+			position: "fixed",
+			bottom: 0,
+			left: 0,
+			transformOrigin: "bottom left",
+			transform: "scale(3)",
+		});
+	
+	$("<button title='Undo'/>")
+	.on("click", undo)
+	.appendTo($floating_buttons)
+	.css({
+		width: 28,
+		height: 28,
+		verticalAlign: "bottom",
+		position: "relative", // to make the icon's "absolute" relative to here
+	})
+	.append(
+		$("<div>")
+		.css({
+			position: "absolute",
+			left: 0,
+			top: 0,
+			width: 24,
+			height: 24,
+			backgroundImage: "url(images/classic/undo.svg)",
+		})
+	);
+
+	// These are matched on exactly for speech recognition synonymization
+	const pause_button_text = "Pause Dwell Clicking";
+	const resume_button_text = "Resume Dwell Clicking";
+
+	$pause_button = $(`<button title="${pause_button_text}"/>`)
+	.on("click", ()=> {
+		paused = !paused;
+		$pause_button
+		.attr("title", paused ? resume_button_text : pause_button_text)
+		.find("div").css({
+			backgroundImage:
+				paused ?
+				"url(images/classic/eye-gaze-unpause.svg)" :
+				"url(images/classic/eye-gaze-pause.svg)",
+		});
+	})
+	.appendTo($floating_buttons)
+	.css({
+		width: 28,
+		height: 28,
+		verticalAlign: "bottom",
+		position: "relative", // to make the icon's "absolute" relative to here
+	})
+	.append(
+		$("<div>")
+		.css({
+			position: "absolute",
+			left: 0,
+			top: 0,
+			width: 24,
+			height: 24,
+			backgroundImage: "url(images/classic/eye-gaze-pause.svg)",
+		})
+	);
+
+	clean_up_eye_gaze_mode = ()=> {
+		console.log("Cleaning up / disabling eye gaze mode");
+		cancelAnimationFrame(raf_id);
+		$halo.remove();
+		$dwell_indicator.remove();
+		$floating_buttons.remove();
+		$G.off("pointermove", on_pointer_move);
+		$G.off("pointerup pointercancel", on_pointer_up_or_cancel);
+		$G.off("focus", on_focus);
+		$G.off("blur", on_blur);
+		$(document).off("mouseleave", on_mouse_leave_page);
+		$(document).off("mouseenter", on_mouse_enter_page);
+		clean_up_eye_gaze_mode = ()=> {};
+	};
+}
+
 let pan_start_pos;
 let pan_start_scroll_top;
 let pan_start_scroll_left;
@@ -736,7 +1381,28 @@ function average_points(points) {
 	return average;
 }
 $canvas_area.on("pointerdown", (event)=> {
-	pointers.push({pointerId: event.pointerId, x: event.clientX, y: event.clientY});
+	if (document.activeElement && document.activeElement !== document.body && document.activeElement !== document.documentElement) {
+		// Allow unfocusing dialogs etc. in order to use keyboard shortcuts
+		document.activeElement.blur();
+	}
+
+	if (pointers.every((pointer)=>
+		// prevent multitouch panning in case of synthetic events from eye gaze mode
+		pointer.pointerId !== 1234567890 &&
+		// prevent multitouch panning in case of dragging across iframe boundary with a mouse/pen
+		// Note: there can be multiple active primary pointers, one per pointer type
+		!(pointer.isPrimary && (pointer.pointerType === "mouse" || pointer.pointerType === "pen"))
+		// @TODO: handle case of dragging across iframe boundary with touch
+	)) {
+		pointers.push({
+			pointerId: event.pointerId,
+			pointerType: event.pointerType,
+			// isPrimary not available on jQuery.Event, and originalEvent not available in synthetic case
+			isPrimary: event.originalEvent && event.originalEvent.isPrimary || event.isPrimary,
+			x: event.clientX,
+			y: event.clientY,
+		});
+	}
 
 	if (pointers.length == 2) {
 		pan_start_pos = average_points(pointers);
@@ -752,12 +1418,9 @@ $canvas_area.on("pointerdown", (event)=> {
 	}
 });
 $G.on("pointerup pointercancel", (event)=> {
-	pointers = pointers.filter((pointer)=> {
-		if (event.pointerId === pointer.pointerId) {
-			return false;
-		}
-		return true;
-	});
+	pointers = pointers.filter((pointer)=>
+		pointer.pointerId !== event.pointerId
+	);
 });
 $G.on("pointermove", (event)=> {
 	for (const pointer of pointers) {
@@ -787,6 +1450,10 @@ $canvas.on("pointerdown", e => {
 	if(pointers.length >= 1){
 		cancel();
 		pointer_active = false; // NOTE: pointer_active used in cancel()
+		// in eye gaze mode, allow drawing with mouse after canceling gaze gesture with mouse
+		pointers = pointers.filter((pointer)=>
+			pointer.pointerId !== 1234567890
+		);
 		return;
 	}
 
@@ -873,31 +1540,34 @@ $canvas_area.on("pointerdown", e => {
 	}
 });
 
-$app
-.add($toolbox)
-// .add($toolbox2)
-.add($colorbox)
-.on("mousedown selectstart contextmenu", e => {
-	if(e.isDefaultPrevented()){
-		return;
-	}
-	if(
-		e.target instanceof HTMLSelectElement ||
-		e.target instanceof HTMLTextAreaElement ||
-		(e.target instanceof HTMLLabelElement && e.type !== "contextmenu") ||
-		(e.target instanceof HTMLInputElement && e.target.type !== "color")
-	){
-		return;
-	}
-	if(e.button === 1){
-		return; // allow middle-click scrolling
-	}
-	e.preventDefault();
-	// we're just trying to prevent selection
-	// but part of the default for mousedown is *deselection*
-	// so we have to do that ourselves explicitly
-	window.getSelection().removeAllRanges();
-});
+function prevent_selection($el) {
+	$el.on("mousedown selectstart contextmenu", (e) => {
+		if(e.isDefaultPrevented()){
+			return;
+		}
+		if(
+			e.target instanceof HTMLSelectElement ||
+			e.target instanceof HTMLTextAreaElement ||
+			(e.target instanceof HTMLLabelElement && e.type !== "contextmenu") ||
+			(e.target instanceof HTMLInputElement && e.target.type !== "color")
+		){
+			return;
+		}
+		if(e.button === 1){
+			return; // allow middle-click scrolling
+		}
+		e.preventDefault();
+		// we're just trying to prevent selection
+		// but part of the default for mousedown is *deselection*
+		// so we have to do that ourselves explicitly
+		window.getSelection().removeAllRanges();
+	});
+}
+
+prevent_selection($app);
+prevent_selection($toolbox);
+// prevent_selection($toolbox2);
+prevent_selection($colorbox);
 
 // Stop drawing (or dragging or whatver) if you Alt+Tab or whatever
 $G.on("blur", () => {

@@ -10,7 +10,7 @@ const fs = require("fs");
 const path = require("path");
 const argv = require("electron").remote.process.argv;
 
-// TODO: let user apply this setting somewhere in the UI
+// @TODO: let user apply this setting somewhere in the UI
 // (and ideally revert it)
 // (Note: it would be better to use REG.EXE to apply the change, rather than a .reg file)
 // This registry modification changes the right click > Edit option for images in Windows Explorer
@@ -69,6 +69,7 @@ window.save_to_file_path = (filePath, formatName, savedCallback) => {
 	// 	new GIF();
 	// }
 	canvas.toBlob(blob => {
+		// TODO: unify/DRY with magic number checking based sanity_check_blob usage in save_canvas_as
 		if(blob.type !== mimeType){
 			return show_error_message(`Failed to save as ${formatName} (your browser doesn't support exporting a canvas as "${mimeType}")`);
 		}
@@ -89,18 +90,35 @@ window.save_to_file_path = (filePath, formatName, savedCallback) => {
 	}, mimeType);
 };
 
-// TODO: window.platform.saveCanvasAs etc. or platformIntegration or system or something
+function blob_to_buffer(blob, callback) {
+	const file_reader = new FileReader();
+
+	file_reader.addEventListener("loadend", () => {
+		if (file_reader.error) {
+			callback(file_reader.error);
+		} else {
+			callback(null, Buffer.from(file_reader.result));
+		}
+	}, false);
+
+	// Read the blob as a typed array.
+	file_reader.readAsArrayBuffer(blob);
+
+	return file_reader;
+}
+
+// @TODO: window.platform.saveCanvasAs etc. or platformIntegration or system or something
 window.systemSaveCanvasAs = (canvas, suggestedFileName, savedCallback) => {
 	const getExtension = filePathOrName => {
 		const splitByDots = filePathOrName.split(/\./g);
 		return splitByDots[splitByDots.length - 1].toLowerCase();
 	};
-	// TODO: default to existing extension, except it would be awkward to rearrange the list...
+	// @TODO: default to existing extension, except it would be awkward to rearrange the list...
 	// const suggestedExtension = getExtension(suggestedFileName);
 	const filters = [
 		// top one is considered default by electron
 		{name: "PNG", extensions: ["png"]},
-		// TODO: enable more formats
+		// @TODO: enable more formats
 		// {name: "Monochrome Bitmap", extensions: ["bmp", "dib"]},
 		// {name: "16 Color Bitmap", extensions: ["bmp", "dib"]},
 		// {name: "256 Color Bitmap", extensions: ["bmp", "dib"]},
@@ -111,8 +129,8 @@ window.systemSaveCanvasAs = (canvas, suggestedFileName, savedCallback) => {
 		// {name: "PNG", extensions: ["png"]},
 		{name: "WebP", extensions: ["webp"]},
 	];
-	// TODO: pass BrowserWindow to make dialog modal?
-	// TODO: should suggestedFileName be sanitized in some way?
+	// @TODO: pass BrowserWindow to make dialog modal?
+	// @TODO: should suggestedFileName be sanitized in some way?
 	dialog.showSaveDialog({
 		defaultPath: suggestedFileName,
 		filters,
@@ -122,7 +140,7 @@ window.systemSaveCanvasAs = (canvas, suggestedFileName, savedCallback) => {
 		}
 		const extension = getExtension(filePath);
 		if(!extension){
-			// TODO: Linux/Unix?? you're not supposed to need file extensions
+			// @TODO: Linux/Unix?? you're not supposed to need file extensions
 			return show_error_message("Missing file extension - try adding .png to the file name");
 		}
 		const formatNameMatched = ((filters.find(({extensions}) => extensions.includes(extension))) || {}).name;
@@ -141,7 +159,7 @@ window.systemSetAsWallpaperCentered = c => {
 	const fs = require("fs");
 	const wallpaper = require("wallpaper");
 
-	// TODO: implement centered option for Windows and Linux in https://www.npmjs.com/package/wallpaper
+	// @TODO: implement centered option for Windows and Linux in https://www.npmjs.com/package/wallpaper
 	// currently it's only supported on macOS
 	let wallpaperCanvas;
 	if(process.platform === "darwin"){

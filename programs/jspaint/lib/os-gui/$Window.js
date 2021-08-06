@@ -256,29 +256,50 @@ function $Window(options){
 	});
 	// @TODO: restore last focused controls when clicking/mousing down on the window
 	
-	$w.applyBounds = function(){
+	$w.applyBounds = () => {
 		$w.css({
-			left: Math.max(0, Math.min(innerWidth - $w.width(), $w.position().left)),
-			top: Math.max(0, Math.min(innerHeight - $w.height(), $w.position().top)),
+			left: Math.max(0, Math.min(innerWidth - $w.outerWidth(), $w[0].getBoundingClientRect().left)),
+			top: Math.max(0, Math.min(innerHeight - $w.outerHeight(), $w[0].getBoundingClientRect().top)),
+		});
+	};
+	
+	$w.bringTitleBarOnScreen = () => {
+		// Try to make the titlebar always accessible
+		const min_horizontal_pixels_on_screen = 40; // enough for space past a close button
+		$w.css({
+			left: Math.max(
+				min_horizontal_pixels_on_screen - $w.outerWidth(),
+				Math.min(
+					innerWidth - min_horizontal_pixels_on_screen,
+					$w[0].getBoundingClientRect().left
+				)
+			),
+			top: Math.max(0, Math.min(
+				innerHeight - $w.$titlebar.outerHeight() - 5,
+				$w[0].getBoundingClientRect().top
+			)),
 		});
 	};
 	
 	$w.center = function(){
 		$w.css({
-			left: (innerWidth - $w.width()) / 2,
-			top: (innerHeight - $w.height()) / 2,
+			left: (innerWidth - $w.width()) / 2 + window.scrollX,
+			top: (innerHeight - $w.height()) / 2 + window.scrollY,
 		});
 		$w.applyBounds();
 	};
 	
 	
-	$G.on("resize", $w.applyBounds);
+	$G.on("resize", $w.bringTitleBarOnScreen);
 	
 	var drag_offset_x, drag_offset_y;
-	var drag = function(e){
+	var mouse_x, mouse_y;
+	var update_drag = function(e){
+		mouse_x = e.clientX != null ? e.clientX : mouse_x;
+		mouse_y = e.clientY != null ? e.clientY : mouse_y;
 		$w.css({
-			left: e.clientX - drag_offset_x,
-			top: e.clientY - drag_offset_y,
+			left: mouse_x + scrollX - drag_offset_x,
+			top: mouse_y + scrollY - drag_offset_y,
 		});
 	};
 	$w.$titlebar.attr("touch-action", "none");
@@ -292,15 +313,19 @@ function $Window(options){
 		if ($w.hasClass("maximized")) {
 			return;
 		}
-		drag_offset_x = e.clientX - $w.position().left;
-		drag_offset_y = e.clientY - $w.position().top;
-		$G.on("pointermove", drag);
+		drag_offset_x = e.clientX + scrollX - $w.position().left;
+		drag_offset_y = e.clientY + scrollY - $w.position().top;
+		$G.on("pointermove", update_drag);
+		$G.on("scroll", update_drag);
 		$("body").addClass("dragging"); // for when mouse goes over an iframe
 	});
 	$G.on("pointerup", function(e){
-		$G.off("pointermove", drag);
+		$G.off("pointermove", update_drag);
+		$G.off("scroll", update_drag);
 		$("body").removeClass("dragging");
-		$w.applyBounds();
+		// $w.applyBounds(); // Windows doesn't really try to keep windows on screen
+		// but you also can't really drag off of the desktop, whereas here you can drag to way outside the web page.
+		$w.bringTitleBarOnScreen();
 	});
 	$w.$titlebar.on("dblclick", function(e){
 		if($component){

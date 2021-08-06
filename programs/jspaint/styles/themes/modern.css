@@ -1,5 +1,7 @@
 :root {
 	--theme-loaded: "modern.css";
+	--Hilight: #0178d7;
+	--ButtonText: #000000;
 }
 
 body {
@@ -60,16 +62,13 @@ body {
 }
 .window,
 .window-titlebar {
-	/*border-top-left-radius: 2px;*/
-	/*border-top-right-radius: 2px;*/
 	border-top-left-radius: 4px;
 	border-top-right-radius: 4px;
 }
 .window-titlebar {
 	background: #3f51b5;
 	color: white;
-	/*padding: 16px;*/
-	/*height: 32px;*/
+	padding-left: 8px;
 	padding-right: 8px;
 }
 .tool-window .window-titlebar {
@@ -81,6 +80,7 @@ body {
 .window-content {
 	padding: 16px;
 	background: white;
+	color: black;
 	border-bottom-left-radius: 2px;
 	border-bottom-right-radius: 2px;
 }
@@ -96,6 +96,17 @@ body {
 	color: transparent;
 	transform: scale(1.5);
 	font-size: 1px;
+	border-radius: 50%;
+	width: 17px;
+	height: 17px;
+	margin-left: 10px;
+	position: relative;
+}
+.window-button:hover {
+	background: rgba(255, 255, 255, 0.2);
+}
+.window-button:hover:active {
+	background: rgba(255, 255, 255, 0.5);
 }
 .os-window .window-button {
 	transform: scale(1.8);
@@ -103,6 +114,12 @@ body {
 .window-button::after {
 	color: white;
 	font-size: 15px;
+	position: absolute;
+	left: 0;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	text-align: center;
 }
 .window-close-button::after {
 	content: "×";
@@ -116,6 +133,11 @@ body {
 
 .menus {
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.26);
+}
+
+.eye-gaze-mode .menu-button {
+	height: 3rem;
+	line-height: 3rem;
 }
 
 .menu-button,
@@ -188,14 +210,20 @@ body {
 	width: 18px;
 	height: 18px;
 }
+.color-button, /* this outer one is only for detection for the hover halo in eye gaze mode */
+.edit-colors-window .swatch, /* this outer one is only for detection for the hover halo in eye gaze mode */
 .color-button canvas,
 .color-selection canvas,
+.edit-colors-window .swatch canvas,
 .color-button:after,
-.color-selection:after {
+.color-selection:after,
+.edit-colors-window .swatch:after {
 	border-radius: 3px;
+	position: relative;
 }
-.color-button:after,
-.color-selection:after {
+.color-button::after,
+.color-selection::after,
+.edit-colors-window .swatch::after {
 	content: '';
 	position: absolute;
 	left: 0;
@@ -204,8 +232,27 @@ body {
 	bottom: 0;
 	box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.5) inset;
 }
+.eye-gaze-mode .colors-component.tall {
+	width: 53px;
+}
+.eye-gaze-mode .colors-component.tall .color-button {
+	margin-left: 1px;
+}
 
-/* TODO: padding/margin on the top at least when in the sidebar */
+.edit-colors-window .inset-shallow {
+	border: 1px solid rgba(0, 0, 0, 0.5);
+	border-radius: 3px;
+}
+
+.edit-colors-window .swatch {
+	width: 20px;
+	height: 17px;
+}
+.edit-colors-window .swatch:focus::after {
+	outline-offset: 3px;
+}
+
+/* @TODO: padding/margin on the top at least when in the sidebar */
 .tools {
 	width: 50px;
 }
@@ -218,6 +265,9 @@ body {
 .tool.selected {
 	background: rgba(0, 0, 0, 0.24);
 }
+.toggle.selected {
+	box-shadow: 0px -2px 1px 0px blue;
+}
 
 .tool-options {
 	/* the layout currently depends on the exact pixel width (specifically the brush tool options) */
@@ -228,6 +278,9 @@ body {
 .component-area,
 .status-area {
 	background: #fff;
+}
+.status-text {
+	padding-left: 8px;
 }
 
 body,
@@ -241,8 +294,8 @@ body,
 }
 
 /* NOTE: copy/pasted from classic.css */
-/* TODO: actually show a preview of the component itself when dragging for the modern theme */
-/* TODO: cursor maybe? just when already dragging? */
+/* @TODO: actually show a preview of the component itself when dragging for the modern theme */
+/* @TODO: cursor maybe? just when already dragging? */
 .component-ghost.dock {
 	outline: 1px solid black;
 	/*outline: 1px solid invert;*/
@@ -265,12 +318,30 @@ body,
 	outline-offset: 2px;
 }
 
+:root {
+	/* for disabled button icon effect */
+	--ButtonHilight: #fff;
+	--ButtonShadow: #aaa;
+}
+.help-window .resizer {
+	background-color: #aaa !important;
+	border: 0 !important;
+	box-shadow: none !important;
+}
+.help-window .toolbar button {
+	width: 60px;
+	height: 42px;
+	margin-left: 2px;
+	margin-right: 0;
+	margin-top: 2px;
+	margin-bottom: 1px;
+}
 .help-window .window-content {
 	padding: 0;
 }
 .help-window iframe {
 	border: 0;
-	/* TODO ideally, apply a padding: 16px on the body in the iframe, except for on the landing page (which has a background) */
+	/* @TODO ideally, apply a padding: 16px on the body in the iframe, except for on the landing page (which has a background) */
 }
 .help-window ul.contents {
 	padding: 16px;
@@ -287,7 +358,7 @@ body,
 	cursor: pointer;
 }
 .help-window li:before {
-	/* TODO: more modern icons */
+	/* @TODO: more modern icons */
 	background-image: url("../../images/help-icons.png");
 }
 .help-window .item.selected {
@@ -299,3 +370,15 @@ body,
 	background-color: #2196f3;
 	color: white;
 } */
+
+.history-view {
+	background: white;
+	color: black;
+}
+
+input:invalid {
+	box-shadow: 0 0 0 2px red;
+}
+.partial-url-label {
+	opacity: 0.6;
+}

@@ -82,10 +82,10 @@ class OnCanvasTextBox extends OnCanvasObject {
 				this.canvas.width = this.width;
 				this.canvas.height = this.height;
 				this.canvas.ctx.drawImage(img, 0, 0);
-				update_helper_layer(); // TODO: under-grid specific helper layer?
+				update_helper_layer(); // @TODO: under-grid specific helper layer?
 			};
-			img.onerror = (e)=> {
-				window.console && console.log("Failed to load image", e);
+			img.onerror = (event)=> {
+				window.console && console.log("Failed to load image", event);
 			};
 			img.src = data_url;
 		};
@@ -125,7 +125,7 @@ class OnCanvasTextBox extends OnCanvasObject {
 			this.y = Math.max(Math.min(m.y - moy, canvas.height), -this.height);
 			this.position();
 			if (e.shiftKey) {
-				// TODO: maybe re-enable but handle undoables well
+				// @TODO: maybe re-enable but handle undoables well
 				// this.draw();
 			}
 		};
@@ -154,25 +154,38 @@ class OnCanvasTextBox extends OnCanvasObject {
 			OnCanvasTextBox.$fontbox = null;
 		}
 		const $fb = OnCanvasTextBox.$fontbox = OnCanvasTextBox.$fontbox || new $FontBox();
-		// move the font box out of the way if it's overlapping the OnCanvasTextBox
-		const fb_rect = $fb[0].getBoundingClientRect();
-		const tb_rect = this.$el[0].getBoundingClientRect();
-		if (
-			// the fontbox overlaps textbox
-			fb_rect.left <= tb_rect.right &&
-			tb_rect.left <= fb_rect.right &&
-			fb_rect.top <= tb_rect.bottom &&
-			tb_rect.top <= fb_rect.bottom) {
-			// move the font box out of the way
-			$fb.css({
-				top: this.$el.position().top - $fb.height()
-			});
-		}
-		$fb.applyBounds();
+		const displace_font_box = ()=> {
+			// move the font box out of the way if it's overlapping the OnCanvasTextBox
+			const fb_rect = $fb[0].getBoundingClientRect();
+			const tb_rect = this.$el[0].getBoundingClientRect();
+			if (
+				// the fontbox overlaps textbox
+				fb_rect.left <= tb_rect.right &&
+				tb_rect.left <= fb_rect.right &&
+				fb_rect.top <= tb_rect.bottom &&
+				tb_rect.top <= fb_rect.bottom
+			) {
+				// move the font box out of the way
+				$fb.css({
+					top: this.$el.position().top - $fb.height()
+				});
+			}
+			$fb.applyBounds();
+		};
+		displace_font_box();
+		
+		// In case a software keyboard opens, like Optikey for eye gaze / head tracking users,
+		// or perhaps a handwriting input for pen tablet users, or *partially* for mobile browsers.
+		// Mobile browsers generally scroll the view for a textbox well enough, but
+		// don't include the custom behavior of moving the font box out of the way.
+		$(window).on("resize", this._on_window_resize = ()=> {
+			this.$editor[0].scrollIntoView({ block: 'nearest', inline: 'nearest' });
+			displace_font_box();
+		});
 	}
 	position() {
 		super.position(true);
-		update_helper_layer(); // TODO: under-grid specific helper layer?
+		update_helper_layer(); // @TODO: under-grid specific helper layer?
 	}
 	destroy() {
 		super.destroy();
@@ -183,6 +196,7 @@ class OnCanvasTextBox extends OnCanvasObject {
 		$G.off("option-changed", this._on_option_changed);
 		this.$editor.off("input", this._on_input);
 		this.$editor.off("scroll", this._on_scroll);
-		update_helper_layer(); // TODO: under-grid specific helper layer?
+		$(window).off("resize", this._on_window_resize);
+		update_helper_layer(); // @TODO: under-grid specific helper layer?
 	}
 }
