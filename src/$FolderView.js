@@ -261,6 +261,7 @@ function $FolderView(folder_path) {
 		$(window).on("pointerup blur", function(){
 			$marquee.hide();
 			dragging = false;
+			set_dragging_file_paths([]);
 		});
 	})();
 
