@@ -3652,6 +3652,7 @@
     "filesystem-setup.js": null,
     "helpers.js": null,
     "programs.js": null,
+    "skin-overlay.js": null,
     "visualizer-overlay.js": null
   }
 }

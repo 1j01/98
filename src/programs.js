@@ -760,7 +760,8 @@ function openWinamp(file_path){
 			webamp.onClose(function(){
 				winamp_interface.close();
 				cancelAnimationFrame(raf_id);
-				visualizerOverlay.fadeOutAndCleanUp();
+				visualizerOverlay?.fadeOutAndCleanUp();
+				skinOverlay?.fadeOutAndCleanUp();
 				$G.off("pointerdown", global_pointerdown);
 			});
 			webamp.onMinimize(function(){
@@ -786,28 +787,48 @@ function openWinamp(file_path){
 				}
 			});
 
-			const visualizerOverlay = new VisualizerOverlay(
+			let visualizerOverlayEnabled = true;
+			let skinOverlayEnabled = false;
+			try {
+				if (localStorage.getItem("webamp_visualizer_overlay_enabled")) {
+					visualizerOverlayEnabled = localStorage.getItem("webamp_visualizer_overlay_enabled") === "true";
+				}
+				if (localStorage.getItem("webamp_skin_overlay_enabled")) {
+					skinOverlayEnabled = localStorage.getItem("webamp_skin_overlay_enabled") === "true";
+				}
+			} catch (error) {
+				// no local storage
+			}
+
+			const visualizerOverlay = visualizerOverlayEnabled ? new VisualizerOverlay(
 				$webamp.find(".gen-window canvas")[0],
 				{ mirror: true, stretch: true },
-			);
+			) : null;
+			const skinOverlay = skinOverlayEnabled ? new SkinOverlay() : null;
 			
-			// TODO: replace with setInterval
+			// TODO: replace with setInterval.. uh.. not if we're using this for the animation for skinOverlay though
 			// Note: can't access butterchurn canvas image data during a requestAnimationFrame here
 			// because of double buffering
 			const animate = ()=> {
 				const windowElements = $(".os-window, .window:not(.gen-window)").toArray();
 				windowElements.forEach(windowEl => {
 					if (!windowEl.hasOverlayCanvas) {
-						visualizerOverlay.makeOverlayCanvas(windowEl);
+						// order matters here; visualizer overlay should be on top
+						skinOverlay?.makeOverlayCanvas(windowEl);
+						visualizerOverlay?.makeOverlayCanvas(windowEl);
 						windowEl.hasOverlayCanvas = true;
 					}
 				});
 	
-				if (webamp.getMediaStatus() === "PLAYING") {
-					visualizerOverlay.fadeIn();
-				} else {
-					visualizerOverlay.fadeOut();
+				if (visualizerOverlayEnabled) {
+					if (webamp.getMediaStatus() === "PLAYING") {
+						visualizerOverlay.fadeIn();
+					} else {
+						visualizerOverlay.fadeOut();
+					}
 				}
+				skinOverlay?.render();
+
 				raf_id = requestAnimationFrame(animate);
 			};
 			raf_id = requestAnimationFrame(animate);
