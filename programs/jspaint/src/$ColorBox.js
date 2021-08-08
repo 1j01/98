@@ -136,6 +136,7 @@ function $ColorBox(vertical){
 	
 	build_palette();
 	$(window).on("theme-change", build_palette);
+	$(window).on("load", ()=> setTimeout(build_palette, 0)); // fix for Firefox when loaded in an iframe
 	
 	$c.rebuild_palette = build_palette;
 	
