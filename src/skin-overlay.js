@@ -138,7 +138,11 @@ class SkinOverlay {
 						ctx.restore();
 					}
 					if (element instanceof HTMLCanvasElement || element instanceof HTMLImageElement || element instanceof HTMLVideoElement) {
-						ctx.drawImage(element, offsetLeft, offsetTop, width, height);
+						if (this.image) {
+							ctx.drawImage(this.image, offsetLeft, offsetTop, width, height);
+						} else {
+							ctx.drawImage(element, offsetLeft, offsetTop, width, height);
+						}
 					} else {
 						// only want direct text children, since we're iterating over all elements and we want to render the text only once
 						const text = Array.prototype.filter
@@ -165,6 +169,10 @@ class SkinOverlay {
 					ctx.restore();
 				});
 		});
+	}
+	setImage(image) {
+		console.log("got image", image);
+		this.image = image;
 	}
 
 	render() {

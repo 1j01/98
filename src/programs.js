@@ -368,8 +368,18 @@ function Paint(file_path){
 			$win.title(contentWindow.document.title);
 		};
 	});
-	
-	return new Task($win);
+	const task = new Task($win);
+	task._on_image_change = (callback) => {
+		waitUntil(() => contentWindow.jQuery, 500, () => {
+			console.log("jQuery loaded");
+			contentWindow.jQuery(contentWindow).on("session-update", () => {
+				const canvas = contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
+				console.log("session-update", canvas);
+				callback(canvas);
+			});
+		});
+	};
+	return task;
 }
 Paint.acceptsFilePaths = true;
 
@@ -829,6 +839,14 @@ function openWinamp(file_path){
 				{ mirror: true, stretch: true },
 			) : null;
 			const skinOverlay = skinOverlayEnabled ? new SkinOverlay() : null;
+
+			if (skinOverlayEnabled) {
+				const skinPath = "programs/winamp/skins/base/MAIN.BMP";
+				const paint = new Paint(skinPath);
+				paint._on_image_change((canvas) => {
+					skinOverlay.setImage(canvas);
+				});
+			}
 			
 			// TODO: replace with setInterval.. uh.. not if we're using this for the animation for skinOverlay though
 			// Note: can't access butterchurn canvas image data during a requestAnimationFrame here
