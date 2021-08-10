@@ -888,6 +888,7 @@
         "p_airb.gif": null,
         "p_blank.png": null,
         "p_brush.gif": null,
+        "p_color.png": null,
         "p_curve.gif": null,
         "p_cut.png": null,
         "p_database.png": null,
@@ -901,8 +902,8 @@
         "p_line.gif": null,
         "p_make_opaque.png": null,
         "p_monochrome.png": null,
-        "p_monochrome_undo.png": null,
         "p_opaq.gif": null,
+        "p_open.png": null,
         "p_oval.gif": null,
         "p_paint.gif": null,
         "p_paste.png": null,
@@ -914,6 +915,7 @@
         "p_rotate_cw.png": null,
         "p_rotate_cw_thin.png": null,
         "p_rrect.gif": null,
+        "p_save.png": null,
         "p_sel.gif": null,
         "p_skew_h.png": null,
         "p_skew_v.png": null,
@@ -963,6 +965,7 @@
       },
       "images": {
         "98.js.org.svg": null,
+        "anypalette-logo-128x128.png": null,
         "arrows.png": null,
         "chm-16x16.png": null,
         "classic": {
@@ -1020,8 +1023,9 @@
           "gay-es-paint-16x16.png": null,
           "gay-es-paint-32x32-light-outline.png": null,
           "gay-es-paint-32x32.png": null,
+          "jspaint.icns": null,
+          "jspaint.ico": null,
           "jspaint.svg": null,
-          "mac.icns": null,
           "ms-icon-144x144.png": null,
           "ms-icon-150x150.png": null,
           "ms-icon-310x310.png": null,
@@ -1029,8 +1033,7 @@
           "og-image-279x279.jpg": null,
           "safari-pinned-tab-source.svg": null,
           "safari-pinned-tab.svg": null,
-          "silhouette-48x48.svg": null,
-          "windows.ico": null
+          "silhouette-48x48.svg": null
         },
         "meta": {
           "main-screenshot.png": null,
@@ -1091,6 +1094,7 @@
         "options-airbrush-size.png": null,
         "options-magnification.png": null,
         "text-tools.png": null,
+        "tracky-mouse-16x16.png": null,
         "transforms": {
           "skew-x.png": null,
           "skew-y.png": null,
@@ -1108,8 +1112,10 @@
       "jsconfig.json": null,
       "lib": {
         "FileSaver.js": null,
+        "UPNG.js": null,
+        "UTIF.js": null,
         "anypalette-0.6.0.js": null,
-        "canvas.toBlob.js": null,
+        "bmp.js": null,
         "firebase.js": null,
         "font-detective.js": null,
         "gif.js": {
@@ -1138,7 +1144,601 @@
           "windows-default.css": null,
           "windows-default.css.map": null
         },
-        "pep.js": null
+        "pako-2.0.3.min.js": null,
+        "pdf.js": {
+          "LICENSE": null,
+          "web": {
+            "cmaps": {
+              "78-EUC-H.bcmap": null,
+              "78-EUC-V.bcmap": null,
+              "78-H.bcmap": null,
+              "78-RKSJ-H.bcmap": null,
+              "78-RKSJ-V.bcmap": null,
+              "78-V.bcmap": null,
+              "78ms-RKSJ-H.bcmap": null,
+              "78ms-RKSJ-V.bcmap": null,
+              "83pv-RKSJ-H.bcmap": null,
+              "90ms-RKSJ-H.bcmap": null,
+              "90ms-RKSJ-V.bcmap": null,
+              "90msp-RKSJ-H.bcmap": null,
+              "90msp-RKSJ-V.bcmap": null,
+              "90pv-RKSJ-H.bcmap": null,
+              "90pv-RKSJ-V.bcmap": null,
+              "Add-H.bcmap": null,
+              "Add-RKSJ-H.bcmap": null,
+              "Add-RKSJ-V.bcmap": null,
+              "Add-V.bcmap": null,
+              "Adobe-CNS1-0.bcmap": null,
+              "Adobe-CNS1-1.bcmap": null,
+              "Adobe-CNS1-2.bcmap": null,
+              "Adobe-CNS1-3.bcmap": null,
+              "Adobe-CNS1-4.bcmap": null,
+              "Adobe-CNS1-5.bcmap": null,
+              "Adobe-CNS1-6.bcmap": null,
+              "Adobe-CNS1-UCS2.bcmap": null,
+              "Adobe-GB1-0.bcmap": null,
+              "Adobe-GB1-1.bcmap": null,
+              "Adobe-GB1-2.bcmap": null,
+              "Adobe-GB1-3.bcmap": null,
+              "Adobe-GB1-4.bcmap": null,
+              "Adobe-GB1-5.bcmap": null,
+              "Adobe-GB1-UCS2.bcmap": null,
+              "Adobe-Japan1-0.bcmap": null,
+              "Adobe-Japan1-1.bcmap": null,
+              "Adobe-Japan1-2.bcmap": null,
+              "Adobe-Japan1-3.bcmap": null,
+              "Adobe-Japan1-4.bcmap": null,
+              "Adobe-Japan1-5.bcmap": null,
+              "Adobe-Japan1-6.bcmap": null,
+              "Adobe-Japan1-UCS2.bcmap": null,
+              "Adobe-Korea1-0.bcmap": null,
+              "Adobe-Korea1-1.bcmap": null,
+              "Adobe-Korea1-2.bcmap": null,
+              "Adobe-Korea1-UCS2.bcmap": null,
+              "B5-H.bcmap": null,
+              "B5-V.bcmap": null,
+              "B5pc-H.bcmap": null,
+              "B5pc-V.bcmap": null,
+              "CNS-EUC-H.bcmap": null,
+              "CNS-EUC-V.bcmap": null,
+              "CNS1-H.bcmap": null,
+              "CNS1-V.bcmap": null,
+              "CNS2-H.bcmap": null,
+              "CNS2-V.bcmap": null,
+              "ETHK-B5-H.bcmap": null,
+              "ETHK-B5-V.bcmap": null,
+              "ETen-B5-H.bcmap": null,
+              "ETen-B5-V.bcmap": null,
+              "ETenms-B5-H.bcmap": null,
+              "ETenms-B5-V.bcmap": null,
+              "EUC-H.bcmap": null,
+              "EUC-V.bcmap": null,
+              "Ext-H.bcmap": null,
+              "Ext-RKSJ-H.bcmap": null,
+              "Ext-RKSJ-V.bcmap": null,
+              "Ext-V.bcmap": null,
+              "GB-EUC-H.bcmap": null,
+              "GB-EUC-V.bcmap": null,
+              "GB-H.bcmap": null,
+              "GB-V.bcmap": null,
+              "GBK-EUC-H.bcmap": null,
+              "GBK-EUC-V.bcmap": null,
+              "GBK2K-H.bcmap": null,
+              "GBK2K-V.bcmap": null,
+              "GBKp-EUC-H.bcmap": null,
+              "GBKp-EUC-V.bcmap": null,
+              "GBT-EUC-H.bcmap": null,
+              "GBT-EUC-V.bcmap": null,
+              "GBT-H.bcmap": null,
+              "GBT-V.bcmap": null,
+              "GBTpc-EUC-H.bcmap": null,
+              "GBTpc-EUC-V.bcmap": null,
+              "GBpc-EUC-H.bcmap": null,
+              "GBpc-EUC-V.bcmap": null,
+              "H.bcmap": null,
+              "HKdla-B5-H.bcmap": null,
+              "HKdla-B5-V.bcmap": null,
+              "HKdlb-B5-H.bcmap": null,
+              "HKdlb-B5-V.bcmap": null,
+              "HKgccs-B5-H.bcmap": null,
+              "HKgccs-B5-V.bcmap": null,
+              "HKm314-B5-H.bcmap": null,
+              "HKm314-B5-V.bcmap": null,
+              "HKm471-B5-H.bcmap": null,
+              "HKm471-B5-V.bcmap": null,
+              "HKscs-B5-H.bcmap": null,
+              "HKscs-B5-V.bcmap": null,
+              "Hankaku.bcmap": null,
+              "Hiragana.bcmap": null,
+              "KSC-EUC-H.bcmap": null,
+              "KSC-EUC-V.bcmap": null,
+              "KSC-H.bcmap": null,
+              "KSC-Johab-H.bcmap": null,
+              "KSC-Johab-V.bcmap": null,
+              "KSC-V.bcmap": null,
+              "KSCms-UHC-H.bcmap": null,
+              "KSCms-UHC-HW-H.bcmap": null,
+              "KSCms-UHC-HW-V.bcmap": null,
+              "KSCms-UHC-V.bcmap": null,
+              "KSCpc-EUC-H.bcmap": null,
+              "KSCpc-EUC-V.bcmap": null,
+              "Katakana.bcmap": null,
+              "LICENSE": null,
+              "NWP-H.bcmap": null,
+              "NWP-V.bcmap": null,
+              "RKSJ-H.bcmap": null,
+              "RKSJ-V.bcmap": null,
+              "Roman.bcmap": null,
+              "UniCNS-UCS2-H.bcmap": null,
+              "UniCNS-UCS2-V.bcmap": null,
+              "UniCNS-UTF16-H.bcmap": null,
+              "UniCNS-UTF16-V.bcmap": null,
+              "UniCNS-UTF32-H.bcmap": null,
+              "UniCNS-UTF32-V.bcmap": null,
+              "UniCNS-UTF8-H.bcmap": null,
+              "UniCNS-UTF8-V.bcmap": null,
+              "UniGB-UCS2-H.bcmap": null,
+              "UniGB-UCS2-V.bcmap": null,
+              "UniGB-UTF16-H.bcmap": null,
+              "UniGB-UTF16-V.bcmap": null,
+              "UniGB-UTF32-H.bcmap": null,
+              "UniGB-UTF32-V.bcmap": null,
+              "UniGB-UTF8-H.bcmap": null,
+              "UniGB-UTF8-V.bcmap": null,
+              "UniJIS-UCS2-H.bcmap": null,
+              "UniJIS-UCS2-HW-H.bcmap": null,
+              "UniJIS-UCS2-HW-V.bcmap": null,
+              "UniJIS-UCS2-V.bcmap": null,
+              "UniJIS-UTF16-H.bcmap": null,
+              "UniJIS-UTF16-V.bcmap": null,
+              "UniJIS-UTF32-H.bcmap": null,
+              "UniJIS-UTF32-V.bcmap": null,
+              "UniJIS-UTF8-H.bcmap": null,
+              "UniJIS-UTF8-V.bcmap": null,
+              "UniJIS2004-UTF16-H.bcmap": null,
+              "UniJIS2004-UTF16-V.bcmap": null,
+              "UniJIS2004-UTF32-H.bcmap": null,
+              "UniJIS2004-UTF32-V.bcmap": null,
+              "UniJIS2004-UTF8-H.bcmap": null,
+              "UniJIS2004-UTF8-V.bcmap": null,
+              "UniJISPro-UCS2-HW-V.bcmap": null,
+              "UniJISPro-UCS2-V.bcmap": null,
+              "UniJISPro-UTF8-V.bcmap": null,
+              "UniJISX0213-UTF32-H.bcmap": null,
+              "UniJISX0213-UTF32-V.bcmap": null,
+              "UniJISX02132004-UTF32-H.bcmap": null,
+              "UniJISX02132004-UTF32-V.bcmap": null,
+              "UniKS-UCS2-H.bcmap": null,
+              "UniKS-UCS2-V.bcmap": null,
+              "UniKS-UTF16-H.bcmap": null,
+              "UniKS-UTF16-V.bcmap": null,
+              "UniKS-UTF32-H.bcmap": null,
+              "UniKS-UTF32-V.bcmap": null,
+              "UniKS-UTF8-H.bcmap": null,
+              "UniKS-UTF8-V.bcmap": null,
+              "V.bcmap": null,
+              "WP-Symbol.bcmap": null
+            },
+            "compressed.tracemonkey-pldi-09.pdf": null,
+            "debugger.js": null,
+            "images": {
+              "annotation-check.svg": null,
+              "annotation-comment.svg": null,
+              "annotation-help.svg": null,
+              "annotation-insert.svg": null,
+              "annotation-key.svg": null,
+              "annotation-newparagraph.svg": null,
+              "annotation-noicon.svg": null,
+              "annotation-note.svg": null,
+              "annotation-paragraph.svg": null,
+              "findbarButton-next.svg": null,
+              "findbarButton-previous.svg": null,
+              "grab.cur": null,
+              "grabbing.cur": null,
+              "loading-dark.svg": null,
+              "loading-icon.gif": null,
+              "loading.svg": null,
+              "secondaryToolbarButton-documentProperties.svg": null,
+              "secondaryToolbarButton-firstPage.svg": null,
+              "secondaryToolbarButton-handTool.svg": null,
+              "secondaryToolbarButton-lastPage.svg": null,
+              "secondaryToolbarButton-rotateCcw.svg": null,
+              "secondaryToolbarButton-rotateCw.svg": null,
+              "secondaryToolbarButton-scrollHorizontal.svg": null,
+              "secondaryToolbarButton-scrollVertical.svg": null,
+              "secondaryToolbarButton-scrollWrapped.svg": null,
+              "secondaryToolbarButton-selectTool.svg": null,
+              "secondaryToolbarButton-spreadEven.svg": null,
+              "secondaryToolbarButton-spreadNone.svg": null,
+              "secondaryToolbarButton-spreadOdd.svg": null,
+              "shadow.png": null,
+              "toolbarButton-bookmark.svg": null,
+              "toolbarButton-currentOutlineItem.svg": null,
+              "toolbarButton-download.svg": null,
+              "toolbarButton-menuArrow.svg": null,
+              "toolbarButton-openFile.svg": null,
+              "toolbarButton-pageDown.svg": null,
+              "toolbarButton-pageUp.svg": null,
+              "toolbarButton-presentationMode.svg": null,
+              "toolbarButton-print.svg": null,
+              "toolbarButton-search.svg": null,
+              "toolbarButton-secondaryToolbarToggle.svg": null,
+              "toolbarButton-sidebarToggle.svg": null,
+              "toolbarButton-viewAttachments.svg": null,
+              "toolbarButton-viewLayers.svg": null,
+              "toolbarButton-viewOutline.svg": null,
+              "toolbarButton-viewThumbnail.svg": null,
+              "toolbarButton-zoomIn.svg": null,
+              "toolbarButton-zoomOut.svg": null,
+              "treeitem-collapsed.svg": null,
+              "treeitem-expanded.svg": null
+            },
+            "locale": {
+              "ach": {
+                "viewer.properties": null
+              },
+              "af": {
+                "viewer.properties": null
+              },
+              "an": {
+                "viewer.properties": null
+              },
+              "ar": {
+                "viewer.properties": null
+              },
+              "ast": {
+                "viewer.properties": null
+              },
+              "az": {
+                "viewer.properties": null
+              },
+              "be": {
+                "viewer.properties": null
+              },
+              "bg": {
+                "viewer.properties": null
+              },
+              "bn": {
+                "viewer.properties": null
+              },
+              "bo": {
+                "viewer.properties": null
+              },
+              "br": {
+                "viewer.properties": null
+              },
+              "brx": {
+                "viewer.properties": null
+              },
+              "bs": {
+                "viewer.properties": null
+              },
+              "ca": {
+                "viewer.properties": null
+              },
+              "cak": {
+                "viewer.properties": null
+              },
+              "ckb": {
+                "viewer.properties": null
+              },
+              "cs": {
+                "viewer.properties": null
+              },
+              "cy": {
+                "viewer.properties": null
+              },
+              "da": {
+                "viewer.properties": null
+              },
+              "de": {
+                "viewer.properties": null
+              },
+              "dsb": {
+                "viewer.properties": null
+              },
+              "el": {
+                "viewer.properties": null
+              },
+              "en-CA": {
+                "viewer.properties": null
+              },
+              "en-GB": {
+                "viewer.properties": null
+              },
+              "en-US": {
+                "viewer.properties": null
+              },
+              "eo": {
+                "viewer.properties": null
+              },
+              "es-AR": {
+                "viewer.properties": null
+              },
+              "es-CL": {
+                "viewer.properties": null
+              },
+              "es-ES": {
+                "viewer.properties": null
+              },
+              "es-MX": {
+                "viewer.properties": null
+              },
+              "et": {
+                "viewer.properties": null
+              },
+              "eu": {
+                "viewer.properties": null
+              },
+              "fa": {
+                "viewer.properties": null
+              },
+              "ff": {
+                "viewer.properties": null
+              },
+              "fi": {
+                "viewer.properties": null
+              },
+              "fr": {
+                "viewer.properties": null
+              },
+              "fy-NL": {
+                "viewer.properties": null
+              },
+              "ga-IE": {
+                "viewer.properties": null
+              },
+              "gd": {
+                "viewer.properties": null
+              },
+              "gl": {
+                "viewer.properties": null
+              },
+              "gn": {
+                "viewer.properties": null
+              },
+              "gu-IN": {
+                "viewer.properties": null
+              },
+              "he": {
+                "viewer.properties": null
+              },
+              "hi-IN": {
+                "viewer.properties": null
+              },
+              "hr": {
+                "viewer.properties": null
+              },
+              "hsb": {
+                "viewer.properties": null
+              },
+              "hu": {
+                "viewer.properties": null
+              },
+              "hy-AM": {
+                "viewer.properties": null
+              },
+              "hye": {
+                "viewer.properties": null
+              },
+              "ia": {
+                "viewer.properties": null
+              },
+              "id": {
+                "viewer.properties": null
+              },
+              "is": {
+                "viewer.properties": null
+              },
+              "it": {
+                "viewer.properties": null
+              },
+              "ja": {
+                "viewer.properties": null
+              },
+              "ka": {
+                "viewer.properties": null
+              },
+              "kab": {
+                "viewer.properties": null
+              },
+              "kk": {
+                "viewer.properties": null
+              },
+              "km": {
+                "viewer.properties": null
+              },
+              "kn": {
+                "viewer.properties": null
+              },
+              "ko": {
+                "viewer.properties": null
+              },
+              "lij": {
+                "viewer.properties": null
+              },
+              "lo": {
+                "viewer.properties": null
+              },
+              "locale.properties": null,
+              "lt": {
+                "viewer.properties": null
+              },
+              "ltg": {
+                "viewer.properties": null
+              },
+              "lv": {
+                "viewer.properties": null
+              },
+              "meh": {
+                "viewer.properties": null
+              },
+              "mk": {
+                "viewer.properties": null
+              },
+              "mr": {
+                "viewer.properties": null
+              },
+              "ms": {
+                "viewer.properties": null
+              },
+              "my": {
+                "viewer.properties": null
+              },
+              "nb-NO": {
+                "viewer.properties": null
+              },
+              "ne-NP": {
+                "viewer.properties": null
+              },
+              "nl": {
+                "viewer.properties": null
+              },
+              "nn-NO": {
+                "viewer.properties": null
+              },
+              "oc": {
+                "viewer.properties": null
+              },
+              "pa-IN": {
+                "viewer.properties": null
+              },
+              "pl": {
+                "viewer.properties": null
+              },
+              "pt-BR": {
+                "viewer.properties": null
+              },
+              "pt-PT": {
+                "viewer.properties": null
+              },
+              "rm": {
+                "viewer.properties": null
+              },
+              "ro": {
+                "viewer.properties": null
+              },
+              "ru": {
+                "viewer.properties": null
+              },
+              "scn": {
+                "viewer.properties": null
+              },
+              "si": {
+                "viewer.properties": null
+              },
+              "sk": {
+                "viewer.properties": null
+              },
+              "sl": {
+                "viewer.properties": null
+              },
+              "son": {
+                "viewer.properties": null
+              },
+              "sq": {
+                "viewer.properties": null
+              },
+              "sr": {
+                "viewer.properties": null
+              },
+              "sv-SE": {
+                "viewer.properties": null
+              },
+              "szl": {
+                "viewer.properties": null
+              },
+              "ta": {
+                "viewer.properties": null
+              },
+              "te": {
+                "viewer.properties": null
+              },
+              "th": {
+                "viewer.properties": null
+              },
+              "tl": {
+                "viewer.properties": null
+              },
+              "tr": {
+                "viewer.properties": null
+              },
+              "trs": {
+                "viewer.properties": null
+              },
+              "uk": {
+                "viewer.properties": null
+              },
+              "ur": {
+                "viewer.properties": null
+              },
+              "uz": {
+                "viewer.properties": null
+              },
+              "vi": {
+                "viewer.properties": null
+              },
+              "wo": {
+                "viewer.properties": null
+              },
+              "xh": {
+                "viewer.properties": null
+              },
+              "zh-CN": {
+                "viewer.properties": null
+              },
+              "zh-TW": {
+                "viewer.properties": null
+              }
+            },
+            "viewer.css": null,
+            "viewer.html": null,
+            "viewer.js": null,
+            "viewer.js.map": null
+          }
+        },
+        "tracky-mouse": {
+          "LICENSE.txt": null,
+          "README.md": null,
+          "facemesh.worker.js": null,
+          "images": {
+            "tracky-mouse-logo-16.png": null,
+            "tracky-mouse-logo-32.png": null,
+            "tracky-mouse-logo-512.png": null,
+            "tracky-mouse-logo.svg": null
+          },
+          "index.html": null,
+          "lib": {
+            "clmtrackr.js": null,
+            "facemesh": {
+              "blazeface": {
+                "group1-shard1of1.bin": null,
+                "model.json": null
+              },
+              "facemesh": {
+                "group1-shard1of1.bin": null,
+                "model.json": null
+              },
+              "facemesh.js": null
+            },
+            "jsfeat-min.js": null,
+            "stats.js": null,
+            "tf.js": null,
+            "tf.js.map": null
+          },
+          "package.json": null,
+          "tracky-mouse-electron": {
+            "forge.config.js": null,
+            "package-lock.json": null,
+            "package.json": null,
+            "src": {
+              "electron-main.js": null,
+              "preload.js": null
+            }
+          },
+          "tracky-mouse.css": null,
+          "tracky-mouse.js": null
+        }
       },
       "localization": {
         "ar": {
@@ -3499,6 +4099,7 @@
         "OnCanvasObject.js": null,
         "OnCanvasSelection.js": null,
         "OnCanvasTextBox.js": null,
+        "app-localization.js": null,
         "app.js": null,
         "edit-colors.js": null,
         "electron-injected.js": null,
