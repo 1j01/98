@@ -77,8 +77,9 @@ I want to bring good old paint into the modern era.
   It isn't seamless; actions by other users interrupt what you're doing, and visa versa.
   Sessions are not private, and you may lose your work at any time.
   If you want better collaboration support, follow the development of [Mopaint](https://github.com/1j01/mopaint).
-* Load many different palette formats with **Colors > Get Colors**.
-  (I made a [library](https://github.com/1j01/palette.js/) for this.)
+* Load and save [many different palette formats](#color-palette-formats) with **Colors > Get Colors** and **Colors > Save Colors**.
+  (I made a library for this: <img src="images/anypalette-logo-128x128.png" height="16"> [AnyPalette.js](https://github.com/1j01/anypalette.js).)
+* You can also drag and drop palette files (of any format) into the app to load. (Dragging and dropping image files also works, to load images.)
 * Touch support: use two fingers to pan the view.
 * Click/tap the selected colors area to swap the foreground and background colors
 
@@ -96,6 +97,88 @@ In other browsers you can still can copy with <kbd>Ctrl+C</kbd>, cut with <kbd>C
 but data copied from JS Paint can only be pasted into other instances of JS Paint.
 External images can be pasted in.
 
+
+## Supported File Formats
+
+### Image Formats
+
+⚠️ Saving as JPEG will introduce artifacts that cause problems when using the Fill tool or transparent selections.
+
+⚠️ Saving in some formats will reduce the number of colors in the image.
+
+💡 Unlike in MS Paint, you can use **Edit > Undo** to revert color or quality reduction from saving.
+This doesn't undo saving the file, but allows you to then save in a different format with higher quality, using **File > Save As**.
+
+💡 Saving as PNG is recommended as it gives small file sizes while retaining full quality.
+
+| File Extension                | Name                          | Read | Write | Read Palette | Write Palette |
+|-------------------------------|-------------------------------|:----:|:-----:|:------------:|:-------------:|
+| .png                          | [PNG][]                       |  ✅  |  ✅   |      ✅      |               |
+| .bmp, .dib                    | [Monochrome Bitmap][BMP]      |  ✅  |  ✅   |      ✅      |      ✅       |
+| .bmp, .dib                    | [16 Color Bitmap][BMP]        |  ✅  |  ✅   |      ✅      |      ✅       |
+| .bmp, .dib                    | [256 Color Bitmap][BMP]       |  ✅  |  ✅   |      ✅      |      ✅       |
+| .bmp, .dib                    | [24-bit Bitmap][BMP]          |  ✅  |  ✅   |      N/A     |      N/A      |
+| .tif, .tiff, .dng, .cr2, .nef | [TIFF][] (loads first page)   |  ✅  |  ✅   |              |               |
+| .pdf                          | [PDF][] (loads first page)    |  ✅  |       |              |               |
+| .webp                         | [WebP][]                      |  🌐  |  🌐   |              |               |
+| .gif                          | [GIF][]                       |  🌐  |  🌐   |              |               |
+| .jpeg, .jpg                   | [JPEG][]                      |  🌐  |  🌐   |      N/A     |      N/A      |
+| .svg                          | [SVG][] (only default size)   |  🌐  |       |              |               |
+| .ico                          | [ICO][] (only default size)   |  🌐  |       |              |               |
+
+Capabilities marked with 🌐 are currently left up to the browser to support or not.
+If "Write" is marked with 🌐, the format will appear in the file type dropdown but may not work when you try to save.
+For opening files, see Wikipedia's [browser image format support table][] for more information.
+
+"Read Palette" refers to loading the colors into the Colors box automatically (from an [indexed color][] image),
+and "Write Palette" refers to writing an [indexed color][] image.
+
+[PNG]: https://en.wikipedia.org/wiki/Portable_Network_Graphics
+[Monochrome Bitmap]: https://en.wikipedia.org/wiki/BMP_file_format
+[16 Color Bitmap]: https://en.wikipedia.org/wiki/BMP_file_format
+[256 Color Bitmap]: https://en.wikipedia.org/wiki/BMP_file_format
+[24-bit Bitmap]: https://en.wikipedia.org/wiki/BMP_file_format
+[TIFF]: https://en.wikipedia.org/wiki/TIFF
+[PDF]: https://en.wikipedia.org/wiki/PDF
+[WebP]: https://en.wikipedia.org/wiki/WebP
+[GIF]: https://en.wikipedia.org/wiki/GIF
+[JPEG]: https://en.wikipedia.org/wiki/JPEG
+[SVG]: https://en.wikipedia.org/wiki/Scalable_Vector_Graphics
+[ICO]: https://en.wikipedia.org/wiki/ICO_(file_format)
+[indexed color]: https://en.wikipedia.org/wiki/Indexed_color
+[browser image format support table]: https://en.wikipedia.org/wiki/Comparison_of_web_browsers#Image_format_support
+
+
+### Color Palette Formats
+
+With **Colors > Save Colors** and **Colors > Get Colors** you can save and load colors
+in many different formats, for compatibility with a wide range of programs.
+
+If you want to add extensive palette support to another application, I've made this functionality available as a library:
+<img src="images/anypalette-logo-128x128.png" height="16"> [AnyPalette.js](https://github.com/1j01/anypalette.js)
+
+| File Extension    | Name                              | Programs                                                                          |   Read  |  Write  |
+|-------------------|-----------------------------------|-----------------------------------------------------------------------------------|:-------:|:-------:|
+| .pal              | [RIFF] Palette                    | [MS Paint] for Windows 95 and Windows NT 4.0                                      |   ✅   |   ✅    |
+| .gpl              | [GIMP][Gimp] Palette              | [Gimp], [Inkscape], [Krita], [KolourPaint], [Scribus], [CinePaint], [MyPaint]     |   ✅   |   ✅    |
+| .aco              | Adobe Color Swatch                | Adobe [Photoshop]                                                                 |   ✅   |   ✅    |
+| .ase              | Adobe Swatch Exchange             | Adobe [Photoshop], [InDesign], and [Illustrator]                                  |   ✅   |   ✅    |
+| .txt              | [Paint.NET] Palette               | [Paint.NET]                                                                       |   ✅   |   ✅    |
+| .act              | Adobe Color Table                 | Adobe [Photoshop] and [Illustrator]                                               |   ✅   |   ✅    |
+| .pal, .psppalette | [Paint Shop Pro] Palette          | [Paint Shop Pro] (Jasc Software / Corel)                                          |   ✅   |   ✅    |
+| .hpl              | [Homesite] Palette                | Allaire [Homesite] / Macromedia [ColdFusion]                                      |   ✅   |   ✅    |
+| .cs               | ColorSchemer                      | ColorSchemer Studio                                                               |   ✅   |         |
+| .pal              | [StarCraft] Palette               | [StarCraft]                                                                       |   ✅   |   ✅    |
+| .wpe              | [StarCraft] Terrain Palette       | [StarCraft]                                                                       |   ✅   |   ✅    |
+| .sketchpalette    | [Sketch] Palette                  | [Sketch]                                                                          |   ✅   |   ✅    |
+| .spl              | [Skencil] Palette                 | [Skencil] (formerly called Sketch)                                                |   ✅   |   ✅    |
+| .soc              | StarOffice Colors                 | [StarOffice], [OpenOffice], [LibreOffice]                                         |   ✅   |   ✅    |
+| .colors           | KolourPaint Color Collection      | [KolourPaint]                                                                     |   ✅   |   ✅    |
+| .colors           | Plasma Desktop Color Scheme       | [KDE] Plasma Desktop                                                              |   ✅   |         |
+| .theme            | Windows Theme                     | [Windows] Desktop                                                                 |   ✅   |         |
+| .themepack        | Windows Theme                     | [Windows] Desktop                                                                 |   ✅   |         |
+| .css, .scss, .styl| Cascading StyleSheets             | Web browsers / web pages                                                          |   ✅   |   ✅    |
+| .html, .svg, .js  | any text files with CSS colors    | Web browsers / web pages                                                          |   ✅   |         |
 
 ## Did you know?
 
@@ -118,10 +201,10 @@ External images can be pasted in.
 * These Tips and Tricks from [a tutorial for MS Paint](https://www.albinoblacksheep.com/tutorial/mspaint)
   also work in JS Paint:
 
-	* [x] Brush Scaling (<kbd>+</kbd> & <kbd>-</kbd> on the Numpad to adjust brush size)
+	* [x] Brush Scaling (<kbd>+</kbd> & <kbd>-</kbd> on the number pad to adjust brush size)
 	* [x] "Custom Brushes" (hold <kbd>Shift</kbd> and drag the selection to smear it)
 	* [x] The 'Stamp' "Tool" (hold <kbd>Shift</kbd> and click the selection to stamp it)
-	* [x] Image Scaling (<kbd>+</kbd> & <kbd>-</kbd> on the Numpad to scale the selection by factors of 2)
+	* [x] Image Scaling (<kbd>+</kbd> & <kbd>-</kbd> on the number pad to scale the selection by factors of 2)
 	* [x] Color Replacement (right mouse button with Eraser to selectively replace the foreground color with the background color)
 	* [x] The Grid (<kbd>Ctrl+G</kbd> & Zoom to 4x+)
 	* [x] Quick Undo (Pressing a second mouse button cancels the action you were performing.
@@ -177,11 +260,10 @@ This is unreleased and not in development.
 - Install dependencies with `npm i`
 - Start the electron app with `npm run electron:start`
 
-[electron-debug][] and [devtron][] are included, so you can use <kbd>Ctrl+R</kbd> to reload and <kbd>F12</kbd>/<kbd>Ctrl+Shift+I</kbd> to open the devtools, and there's a Devtron tab with tools specific to Electron.
+[electron-debug][] is included, so you can use <kbd>Ctrl+R</kbd> to reload and <kbd>F12</kbd>/<kbd>Ctrl+Shift+I</kbd> to open the devtools.
 
 You can build for production with `npm run electron:make`
 
 [Live Server]: https://github.com/tapio/live-server
 [Node.js]: https://nodejs.org/
 [electron-debug]: https://github.com/sindresorhus/electron-debug
-[devtron]: https://electronjs.org/devtron

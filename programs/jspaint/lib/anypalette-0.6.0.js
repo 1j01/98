@@ -11671,6 +11671,7 @@ read_palette = function(o, callback) {
       // or {friendlyMessage, error}
       err = new Error(msg);
       err.error = e;
+      err.__PATCHED_LIB_TO_ADD_THIS__format = format;
       errors.push(err);
     }
     if (palette) {

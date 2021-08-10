@@ -1,6 +1,6 @@
 (()=> {
 
-const looksLikeChrome = !!(window.chrome && (chrome.loadTimes || chrome.csi));
+const looksLikeChrome = !!(window.chrome && (window.chrome.loadTimes || window.chrome.csi));
 // NOTE: Microsoft Edge includes window.chrome.app
 // (also this browser detection logic could likely use some more nuance)
 
@@ -107,7 +107,7 @@ window.menus = {
 				// include the selection in the saved image
 				deselect();
 
-				canvas.toBlob((blob)=> {
+				main_canvas.toBlob((blob)=> {
 					sanity_check_blob(blob, ()=> {
 						show_imgur_uploader(blob);
 					});
@@ -178,7 +178,7 @@ window.menus = {
 				"use image as wallpaper tiled", "use picture as wallpaper tiled", "use drawing as wallpaper tiled", 
 				"tile image as wallpaper", "tile picture as wallpaper", "tile drawing as wallpaper", 
 			],
-			action: ()=> { set_as_wallpaper_tiled(); },
+			action: ()=> { systemHooks.setWallpaperTiled(main_canvas); },
 			description: localize("Tiles this bitmap as the desktop background."),
 		},
 		{
@@ -190,7 +190,7 @@ window.menus = {
 				"use image as wallpaper centered", "use picture as wallpaper centered", "use drawing as wallpaper centered", 
 				"center image as wallpaper", "center picture as wallpaper", "center drawing as wallpaper", 
 			],
-			action: ()=> { set_as_wallpaper_centered(); },
+			action: ()=> { systemHooks.setWallpaperCentered(main_canvas); },
 			description: localize("Centers this bitmap as the desktop background."),
 		},
 		MENU_DIVIDER,
@@ -325,7 +325,7 @@ window.menus = {
 			speech_recognition: [
 				"paste a file", "paste from a file", "insert a file", "insert an image file", 
 			],
-			action: ()=> { paste_from_file_select_dialog(); },
+			action: ()=> { choose_file_to_paste(); },
 			description: localize("Pastes a file into the selection."),
 		}
 	],
@@ -448,8 +448,8 @@ window.menus = {
 						const rect = $canvas_area[0].getBoundingClientRect();
 						const margin = 30; // leave a margin so scrollbars won't appear
 						let mag = Math.min(
-							(rect.width - margin) / canvas.width,
-							(rect.height - margin) / canvas.height,
+							(rect.width - margin) / main_canvas.width,
+							(rect.height - margin) / main_canvas.height,
 						);
 						// round to an integer percent for the View > Zoom > Custom... dialog, which shows non-integers as invalid
 						mag = Math.floor(100 * mag) / 100;
@@ -475,7 +475,7 @@ window.menus = {
 					],
 					enabled: () => magnification >= 4,
 					checkbox: {
-						toggle: toggle_grid,
+						toggle: () => { toggle_grid(); },
 						check: () => show_grid,
 					},
 					description: localize("Shows or hides the grid."),
@@ -621,19 +621,16 @@ window.menus = {
 			speech_recognition: [
 				"get colors", "load colors", "load color palette", "load palette", "load color palette file", "load palette file", "load list of colors",
 			],
-			action: ()=> {
-				get_FileList_from_file_select_dialog((files)=> {
-					const file = files[0];
-					AnyPalette.loadPalette(file, (err, new_palette)=> {
-						if(err){
-							// localize("Unexpected file format.");
-							show_error_message("This file is not in a format that Paint recognizes, or no colors were found.");
-						}else{
-							palette = new_palette.map((color)=> color.toString());
-							$colorbox.rebuild_palette();
-							window.console && console.log(`Loaded palette: ${palette.map(()=> `%c█`).join("")}`, ...palette.map((color)=> `color: ${color};`));
-						}
-					});
+			action: async ()=> {
+				const {file} = await systemHooks.showOpenFileDialog({formats: palette_formats});
+				AnyPalette.loadPalette(file, (error, new_palette)=> {
+					if (error) {
+						show_file_format_errors({ as_palette_error: error });
+					} else {
+						palette = new_palette.map((color)=> color.toString());
+						$colorbox.rebuild_palette();
+						window.console && console.log(`Loaded palette: ${palette.map(()=> `%c█`).join("")}`, ...palette.map((color)=> `color: ${color};`));
+					}
 				});
 			},
 			description: localize("Uses a previously saved palette of colors."),
@@ -655,32 +652,19 @@ window.menus = {
 						blue: b / 255,
 					}));
 				}
-				const palette_types_unordered = {};
-				for (const [format_id, format] of Object.entries(AnyPalette.formats)) {
-					if (format.write) {
-						palette_types_unordered[format_id] = `${format.name} (${
-							format.fileExtensions.map((extension)=> `*.${extension}`).join(";")
-						})`;
-					}
-				}
-				const palette_types_ordered = Object.keys(palette_types_unordered).sort((a, b)=>
-					// first option is default
-					(b === "RIFF_PALETTE") - (a === "RIFF_PALETTE") ||
-					(b === "GIMP_PALETTE") - (a === "GIMP_PALETTE") ||
-					0
-				).reduce(
-					(obj, key) => {
-						obj[key] = palette_types_unordered[key];
-						return obj;
+				systemHooks.showSaveFileDialog({
+					dialogTitle: localize("Save Colors"),
+					defaultFileName: localize("untitled.pal"),
+					formats: palette_formats,
+					getBlob: ()=> {
+						const file_content = AnyPalette.writePalette(ap, AnyPalette.formats[format_id]);
+						const blob = new Blob([file_content], {type: "text/plain"});
+						return new Promise((resolve)=> {
+							sanity_check_blob(blob, ()=> {
+								resolve(blob);
+							});
+						});
 					},
-					{}
-				);
-				choose_file_name_and_type(localize("Save Colors"), localize("untitled.pal"), palette_types_ordered, (palette_file_name, format_id)=> {
-					const file_content = AnyPalette.writePalette(ap, AnyPalette.formats[format_id]);
-					const blob = new Blob([file_content], {type: "text/plain"});
-					sanity_check_blob(blob, ()=> {
-						saveAs(blob, palette_file_name);
-					});
 				});
 			},
 			description: localize("Saves the current palette of colors to a file."),
@@ -712,7 +696,7 @@ window.menus = {
 	],
 	[localize("E&xtras")]: [
 		{
-			item: localize("&History"),
+			item: "⌚ " + localize("&History"),
 			shortcut: "Ctrl+Shift+Y",
 			speech_recognition: [
 				// This is a duplicate menu item (for easy access), so it doesn't need speech recognition data here.
@@ -721,7 +705,7 @@ window.menus = {
 			description: localize("Shows the document history and lets you navigate to states not accessible with Undo or Repeat."),
 		},
 		{
-			item: localize("&Render History As GIF"),
+			item: "🎞️ " + localize("&Render History As GIF"),
 			shortcut: "Ctrl+Shift+G",
 			speech_recognition: [
 				// @TODO: animated gif, blah
@@ -790,7 +774,7 @@ window.menus = {
 			description: localize("Draws randomly with different tools."),
 		},*/
 		{
-			item: localize("&Multi-User"),
+			item: "👥 " + localize("&Multi-User"),
 			submenu: [
 				{
 					item: localize("&New Session From Document"),
@@ -881,10 +865,10 @@ window.menus = {
 			]
 		},
 		{
-			item: localize("&Themes"),
+			item: "💄 " + localize("&Themes"),
 			submenu: [
 				{
-					item: localize("&Classic"),
+					item: "🔙 " + localize("&Classic"),
 					speech_recognition: [
 						"reset theme", "revert theme setting",
 						"classic theme", "switch to classic theme", "use classic theme", "set theme to classic", "set theme classic", "switch to classic theme", "switch theme to classic", "switch theme classic",
@@ -913,7 +897,7 @@ window.menus = {
 					description: localize("Makes JS Paint look like MS Paint from Windows 98."),
 				},
 				{
-					item: localize("&Dark"),
+					item: "⬛ " + localize("&Dark"),
 					speech_recognition: [
 						"dark theme", "switch to dark theme", "use dark theme", "set theme to dark", "set theme dark", "switch to dark theme", "switch theme to dark", "switch theme dark",
 						"dark mode", "switch to dark mode", "use dark mode", "set mode to dark", "set mode dark", "switch to dark mode", "switch mode to dark", "switch mode dark",
@@ -930,7 +914,7 @@ window.menus = {
 					description: localize("Makes JS Paint darker."),
 				},
 				{
-					item: localize("&Modern"),
+					item: "⚪ " + localize("&Modern"),
 					speech_recognition: [
 						"modern theme", "switch to modern theme", "use modern theme", "set theme to modern", "set theme modern", "switch to modern theme", "switch theme to modern", "switch theme modern",
 					],
@@ -941,7 +925,7 @@ window.menus = {
 					description: localize("Makes JS Paint look a bit more modern."),
 				},
 				{
-					item: localize("&Winter"),
+					item: "❄️ " + localize("&Winter"),
 					speech_recognition: [
 						"winter theme", "switch to winter theme", "use winter theme", "set theme to winter", "set theme winter", "switch to winter theme", "switch theme to winter", "switch theme winter",
 						"holiday theme", "switch to holiday theme", "use holiday theme", "set theme to holiday", "set theme holiday", "switch to holiday theme", "switch theme to holiday", "switch theme holiday",
@@ -955,7 +939,7 @@ window.menus = {
 					description: localize("Makes JS Paint look festive for the holidays."),
 				},
 				{
-					item: localize("&Occult"),
+					item: "🤘 " + localize("&Occult"),
 					speech_recognition: [
 						"occult theme", "switch to occult theme", "use occult theme", "set theme to occult", "set theme occult", "switch to occult theme", "switch theme to occult", "switch theme occult",
 						"occultist theme", "switch to occultist theme", "use occultist theme", "set theme to occultist", "set theme occultist", "switch to occultist theme", "switch theme to occultist", "switch theme occultist",
@@ -991,8 +975,8 @@ window.menus = {
 						"summon devil", "summon the devil", "summon devil theme", "summon the devil theme",
 						"welcome devil", "welcome the devil", "welcome devil theme", "welcome the devil theme",
 
-						"I beseach thee", "I entreat thee", "I summon thee", "I call upon thy name", "I call upon thine name", "Lord Satan", "hail Satan", "hail Lord Satan", "O Mighty Satan", "Oh Mighty Satan",
-						"In nomine Dei nostri Satanas Luciferi Excelsi", "Rege Satanas", "Ave Satanas",
+						"I beseech thee", "I entreat thee", "I summon thee", "I call upon thy name", "I call upon thine name", "Lord Satan", "hail Satan", "hail Lord Satan", "O Mighty Satan", "Oh Mighty Satan",
+						"In nomine Dei nostri Satanas Luciferi Excelsi", "Rege Satanas", "Ave Satanas","Rege Satana", "Ave Satana",
 						"go demonic", "go daemonic", "go occult", "666",
 						"begin ritual", "begin the ritual", "begin a ritual",
 						"start ritual", "start the ritual", "start a ritual",
@@ -1006,10 +990,10 @@ window.menus = {
 			]
 		},
 		{
-			item: localize("&Language"),
+			item: "🌍 " + localize("&Language"),
 			submenu: available_languages.map((available_language)=> (
 				{
-					item: get_endonym(available_language),
+					item: get_language_emoji(available_language) + " " + get_language_endonym(available_language),
 					action: ()=> {
 						set_language(available_language);
 					},
@@ -1019,7 +1003,7 @@ window.menus = {
 			)),
 		},
 		{
-			item: localize("&Eye Gaze Mode"),
+			item: "👁️ " + localize("&Eye Gaze Mode"),
 			speech_recognition: [
 				"toggle eye gaze mode",
 				"enable eye gaze mode",
@@ -1078,7 +1062,7 @@ window.menus = {
 			description: localize("Enlarges buttons and provides dwell clicking."),
 		},
 		{
-			item: localize("&Speech Recognition"),
+			item: "🎙️ " + localize("&Speech Recognition"),
 			speech_recognition: [
 				"toggle speech recognition", "toggle speech recognition mode",
 				"disable speech recognition", "disable speech recognition mode", "turn off speech recognition", "turn off speech recognition mode", "leave speech recognition mode", "exit speech recognition mode",
@@ -1099,7 +1083,7 @@ window.menus = {
 			description: localize("Controls the application with voice commands."),
 		},
 		{
-			item: localize("&Vertical Color Box"),
+			item: "↕️ " + localize("&Vertical Color Box"),
 			speech_recognition: [
 				"toggle vertical color box", "toggle vertical color box mode",
 				"toggle vertical colors box", "toggle vertical colors box mode",
@@ -1136,7 +1120,7 @@ window.menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: localize("Manage Storage"),
+			item: "🗃️ " + localize("Manage Storage"),
 			speech_recognition: [
 				// This is a duplicate menu item (for easy access), so it doesn't need speech recognition data here.
 			],
@@ -1145,7 +1129,7 @@ window.menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: localize("Project News"),
+			item: "📢 " + localize("Project News"),
 			speech_recognition: [
 				"project news", "news about the project", "news about this project",
 				"app news", "news about the app", "news about this app",
@@ -1157,7 +1141,7 @@ window.menus = {
 			description: localize("Shows news about JS Paint."),
 		},
 		{
-			item: localize("GitHub"),
+			item: "ℹ️ " + localize("GitHub"),
 			speech_recognition: [
 				"repo on github", "project on github", "show the source code", "show source code",
 			],
@@ -1165,7 +1149,7 @@ window.menus = {
 			description: localize("Shows the project on GitHub."),
 		},
 		{
-			item: localize("Donate"),
+			item: "💵 " + localize("Donate"),
 			speech_recognition: [
 				"donate", "make a monetary contribution",
 			],

@@ -25,12 +25,9 @@
 
 * Warning sign for "Save changes to X?" dialog
 * Error symbol for error message dialogs
-* 3D inset border for inputs with SVG `image-border` (in [os-gui](https://github.com/1j01/os-gui))
-* The window close button uses text; font rendering is not consistent
-* The progress bar (Rendering GIF) is left native
 * Menu separator spacing
 * I want to give most things a revisit later on for Pixel Perfection
-* Fill bucket and airbrush cursors are supposed to have inverty parts
+* Fill bucket and airbrush cursors are supposed to invert the background in parts
 * Custom cursors in Edge; apparently they require `.cur` files? ugh
 * The canvas-area's border is different in Firefox and Edge from Chrome
 
@@ -41,11 +38,6 @@
 * Keyboard navigation of submenus
 * <kbd>Alt</kbd> (by itself)?
 
-
-### Components / Windows
-
-* Use the ghost when dragging on a component window's title bar
-* Make the component ghost account for the window's title bar
 
 ### Extended editing
 
@@ -72,6 +64,10 @@
 	* Layered images?
 		* Photoshop PSD ([via psd.js](https://github.com/trevorlinton/psd.js))
 		* OpenRaster ORA ([via ora.js](https://github.com/zsgalusz/ora.js/tree/master))
+	* Paged Images?
+		* PDF (via [pdf.js](https://github.com/mozilla/pdf.js)) (single page already supported)
+		* DjVu (via [djvu.js](https://djvu.js.org/))
+		* TIFF (via [utif.js](https://github.com/photopea/UTIF.js/)) (single page/frame already supported)
 
 * Online (multi-user) and local (single-user) sessions
 	* See [sessions.js](src/sessions.js)
@@ -80,14 +76,25 @@
 		* It's not eventually consistent
 		* Cursors from other users that go outside the parent can cause the page to be scrollable
 
-* Painting textures on 3D models
-	* And onto tesselating patterns which I imagine can be a special case of 3D models
+* Symmetry, tesselation, painting texture on 3D models, and even an infinite canvas, all could be done with a shared system 
+	* For symmetry and tesselation, [geometry can be generated](), and then it can work the same as painting on a 3D model
+	* An infinite canvas engine would generate simple square geometry, but would require support for multiple editable textures (also useful for 3D models)
+		* And of course layers and animations and multi-size icons need a similar system (multiple sub-images)
+	* For 3D model painting, it's important to note there's a few different possible approaches.
+		1. UV-dynamic, like [Chameleon](https://www-ui.is.s.u-tokyo.ac.jp/~takeo/chameleon/chameleon.htm) & [Chameleon.js](https://tomtung.github.io/chameleon.js/) (can adapt texture resolution as you paint)
+		2. UV-static
+			1. Ray tracing the pointer to find texture coordinates (gives texture coordinate space scaled result by default)
+			2. Screen-space drawing (gives screen space scaled result by default); I saw a good medium post or two about this
+	* Also, some approaches might not extend to tesselation and symmetry. ["Very important, this means that we assume our uv has no overlapping triangles. So no \[tileable\] textures."](https://shahriyarshahrabi.medium.com/mesh-texture-painting-in-unity-using-shaders-8eb7fc31221c)
+	* Existing 3D texturing systems:
+		* Closed source project: https://discourse.threejs.org/t/a-fully-fledged-texture-painter-for-the-web/15678/16
+		* Open source project with adaptive UVs: https://tomtung.github.io/chameleon.js/
+		* Open source project with adaptive and static UV modes, for both painting and sculpting: https://github.com/stephomi/sculptgl (check Dynamic Topology > Activated)
 
 * Save text and record transformations so the image can be saved as
 SVG (or HTML?) with invisible selectable transformed text elements?
 	* Every time you move a selection, duplicate the text and create a clip-path for both parts?
-		* This wouldn't really be nice for screen-readers, only selection
-			* Well, maybe make only one of them audible for screen-readers
+		* Make only one of them audible for screen-readers
 
 
 ### Device support
@@ -100,9 +107,10 @@ SVG (or HTML?) with invisible selectable transformed text elements?
 * Alternative way to access "Color Eraser" feature without a secondary mouse button?
 * Alternative access to functionality that would normally require a keyboard (with a numpad!)
 	* Numpad +/-: Increase/Decrease brush size, Double/Halve selection size, ...
-	* Shift (toggle):
-		* Proportional, Smear / Trail Selection
-		* "Snap to 8 directions" / "Octosnap"?
+	* Shift (toggles; rename contextually?):
+		* Proportional Resize
+		* Smear / Trail Selection
+		* Snap to 8 directions
 			* An isometric mode would also be good
 	* Ctrl+Select: Crop tool or "Crop to selection" option
 * Don't drag toolbars out into windows with touch
@@ -120,10 +128,7 @@ SVG (or HTML?) with invisible selectable transformed text elements?
 
 
 * Text
-	* Expand box to make room for new lines
-		* If it would go over the edge of the canvas, reject the input (at least, that's what mspaint does)
-	* Minimum size of 3em x 1em
-		* Initially and while resizing
+	* If it would go over the edge of the canvas, reject the input (at least, that's what mspaint does)
 	* Add padding left to text area when font has glyphs that extend left, like italic 'f' in Times New Roman
 		* mspaint has access to font metrics
 		* jspaint could render text to see when it would overflow
@@ -152,10 +157,8 @@ Electron boilerplate stuff:
 
 * [Set up Content-Security-Policy](https://electronjs.org/docs/tutorial/security)
 * Remember window position/state
-* Add icon to built executable
 * Set up autoupdating
 * Keep window hidden until loaded (`show: false`, [`ready-to-show`](https://electronjs.org/docs/api/browser-window#event-ready-to-show))
-* Ideally name the executable `jspaint.exe` instead of `JS Paint.exe`
 
 Functionality:
 

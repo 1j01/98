@@ -1,44 +1,44 @@
 
 class OnCanvasSelection extends OnCanvasObject {
-	constructor(x, y, width, height, img) {
+	constructor(x, y, width, height, img_or_canvas) {
 		super(x, y, width, height, true);
 
 		this.$el.addClass("selection");
 		let last_tool_transparent_mode = tool_transparent_mode;
-		let last_background_color = colors.background;
+		let last_background_color = selected_colors.background;
 		this._on_option_changed = () => {
 			if (!this.source_canvas) {
 				return;
 			}
 			if (last_tool_transparent_mode !== tool_transparent_mode ||
-				last_background_color !== colors.background) {
+				last_background_color !== selected_colors.background) {
 				last_tool_transparent_mode = tool_transparent_mode;
-				last_background_color = colors.background;
+				last_background_color = selected_colors.background;
 				this.update_tool_transparent_mode();
 			}
 		};
 		$G.on("option-changed", this._on_option_changed);
 
-		this.instantiate(img);
+		this.instantiate(img_or_canvas);
 	}
 	position() {
 		super.position(true);
 		update_helper_layer(); // @TODO: under-grid specific helper layer?
 	}
-	instantiate(img) {
+	instantiate(img_or_canvas) {
 		this.$el.css({
-			cursor: make_css_cursor("move", [8, 8], "move")
+			cursor: make_css_cursor("move", [8, 8], "move"),
+			touchAction: "none",
 		});
-		this.$el.attr("touch-action", "none");
 		this.position();
 
 		const instantiate = ()=> {
-			if (img) {
+			if (img_or_canvas) {
 				// (this applies when pasting a selection)
 				// NOTE: need to create a Canvas because something about imgs makes dragging not work with magnification
 				// (width vs naturalWidth?)
 				// and at least apply_image_transformation needs it to be a canvas now (and the property name says canvas anyways)
-				this.source_canvas = make_canvas(img);
+				this.source_canvas = make_canvas(img_or_canvas);
 				// @TODO: is this width/height code needed? probably not! wouldn't it clear the canvas anyways?
 				// but maybe we should assert in some way that the widths are the same, or resize the selection?
 				if (this.source_canvas.width !== this.width) {
@@ -51,26 +51,30 @@ class OnCanvasSelection extends OnCanvasObject {
 			}
 			else {
 				this.source_canvas = make_canvas(this.width, this.height);
-				this.source_canvas.ctx.drawImage(canvas, this.x, this.y, this.width, this.height, 0, 0, this.width, this.height);
+				this.source_canvas.ctx.drawImage(main_canvas, this.x, this.y, this.width, this.height, 0, 0, this.width, this.height);
 				this.canvas = make_canvas(this.source_canvas);
 				this.cut_out_background();
 			}
 			this.$el.append(this.canvas);
-			const getRect = ()=> ({left: this.x, top: this.y, width: this.width, height: this.height, right: this.x + this.width, bottom: this.y + this.height})
-			this.$handles = $Handles(this.$el, getRect, { outset: 2 });
-			this.$el.on("user-resized", (e, delta_x, delta_y, width, height) => {
-				undoable({
-					name: "Resize Selection",
-					icon: get_icon_for_tool(get_tool_by_id(TOOL_SELECT)),
-					soft: true,
-				}, ()=> {
-					this.x += delta_x;
-					this.y += delta_y;
-					this.width = width;
-					this.height = height;
-					this.position();
-					this.resize();
-				});
+			this.$handles = $Handles(this.$el, $canvas_area, {
+				outset: 2,
+				get_rect: ()=> ({x: this.x, y: this.y, width: this.width, height: this.height}),
+				set_rect: ({x, y, width, height}) => {
+					undoable({
+						name: "Resize Selection",
+						icon: get_icon_for_tool(get_tool_by_id(TOOL_SELECT)),
+						soft: true,
+					}, ()=> {
+						this.x = x;
+						this.y = y;
+						this.width = width;
+						this.height = height;
+						this.position();
+						this.resize();
+					});
+				},
+				get_ghost_offset_left: ()=> parseFloat($canvas_area.css("padding-left")) + 1,
+				get_ghost_offset_top: ()=> parseFloat($canvas_area.css("padding-top")) + 1,
 			});
 			let mox, moy;
 			const pointermove = e => {
@@ -84,8 +88,8 @@ class OnCanvasSelection extends OnCanvasObject {
 					soft: true,
 				}, ()=> {
 					const m = to_canvas_coords(e);
-					this.x = Math.max(Math.min(m.x - mox, canvas.width), -this.width);
-					this.y = Math.max(Math.min(m.y - moy, canvas.height), -this.height);
+					this.x = Math.max(Math.min(m.x - mox, main_canvas.width), -this.width);
+					this.y = Math.max(Math.min(m.y - moy, main_canvas.height), -this.height);
 					this.position();
 					if (e.shiftKey) {
 						// Smear selection
@@ -137,9 +141,9 @@ class OnCanvasSelection extends OnCanvasObject {
 	cut_out_background() {
 		const cutout = this.canvas;
 		// doc/this or canvas/cutout, either of those pairs would result in variable names of equal length which is nice :)
-		const canvasImageData = ctx.getImageData(this.x, this.y, this.width, this.height);
+		const canvasImageData = main_ctx.getImageData(this.x, this.y, this.width, this.height);
 		const cutoutImageData = cutout.ctx.getImageData(0, 0, this.width, this.height);
-		// cutoutImageData is initialzed with the shape to be cut out (whether rectangular or polygonal)
+		// cutoutImageData is initialized with the shape to be cut out (whether rectangular or polygonal)
 		// and should end up as the cut out image data for the selection
 		// canvasImageData is initially the portion of image data on the canvas,
 		// and should end up as... the portion of image data on the canvas that it should end up as.
@@ -149,7 +153,7 @@ class OnCanvasSelection extends OnCanvasObject {
 		// this is mainly in order to support patterns as the background color
 		// NOTE: must come before cutout canvas is modified
 		const colored_cutout = make_canvas(cutout);
-		replace_colors_with_swatch(colored_cutout.ctx, colors.background, this.x, this.y);
+		replace_colors_with_swatch(colored_cutout.ctx, selected_colors.background, this.x, this.y);
 		// const colored_cutout_image_data = colored_cutout.ctx.getImageData(0, 0, this.width, this.height);
 		// }
 		for (let i = 0; i < cutoutImageData.data.length; i += 4) {
@@ -171,7 +175,7 @@ class OnCanvasSelection extends OnCanvasObject {
 				cutoutImageData.data[i + 3] = 0;
 			}
 		}
-		ctx.putImageData(canvasImageData, this.x, this.y);
+		main_ctx.putImageData(canvasImageData, this.x, this.y);
 		cutout.ctx.putImageData(cutoutImageData, 0, 0);
 		this.update_tool_transparent_mode();
 		// NOTE: in case you want to use the tool_transparent_mode
@@ -185,7 +189,7 @@ class OnCanvasSelection extends OnCanvasObject {
 		// and even if you do, if you do it after creating a selection, it still won't work,
 		// because you will have already *not cut out* the selection from the canvas
 		if (!transparency || tool_transparent_mode) {
-			ctx.drawImage(colored_cutout, this.x, this.y);
+			main_ctx.drawImage(colored_cutout, this.x, this.y);
 		}
 
 		$G.triggerHandler("session-update"); // autosave
@@ -194,20 +198,23 @@ class OnCanvasSelection extends OnCanvasObject {
 	update_tool_transparent_mode() {
 		const sourceImageData = this.source_canvas.ctx.getImageData(0, 0, this.width, this.height);
 		const cutoutImageData = this.canvas.ctx.createImageData(this.width, this.height);
-		const background_color_rgba = get_rgba_from_color(colors.background);
+		const background_color_rgba = get_rgba_from_color(selected_colors.background);
 		// NOTE: In b&w mode, mspaint treats the transparency color as white,
 		// regardless of the pattern selected, even if the selected background color is pure black.
 		// We allow any kind of image data while in our "b&w mode".
 		// Our b&w mode is essentially 'patterns in the palette'.
+		const match_threshold = 1; // 1 is just enough for a workaround for Brave browser's farbling: https://github.com/1j01/jspaint/issues/184
 		for (let i = 0; i < cutoutImageData.data.length; i += 4) {
-			let in_cutout = sourceImageData.data[i + 3] > 0;
+			let in_cutout = sourceImageData.data[i + 3] > 1;
 			if (tool_transparent_mode) {
 				// @FIXME: work with transparent selected background color
 				// (support treating partially transparent background colors as transparency)
-				if (sourceImageData.data[i + 0] === background_color_rgba[0] &&
-					sourceImageData.data[i + 1] === background_color_rgba[1] &&
-					sourceImageData.data[i + 2] === background_color_rgba[2] &&
-					sourceImageData.data[i + 3] === background_color_rgba[3]) {
+				if (
+					Math.abs(sourceImageData.data[i+0] - background_color_rgba[0]) <= match_threshold &&
+					Math.abs(sourceImageData.data[i+1] - background_color_rgba[1]) <= match_threshold &&
+					Math.abs(sourceImageData.data[i+2] - background_color_rgba[2]) <= match_threshold &&
+					Math.abs(sourceImageData.data[i+3] - background_color_rgba[3]) <= match_threshold
+				) {
 					in_cutout = false;
 				}
 			}
@@ -266,7 +273,7 @@ class OnCanvasSelection extends OnCanvasObject {
 	}
 	draw() {
 		try {
-			ctx.drawImage(this.canvas, this.x, this.y);
+			main_ctx.drawImage(this.canvas, this.x, this.y);
 		}
 		// eslint-disable-next-line no-empty
 		catch (e) { }

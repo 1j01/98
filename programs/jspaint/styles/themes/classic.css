@@ -56,9 +56,11 @@ body,
 	box-shadow: 1px 1px 0 var(--Hilight) inset;
 }
 .resize-ghost {
-	outline: 1px dotted black;
-	/*outline: 1px dotted invert;*/
-	/* I want this to be inverty, but in chrome this makes it invisible */
+	/* this isn't quite the right inversion effect, but I think it's the best I can do;
+	white makes it invisible over the classic theme's dark gray background;
+	it's supposed to be lighter over the dark gray background, but I can only make it darker */
+	outline: 1px dotted #ccc;
+	mix-blend-mode: difference;
 }
 
 .status-area {
@@ -215,24 +217,31 @@ body,
 
 
 .component-ghost.dock {
-	outline: 1px solid black;
-	/*outline: 1px solid invert;*/
+	/* this isn't quite the right inversion effect, but I think it's the best I can do;
+	white makes it invisible over the classic theme's dark gray background;
+	it's supposed to be lighter over the dark gray background, but I can only make it darker */
+	outline: 1px solid #ccc;
+	mix-blend-mode: difference;
 }
 .component-ghost:not(.dock) {
-	outline: 1px dotted black;
-	/*outline: 1px dotted invert;*/
+	outline: 1px dotted #ccc;
+	mix-blend-mode: difference;
 }
 .component-ghost:not(.dock):after,
-.component-ghost:not(.dock):before {
+.component-ghost:not(.dock):before,
+/* @TODO: thicker resize ghost (4px instead of 3px) */
+.resize-ghost.thick:after,
+.resize-ghost.thick:before {
 	content: '';
 	position: absolute; left: 0; right: 0; top: 0; bottom: 0;
-	outline: 1px dotted black;
-	/*outline: 1px dotted invert;*/
+	outline: 1px dotted #ccc;
 }
-.component-ghost:not(.dock):after {
+.component-ghost:not(.dock):after,
+.resize-ghost.thick:after {
 	outline-offset: 1px;
 }
-.component-ghost:not(.dock):before {
+.component-ghost:not(.dock):before,
+.resize-ghost.thick:before {
 	outline-offset: 2px;
 }
 
@@ -354,17 +363,25 @@ input[type=number].inset-deep,
 select.inset-deep {
 	background-color: var(--Window);
 	color: var(--WindowText);
-	/* TODO: should controls be styled by default, or need .inset-deep or similar? */
+	/* @TODO: should controls be styled by default, or need .inset-deep or similar? */
 	/* border-image: var(--inset-deep-border-image); */
 }
 
-/* XXX: using inset-deep to mean "thematic" */
+/* @XXX: using inset-deep to mean "thematic" */
 input[type=text].inset-deep,
 input[type=url].inset-deep,
 input[type=search].inset-deep,
 input[type=number].inset-deep,
 select.inset-deep {
 	outline: none;
+}
+
+input[type=text]:disabled,
+input[type=url]:disabled,
+input[type=search]:disabled,
+input[type=number]:disabled {
+	background: var(--ButtonFace);
+	color: var(--GrayText);
 }
 
 input[type=number].no-spinner::-webkit-inner-spin-button,
@@ -376,11 +393,15 @@ input[type=number].no-spinner {
 	-moz-appearance: textfield;
 }
 
+input:disabled + label {
+	color: var(--GrayText);
+}
+
 /*
 Will need a wrapper element or ideally an accessible stylable replacement for the select element for further styling.
 Can't use option:hover, or option::after, or select::after, among other things.
 */
-/* XXX: using inset-deep to mean "thematic" */
+/* @XXX: using inset-deep to mean "thematic" */
 select.inset-deep {
 	/* taken from 98.css: https://jdan.github.io/98.css/ */
 	/* padding-right and background-position are in layout.css for RTL support (@TODO: RTL theme CSS too) */
@@ -408,4 +429,42 @@ input:invalid {
 }
 .partial-url-label {
 	opacity: 0.6;
+}
+
+/* @XXX: using .inset-deep to mean "thematic" */
+/* @TODO: show percentage on progress bar, white (HilightText) where it overlaps the Hilight */
+progress[value].inset-deep {
+	display: block;
+	appearance: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	background-color: var(--ButtonFace);
+	position: relative;
+}
+progress[value].inset-deep::-webkit-progress-value { 
+	background: var(--Hilight);
+}
+progress[value].inset-deep::-moz-progress-bar { 
+	background: var(--Hilight);
+}
+
+summary {
+	padding: 0;
+}
+summary:focus {
+	outline: 1px dotted var(--ButtonText);
+}
+summary:hover > span {
+	text-decoration: underline;
+	color: #0000FF;
+}
+summary::marker {
+	color: var(--ButtonText);
+	content: "►";
+	text-decoration: none;
+}
+details[open] > summary::marker {
+	color: var(--ButtonText);
+	content: "▼";
+	text-decoration: none;
 }

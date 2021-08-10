@@ -12,7 +12,7 @@ function $ToolWindow($component){
 		$w.addClass("component-window");
 	}
 	
-	$w.attr("touch-action", "none");
+	$w.css("touch-action", "none");
 	
 	$w.$x.on("click", () => {
 		$w.close();
@@ -23,20 +23,53 @@ function $ToolWindow($component){
 	
 	// @TODO: prevent selection *outside* of the window *via* the window
 
-	// @TODO: keep track of last focused control in the window, and focus it when clicking on / focusing the window
-
 	$w.css({
 		position: "absolute",
 		zIndex: $Window.Z_INDEX++
 	});
-	$w.on("pointerdown", () => {
+	// var focused = false;
+	var last_focused_control;
+	$w.on("pointerdown refocus-window", (event) => {
 		$w.css({
 			zIndex: $Window.Z_INDEX++
 		});
+		// Test cases where it should refocus the last focused control in the window:
+		// - Click in the blank space of the window
+		// - Click on the window title bar
+		// - Close a second window, focusing the first window
+		// - Clicking on a control in the window should focus it, by way of updating last_focused_control
+		// - Eye gaze mode dwell click (simulated click)
+		// It should NOT refocus when:
+		// - (Clicking on a control in a different window)
+		// - Trying to select text! @FIXME
+
+		// Wait for other pointerdown handlers and default behavior, and focusin events.
+		// Set focus to the last focused control, which should be updated if a click just occurred.
+		requestAnimationFrame(()=> {
+			// focused = true;
+			if (last_focused_control) {
+				last_focused_control.focus();
+			}
+		});
 	});
+	// Assumption: no control exists in the window before, this "focusin" handler is set up,
+	// so any element.focus() will be after and trigger this handler.
+	$w.on("focusin", ()=> {
+		// focused = true;
+		if (document.activeElement && $.contains($w[0], document.activeElement)) {
+			last_focused_control = document.activeElement;
+		}
+	});
+	// $w.on("focusout", ()=> {
+	// 	requestAnimationFrame(()=> {
+	// 		if (!document.activeElement || !$.contains($w[0], document.activeElement)) {
+	// 			focused = false;
+	// 		}
+	// 	});
+	// });
 	
 	$w.on("keydown", e => {
-		if(e.ctrlKey || e.altKey || e.shiftKey || e.metaKey){
+		if(e.ctrlKey || e.altKey || e.metaKey){
 			return;
 		}
 		const $buttons = $w.$content.find("button");
@@ -45,7 +78,7 @@ function $ToolWindow($component){
 		switch(e.keyCode){
 			case 40: // Down
 			case 39: // Right
-				if($focused.is("button")){
+				if($focused.is("button") && !e.shiftKey){
 					if(focused_index < $buttons.length - 1){
 						$buttons[focused_index + 1].focus();
 						e.preventDefault();
@@ -54,7 +87,7 @@ function $ToolWindow($component){
 				break;
 			case 38: // Up
 			case 37: // Left
-				if($focused.is("button")){
+				if($focused.is("button") && !e.shiftKey){
 					if(focused_index > 0){
 						$buttons[focused_index - 1].focus();
 						e.preventDefault();
@@ -63,7 +96,7 @@ function $ToolWindow($component){
 				break;
 			case 32: // Space
 			case 13: // Enter (doesn't actually work in chrome because the button gets clicked immediately)
-				if($focused.is("button")){
+				if($focused.is("button") && !e.shiftKey){
 					$focused.addClass("pressed");
 					const release = () => {
 						$focused.removeClass("pressed");
@@ -80,15 +113,46 @@ function $ToolWindow($component){
 				}
 				break;
 			case 9: { // Tab
-				
-				// @TODO: handle shift+tab as well (note: early return at top of function)
 				// wrap around when tabbing through controls in a window
-				// @TODO: other element types? also [tabIndex]
-				const $controls = $w.$content.find("input, textarea, select, button, a");
-				const focused_control_index = $controls.index($focused);
-				if(focused_control_index === $controls.length - 1){
-					e.preventDefault();
-					$controls[0].focus();
+				// @#: focusables
+				let $controls = $w.$content.find("input, textarea, select, button, object, a[href], [tabIndex='0'], details summary").filter(":enabled, summary, a").filter(":visible");
+				// const $controls = $w.$content.find(":tabbable"); // https://api.jqueryui.com/tabbable-selector/
+				// Radio buttons should be treated as a group with one tabstop.
+				// If there's no selected ("checked") radio, it should still visit the group,
+				// but it should skip all unselected radios in that group if there is a selected radio in that group.
+				const radios = {}; // best radio found so far, per group
+				const toSkip = [];
+				for (const el of $controls) {
+					if (el.nodeName.toLowerCase() === "input" && el.type === "radio") {
+						if (radios[el.name]) {
+							if (el.checked) {
+								toSkip.push(radios[el.name]);
+								radios[el.name] = el;
+							} else {
+								toSkip.push(el);
+							}
+						} else {
+							radios[el.name] = el;
+						}
+					}
+				}
+				$controls = $controls.not(toSkip);
+				// debug viz:
+				// $controls.css({boxShadow: "0 0 2px 2px green"});
+				// $(toSkip).css({boxShadow: "0 0 2px 2px gray"})
+				if ($controls.length > 0) {
+					const focused_control_index = $controls.index($focused);
+					if (e.shiftKey) {
+						if(focused_control_index === 0){
+							e.preventDefault();
+							$controls[$controls.length - 1].focus();
+						}
+					} else {
+						if(focused_control_index === $controls.length - 1){
+							e.preventDefault();
+							$controls[0].focus();
+						}
+					}
 				}
 				break;
 			}
@@ -141,14 +205,23 @@ function $ToolWindow($component){
 			top: e.clientY - drag_offset_y,
 		});
 	};
-	$w.$titlebar.attr("touch-action", "none");
+	$w.$titlebar.css("touch-action", "none");
 	$w.$titlebar.on("mousedown selectstart", e => {
 		e.preventDefault();
 	});
 	$w.$titlebar.on("pointerdown", e => {
-		if($(e.target).is("button")){
-			return;
+		if(!$w.$titlebar.is(e.target)){
+			return; // don't drag via buttons
 		}
+		// if (e.isDefaultPrevented()) { // doesn't work because of event listener order
+		// 	return; // allow custom drag behavior of component windows (Tools / Colors)
+		// }
+		const customEvent = $.Event("window-drag-start");
+		$w.trigger(customEvent); 
+		if(customEvent.isDefaultPrevented()){
+			return; // allow custom drag behavior of component windows (Tools / Colors)
+		}
+
 		drag_offset_x = e.clientX - $w[0].getBoundingClientRect().left;
 		drag_offset_y = e.clientY - $w[0].getBoundingClientRect().top;
 		$G.on("pointermove", drag);
@@ -201,6 +274,10 @@ function $ToolWindow($component){
 		}
 		$w.remove();
 		$w.closed = true;
+		// Focus next-topmost window
+		$(
+			$(".window:visible").toArray().sort((a, b)=> b.style.zIndex - a.style.zIndex)[0]
+		).triggerHandler("refocus-window");
 	};
 	$w.closed = false;
 	

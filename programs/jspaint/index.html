@@ -11,6 +11,7 @@
 		<!-- <link href="lib/os-gui/windows-98.css" rel="stylesheet" type="text/css"> -->
 		<!-- <link href="lib/os-gui/windows-default.css" rel="stylesheet" type="text/css" title="Windows Default"> -->
 		<!-- <link href="lib/os-gui/peggys-pastels.css" rel="alternate stylesheet" type="text/css" title="Peggy's Pastels"> -->
+		<!-- <link href="lib/tracky-mouse/tracky-mouse.css" rel="stylesheet" type="text/css"> -->
 
 		<link rel="apple-touch-icon" href="images/icons/apple-icon-180x180.png">
 		<!-- Chrome will pick the largest image for some reason, instead of the most appropriate one. -->
@@ -40,7 +41,24 @@
 		<meta name="twitter:card" content="summary_large_image">
 		<meta name="twitter:site" content="@isaiahodhner">
 		<meta name="twitter:creator" content="@isaiahodhner">
-
+		<script>
+			// use only ES5 syntax for this script
+			// set up basic global error handling, which we can override later
+			window.onerror = function (msg, url, lineNo, columnNo, error) {
+				var string = msg.toLowerCase();
+				var substring = "script error";
+				if (string.indexOf(substring) > -1) {
+					alert('Script Error: See Browser Console for Detail');
+				} else {
+					try {
+						// try-catch in case of circular references or old browsers without JSON.stringify
+						error = JSON.stringify(error);
+					} catch (e) {}
+					alert('Internal application error: ' + msg + '\n\n' + 'URL: ' + url + '\n' + 'Line: ' + lineNo + '\n' + 'Column: ' + columnNo);
+				}
+				return false;
+			};
+		</script>
 		<script src="src/theme.js"></script>
 	</head>
 	<body>
@@ -48,8 +66,8 @@
 			<h1 id="about-paint-header">
 				<img src="images/icons/32x32.png" width="32" height="32" id="paint-32x32" alt=""/>
 				<span id="jspaint-project-name">JS Paint</span>
-				<small id="jspaint-version" title="expect bugs!">Alpha</small>
-				<button id="view-project-news">View Project News</button>
+				<!-- <small id="jspaint-version" title="expect bugs!">Alpha</small> -->
+				<button id="view-project-news">What's New?</button>
 			</h1>
 			
 			<div id="maybe-outdated-view-project-news" hidden>
@@ -77,12 +95,10 @@
 				
 			</div>
 			<p>JS Paint is a web-based remake of MS Paint by <a href="https://isaiahodhner.io/">Isaiah Odhner</a>.</p>
-			<p>Read about the project and <b>extra features</b> on <a href="https://github.com/1j01/jspaint#readme">the README</a>.</p>
+			<p>Read about the project and extra features on <a href="https://github.com/1j01/jspaint#readme">the readme</a>.</p>
 			<p>Request features and report bugs <a href="https://github.com/1j01/jspaint/issues">on GitHub</a>
 			or <a href="mailto:isaiahodhner@gmail.com?subject=JS%20Paint">by email</a>.</p>
-			<p>If you want to support the project &amp; cover domain fees:
-				<a href="https://www.paypal.me/IsaiahOdhner" target="_blank">paypal.me/IsaiahOdhner</a>
-			</p>
+			<p>Support the project at <a href="https://www.paypal.me/IsaiahOdhner" target="_blank">paypal.me/IsaiahOdhner</a>.</p>
 		</div>
 		<div id="news" hidden>
 			<article class="news-entry" id="news-2020-accessibility-update">
@@ -102,7 +118,7 @@
 				</p>
 				<p>
 					To change the language, go to <b>Extras > Language</b>.
-					Your prefered language may already be detected, if specified in system or browser settings.
+					Your preferred language may already be detected, if specified in system or browser settings.
 				</p>
 				<img width="1280" height="720" style="max-width: 100%; height: auto; image-rendering: auto;" alt="26 languages, right off the bat!" src="https://i.postimg.cc/G2bH92fp/language-menu.png"/>
 				<p>For Arabic and Hebrew, right-to-left layout is supported!</p>
@@ -128,7 +144,7 @@
 					Try <a target="_blank" href="https://sourceforge.net/projects/gazepointer/">GazePointer</a>.
 				</p>
 				<p>
-					Eye gaze tracking requires significant calibration, and if the callibration is off,
+					Eye gaze tracking requires significant calibration, and if the calibration is off,
 					it's hard to use because you can't look where you want to look to interact with things.
 					This is why I recommend head tracking (if that's an option for you),
 					because then you can freely look around, and control the cursor <em>independently</em>,
@@ -140,7 +156,7 @@
 					It can also be frustrating, and takes some practice to master.
 				</p>
 				<p>
-					A good place to start is coloring lineart using just the Fill tool (<img src="help/p_paint.gif" width="15" height="11" alt="">):
+					A good place to start is coloring line art using just the Fill tool (<img src="help/p_paint.gif" width="15" height="11" alt="">):
 				</p>
 				<ul>
 					<li>
@@ -191,19 +207,18 @@
 				<p>Keyboard shortcuts are supported in this dialog, and for mobile devices with small screens, I made it treat adding custom colors as a separate screen.</p>
 				<h2>Conclusion</h2>
 				<p>
-					JS Paint is way more accessible now. And futuristic. And cool.
+					JS Paint should be way more accessible now. And futuristic.
 				<p>
 				<p>
 					Of course there's always more that could be done.
-					Eye Gaze Mode could use brush stroke smoothing, and Speech Recognition could use general artificial intelligence.
+					Eye Gaze Mode could use brush stroke smoothing, and Speech Recognition could use Artificial General Intelligence.
 				</p>
 				<p>
 					I'd love to see people using JS Paint, especially the Eye Gaze Mode and Speech Recognition,
-					so please, if you don't mind, record yourself on video and
-					<a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSdGgS6TS4wBV89v8NoYHenh1eI8jYBfgwYBdPx-OaCEG5EW7g/viewform?usp=sf_link">send me the video through this form.</a>
-					Maybe I could even make a compilation video.
-					But mainly this lets me know what's actually important to people, and what's confusing,
-					and it gives me motivation to work more on new features.
+					so if you record a video of using JS Paint, please
+					<a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSdGgS6TS4wBV89v8NoYHenh1eI8jYBfgwYBdPx-OaCEG5EW7g/viewform?usp=sf_link">send it to me through this form.</a>
+					This lets me know what's actually important to people, and what's confusing,
+					and it gives me motivation to work on new features.
 				</p>
 			</article>
 			<article class="news-entry" id="news-2019-winter-update">
@@ -363,384 +378,41 @@
 		<script>
 			window.jQuery || document.write('<script src="lib/jquery-3.4.1.min.js"><\/script>');
 		</script>
-		
-		<script>
-			// @TODO: DRY hotkey helpers
-			// & defines accelerators (hotkeys) in menus and buttons and things, which get underlined in the UI.
-			// & can be escaped by doubling it, e.g. "&Taskbar && Start Menu"
-			function index_of_hotkey(text) {
-				// Returns the index of the ampersand that defines a hotkey, or -1 if not present.
 
-				// return english_text.search(/(?<!&)&(?!&|\s)/); // not enough browser support for negative lookbehind assertions
-
-				// The space here handles beginning-of-string matching and counteracts the offset for the [^&] so it acts like a negative lookbehind
-				return ` ${text}`.search(/[^&]&[^&\s]/);
-			}
-			function has_hotkey(text) {
-				return index_of_hotkey(text) !== -1;
-			}
-			function remove_hotkey(text) {
-				return text.replace(/\s?\(&.\)/, "").replace(/([^&]|^)&([^&\s])/, "$1$2");
-			}
-			function display_hotkey(text) {
-				// misnomer: using .menu-hotkey out of lazyness, instead of a more general term like .hotkey or .accelerator
-				return text.replace(/([^&]|^)&([^&\s])/, "$1<span class='menu-hotkey'>$2</span>").replace(/&&/g, "&");
-			}
-			// function get_hotkey(text) {
-			// 	return text[index_of_hotkey(text) + 1].toUpperCase();
-			// }
-
-			let localizations = {};
-			window.localize = (english_text, ...interpolations)=> {
-				function find_localization(english_text) {
-					const amp_index = index_of_hotkey(english_text);
-					if (amp_index > -1) {
-						const without_hotkey = remove_hotkey(english_text);
-						if (localizations[without_hotkey]) {
-							const hotkey_def = english_text.slice(amp_index, amp_index + 2);
-							if (localizations[without_hotkey].toUpperCase().indexOf(hotkey_def.toUpperCase()) > -1) {
-								return localizations[without_hotkey];
-							} else {
-								if (has_hotkey(localizations[without_hotkey])) {
-									// window.console && console.warn(`Localization has differing accelerator (hotkey) hint: '${localizations[without_hotkey]}' vs '${english_text}'`);
-									// TODO: detect differing accelerator more generally
-									return `${remove_hotkey(localizations[without_hotkey])} (${hotkey_def})`;
-								}
-								return `${localizations[without_hotkey]} (${hotkey_def})`;
-							}
-						}
-					}
-					if (localizations[english_text]) {
-						return localizations[english_text];
-					}
-					return english_text;
-				}
-				function interpolate(text, interpolations) {
-					for (let i = 0; i < interpolations.length; i++) {
-						text = text.replace(`%${i+1}`, interpolations[i]);
-					}
-					return text;
-				}
-				return interpolate(find_localization(english_text), interpolations);
-			}
-
-			const language_storage_key = "jspaint language";
-			const accepted_languages = Array.from(navigator.languages || [navigator.language || navigator.userLanguage]);
-			try {
-				if (localStorage[language_storage_key]) {
-					accepted_languages.unshift(localStorage[language_storage_key]);
-				}
-			} catch (error) {}
-
-			const base_language = "en";
-			const available_languages = ["ar", "cs", "da", "de", "el", "en", "es", "fi", "fr", "he", "hu", "it", "ja", "ko", "nl", "no", "pl", "pt", "pt-br", "ru", "sk", "sl", "sv", "tr", "zh", "zh-simplified"];
-			const language_names = {
-				// "639-1": [["ISO language name"], ["Native name (endonym)"]],
-				ab: [["Abkhazian"], ["Аҧсуа Бызшәа", "Аҧсшәа"]],
-				aa: [["Afar"], ["Afaraf"]],
-				af: [["Afrikaans"], ["Afrikaans"]],
-				ak: [["Akan"], ["Akan"]],
-				sq: [["Albanian"], ["Shqip"]],
-				am: [["Amharic"], ["አማርኛ"]],
-				ar: [["Arabic"], ["العربية"]],
-				an: [["Aragonese"], ["Aragonés"]],
-				hy: [["Armenian"], ["Հայերեն"]],
-				as: [["Assamese"], ["অসমীয়া"]],
-				av: [["Avaric"], ["Авар МацӀ", "МагӀарул МацӀ"]],
-				ae: [["Avestan"], ["Avesta"]],
-				ay: [["Aymara"], ["Aymar Aru"]],
-				az: [["Azerbaijani"], ["Azərbaycan Dili"]],
-				bm: [["Bambara"], ["Bamanankan"]],
-				ba: [["Bashkir"], ["Башҡорт Теле"]],
-				eu: [["Basque"], ["Euskara", "Euskera"]],
-				be: [["Belarusian"], ["Беларуская Мова"]],
-				bn: [["Bengali"], ["বাংলা"]],
-				bh: [["Bihari Languages"], ["भोजपुरी"]],
-				bi: [["Bislama"], ["Bislama"]],
-				bs: [["Bosnian"], ["Bosanski Jezik"]],
-				br: [["Breton"], ["Brezhoneg"]],
-				bg: [["Bulgarian"], ["Български Език"]],
-				my: [["Burmese"], ["ဗမာစာ"]],
-				ca: [["Catalan", "Valencian"], ["Català", "Valencià"]],
-				ch: [["Chamorro"], ["Chamoru"]],
-				ce: [["Chechen"], ["Нохчийн Мотт"]],
-				ny: [["Chichewa", "Chewa", "Nyanja"], ["ChiCheŵa", "Chinyanja"]],
-				// zh: [["Chinese"], ["中文", "Zhōngwén", "汉语", "漢語"]],
-				// The ISO 639-1 code "zh" doesn't refer to Traditional Chinese specifically,
-				// but we want to show the distinction between Chinese varieties in the Language menu,
-				// so this is overly specific for now.
-				// @TODO: do this cleaner by establishing a mapping between ISO codes (such as "zh") and default language IDs (such as "zh-traditional")
-				zh: [["Traditional Chinese"], ["繁體中文", "傳統中文", "正體中文", "繁体中文"]],
-				"zh-traditional": [["Traditional Chinese"], ["繁體中文", "傳統中文", "正體中文", "繁体中文"]], // made-up ID, not real ISO 639-1
-				"zh-simplified": [["Simple Chinese"], ["简体中文"]], // made-up ID, not real ISO 639-1
-				cv: [["Chuvash"], ["Чӑваш Чӗлхи"]],
-				kw: [["Cornish"], ["Kernewek"]],
-				co: [["Corsican"], ["Corsu", "Lingua Corsa"]],
-				cr: [["Cree"], ["ᓀᐦᐃᔭᐍᐏᐣ"]],
-				hr: [["Croatian"], ["Hrvatski Jezik"]],
-				cs: [["Czech"], ["Čeština", "Český Jazyk"]],
-				da: [["Danish"], ["Dansk"]],
-				dv: [["Divehi", "Dhivehi", "Maldivian"], ["ދިވެހި"]],
-				nl: [["Dutch", "Flemish"], ["Nederlands", "Vlaams"]],
-				dz: [["Dzongkha"], ["རྫོང་ཁ"]],
-				en: [["English"], ["English"]],
-				eo: [["Esperanto"], ["Esperanto"]],
-				et: [["Estonian"], ["Eesti", "Eesti Keel"]],
-				ee: [["Ewe"], ["Eʋegbe"]],
-				fo: [["Faroese"], ["Føroyskt"]],
-				fj: [["Fijian"], ["Vosa Vakaviti"]],
-				fi: [["Finnish"], ["Suomi", "Suomen Kieli"]],
-				fr: [["French"], ["Français", "Langue Française"]],
-				ff: [["Fulah"], ["Fulfulde", "Pulaar", "Pular"]],
-				gl: [["Galician"], ["Galego"]],
-				ka: [["Georgian"], ["ქართული"]],
-				de: [["German"], ["Deutsch"]],
-				el: [["Greek"], ["Ελληνικά"]],
-				gn: [["Guarani"], ["Avañe'ẽ"]],
-				gu: [["Gujarati"], ["ગુજરાતી"]],
-				ht: [["Haitian", "Haitian Creole"], ["Kreyòl Ayisyen"]],
-				ha: [["Hausa"], ["هَوُسَ"]],
-				he: [["Hebrew"], ["עברית"]],
-				hz: [["Herero"], ["Otjiherero"]],
-				hi: [["Hindi"], ["हिन्दी", "हिंदी"]],
-				ho: [["Hiri Motu"], ["Hiri Motu"]],
-				hu: [["Hungarian"], ["Magyar"]],
-				ia: [["Interlingua"], ["Interlingua"]],
-				id: [["Indonesian"], ["Bahasa Indonesia"]],
-				ie: [["Interlingue", "Occidental"], ["Interlingue", "Occidental"]],
-				ga: [["Irish"], ["Gaeilge"]],
-				ig: [["Igbo"], ["Asụsụ Igbo"]],
-				ik: [["Inupiaq"], ["Iñupiaq", "Iñupiatun"]],
-				io: [["Ido"], ["Ido"]],
-				is: [["Icelandic"], ["Íslenska"]],
-				it: [["Italian"], ["Italiano"]],
-				iu: [["Inuktitut"], ["ᐃᓄᒃᑎᑐᑦ"]],
-				ja: [["Japanese"], ["日本語", "にほんご"]],
-				jv: [["Javanese"], ["ꦧꦱꦗꦮ", "Basa Jawa"]],
-				kl: [["Kalaallisut", "Greenlandic"], ["Kalaallisut", "Kalaallit Oqaasii"]],
-				kn: [["Kannada"], ["ಕನ್ನಡ"]],
-				kr: [["Kanuri"], ["Kanuri"]],
-				ks: [["Kashmiri"], ["कश्मीरी", "كشميري‎"]],
-				kk: [["Kazakh"], ["Қазақ Тілі"]],
-				km: [["Central Khmer"], ["ខ្មែរ", "ខេមរភាសា", "ភាសាខ្មែរ"]],
-				ki: [["Kikuyu", "Gikuyu"], ["Gĩkũyũ"]],
-				rw: [["Kinyarwanda"], ["Ikinyarwanda"]],
-				ky: [["Kirghiz", "Kyrgyz"], ["Кыргызча", "Кыргыз Тили"]],
-				kv: [["Komi"], ["Коми Кыв"]],
-				kg: [["Kongo"], ["Kikongo"]],
-				ko: [["Korean"], ["한국어"]],
-				ku: [["Kurdish"], ["Kurdî", "کوردی‎"]],
-				kj: [["Kuanyama", "Kwanyama"], ["Kuanyama"]],
-				la: [["Latin"], ["Latine", "Lingua Latina"]],
-				lb: [["Luxembourgish", "Letzeburgesch"], ["Lëtzebuergesch"]],
-				lg: [["Ganda"], ["Luganda"]],
-				li: [["Limburgan", "Limburger", "Limburgish"], ["Limburgs"]],
-				ln: [["Lingala"], ["Lingála"]],
-				lo: [["Lao"], ["ພາສາລາວ"]],
-				lt: [["Lithuanian"], ["Lietuvių Kalba"]],
-				lu: [["Luba-Katanga"], ["Kiluba"]],
-				lv: [["Latvian"], ["Latviešu Valoda"]],
-				gv: [["Manx"], ["Gaelg", "Gailck"]],
-				mk: [["Macedonian"], ["Македонски Јазик"]],
-				mg: [["Malagasy"], ["Fiteny Malagasy"]],
-				ms: [["Malay"], ["Bahasa Melayu", "بهاس ملايو‎"]],
-				ml: [["Malayalam"], ["മലയാളം"]],
-				mt: [["Maltese"], ["Malti"]],
-				mi: [["Maori"], ["Te Reo Māori"]],
-				mr: [["Marathi"], ["मराठी"]],
-				mh: [["Marshallese"], ["Kajin M̧ajeļ"]],
-				mn: [["Mongolian"], ["Монгол Хэл"]],
-				na: [["Nauru"], ["Dorerin Naoero"]],
-				nv: [["Navajo", "Navaho"], ["Diné Bizaad"]],
-				nd: [["North Ndebele"], ["IsiNdebele"]],
-				ne: [["Nepali"], ["नेपाली"]],
-				ng: [["Ndonga"], ["Owambo"]],
-				nb: [["Norwegian Bokmål"], ["Norsk Bokmål"]],
-				nn: [["Norwegian Nynorsk"], ["Norsk Nynorsk"]],
-				no: [["Norwegian"], ["Norsk"]],
-				ii: [["Sichuan Yi", "Nuosu"], ["ꆈꌠ꒿", "Nuosuhxop"]],
-				nr: [["South Ndebele"], ["IsiNdebele"]],
-				oc: [["Occitan"], ["Occitan", "Lenga d'Òc"]],
-				oj: [["Ojibwa"], ["ᐊᓂᔑᓈᐯᒧᐎᓐ"]],
-				cu: [["Church Slavic", "Old Slavonic", "Church Slavonic", "Old Bulgarian", "Old Church Slavonic"], ["Ѩзыкъ Словѣньскъ"]],
-				om: [["Oromo"], ["Afaan Oromoo"]],
-				or: [["Oriya"], ["ଓଡ଼ିଆ"]],
-				os: [["Ossetian", "Ossetic"], ["Ирон Æвзаг"]],
-				pa: [["Punjabi", "Panjabi"], ["ਪੰਜਾਬੀ", "پنجابی‎"]],
-				pi: [["Pali"], ["पालि", "पाळि"]],
-				fa: [["Persian"], ["فارسی"]],
-				pl: [["Polish"], ["Język Polski", "Polszczyzna"]],
-				ps: [["Pashto", "Pushto"], ["پښتو"]],
-				pt: [["Portuguese"], ["Português"]],
-				"pt-br": [["Brazilian Portuguese"], ["Português Brasileiro"]],
-				"pt-pt": [["Portuguese (Portugal)"], ["Português De Portugal"]],
-				qu: [["Quechua"], ["Runa Simi", "Kichwa"]],
-				rm: [["Romansh"], ["Rumantsch Grischun"]],
-				rn: [["Rundi"], ["Ikirundi"]],
-				ro: [["Romanian", "Moldavian", "Moldovan"], ["Română"]],
-				ru: [["Russian"], ["Русский"]],
-				sa: [["Sanskrit"], ["संस्कृतम्"]],
-				sc: [["Sardinian"], ["Sardu"]],
-				sd: [["Sindhi"], ["सिन्धी", "سنڌي، سندھی‎"]],
-				se: [["Northern Sami"], ["Davvisámegiella"]],
-				sm: [["Samoan"], ["Gagana Fa'a Samoa"]],
-				sg: [["Sango"], ["Yângâ Tî Sängö"]],
-				sr: [["Serbian"], ["Српски Језик"]],
-				gd: [["Gaelic", "Scottish Gaelic"], ["Gàidhlig"]],
-				sn: [["Shona"], ["ChiShona"]],
-				si: [["Sinhala", "Sinhalese"], ["සිංහල"]],
-				sk: [["Slovak"], ["Slovenčina", "Slovenský Jazyk"]],
-				sl: [["Slovenian"], ["Slovenski Jezik", "Slovenščina"]],
-				so: [["Somali"], ["Soomaaliga", "Af Soomaali"]],
-				st: [["Southern Sotho"], ["Sesotho"]],
-				es: [["Spanish", "Castilian"], ["Español"]],
-				su: [["Sundanese"], ["Basa Sunda"]],
-				sw: [["Swahili"], ["Kiswahili"]],
-				ss: [["Swati"], ["SiSwati"]],
-				sv: [["Swedish"], ["Svenska"]],
-				ta: [["Tamil"], ["தமிழ்"]],
-				te: [["Telugu"], ["తెలుగు"]],
-				tg: [["Tajik"], ["Тоҷикӣ", "Toçikī", "تاجیکی‎"]],
-				th: [["Thai"], ["ไทย"]],
-				ti: [["Tigrinya"], ["ትግርኛ"]],
-				bo: [["Tibetan"], ["བོད་ཡིག"]],
-				tk: [["Turkmen"], ["Türkmen", "Түркмен"]],
-				tl: [["Tagalog"], ["Wikang Tagalog"]],
-				tn: [["Tswana"], ["Setswana"]],
-				to: [["Tonga"], ["Faka Tonga"]],
-				tr: [["Turkish"], ["Türkçe"]],
-				ts: [["Tsonga"], ["Xitsonga"]],
-				tt: [["Tatar"], ["Татар Теле", "Tatar Tele"]],
-				tw: [["Twi"], ["Twi"]],
-				ty: [["Tahitian"], ["Reo Tahiti"]],
-				ug: [["Uighur", "Uyghur"], ["ئۇيغۇرچە‎", "Uyghurche"]],
-				uk: [["Ukrainian"], ["Українська"]],
-				ur: [["Urdu"], ["اردو"]],
-				uz: [["Uzbek"], ["Oʻzbek", "Ўзбек", "أۇزبېك‎"]],
-				ve: [["Venda"], ["Tshivenḓa"]],
-				vi: [["Vietnamese"], ["Tiếng Việt"]],
-				vo: [["Volapük"], ["Volapük"]],
-				wa: [["Walloon"], ["Walon"]],
-				cy: [["Welsh"], ["Cymraeg"]],
-				wo: [["Wolof"], ["Wollof"]],
-				fy: [["Western Frisian"], ["Frysk"]],
-				xh: [["Xhosa"], ["IsiXhosa"]],
-				yi: [["Yiddish"], ["ייִדיש"]],
-				yo: [["Yoruba"], ["Yorùbá"]],
-				za: [["Zhuang", "Chuang"], ["Saɯ Cueŋƅ", "Saw Cuengh"]],
-				zu: [["Zulu"], ["IsiZulu"]],
-			};
-
-			function get_iso_language_name(language) {
-				return language_names[language][0][0];
-			}
-			function get_endonym(language) {
-				return language_names[language][1][0];
-			}
-
-			let current_language = base_language;
-			for (const accepted_language of accepted_languages) {
-				if (available_languages.indexOf(accepted_language) !== -1) {
-					current_language = accepted_language;
-					break;
-				}
-			}
-
-			function get_language() {
-				return current_language;
-			}
-			function get_direction(language=current_language) {
-				return current_language.match(/^(ar|dv|fa|ha|he|ks|ku|ms|pa|ps|sd|ug|yi)\b/i) ? "rtl" : "ltr";
-			}
-			function load_language(language) {
-				const prev_language = current_language;
-
-				const stylesheets = [...document.querySelectorAll(".flippable-layout-stylesheet")];
-				for (const stylesheet of stylesheets) {
-					let href = stylesheet.getAttribute("href");
-					if (get_direction(language) === "rtl") {
-						if (href.indexOf(".rtl.css") === -1) {
-							href = href.replace(/\.css/i, ".rtl.css");
-						}
-					} else {
-						if (href.indexOf(".rtl.css") > -1) {
-							href = href.replace(/\.rtl\.css/i, ".css");
-						}
-					}
-					stylesheet.setAttribute("href", href);
-					// hack to wait for stylesheet to load
-					const img = document.createElement("img");
-					img.onerror = ()=> {
-						$(()=> {
-							$G.triggerHandler("theme-load"); // signal layout change
-						});
-					};
-					img.src = href;
-				}
-
-				if (language === base_language) {
-					localizations = {};
-					current_language = base_language;
-					return;
-				}
-				// fetch(`localization/${language}/localizations.json`)
-				// .then((response)=> response.json())
-				// .then((new_localizations)=> {
-				// 	localizations = new_localizations;
-				// 	current_language = language;
-				// }).catch((error)=> {
-				// 	show_error_message(`Failed to load localizations for ${language_names[language]}.`, error);
-				// 	current_language = prev_language;
-				// });
-				const src = `localization/${language}/localizations.js`;
-				document.write(`<script src="${src}"><\/script>`);
-			}
-			// JSONP callback
-			function loaded_localizations(language, mapping) {
-				localizations = mapping;
-				current_language = language;
-			}
-			function set_language(language) {
-				const $w = $FormToolWindow().title("Reload Required").addClass("dialogue-window squish");
-				$w.$main.text("The application needs to reload to change the language.");
-				$w.$main.css("max-width", "600px");
-				$w.$Button(localize("OK"), () => {
-					$w.close();
-					are_you_sure(() => {
-						try {
-							localStorage[language_storage_key] = language;
-							location.reload();
-						} catch(error) {
-							show_error_message("Failed to store language preference. Make sure cookies / local storage is enabled in your browser settings.", error);
-						}
-					});
-				});
-				$w.$Button(localize("Cancel"), () => {
-					$w.close();
-				});
-				$w.center();
-				// load_language(language);
-			}
-			load_language(current_language);
-		</script>
-
-		<script src="lib/pep.js"></script>
-		<script src="lib/canvas.toBlob.js"></script>
 		<script src="lib/gif.js/gif.js"></script>
+		<script src="lib/pako-2.0.3.min.js"></script> <!-- for UPNG.js and UTIF.js -->
+		<script src="lib/UPNG.js"></script>
+		<script src="lib/UTIF.js"></script>
+		<script src="lib/bmp.js"></script>
+		<script src="lib/pdf.js/build/pdf.js"></script>
 		<script src="lib/anypalette-0.6.0.js"></script>
 		<script src="lib/FileSaver.js"></script>
 		<script src="lib/font-detective.js"></script>
 		<script src="lib/libtess.min.js"></script>
+		<!-- <script src="lib/tracky-mouse/tracky-mouse.js"></script> -->
 		<script src="lib/os-gui/parse-theme.js"></script>
 		<script src="lib/os-gui/$Window.js"></script>
 		<script src="lib/os-gui/$MenuBar.js"></script>
 		<script src="lib/imagetracer_v1.2.5.js"></script>
 
+		<script src="src/app-localization.js"></script> <!-- must not be async/deferred, as it uses document.write(); and must come before other app code which uses localization functions -->
 		<script src="src/functions.js"></script>
 		<script src="src/helpers.js"></script>
 		<script src="src/storage.js"></script>
 		<script src="src/$Component.js"></script>
 		<script src="src/$ToolWindow.js"></script>
+		<script>
+			// after show_error_message, $FormToolWindow, and localize are defined,
+			// set up better global error handling
+			const old_onerror = window.onerror;
+			window.onerror = (message, source, lineno, colno, error)=> {
+				try {
+					show_error_message(localize("Internal application error."), error);
+				} catch (e) {
+					old_onerror(message, source, lineno, colno, error);
+				}
+			};
+		</script>
 		<script src="src/$ToolBox.js"></script>
 		<script src="src/$ColorBox.js"></script>
 		<script src="src/$FontBox.js"></script>

@@ -18,9 +18,9 @@
 	// (maybe even whether it's considered saved? idk about that)
 	// I could have the image in one storage slot and the state in another
 
-
+	const match_threshold = 1; // 1 is just enough for a workaround for Brave browser's farbling: https://github.com/1j01/jspaint/issues/184
 	const canvas_has_any_apparent_image_data = ()=>
-		canvas.ctx.getImageData(0, 0, canvas.width, canvas.height).data.some((v)=> v > 0);
+		main_canvas.ctx.getImageData(0, 0, main_canvas.width, main_canvas.height).data.some((v)=> v > match_threshold);
 
 	let $recovery_window;
 	function show_recovery_window(no_longer_blank) {
@@ -72,6 +72,8 @@
 			$w.close();
 		});
 		$w.center();
+
+		$w.find("button:enabled").focus();
 	}
 
 	let last_undos_length = undos.length;
@@ -99,12 +101,13 @@
 			const lsid = `image#${session_id}`;
 			log(`Local storage ID: ${lsid}`);
 			// save image to storage
-			const save_image_to_storage = debounce(() => {
+			this.save_image_to_storage_immediately = () => {
 				const save_paused = handle_data_loss();
 				if (save_paused) {
 					return;
 				}
-				storage.set(lsid, canvas.toDataURL("image/png"), err => {
+				log(`Saving image to storage: ${lsid}`);
+				storage.set(lsid, main_canvas.toDataURL("image/png"), err => {
 					if (err) {
 						if (err.quotaExceeded) {
 							storage_quota_exceeded();
@@ -116,11 +119,12 @@
 						}
 					}
 				});
-			}, 100);
+			};
+			this.save_image_to_storage_soon = debounce(this.save_image_to_storage_immediately, 100);
 			storage.get(lsid, (err, uri) => {
 				if (err) {
 					if (localStorageAvailable) {
-						show_error_message("Failed to retrieve image from local storage:", err);
+						show_error_message("Failed to retrieve image from local storage.", err);
 					}
 					else {
 						// @TODO: DRY with storage manager message
@@ -128,21 +132,23 @@
 					}
 				}
 				else if (uri) {
-					open_from_URI(uri, err => {
-						if (err) {
-							return show_error_message("Failed to open image from local storage:", err);
-						}
-						saved = false; // it may be safe, sure, but you haven't "Saved" it
+					load_image_from_uri(uri).then((info) => {
+						open_from_image_info(info, null, null, true, true);
+					}, (error) => {
+						show_error_message("Failed to open image from local storage.", error);
 					});
 				}
 				else {
 					// no uri so lets save the blank canvas
-					save_image_to_storage();
+					this.save_image_to_storage_soon();
 				}
 			});
-			$G.on("session-update.session-hook", save_image_to_storage);
+			$G.on("session-update.session-hook", this.save_image_to_storage_soon);
 		}
 		end() {
+			// Skip debounce and save immediately
+			this.save_image_to_storage_soon.cancel();
+			this.save_image_to_storage_immediately();
 			// Remove session-related hooks
 			$G.off(".session-hook");
 		}
@@ -194,11 +200,9 @@
 			this._fb_listeners = [];
 
 			file_name = `[Loading ${this.id}]`;
-			file_name_chosen = false;
 			update_title();
 			const on_firebase_loaded = () => {
 				file_name = `[${this.id}]`;
-				file_name_chosen = false;
 				update_title();
 				this.start();
 			};
@@ -220,7 +224,6 @@
 					.fail(() => {
 						show_error_message("Failed to load Firebase; the document will not load, and changes will not be saved.");
 						file_name = `[Failed to load ${this.id}]`;
-						file_name_chosen = false;
 						update_title();
 					});
 			}
@@ -242,7 +245,7 @@
 			$w.$main.css({ maxWidth: "500px" });
 			$w.$Button(localize("OK"), () => {
 				$w.close();
-			});
+			}).focus();
 			$w.center();
 			
 			// Wrap the Firebase API because they don't
@@ -307,13 +310,13 @@
 						const draw_cursor = () => {
 							cursor_canvas.width = cursor_image.width;
 							cursor_canvas.height = cursor_image.height;
-							const cctx = cursor_canvas.ctx;
-							cctx.fillStyle = other_user.color;
-							cctx.fillRect(0, 0, cursor_canvas.width, cursor_canvas.height);
-							cctx.globalCompositeOperation = "multiply";
-							cctx.drawImage(cursor_image, 0, 0);
-							cctx.globalCompositeOperation = "destination-atop";
-							cctx.drawImage(cursor_image, 0, 0);
+							const cursor_ctx = cursor_canvas.ctx;
+							cursor_ctx.fillStyle = other_user.color;
+							cursor_ctx.fillRect(0, 0, cursor_canvas.width, cursor_canvas.height);
+							cursor_ctx.globalCompositeOperation = "multiply";
+							cursor_ctx.drawImage(cursor_image, 0, 0);
+							cursor_ctx.globalCompositeOperation = "destination-atop";
+							cursor_ctx.drawImage(cursor_image, 0, 0);
 						};
 						if (cursor_image.complete) {
 							draw_cursor();
@@ -335,13 +338,13 @@
 			});
 			let previous_uri;
 			// let pointer_operations = []; // the multiplayer syncing stuff is a can of worms, so this is disabled
-			const write_canvas_to_database = debounce(() => {
+			this.write_canvas_to_database_immediately = () => {
 				const save_paused = handle_data_loss();
 				if (save_paused) {
 					return;
 				}
 				// Sync the data from this client to the server (one-way)
-				const uri = canvas.toDataURL();
+				const uri = main_canvas.toDataURL();
 				if (previous_uri !== uri) {
 					// log("clear pointer operations to set data", pointer_operations);
 					// pointer_operations = [];
@@ -352,27 +355,27 @@
 				else {
 					log("(Don't write canvas data to Firebase; it hasn't changed)");
 				}
-			}, 100);
+			};
+			this.write_canvas_to_database_soon = debounce(this.write_canvas_to_database_immediately, 100);
 			let ignore_session_update = false;
 			$G.on("session-update.session-hook", ()=> {
 				if (ignore_session_update) {
 					log("(Ignore session-update from Sync Session undoable)");
 					return;
 				}
-				write_canvas_to_database();
+				this.write_canvas_to_database_soon();
 			});
-			// Any time we change or recieve the image data
+			// Any time we change or receive the image data
 			_fb_on(this.fb_data, "value", snap => {
 				log("Firebase data update");
 				const uri = snap.val();
 				if (uri == null) {
 					// If there's no value at the data location, this is a new session
 					// Sync the current data to it
-					write_canvas_to_database();
+					this.write_canvas_to_database_soon();
 				}
 				else {
 					previous_uri = uri;
-					// saved = true; // hopefully // what is the idea here??
 					// Load the new image data
 					const img = new Image();
 					img.onload = () => {
@@ -383,7 +386,7 @@
 
 						const test_canvas = make_canvas(img);
 						const image_data_remote = test_canvas.ctx.getImageData(0, 0, test_canvas.width, test_canvas.height);
-						const image_data_local = ctx.getImageData(0, 0, canvas.width, canvas.height);
+						const image_data_local = main_ctx.getImageData(0, 0, main_canvas.width, main_canvas.height);
 						
 						if (!image_data_match(image_data_remote, image_data_local, 5)) {
 							ignore_session_update = true;
@@ -392,13 +395,13 @@
 								icon: get_help_folder_icon("p_database.png"),
 							}, ()=> {
 								// Write the image data to the canvas
-								ctx.copy(img);
+								main_ctx.copy(img);
 								$canvas_area.trigger("resize");
 							});
 							ignore_session_update = false;
 						}
 
-						// (detect_transparency() here would not be ideal
+						// (transparency = has_any_transparency(main_ctx); here would not be ideal
 						// Perhaps a better way of syncing transparency
 						// and other options will be established)
 						/*
@@ -417,7 +420,6 @@
 			}, error => {
 				show_error_message("Failed to retrieve data from Firebase. The document will not load, and changes will not be saved.", error);
 				file_name = `[Failed to load ${this.id}]`;
-				file_name_chosen = false;
 				update_title();
 			});
 			// Update the cursor status
@@ -468,6 +470,9 @@
 			*/
 		}
 		end() {
+			// Skip debounce and save immediately
+			this.write_canvas_to_database_soon.cancel();
+			this.write_canvas_to_database_immediately();
 			// Remove session-related hooks
 			$G.off(".session-hook");
 			// $canvas_area.off("pointerdown.session-hook");
@@ -533,21 +538,20 @@
 		}else if(load_from_url_match){
 			const url = decodeURIComponent(load_from_url_match[2]);
 
-			const uris = get_URIs(url);
+			const uris = get_uris(url);
 			if (uris.length === 0) {
 				show_error_message("Invalid URL to load (after #load: in the address bar). It must include a protocol (https:// or http://)");
 				return;
 			}
 
 			log("Switching to new session from #load: URL (to #local: URL with session ID)");
+			// Note: could use into_existing_session=false on open_from_image_info instead of creating the new session beforehand
 			end_current_session();
 			change_url_param("local", generate_session_id());
 
-			open_from_URI(url, error => {
-				if (error) {
-					show_resource_load_error_message(error);
-				}
-			});
+			load_image_from_uri(uri).then((info) => {
+				open_from_image_info(info, null, null, true, true);
+			}, show_resource_load_error_message);
 
 		}else{
 			log("No session ID in hash");
@@ -570,6 +574,12 @@
 	});
 	log("Initializing with location hash:", location.hash);
 	update_session_from_location_hash();
+
+	window.new_local_session = () => {
+		end_current_session();
+		log("Changing URL to start new session...");
+		change_url_param("local", generate_session_id());
+	};
 
 	// @TODO: Session GUI
 	// @TODO: Indicate when the session ID is invalid

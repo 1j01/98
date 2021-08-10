@@ -11,7 +11,7 @@ function storage_quota_exceeded(){
 	if(ignoring_quota_exceeded){
 		return;
 	}
-	const $w = $FormToolWindow().title("Storage Error").addClass("dialogue-window");
+	const $w = $FormToolWindow().title("Storage Error").addClass("dialogue-window squish");
 	$w.$main.html(
 		"<p>JS Paint stores images as you work on them so that if you " +
 		"close your browser or tab or reload the page " +
@@ -20,11 +20,11 @@ function storage_quota_exceeded(){
 		"<p>You can still save the current image with <b>File > Save</b>. " +
 		"You should save frequently, or free up enough space to keep the image safe.</p>"
 	);
-	$w.$Button("View and manage storage", () => {
+	$w.$Button("Manage Storage", () => {
 		$w.close();
 		ignoring_quota_exceeded = false;
 		manage_storage();
-	});
+	}).focus();
 	$w.$Button("Ignore", () => {
 		$w.close();
 		ignoring_quota_exceeded = true;
@@ -103,4 +103,6 @@ function manage_storage(){
 
 	$storage_manager.$content.width(450);
 	$storage_manager.center();
+
+	$storage_manager.find(".remove-button").focus();
 }

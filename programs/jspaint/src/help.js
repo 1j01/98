@@ -17,8 +17,8 @@ function show_help() {
 
 // awkward shim to interface with my own stupid code
 window.TITLEBAR_ICON_SIZE = 16;
-window.$Icon = ()=> {
-	return $("<img src='images/chm-16x16.png'>");
+window.$Icon = (name)=> {
+	return $(`<img src='images/${name}-16x16.png'>`);
 };
 
 // shared code with 98.js.org
@@ -39,7 +39,7 @@ function open_help_viewer(options){
 	const $toolbar = $(E("div")).addClass("toolbar");
 	const add_toolbar_button = (name, sprite_n, action_fn, enabled_fn)=> {
 		const $button = $("<button class='lightweight'>")
-		.text(name)
+		.append($("<span>").text(name))
 		.appendTo($toolbar)
 		.on("click", ()=> {
 			action_fn();
@@ -267,7 +267,7 @@ function open_help_viewer(options){
 			$w.$main.css({maxWidth: "500px"});
 			$w.$Button(localize("OK"), () => {
 				$w.close();
-			});
+			}).focus();
 			$w.center();
 		} else {
 			show_error_message(`${localize("Failed to launch help.")} ${localize("Access to %1 was denied.", options.contentsFile)}`);
@@ -427,8 +427,8 @@ function $Iframe(options){
 // 	var $iframe = $win.$iframe = $Iframe({src: options.src});
 // 	$win.$content.append($iframe);
 // 	var iframe = $win.iframe = $iframe[0];
-// 	// @TODO: should I instead of having iframe.$window, have a get$Window type of dealio?
-// 	// where all is $window needed?
+// 	// @TODO: should I instead of having iframe.$window, have something like get$Window?
+// 	// Where all is $window needed?
 // 	// I know it's used from within the iframe contents as frameElement.$window
 // 	iframe.$window = $win;
 

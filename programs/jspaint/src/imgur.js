@@ -14,7 +14,8 @@ function show_imgur_uploader(blob){
 	// (starting small (max-width: 100%) and toggling to either scrollable or fullscreen)
 	// it should be clear that it's not going to upload a downsized version of your image
 	const $preview_image = $(E("img")).appendTo($preview_image_area);
-	$preview_image.attr({src: URL.createObjectURL(blob)});
+	const blob_url = URL.createObjectURL(blob);
+	$preview_image.attr({src: blob_url});
 	// $preview_image.css({maxWidth: "100%", maxHeight: "400px"});
 	$preview_image_area.css({
 		maxWidth: "90vw",
@@ -26,9 +27,13 @@ function show_imgur_uploader(blob){
 		$imgur_window.css({width: "auto"});
 		$imgur_window.center();
 	});
+	$imgur_window.on("close", () => {
+		URL.revokeObjectURL(blob_url);
+	});
 
 	const $upload_button = $imgur_window.$Button("Upload", () => {
 
+		URL.revokeObjectURL(blob_url);
 		$preview_image_area.remove();
 		$upload_button.remove();
 		$cancel_button.remove(); // @TODO: allow canceling upload request
@@ -36,7 +41,7 @@ function show_imgur_uploader(blob){
 		$imgur_window.$content.width(300);
 		$imgur_window.center();
 
-		const $progress = $(E("progress")).appendTo($imgur_window.$main);
+		const $progress = $(E("progress")).appendTo($imgur_window.$main).addClass("inset-deep");
 		const $progress_percent = $(E("span")).appendTo($imgur_window.$main).css({
 			width: "2.3em",
 			display: "inline-block",
@@ -120,12 +125,14 @@ function show_imgur_uploader(blob){
 				// @TODO: a button to copy the URL to the clipboard
 				// (also maybe put the URL in a readonly input)
 				
+				let $ok_button;
 				const $delete_button = $imgur_window.$Button("Delete", () => {
 					const req = new XMLHttpRequest();
-
+					$delete_button[0].disabled = true;
 					req.addEventListener("readystatechange", () => { 
 						if(req.readyState == 4 && req.status == 200){
 							$delete_button.remove();
+							$ok_button.focus();
 
 							const response = parseImgurResponseJSON(req.responseText);
 							if(!response) return;
@@ -136,8 +143,11 @@ function show_imgur_uploader(blob){
 							}else{
 								$imgur_status.text("Failed to delete image :(");
 							}
+
 						}else if(req.readyState == 4){
 							$imgur_status.text("Error deleting image :(");
+							$delete_button[0].disabled = false;
+							$delete_button.focus();
 						}
 					});
 
@@ -149,9 +159,9 @@ function show_imgur_uploader(blob){
 
 					$imgur_status.text("Deleting...");
 				});
-				$imgur_window.$Button(localize("OK"), () => {
+				$ok_button = $imgur_window.$Button(localize("OK"), () => {
 					$imgur_window.close();
-				});
+				}).focus();
 			}else if(req.readyState == 4){
 				$progress.add($progress_percent).remove();
 				$imgur_status.text("Error uploading image :(");
@@ -168,7 +178,7 @@ function show_imgur_uploader(blob){
 		req.send(form_data);
 
 		$imgur_status.text("Uploading...");
-	});
+	}).focus();
 	const $cancel_button = $imgur_window.$Button(localize("Cancel"), () => {
 		$imgur_window.close();
 	});

@@ -11,6 +11,8 @@ if (!window.speech_recognition_available) {
 }
 
 const recognitionFixes = [
+	// spell-checker:disable
+
 	// colors
 	[/^rat$/i, "red"],
 	[/^Fred$/i, "red"],
@@ -1224,6 +1226,8 @@ const recognitionFixes = [
 	["next selection opaque", "make selection opaque"],
 	["explosion transparent", "make selection transparent"],
 	["increase breast size", "increase brush size"],
+
+	// spell-checker:enable
 ];
 const colorNames = [ 'aqua', 'azure', 'beige', 'bisque', 'black', 'blue', 'brown', 'chocolate', 'coral', 'crimson', 'cyan', 'fuchsia', 'ghostwhite', 'gold', 'goldenrod', 'gray', 'green', 'indigo', 'ivory', 'khaki', 'lavender', 'lime', 'linen', 'magenta', 'maroon', 'moccasin', 'navy', 'olive', 'orange', 'orchid', 'peru', 'pink', 'plum', 'purple', 'red', 'salmon', 'sienna', 'silver', 'snow', 'tan', 'teal', 'thistle', 'tomato', 'turquoise', 'violet', 'white', 'yellow'];
 const toolNames = tools.map((tool)=> tool.speech_recognition).flat();
@@ -1396,7 +1400,7 @@ window.interpret_command = (input_text, default_to_entering_text)=> {
 			add_interpretation({
 				match_text: color,
 				exec: ((color)=> ()=> {
-					colors.foreground = color;
+					selected_colors.foreground = color;
 					$G.trigger("option-changed");
 				})(color),
 			});
@@ -1530,7 +1534,7 @@ window.interpret_command = (input_text, default_to_entering_text)=> {
 
 				"unmaximize", "unmaximize button", "unmaximize window", "unmaximize window button",
 				"restore", "restore button", "restore window", "restore window button", "restore window size", "restore window size button",
-				"enlarge window", "make window small", "make window smallagain", "make window smaller", "make window smaller again",
+				"enlarge window", "make window small", "make window small again", "make window smaller", "make window smaller again",
 			];
 		}
 		if (button.matches(".window-minimize-button")) {
@@ -1654,7 +1658,7 @@ window.interpret_command = (input_text, default_to_entering_text)=> {
 	const line_width_match = input_text.match(/\b(?:set|use|pick)? ?(?:(?:line|stroke|outline) (?:width|size|thickness))? ?(?:to)? ?(\d+|single|zero|one|two|three|four|five|six|seven|eight|nine|ten|eleven|twelve|thirteen|fourteen|fifteen|sixteen|seventeen|eighteen|nineteen|twenty|a hundred|one hundred|smallest|largest|littlest|biggest|small|large|little|big|tiny|huge|puny|massive|medium) ?(?:px|pixels?)? ?(?:(?:wide|thick|sized)? ?(?:for)? ?(?:(?:out)?lines?)?|(?:width|size|thickness)) ?(?:(?:out)?lines?)?\b/i);
 	if (line_width_match) {
 		const size_str = line_width_match[1];
-		let n = parseInt(size_str);
+		let n = parseInt(size_str, 10);
 		switch (size_str.toLowerCase()) {
 			case "zero": n = 0; break;
 			case "single": n = 1; break;
@@ -1720,7 +1724,7 @@ window.interpret_command = (input_text, default_to_entering_text)=> {
 		});
 	}
 
-	// TODO: "scroll to bottom", "scroll by three pages" etc.
+	// @TODO: "scroll to bottom", "scroll by three pages" etc.
 	const scrolling_regexp = /\b(?:(?:scroll|pan|move|page)(?:(?: the)? view(?:port)?)?|go|view(?:port)?|look)( to( the)?)? (?:up|down|left|right|north|south|west|east|north ?west|south ?west|north ?east|south ?east)(?:wards?)?(( and)?( to( the)?)? (?:up|down|left|right|north|south|west|east)(wards?)?)?\b(( by)?( a| one)? page)?/i;
 	const scroll_match = input_text.match(scrolling_regexp);
 	if (scroll_match) {
@@ -1820,8 +1824,8 @@ window.trace_and_sketch = (subject_imagedata)=> {
 
 	// const subject_imagedata = ctx.getImageData(0, 0, canvas.width, canvas.height);
 	// const pal = palette.map((color)=> get_rgba_from_color(color)).map(([r, g, b, a])=> ({r, g, b, a}));
-	const tracedata = ImageTracer.imagedataToTracedata(subject_imagedata, { ltres:1, qtres:0.01, scale:10, /*pal,*/ numberofcolors: 6, });
-	const {layers} = tracedata;
+	const trace_data = ImageTracer.imagedataToTracedata(subject_imagedata, { ltres:1, qtres:0.01, scale:10, /*pal,*/ numberofcolors: 6, });
+	const {layers} = trace_data;
 	const brush = get_tool_by_id(TOOL_BRUSH);
 	select_tool(brush);
 
@@ -1846,14 +1850,14 @@ window.trace_and_sketch = (subject_imagedata)=> {
 		if (!segment) {
 			segment_index = 0;
 			path_index += 1;
-			brush.pointerup(ctx, pointer.x, pointer.y);
+			brush.pointerup(main_ctx, pointer.x, pointer.y);
 			return;
 		}
 		let {x1, y1, x2, y2} = segment;
 		if (path !== active_path) {
 			pointer_previous = {x: x1, y: y1};
 			pointer = {x: x1, y: y1};
-			brush.pointerdown(ctx, x1, y1);
+			brush.pointerdown(main_ctx, x1, y1);
 			active_path = path;
 		}
 		pointer_previous = {x: x1, y: y1};
@@ -1902,7 +1906,7 @@ function find_clipart_and_sketch(subject_matter) {
 			const img_canvas = make_canvas(width, height);
 			img_canvas.ctx.drawImage(img, 0, 0, width, height);
 			const image_data = img_canvas.ctx.getImageData(0, 0, img_canvas.width, img_canvas.height);
-			resize_canvas_without_saving_dimensions(Math.max(canvas.width, image_data.width), Math.max(canvas.height, image_data.height));
+			resize_canvas_without_saving_dimensions(Math.max(main_canvas.width, image_data.width), Math.max(main_canvas.height, image_data.height));
 			trace_and_sketch(image_data);
 		};
 		img.src = image_url;
@@ -2113,4 +2117,4 @@ if (should_test_speech_recognition) {
 	$(test_speech_recognition);
 }
 
-})();
+}());
