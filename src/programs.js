@@ -311,21 +311,14 @@ function Paint(file_path){
 			});
 		},
 		// TODO: maybe save the wallpaper in localStorage
-		// TODO: maybe use blob URL (if only to not take up so much space in the inspector)
-		setWallpaperCentered: (canvas)=>{
-			$desktop.css({
-				backgroundImage: `url(${canvas.toDataURL()})`,
-				backgroundRepeat: "no-repeat",
-				backgroundPosition: "center",
-				backgroundSize: "auto",
+		setWallpaperCentered: (canvas) => {
+			canvas.toBlob((blob) => {
+				setDesktopWallpaper(blob, "no-repeat");
 			});
 		},
-		setWallpaperTiled: (canvas)=>{
-			$desktop.css({
-				backgroundImage: `url(${canvas.toDataURL()})`,
-				backgroundRepeat: "repeat",
-				backgroundPosition: "0 0",
-				backgroundSize: "auto",
+		setWallpaperTiled: (canvas) => {
+			canvas.toBlob((blob) => {
+				setDesktopWallpaper(blob, "repeat");
 			});
 		},
 	};
