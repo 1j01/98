@@ -10,7 +10,7 @@ var folder_view = new FolderView(desktop_folder_path, {
 });
 $(folder_view.element).appendTo($desktop);
 
-function setDesktopWallpaper(file, repeat) {
+function setDesktopWallpaper(file, repeat, saveToLocalStorage) {
 	const blob_url = URL.createObjectURL(file);
 	$desktop.css({
 		backgroundImage: `url(${blob_url})`,
@@ -18,6 +18,29 @@ function setDesktopWallpaper(file, repeat) {
 		backgroundPosition: "center",
 		backgroundSize: "auto",
 	});
+	if (saveToLocalStorage) {
+		var fr = new FileReader();
+		window.fr = fr;
+		fr.onload = () => {
+			localStorage.setItem("wallpaper-data-url", fr.result);
+			localStorage.setItem("wallpaper-repeat", repeat);
+		};
+		fr.onerror = () => {
+			console.error("Error reading file (for setting wallpaper)", file);
+		};
+		fr.readAsDataURL(file);
+	}
+}
+try {
+	var wallpaper_data_url = localStorage.getItem("wallpaper-data-url");
+	var wallpaper_repeat = localStorage.getItem("wallpaper-repeat");
+	if (wallpaper_data_url) {
+		fetch(wallpaper_data_url).then(r => r.blob()).then(file => {
+			setDesktopWallpaper(file, wallpaper_repeat, false);
+		});
+	}
+} catch (error) {
+	console.error(error);
 }
 
 // Prevent drag and drop from redirecting the page (the browser default behavior for files)

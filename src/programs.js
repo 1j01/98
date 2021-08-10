@@ -315,15 +315,14 @@ function Paint(file_path) {
 				});
 			});
 		},
-		// TODO: maybe save the wallpaper in localStorage
 		setWallpaperCentered: (canvas) => {
 			canvas.toBlob((blob) => {
-				setDesktopWallpaper(blob, "no-repeat");
+				setDesktopWallpaper(blob, "no-repeat", true);
 			});
 		},
 		setWallpaperTiled: (canvas) => {
 			canvas.toBlob((blob) => {
-				setDesktopWallpaper(blob, "repeat");
+				setDesktopWallpaper(blob, "repeat", true);
 			});
 		},
 	};
