@@ -1089,3 +1089,5 @@ add_icon_not_via_filesystem({
 });
 
 $folder_view.arrange_icons();
+
+openWinamp();
