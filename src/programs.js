@@ -838,7 +838,9 @@ function openWinamp(file_path){
 				windowElements.forEach(windowEl => {
 					if (!windowEl.hasOverlayCanvas) {
 						// order matters here; visualizer overlay should be on top
-						skinOverlay?.makeOverlayCanvas(windowEl);
+						if (windowEl.closest("#webamp, .webamp")) {
+							skinOverlay?.makeOverlayCanvas(windowEl);
+						}
 						visualizerOverlay?.makeOverlayCanvas(windowEl);
 						windowEl.hasOverlayCanvas = true;
 					}
