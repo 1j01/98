@@ -4385,9 +4385,7 @@
       "lib": {
         "butterchurn.min.js": null,
         "butterchurnPresets.min.js": null,
-        "webamp.bundle.js": null,
-        "webamp.bundle.min.js": null,
-        "webamp.bundle.min.js.map": null
+        "webamp.bundle.js": null
       },
       "mp3": {
         "llama-2.91.mp3": null

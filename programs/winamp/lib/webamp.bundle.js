@@ -1020,7 +1020,7 @@ function writeIntBE(buf, value, offset, byteLength) {
     return offset + byteLength;
 }
 exports.writeIntBE = writeIntBE;
-//# sourceMappingURL=index.js.map
+
 
 /***/ }),
 /* 7 */
@@ -4477,7 +4477,7 @@ Util.strtokBITSET = {
     len: 1
 };
 exports.default = Util;
-//# sourceMappingURL=Util.js.map
+
 
 /***/ }),
 /* 15 */
@@ -4508,7 +4508,7 @@ exports.FourCcToken = {
         return str.copy(buffer, offset);
     }
 };
-//# sourceMappingURL=FourCC.js.map
+
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9).Buffer))
 
 /***/ }),
@@ -6144,7 +6144,7 @@ class BasicParser {
     }
 }
 exports.BasicParser = BasicParser;
-//# sourceMappingURL=BasicParser.js.map
+
 
 /***/ }),
 /* 21 */
@@ -6231,7 +6231,7 @@ class CommonTagMapper {
 }
 CommonTagMapper.maxRatingScore = 1;
 exports.CommonTagMapper = CommonTagMapper;
-//# sourceMappingURL=GenericTagMapper.js.map
+
 
 /***/ }),
 /* 22 */
@@ -7087,7 +7087,7 @@ class ID3v2Parser {
     }
 }
 exports.ID3v2Parser = ID3v2Parser;
-//# sourceMappingURL=ID3v2Parser.js.map
+
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9).Buffer))
 
 /***/ }),
@@ -7188,7 +7188,7 @@ ID3v2Token.ExtendedHeader = {
     }
 };
 exports.ID3v2Token = ID3v2Token;
-//# sourceMappingURL=ID3v2.js.map
+
 
 /***/ }),
 /* 34 */
@@ -7615,7 +7615,7 @@ function curUrlFromByteArray(arr) {
 function sum(values) {
     return values.reduce(function (total, value) { return total + value; }, 0);
 }
-//# sourceMappingURL=index.js.map
+
 
 /***/ }),
 /* 43 */
@@ -7865,7 +7865,7 @@ class APEv2Parser extends BasicParser_1.BasicParser {
     }
 }
 exports.APEv2Parser = APEv2Parser;
-//# sourceMappingURL=APEv2Parser.js.map
+
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9).Buffer))
 
 /***/ }),
@@ -7942,7 +7942,7 @@ class AbstractID3Parser extends BasicParser_1.BasicParser {
     }
 }
 exports.AbstractID3Parser = AbstractID3Parser;
-//# sourceMappingURL=AbstractID3Parser.js.map
+
 
 /***/ }),
 /* 47 */
@@ -14204,7 +14204,8 @@ function getSpriteUrisFromImg(img, sprites) {
     canvas.height = sprite.height;
     canvas.width = sprite.width;
     context.drawImage(img, -sprite.x, -sprite.y);
-    const image = canvas.toDataURL();
+    const image = new String(canvas.toDataURL());
+    image._sprite = sprite;
     images[sprite.name] = image;
   });
   return images;
@@ -20665,7 +20666,9 @@ const getCssRules = Object(lib["createSelector"])(getSkinImages, getSkinCursors,
 
     if (imageUrl) {
       imageSelectors[imageName].forEach(selector => {
-        cssRules.push(`${CSS_PREFIX} ${selector} {background-image: url(${imageUrl})}`);
+        cssRules.push(`${CSS_PREFIX} ${selector} {background-image: url(${imageUrl});--sprite-info: "${(
+          JSON.stringify(imageUrl._sprite).replace(/["]/g, "\\\"")
+        )}"}`);
       });
     }
   });
@@ -22177,7 +22180,7 @@ class ID3v1Parser extends BasicParser_1.BasicParser {
     }
 }
 exports.ID3v1Parser = ID3v1Parser;
-//# sourceMappingURL=ID3v1Parser.js.map
+
 
 /***/ }),
 /* 49 */
@@ -22201,7 +22204,7 @@ class ID3Stream extends stream_1.Readable {
     }
 }
 exports.ID3Stream = ID3Stream;
-//# sourceMappingURL=ID3Stream.js.map
+
 
 /***/ }),
 /* 50 */
@@ -23558,7 +23561,7 @@ class VorbisParser {
     }
 }
 exports.VorbisParser = VorbisParser;
-//# sourceMappingURL=VorbisParser.js.map
+
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9).Buffer))
 
 /***/ }),
@@ -25118,7 +25121,7 @@ function parseAni(arr) {
     return { images: images, rate: rate, seq: seq, metadata: metadata, artist: artist, title: title };
 }
 exports.parseAni = parseAni;
-//# sourceMappingURL=parser.js.map
+
 
 /***/ }),
 /* 97 */
@@ -28515,7 +28518,7 @@ GUID.FileTransferMedia = new GUID("91BD222C-F21C-497A-8B6D-5AA86BFC0185");
 GUID.BinaryMedia = new GUID("3AFB65E2-47EF-40F2-AC2C-70A90D71D343");
 GUID.ASF_Index_Placeholder_Object = new GUID("D9AADE20-7C17-4F9C-BC28-8555DD98E2A2");
 exports.default = GUID;
-//# sourceMappingURL=GUID.js.map
+
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9).Buffer))
 
 /***/ }),
@@ -28599,7 +28602,7 @@ exports.IdentificationHeader = {
         };
     }
 };
-//# sourceMappingURL=Vorbis.js.map
+
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9).Buffer))
 
 /***/ }),
@@ -28847,7 +28850,7 @@ class StsdAtom {
     }
 }
 exports.StsdAtom = StsdAtom;
-//# sourceMappingURL=AtomToken.js.map
+
 
 /***/ }),
 /* 115 */
@@ -29897,7 +29900,7 @@ function ratingToStars(rating) {
     return rating === undefined ? 0 : 1 + Math.round(rating * 4);
 }
 exports.ratingToStars = ratingToStars;
-//# sourceMappingURL=core.js.map
+
 
 /***/ }),
 /* 123 */
@@ -31335,7 +31338,7 @@ class ParserFactory {
     }
 }
 exports.ParserFactory = ParserFactory;
-//# sourceMappingURL=ParserFactory.js.map
+
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9).Buffer))
 
 /***/ }),
@@ -31900,7 +31903,7 @@ function joinArtists(artists) {
     return artists.join(' & ');
 }
 exports.joinArtists = joinArtists;
-//# sourceMappingURL=MetadataCollector.js.map
+
 
 /***/ }),
 /* 134 */
@@ -32022,7 +32025,7 @@ function isUnique(alias) {
     return !exports.commonTags[alias].multiple || exports.commonTags[alias].unique;
 }
 exports.isUnique = isUnique;
-//# sourceMappingURL=GenericTagTypes.js.map
+
 
 /***/ }),
 /* 135 */
@@ -32076,7 +32079,7 @@ class CombinedTagMapper {
     }
 }
 exports.CombinedTagMapper = CombinedTagMapper;
-//# sourceMappingURL=CombinedTagMapper.js.map
+
 
 /***/ }),
 /* 136 */
@@ -32104,7 +32107,7 @@ class ID3v1TagMapper extends GenericTagMapper_1.CommonTagMapper {
     }
 }
 exports.ID3v1TagMapper = ID3v1TagMapper;
-//# sourceMappingURL=ID3v1TagMap.js.map
+
 
 /***/ }),
 /* 137 */
@@ -32159,7 +32162,7 @@ Windows1292Decoder.windows1252 = [8364, 129, 8218, 402, 8222, 8230, 8224, 8225, 
     233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 247,
     248, 249, 250, 251, 252, 253, 254, 255];
 exports.Windows1292Decoder = Windows1292Decoder;
-//# sourceMappingURL=Windows1292Decoder.js.map
+
 
 /***/ }),
 /* 138 */
@@ -32340,7 +32343,7 @@ class ID3v24TagMapper extends GenericTagMapper_1.CommonTagMapper {
     }
 }
 exports.ID3v24TagMapper = ID3v24TagMapper;
-//# sourceMappingURL=ID3v24TagMapper.js.map
+
 
 /***/ }),
 /* 139 */
@@ -32441,7 +32444,7 @@ class AsfTagMapper extends GenericTagMapper_1.CommonTagMapper {
     }
 }
 exports.AsfTagMapper = AsfTagMapper;
-//# sourceMappingURL=AsfTagMapper.js.map
+
 
 /***/ }),
 /* 140 */
@@ -32492,7 +32495,7 @@ class ID3v22TagMapper extends GenericTagMapper_1.CommonTagMapper {
     }
 }
 exports.ID3v22TagMapper = ID3v22TagMapper;
-//# sourceMappingURL=ID3v22TagMapper.js.map
+
 
 /***/ }),
 /* 141 */
@@ -32591,7 +32594,7 @@ class APEv2TagMapper extends GenericTagMapper_1.CommonTagMapper {
     }
 }
 exports.APEv2TagMapper = APEv2TagMapper;
-//# sourceMappingURL=APEv2TagMapper.js.map
+
 
 /***/ }),
 /* 142 */
@@ -32693,7 +32696,7 @@ class MP4TagMapper extends GenericTagMapper_1.CommonTagMapper {
     }
 }
 exports.MP4TagMapper = MP4TagMapper;
-//# sourceMappingURL=MP4TagMapper.js.map
+
 
 /***/ }),
 /* 143 */
@@ -32822,7 +32825,7 @@ class VorbisTagMapper extends GenericTagMapper_1.CommonTagMapper {
     }
 }
 exports.VorbisTagMapper = VorbisTagMapper;
-//# sourceMappingURL=VorbisTagMapper.js.map
+
 
 /***/ }),
 /* 144 */
@@ -32865,7 +32868,7 @@ class RiffInfoTagMapper extends GenericTagMapper_1.CommonTagMapper {
     }
 }
 exports.RiffInfoTagMapper = RiffInfoTagMapper;
-//# sourceMappingURL=RiffInfoTagMap.js.map
+
 
 /***/ }),
 /* 145 */
@@ -32967,7 +32970,7 @@ class AIFFParser extends BasicParser_1.BasicParser {
     }
 }
 exports.AIFFParser = AIFFParser;
-//# sourceMappingURL=AiffParser.js.map
+
 
 /***/ }),
 /* 146 */
@@ -33223,7 +33226,7 @@ class FrameParser {
     }
 }
 exports.default = FrameParser;
-//# sourceMappingURL=FrameParser.js.map
+
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9).Buffer))
 
 /***/ }),
@@ -33273,7 +33276,7 @@ class Common {
     }
 }
 exports.Common = Common;
-//# sourceMappingURL=AiffToken.js.map
+
 
 /***/ }),
 /* 148 */
@@ -33297,7 +33300,7 @@ exports.Header = {
         };
     }
 };
-//# sourceMappingURL=index.js.map
+
 
 /***/ }),
 /* 149 */
@@ -33751,7 +33754,7 @@ function isBitSet(num, bit) {
     return (num & 1 << bit) !== 0;
 }
 exports.isBitSet = isBitSet;
-//# sourceMappingURL=APEv2Token.js.map
+
 
 /***/ }),
 /* 160 */
@@ -33896,7 +33899,7 @@ class AsfParser extends BasicParser_1.BasicParser {
     }
 }
 exports.AsfParser = AsfParser;
-//# sourceMappingURL=AsfParser.js.map
+
 
 /***/ }),
 /* 161 */
@@ -34236,7 +34239,7 @@ class WmPictureToken {
     }
 }
 exports.WmPictureToken = WmPictureToken;
-//# sourceMappingURL=AsfObject.js.map
+
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9).Buffer))
 
 /***/ }),
@@ -34283,7 +34286,7 @@ AsfUtil.attributeParsers = [
     AsfUtil.parseByteArrayAttr
 ];
 exports.AsfUtil = AsfUtil;
-//# sourceMappingURL=AsfUtil.js.map
+
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9).Buffer))
 
 /***/ }),
@@ -34489,7 +34492,7 @@ class DataDecoder {
         return value;
     }
 }
-//# sourceMappingURL=FlacParser.js.map
+
 
 /***/ }),
 /* 164 */
@@ -34768,7 +34771,7 @@ class MP4Parser extends BasicParser_1.BasicParser {
     }
 }
 exports.MP4Parser = MP4Parser;
-//# sourceMappingURL=MP4Parser.js.map
+
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9).Buffer))
 
 /***/ }),
@@ -34865,7 +34868,7 @@ class Atom {
     }
 }
 exports.Atom = Atom;
-//# sourceMappingURL=Atom.js.map
+
 
 /***/ }),
 /* 166 */
@@ -35391,7 +35394,7 @@ class MpegParser extends AbstractID3Parser_1.AbstractID3Parser {
     }
 }
 exports.MpegParser = MpegParser;
-//# sourceMappingURL=MpegParser.js.map
+
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9).Buffer))
 
 /***/ }),
@@ -35442,7 +35445,7 @@ exports.XingInfoTag = {
         };
     }
 };
-//# sourceMappingURL=XingTag.js.map
+
 
 /***/ }),
 /* 168 */
@@ -35491,7 +35494,7 @@ class MusepackParser extends AbstractID3Parser_1.AbstractID3Parser {
     }
 }
 exports.default = MusepackParser;
-//# sourceMappingURL=index.js.map
+
 
 /***/ }),
 /* 169 */
@@ -35564,7 +35567,7 @@ class MpcSv8Parser extends BasicParser_1.BasicParser {
     }
 }
 exports.MpcSv8Parser = MpcSv8Parser;
-//# sourceMappingURL=MpcSv8Parser.js.map
+
 
 /***/ }),
 /* 170 */
@@ -35664,7 +35667,7 @@ class StreamReader {
     }
 }
 exports.StreamReader = StreamReader;
-//# sourceMappingURL=StreamVersion8.js.map
+
 
 /***/ }),
 /* 171 */
@@ -35728,7 +35731,7 @@ class MpcSv7Parser extends BasicParser_1.BasicParser {
     }
 }
 exports.MpcSv7Parser = MpcSv7Parser;
-//# sourceMappingURL=MpcSv7Parser.js.map
+
 
 /***/ }),
 /* 172 */
@@ -35775,7 +35778,7 @@ exports.Header = {
         return header;
     }
 };
-//# sourceMappingURL=StreamVersion7.js.map
+
 
 /***/ }),
 /* 173 */
@@ -35847,7 +35850,7 @@ class BitReader {
     }
 }
 exports.BitReader = BitReader;
-//# sourceMappingURL=BitReader.js.map
+
 
 /***/ }),
 /* 174 */
@@ -35975,7 +35978,7 @@ OggParser.Header = {
     }
 };
 exports.OggParser = OggParser;
-//# sourceMappingURL=OggParser.js.map
+
 
 /***/ }),
 /* 175 */
@@ -36036,7 +36039,7 @@ class OpusParser extends VorbisParser_1.VorbisParser {
     }
 }
 exports.OpusParser = OpusParser;
-//# sourceMappingURL=OpusParser.js.map
+
 
 /***/ }),
 /* 176 */
@@ -36070,7 +36073,7 @@ class IdHeader {
     }
 }
 exports.IdHeader = IdHeader;
-//# sourceMappingURL=Opus.js.map
+
 
 /***/ }),
 /* 177 */
@@ -36114,7 +36117,7 @@ class SpeexParser extends VorbisParser_1.VorbisParser {
     }
 }
 exports.SpeexParser = SpeexParser;
-//# sourceMappingURL=SpeexParser.js.map
+
 
 /***/ }),
 /* 178 */
@@ -36151,7 +36154,7 @@ exports.Header = {
         };
     }
 };
-//# sourceMappingURL=Speex.js.map
+
 
 /***/ }),
 /* 179 */
@@ -36308,7 +36311,7 @@ class WaveParser extends BasicParser_1.BasicParser {
     }
 }
 exports.WaveParser = WaveParser;
-//# sourceMappingURL=WaveParser.js.map
+
 
 /***/ }),
 /* 180 */
@@ -36347,7 +36350,7 @@ class ListInfoTagValue {
     }
 }
 exports.ListInfoTagValue = ListInfoTagValue;
-//# sourceMappingURL=RiffChunk.js.map
+
 
 /***/ }),
 /* 181 */
@@ -36416,7 +36419,7 @@ class FactChunk {
     }
 }
 exports.FactChunk = FactChunk;
-//# sourceMappingURL=WaveChunk.js.map
+
 
 /***/ }),
 /* 182 */
@@ -36539,7 +36542,7 @@ class WavPackParser extends BasicParser_1.BasicParser {
     }
 }
 exports.WavPackParser = WavPackParser;
-//# sourceMappingURL=WavPackParser.js.map
+
 /* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(9).Buffer))
 
 /***/ }),
@@ -36622,7 +36625,7 @@ WavPack.MetadataIdToken = {
     }
 };
 exports.WavPack = WavPack;
-//# sourceMappingURL=WavPackToken.js.map
+
 
 /***/ }),
 /* 184 */
@@ -36696,7 +36699,7 @@ class DsfParser extends AbstractID3Parser_1.AbstractID3Parser {
     }
 }
 exports.DsfParser = DsfParser;
-//# sourceMappingURL=DsfParser.js.map
+
 
 /***/ }),
 /* 185 */
@@ -36756,7 +36759,7 @@ exports.FormatChunk = {
         };
     }
 };
-//# sourceMappingURL=DsfChunk.js.map
+
 
 /***/ }),
 /* 186 */
@@ -36924,7 +36927,7 @@ class DsdiffParser extends BasicParser_1.BasicParser {
     }
 }
 exports.DsdiffParser = DsdiffParser;
-//# sourceMappingURL=DsdiffParser.js.map
+
 
 /***/ }),
 /* 187 */
@@ -36951,7 +36954,7 @@ exports.ChunkHeader = {
         };
     }
 };
-//# sourceMappingURL=DsdiffToken.js.map
+
 
 /***/ }),
 /* 188 */
@@ -37078,4 +37081,3 @@ exports.Browser2NodeStream = Browser2NodeStream;
 /***/ })
 /******/ ])["default"];
 });
-//# sourceMappingURL=webamp.bundle.js.map

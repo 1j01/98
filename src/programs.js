@@ -373,8 +373,18 @@ function Paint(file_path) {
 			$win.title(contentWindow.document.title);
 		};
 	});
-
-	return new Task($win);
+	const task = new Task($win);
+	task._on_image_change = (callback) => {
+		waitUntil(() => contentWindow.jQuery, 500, () => {
+			console.log("jQuery loaded");
+			contentWindow.jQuery(contentWindow).on("session-update", () => {
+				const canvas = contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
+				console.log("session-update", canvas);
+				callback(canvas);
+			});
+		});
+	};
+	return task;
 }
 Paint.acceptsFilePaths = true;
 
@@ -625,7 +635,7 @@ var load_winamp_bundle_if_not_loaded = function (includeButterchurn, callback) {
 		callback();
 	} else {
 		// TODO: parallelize (if possible)
-		$.getScript("programs/winamp/lib/webamp.bundle.min.js", () => {
+		$.getScript("programs/winamp/lib/webamp.bundle.js", ()=> {
 			if (includeButterchurn) {
 				$.getScript("programs/winamp/lib/butterchurn.min.js", () => {
 					$.getScript("programs/winamp/lib/butterchurnPresets.min.js", () => {
@@ -734,9 +744,9 @@ function openWinamp(file_path) {
 				url: "programs/winamp/mp3/llama-2.91.mp3",
 				duration: 5.322286,
 			}],
-			// initialSkin: {
-			// 	url: "programs/winamp/skins/base-2.91.wsz",
-			// },
+			initialSkin: {
+				url: "programs/winamp/skins/base-2.91.wsz",
+			},
 			enableHotkeys: true,
 			handleTrackDropEvent: (event) =>
 				Promise.all(
@@ -947,6 +957,14 @@ function openWinamp(file_path) {
 				{ mirror: true, stretch: true },
 			) : null;
 			const skinOverlay = skinOverlayEnabled ? new SkinOverlay() : null;
+
+			if (skinOverlayEnabled) {
+				const skinPath = "programs/winamp/skins/base/MAIN.BMP";
+				const paint = new Paint(skinPath);
+				paint._on_image_change((canvas) => {
+					skinOverlay.setImage(canvas);
+				});
+			}
 			
 			// TODO: replace with setInterval.. uh.. not if we're using this for the animation for skinOverlay though
 			// Note: can't access butterchurn canvas image data during a requestAnimationFrame here
@@ -1314,3 +1332,5 @@ function iconsAtTwoSizes(iconID) {
 		32: `images/icons/${iconID}-32x32.png`,
 	};
 }
+
+openWinamp();
