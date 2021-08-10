@@ -4393,6 +4393,39 @@
         "llama-2.91.mp3": null
       },
       "skins": {
+        "base": {
+          "BALANCE.BMP": null,
+          "CBUTTONS.BMP": null,
+          "CLOSE.CUR": null,
+          "EQMAIN.BMP": null,
+          "EQSLID.CUR": null,
+          "EQTITLE.CUR": null,
+          "EQ_EX.BMP": null,
+          "GEN.BMP": null,
+          "GENEX.BMP": null,
+          "MAIN.BMP": null,
+          "MB.BMP": null,
+          "MONOSTER.BMP": null,
+          "NORMAL.CUR": null,
+          "NUMBERS.BMP": null,
+          "PLAYPAUS.BMP": null,
+          "PLEDIT.BMP": null,
+          "PLEDIT.TXT": null,
+          "PNORMAL.CUR": null,
+          "POSBAR.BMP": null,
+          "POSBAR.CUR": null,
+          "PSIZE.CUR": null,
+          "PVSCROLL.CUR": null,
+          "REGION.TXT": null,
+          "SHUFREP.BMP": null,
+          "TEXT.BMP": null,
+          "TITLEBAR.BMP": null,
+          "TITLEBAR.CUR": null,
+          "VIDEO.BMP": null,
+          "VISCOLOR.TXT": null,
+          "VOLBAL.CUR": null,
+          "VOLUME.BMP": null
+        },
         "base-2.91.wsz": null
       }
     }
