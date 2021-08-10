@@ -10,6 +10,16 @@ var folder_view = new FolderView(desktop_folder_path, {
 });
 $(folder_view.element).appendTo($desktop);
 
+function setDesktopWallpaper(file, repeat) {
+	const blob_url = URL.createObjectURL(file);
+	$desktop.css({
+		backgroundImage: `url(${blob_url})`,
+		backgroundRepeat: repeat,
+		backgroundPosition: "center",
+		backgroundSize: "auto",
+	});
+}
+
 // Prevent drag and drop from redirecting the page (the browser default behavior for files)
 // TODO: only prevent if there are actually files; there's nothing that uses text inputs atm that's not in an iframe, so it doesn't matter YET (afaik)
 // $G.on("dragover", function(e){
