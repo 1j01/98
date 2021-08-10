@@ -276,6 +276,60 @@ function Paint(file_path){
 		}
 	};
 
+	const systemHooks = {
+		readBlobFromHandle: (file_path) => {
+			return new Promise((resolve, reject) => {
+				withFilesystem(() => {
+					var fs = BrowserFS.BFSRequire("fs");
+					fs.readFile(file_path, (err, buffer) => {
+						if (err) {
+							return reject(err);
+						}
+						const byte_array = new Uint8Array(buffer);
+						const blob = new Blob([byte_array]);
+						const file_name = file_path.replace(/.*\//g, "");
+						const file = new File([blob], file_name);
+						resolve(file);
+					});
+				});
+			});
+		},
+		writeBlobToHandle: async (file_path, blob) => {
+			const arrayBuffer = await blob.arrayBuffer();
+			return new Promise((resolve, reject) => {
+				withFilesystem(()=> {
+					const fs = BrowserFS.BFSRequire("fs");
+					const { Buffer } = BrowserFS.BFSRequire("buffer");
+					const buffer = Buffer.from(arrayBuffer);
+					fs.writeFile(file_path, buffer, (err)=> {
+						if (err) {
+							return reject(err);
+						}
+						resolve();
+					});
+				});
+			});
+		},
+		// TODO: maybe save the wallpaper in localStorage
+		// TODO: maybe use blob URL (if only to not take up so much space in the inspector)
+		setWallpaperCentered: (canvas)=>{
+			$desktop.css({
+				backgroundImage: `url(${canvas.toDataURL()})`,
+				backgroundRepeat: "no-repeat",
+				backgroundPosition: "center",
+				backgroundSize: "auto",
+			});
+		},
+		setWallpaperTiled: (canvas)=>{
+			$desktop.css({
+				backgroundImage: `url(${canvas.toDataURL()})`,
+				backgroundRepeat: "repeat",
+				backgroundPosition: "0 0",
+				backgroundSize: "auto",
+			});
+		},
+	};
+
 	// it seems like I should be able to use onload here, but when it works (overrides the function),
 	// it for some reason *breaks the scrollbar styling* in jspaint
 	// I don't know what's going on there
@@ -284,27 +338,8 @@ function Paint(file_path){
 	// $(contentWindow).on("load", function(){
 	// $win.$iframe.load(function(){
 	// $win.$iframe[0].addEventListener("load", function(){
-	waitUntil(function(){
-		return contentWindow.set_as_wallpaper_centered;
-	}, 500, function(){
-		// TODO: maybe save the wallpaper in localStorage
-		// TODO: maybe use blob URL (if only to not take up so much space in the inspector)
-		contentWindow.systemSetAsWallpaperCentered = function(canvas){
-			$desktop.css({
-				backgroundImage: "url(" + canvas.toDataURL() + ")",
-				backgroundRepeat: "no-repeat",
-				backgroundPosition: "center",
-				backgroundSize: "auto",
-			});
-		};
-		contentWindow.systemSetAsWallpaperTiled = function(canvas){
-			$desktop.css({
-				backgroundImage: "url(" + canvas.toDataURL() + ")",
-				backgroundRepeat: "repeat",
-				backgroundPosition: "0 0",
-				backgroundSize: "auto",
-			});
-		};
+	waitUntil(()=> contentWindow.systemHooks, 500, ()=> {
+		Object.assign(contentWindow.systemHooks, systemHooks);
 
 		let $help_window;
 		contentWindow.show_help = ()=> {
@@ -323,18 +358,15 @@ function Paint(file_path){
 		};
 
 		if (file_path) {
-			withFilesystem(function(){
-				var fs = BrowserFS.BFSRequire("fs");
-				fs.readFile(file_path, function(err, buffer){
-					if(err){
-						return console.error(err);
-					}
-					const byte_array = new Uint8Array(buffer);
-					const blob = new Blob([byte_array]);
-					const file_name = file_path.replace(/.*\//g, "");
-					const file = new File([blob], file_name);
-					contentWindow.open_from_File(file, ()=> {});
-				});
+			// window.initial_system_file_handle = ...; is too late to set this here
+			// contentWindow.open_from_file_handle(...); doesn't exist
+			systemHooks.readBlobFromHandle(file_path).then(file => {
+				if (file) {
+					contentWindow.open_from_file(file, file_path);
+				}
+			}, (error) => {
+				// this handler may not always called for errors, sometimes error message is shown via readBlobFromHandle
+				contentWindow.show_error_message(`Failed to open file ${file_path}`, error);
 			});
 		}
 
