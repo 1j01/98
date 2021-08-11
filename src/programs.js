@@ -617,6 +617,8 @@ function openWinamp(file_path){
 				const blob = await filePathToBlob(file_path);
 				const url = URL.createObjectURL(blob);
 				webamp.setSkinFromUrl(url);
+			} else if (file_path.match(/(\.m3u|\.pls)$/i)) {
+				alert("Sorry, we don't support playlists yet.");
 			} else {
 				const track = await filePathToTrack(file_path);
 				webamp.setTracksToPlay([track]);
