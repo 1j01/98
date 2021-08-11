@@ -613,8 +613,14 @@ function openWinamp(file_path){
 		winamp_interface.focus();
 
 		if (file_path) {
-			const track = await filePathToTrack(file_path);
-			webamp.setTracksToPlay([track]);
+			if (file_path.match(/(\.wsz|\.zip)$/i)) {
+				const blob = await filePathToBlob(file_path);
+				const url = URL.createObjectURL(blob);
+				webamp.setSkinFromUrl(url);
+			} else {
+				const track = await filePathToTrack(file_path);
+				webamp.setTracksToPlay([track]);
+			}
 		}
 
 		winamp_loading = false;
