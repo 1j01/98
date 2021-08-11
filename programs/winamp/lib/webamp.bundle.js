@@ -14204,7 +14204,8 @@ function getSpriteUrisFromImg(img, sprites) {
     canvas.height = sprite.height;
     canvas.width = sprite.width;
     context.drawImage(img, -sprite.x, -sprite.y);
-    const image = canvas.toDataURL();
+    const image = new String(canvas.toDataURL());
+    image._sprite = sprite;
     images[sprite.name] = image;
   });
   return images;
