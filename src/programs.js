@@ -643,9 +643,9 @@ function openWinamp(file_path){
 				url: "programs/winamp/mp3/llama-2.91.mp3",
 				duration: 5.322286,
 			}],
-			// initialSkin: {
-			// 	url: "programs/winamp/skins/base-2.91.wsz",
-			// },
+			initialSkin: {
+				url: "programs/winamp/skins/base-2.91.wsz",
+			},
 			enableHotkeys: true,
 			handleTrackDropEvent: (event)=>
 				Promise.all(
