@@ -14206,6 +14206,7 @@ function getSpriteUrisFromImg(img, sprites) {
     context.drawImage(img, -sprite.x, -sprite.y);
     const image = canvas.toDataURL();
     images[sprite.name] = image;
+    image._sprite = sprite;
   });
   return images;
 }
@@ -20662,6 +20663,7 @@ const getCssRules = Object(lib["createSelector"])(getSkinImages, getSkinCursors,
   const cssRules = [];
   Object.keys(imageSelectors).forEach(imageName => {
     const imageUrl = skinImages[imageName] || skinImages[FALLBACKS[imageName]];
+    const sprite = "foo";//sprites[imageName];
 
     if (imageUrl) {
       imageSelectors[imageName].forEach(selector => {
