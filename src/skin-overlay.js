@@ -87,8 +87,8 @@ class SkinOverlay {
 						}
 						const { x, y, width, height, name } = sprite;
 						imageURL = webampState.display.skinImages[name];
-						sourceX = x;
-						sourceY = y;
+						// sourceX = x;
+						// sourceY = y;
 						canvasPattern = getCanvasPattern(imageURL, repeat, ctx);
 					} else if (computedStyle.backgroundImage && computedStyle.backgroundImage !== "none") {
 						const imageURLMatch = computedStyle.backgroundImage.match(/url\("(.*)"\)/);
