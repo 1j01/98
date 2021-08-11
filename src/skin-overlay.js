@@ -49,6 +49,7 @@ class SkinOverlay {
 			canvas.style.height = windowEl.clientHeight + "px";
 			const stuff = Array.from(windowEl.querySelectorAll("*:not(.overlay-canvas)"));
 			stuff.push(windowEl);
+			const webampState = webamp.store.getState();
 			stuff
 				.map(el => {
 					const width = el.clientWidth;
@@ -65,34 +66,51 @@ class SkinOverlay {
 					ctx.scale(scale, scale);
 					let sourceX = 0;
 					let sourceY = 0;
+					let imageURL;
 					let canvasPattern;
 					const computedStyle = getComputedStyle(element);
 					if (computedStyle.backgroundColor !== "transparent" && computedStyle.backgroundColor !== "rgba(0, 0, 0, 0)") {
 						ctx.fillStyle = computedStyle.backgroundColor;
 						ctx.fillRect(offsetLeft, offsetTop, width, height);
 					}
-					if (computedStyle.backgroundImage && computedStyle.backgroundImage !== "none") {
-						const repeat = computedStyle.backgroundRepeat || "repeat";
+					const repeat = computedStyle.backgroundRepeat || "repeat";
+					if (computedStyle.getPropertyValue("--sprite-info")) {
+						let sprite;
+						try {
+							sprite = JSON.parse(computedStyle.getPropertyValue("--sprite-info").trim().slice(1, -1).replace(/\\"/g, "\""));
+						} catch (error) {
+							if (!window.showed_sprite_error) {
+								console.error("Could not parse sprite info", computedStyle.getPropertyValue("--sprite-info"), error);
+								window.showed_sprite_error = true;
+							}
+							return;
+						}
+						const { x, y, width, height, name } = sprite;
+						imageURL = webampState.display.skinImages[name];
+						sourceX = x;
+						sourceY = y;
+						canvasPattern = getCanvasPattern(imageURL, repeat, ctx);
+					} else if (computedStyle.backgroundImage && computedStyle.backgroundImage !== "none") {
 						const imageURLMatch = computedStyle.backgroundImage.match(/url\("(.*)"\)/);
 						if (imageURLMatch) {
-							const imageURL = imageURLMatch[1];
+							imageURL = imageURLMatch[1];
 							canvasPattern = getCanvasPattern(imageURL, repeat, ctx);
-							if (canvasPattern) {
-								// Note: CanvasPattern is an opaque object, but I've tacked on width/height to it
-								if (computedStyle.backgroundPositionX.includes("%")) {
-									sourceX = parseFloat(computedStyle.backgroundPositionX) / 100 * (width - canvasPattern.width);
-								} else {
-									sourceX = parseFloat(computedStyle.backgroundPositionX);
-								}
-								if (computedStyle.backgroundPositionY.includes("%")) {
-									sourceY = parseFloat(computedStyle.backgroundPositionY) / 100 * (height - canvasPattern.height);
-								} else {
-									sourceY = parseFloat(computedStyle.backgroundPositionY);
-								}
-							}
 						}
 					}
 					if (canvasPattern) {
+
+						// Note: CanvasPattern is an opaque object, but I've tacked on width/height to it
+						if (computedStyle.backgroundPositionX.includes("%")) {
+							sourceX += parseFloat(computedStyle.backgroundPositionX) / 100 * (width - canvasPattern.width);
+						} else {
+							sourceX += parseFloat(computedStyle.backgroundPositionX);
+						}
+						if (computedStyle.backgroundPositionY.includes("%")) {
+							sourceY += parseFloat(computedStyle.backgroundPositionY) / 100 * (height - canvasPattern.height);
+						} else {
+							sourceY += parseFloat(computedStyle.backgroundPositionY);
+						}
+				
 						ctx.save();
 						try {
 							ctx.fillStyle = canvasPattern;
@@ -138,11 +156,11 @@ class SkinOverlay {
 						ctx.restore();
 					}
 					if (element instanceof HTMLCanvasElement || element instanceof HTMLImageElement || element instanceof HTMLVideoElement) {
-						if (this.image) {
-							ctx.drawImage(this.image, offsetLeft, offsetTop, width, height);
-						} else {
+						// if (this.image) {
+						// 	ctx.drawImage(this.image, offsetLeft, offsetTop, width, height);
+						// } else {
 							ctx.drawImage(element, offsetLeft, offsetTop, width, height);
-						}
+						// }
 					} else {
 						// only want direct text children, since we're iterating over all elements and we want to render the text only once
 						const text = Array.prototype.filter
