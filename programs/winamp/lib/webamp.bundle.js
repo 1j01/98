@@ -20666,7 +20666,9 @@ const getCssRules = Object(lib["createSelector"])(getSkinImages, getSkinCursors,
 
     if (imageUrl) {
       imageSelectors[imageName].forEach(selector => {
-        cssRules.push(`${CSS_PREFIX} ${selector} {background-image: url(${imageUrl})}`);
+        cssRules.push(`${CSS_PREFIX} ${selector} {background-image: url(${imageUrl}); content: "foo"; --var: aaa; --sprite-data: "${(
+          JSON.stringify({ "asd": true }).replace(/["]/g, "\\\"")
+        )}"}`);
       });
     }
   });
