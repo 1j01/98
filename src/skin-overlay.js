@@ -17,6 +17,7 @@ class SkinOverlay {
 	constructor() {
 		this.overlayCanvases = [];
 		this.animateFns = [];
+		this.skinImages = {};
 	}
 
 	makeOverlayCanvas(windowEl) {
@@ -99,7 +100,7 @@ class SkinOverlay {
 								return;
 							}
 							const { x, y, width, height, name } = sprite;
-							imageURL = webampState.display.skinImages[name];
+							imageURL = this.skinImages[name] || webampState.display.skinImages[name];
 							// sourceX = x;
 							// sourceY = y;
 							canvasPattern = getCanvasPattern(imageURL, repeat, ctx);
@@ -201,8 +202,8 @@ class SkinOverlay {
 		});
 	}
 	setImage(image) {
-		console.log("got image", image);
-		this.image = image;
+		const name = "MAIN_WINDOW_BACKGROUND";
+		this.skinImages[name] = image;
 	}
 
 	render() {
