@@ -542,7 +542,7 @@ var load_winamp_bundle_if_not_loaded = function(includeButterchurn, callback){
 		callback();
 	}else{
 		// TODO: parallelize (if possible)
-		$.getScript("programs/winamp/lib/webamp.bundle.min.js", ()=> {
+		$.getScript("programs/winamp/lib/webamp.bundle.js", ()=> {
 			if (includeButterchurn) {
 				$.getScript("programs/winamp/lib/butterchurn.min.js", ()=> {
 					$.getScript("programs/winamp/lib/butterchurnPresets.min.js", ()=> {

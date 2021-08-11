@@ -35,11 +35,11 @@ const copy_and_monkey_patch_webamp = (file_name)=> {
 	console.log(`Monkey patching and copying ${from} => ${to}`);
 	let js = readFileSync(from, "utf8");
 	js = js.replace(/((\w|\.)+)\.render\(\)/g, "(monkey_patch_render($1))");
-	js = js.replace("//# sourceMappingURL=webamp.bundle.min.js.map", ""); // lastIndexOf + slice would be way more efficient but WHERE WE'RE GOING, WE DON'T NEED SPEED
+	js = js.replace(/\/\/# sourceMappingURL=.*/, ""); // lastIndexOf + slice would be way more efficient but WHERE WE'RE GOING, WE DON'T NEED SPEED
 	writeFileSync(to, js, "utf8");
 };
 copy_and_monkey_patch_webamp("webamp.bundle.js");
-copy_and_monkey_patch_webamp("webamp.bundle.min.js");
+// copy_and_monkey_patch_webamp("webamp.bundle.min.js");
 
 console.log(`Done.
 
