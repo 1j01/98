@@ -1000,6 +1000,12 @@ function openThemeFile(file_path) {
 				return alert(err);
 			}
 			loadThemeFromText(content);
+			try {
+				localStorage.setItem("desktop-theme", content);
+				localStorage.setItem("desktop-theme-path", file_path);
+			} catch (error) {
+				// no local storage
+			}
 		});
 	});
 }

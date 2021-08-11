@@ -34,10 +34,14 @@ function setDesktopWallpaper(file, repeat, saveToLocalStorage) {
 try {
 	var wallpaper_data_url = localStorage.getItem("wallpaper-data-url");
 	var wallpaper_repeat = localStorage.getItem("wallpaper-repeat");
+	var theme_file_content = localStorage.getItem("desktop-theme");
 	if (wallpaper_data_url) {
 		fetch(wallpaper_data_url).then(r => r.blob()).then(file => {
 			setDesktopWallpaper(file, wallpaper_repeat, false);
 		});
+	}
+	if (theme_file_content) {
+		loadThemeFromText(theme_file_content);
 	}
 } catch (error) {
 	console.error(error);
