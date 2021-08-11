@@ -377,6 +377,7 @@ function Paint(file_path){
 			});
 		});
 	};
+	task._$window = $win;
 	return task;
 }
 Paint.acceptsFilePaths = true;
@@ -844,6 +845,7 @@ function openWinamp(file_path){
 				paint._on_image_change((canvas) => {
 					skinOverlay.setImage(canvas);
 				});
+				paint._$window.css("left", innerWidth*2/3);
 			}
 			
 			// TODO: replace with setInterval.. uh.. not if we're using this for the animation for skinOverlay though
