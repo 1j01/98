@@ -50,6 +50,11 @@ class SkinOverlay {
 			const stuff = Array.from(windowEl.querySelectorAll("*:not(.overlay-canvas)"));
 			stuff.push(windowEl);
 			const webampState = webamp.store.getState();
+			// preload images for states that aren't used yet, like pressed button sprites
+			// for (const imageURL of Object.values(webampState.display.skinImages)) {
+			// 	loadImage(imageURL);
+			// }
+
 			stuff
 				.map(el => {
 					const width = el.clientWidth;
