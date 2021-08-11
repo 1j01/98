@@ -376,10 +376,8 @@ function Paint(file_path) {
 	const task = new Task($win);
 	task._on_image_change = (callback) => {
 		waitUntil(() => contentWindow.jQuery, 500, () => {
-			console.log("jQuery loaded");
 			contentWindow.jQuery(contentWindow).on("session-update", () => {
 				const canvas = contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
-				console.log("session-update", canvas);
 				callback(canvas);
 			});
 		});
