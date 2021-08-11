@@ -644,8 +644,7 @@ function openWinamp(file_path){
 				duration: 5.322286,
 			}],
 			initialSkin: {
-				// url: "programs/winamp/skins/base-2.91.wsz",
-				url: "programs/winamp/skins/snes_sim_city_by_hankola.zip",
+				url: "programs/winamp/skins/base-2.91.wsz",
 			},
 			enableHotkeys: true,
 			handleTrackDropEvent: (event)=>
