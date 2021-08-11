@@ -87,6 +87,7 @@
 		"asyncify",
 		"atwoodslaw",
 		"basex",
+		"bcmap",
 		"bigfix",
 		"blackwhite",
 		"blinn",
@@ -114,6 +115,7 @@
 		"discretized",
 		"dosbox",
 		"ecrease",
+		"editorconfig",
 		"elball",
 		"emcc",
 		"emcmake",
@@ -123,6 +125,7 @@
 		"eqeqeq",
 		"errored",
 		"esque",
+		"flac",
 		"flexbox",
 		"fliph",
 		"flipv",
@@ -183,6 +186,7 @@
 		"peggys",
 		"persp",
 		"precompute",
+		"prettierignore",
 		"proch",
 		"proclabel",
 		"progid",
@@ -252,6 +256,8 @@
 		"winmine",
 		"winxp",
 		"wrapline",
-		"wrappy"
+		"wrappy",
+		"xcfbz",
+		"xcfgz"
 	]
 }

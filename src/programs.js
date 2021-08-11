@@ -930,28 +930,119 @@ function openThemeFile(file_path){
 openThemeFile.acceptsFilePaths = true;
 
 var file_extension_associations = {
-	"": Notepad,
-	txt: Notepad,
-	md: Notepad,
-	json: Notepad,
-	js: Notepad,
+	// Fonts:
+	// - eot (Embedded OpenType)
+	// - otf (OpenType)
+	// - ttf (TrueType)
+	// - woff (Web Open Font Format)
+	// - woff2 (Web Open Font Format 2)
+	// - (also svg but that's mainly an image format)
+
+	// Misc binary:
+	// - wasm (WebAssembly)
+	// - o (Object file)
+	// - so (Shared Object)
+	// - dll (Dynamic Link Library)
+	// - exe (Executable file)
+	// - a (static library)
+	// - lib (static library)
+	// - pdb (Program Debug database)
+	// - idb (Intermediate Debug file)
+	// - bcmap (Binary Character Map)
+	// - bin (generic binary file extension)
+
+	// Text:
+	"": Notepad, // bare files such as LICENSE, Makefile, CNAME, etc.
+	ahk: Notepad,
+	ai: Paint,
+	bat: Notepad,
+	check_cache: Notepad,
+	cmake: Notepad,
+	cmd: Notepad,
+	conf: Notepad,
+	cpp: Notepad,
 	css: Notepad,
-	html: Notepad,
+	d: Notepad,
+	editorconfig: Notepad,
+	filters: Notepad,
 	gitattributes: Notepad,
 	gitignore: Notepad,
-	png: Paint,
-	jpg: Paint,
-	jpeg: Paint,
-	gif: Paint,
-	webp: Paint,
+	gitrepo: Notepad,
+	h: Notepad,
+	hhc: Notepad,
+	hhk: Notepad,
+	html: Notepad,
+	ini: Notepad,
+	js: Notepad,
+	json: Notepad,
+	log: Notepad,
+	make: Notepad,
+	map: Notepad,
+	marks: Notepad,
+	md: Notepad,
+	prettierignore: Notepad,
+	properties: Notepad,
+	rc: Notepad,
+	rsp: Notepad,
+	sh: Notepad,
+	ts: Notepad,
+	txt: Notepad,
+	vcxproj: Notepad,
+	webmanifest: Notepad,
+	xml: Notepad,
+	yml: Notepad,
+
+	// Images:
 	bmp: Paint,
+	cur: Paint,
+	eps: Paint,
+	gif: Paint,
+	icns: Paint,
+	ico: Paint,
+	jpeg: Paint,
+	jpg: Paint,
+	kra: Paint,
+	pbm: Paint,
+	pdf: Paint, // yes I added PDF support to JS Paint (not all formats listed here are supported though)
+	pdn: Paint,
+	pgm: Paint,
+	png: Paint,
+	pnm: Paint,
+	ppm: Paint,
+	ps: Paint,
+	psd: Paint,
+	svg: Paint,
+	tga: Paint,
 	tif: Paint,
 	tiff: Paint,
+	webp: Paint,
+	xbm: Paint,
+	xcf: Paint,
+	xcfbz2: Paint,
+	xcfgz: Paint,
+	xpm: Paint,
+
+	// Winamp Skins:
+	wsz: openWinamp, // winamp skin zip
+	zip: openWinamp, // MIGHT be a winamp skin zip, so might as well for now
+
+	// Audio:
 	wav: SoundRecorder,
 	mp3: openWinamp,
 	ogg: openWinamp,
 	wma: openWinamp,
 	m4a: openWinamp,
+	aac: openWinamp,
+	flac: openWinamp,
+	mka: openWinamp,
+	mpc: openWinamp,
+	"mp+": openWinamp,
+
+	// Playlists:
+	m3u: openWinamp,
+	pls: openWinamp,
+
+	// Misc:
 	htm: Explorer,
 	html: Explorer,
 	url: openURLFile,
