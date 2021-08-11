@@ -80,28 +80,33 @@ class SkinOverlay {
 						ctx.fillRect(offsetLeft, offsetTop, width, height);
 					}
 					const repeat = computedStyle.backgroundRepeat || "repeat";
-					if (computedStyle.getPropertyValue("--sprite-info")) {
-					// if (false) {
-						let sprite;
-						try {
-							sprite = JSON.parse(computedStyle.getPropertyValue("--sprite-info").trim().slice(1, -1).replace(/\\"/g, "\""));
-						} catch (error) {
-							if (!window.showed_sprite_error) {
-								console.error("Could not parse sprite info", computedStyle.getPropertyValue("--sprite-info"), error);
-								window.showed_sprite_error = true;
+					// I'm using CSS vars, which cascades down, and I only want to render once,
+					// so I'm checking if the background-image is set; --sprite-info should always have a corresponding background-image
+					// (background-image doesn't cascade)
+					if (computedStyle.backgroundImage && computedStyle.backgroundImage !== "none") {
+						if (computedStyle.getPropertyValue("--sprite-info")) {
+							let sprite;
+							try {
+								sprite = JSON.parse(computedStyle.getPropertyValue("--sprite-info").trim().slice(1, -1).replace(/\\"/g, "\""));
+							} catch (error) {
+								if (!window.showed_sprite_error) {
+									console.error("Could not parse sprite info", computedStyle.getPropertyValue("--sprite-info"), error);
+									window.showed_sprite_error = true;
+								}
+								return;
 							}
-							return;
-						}
-						const { x, y, width, height, name } = sprite;
-						imageURL = webampState.display.skinImages[name];
-						// sourceX = x;
-						// sourceY = y;
-						canvasPattern = getCanvasPattern(imageURL, repeat, ctx);
-					} else if (computedStyle.backgroundImage && computedStyle.backgroundImage !== "none") {
-						const imageURLMatch = computedStyle.backgroundImage.match(/url\("(.*)"\)/);
-						if (imageURLMatch) {
-							imageURL = imageURLMatch[1];
+							const { x, y, width, height, name } = sprite;
+							imageURL = webampState.display.skinImages[name];
+							// sourceX = x;
+							// sourceY = y;
 							canvasPattern = getCanvasPattern(imageURL, repeat, ctx);
+						} else {
+							// should not happen
+							const imageURLMatch = computedStyle.backgroundImage.match(/url\("(.*)"\)/);
+							if (imageURLMatch) {
+								imageURL = imageURLMatch[1];
+								canvasPattern = getCanvasPattern(imageURL, repeat, ctx);
+							}
 						}
 					}
 					if (canvasPattern) {
