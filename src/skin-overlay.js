@@ -17,7 +17,8 @@ class SkinOverlay {
 	constructor() {
 		this.overlayCanvases = [];
 		this.animateFns = [];
-		this.skinImages = {};
+		this.skinImageCanvases = {};
+		this.skinCanvasPatterns = {};
 	}
 
 	makeOverlayCanvas(windowEl) {
@@ -72,7 +73,6 @@ class SkinOverlay {
 					ctx.scale(scale, scale);
 					let sourceX = 0;
 					let sourceY = 0;
-					let imageURL;
 					let canvasPattern;
 					const computedStyle = getComputedStyle(element);
 					ctx.globalAlpha = computedStyle.opacity * (computedStyle.display === "none" ? 0 : 1) * (computedStyle.visibility === "hidden" ? 0 : 1);
@@ -100,15 +100,23 @@ class SkinOverlay {
 								return;
 							}
 							const { x, y, width, height, name } = sprite;
-							imageURL = this.skinImages[name] || webampState.display.skinImages[name];
+							if (this.skinImageCanvases[name]) {
+								canvasPattern = this.skinCanvasPatterns[`${name} ${repeat}`];
+								if (!canvasPattern) {
+									canvasPattern = makeCanvasPattern(this.skinImageCanvases[name], repeat, ctx);
+									// this.skinCanvasPatterns[`${name} ${repeat}`] = canvasPattern; // can't actually cache this, if we want to live-update
+								}
+							} else {
+								const imageURL = webampState.display.skinImages[name];
+								canvasPattern = getCanvasPattern(imageURL, repeat, ctx);
+							}
 							// sourceX = x;
 							// sourceY = y;
-							canvasPattern = getCanvasPattern(imageURL, repeat, ctx);
 						} else {
 							// should not happen
 							const imageURLMatch = computedStyle.backgroundImage.match(/url\("(.*)"\)/);
 							if (imageURLMatch) {
-								imageURL = imageURLMatch[1];
+								const imageURL = imageURLMatch[1];
 								canvasPattern = getCanvasPattern(imageURL, repeat, ctx);
 							}
 						}
@@ -201,9 +209,8 @@ class SkinOverlay {
 				});
 		});
 	}
-	setImage(image) {
-		const name = "MAIN_WINDOW_BACKGROUND";
-		this.skinImages[name] = image;
+	setSkinImage(name, image) {
+		this.skinImageCanvases[name] = image;
 	}
 
 	render() {
@@ -259,20 +266,23 @@ function getCanvasPattern(url, repeat, context) {
 	loadCanvasPattern(url, repeat, context);
 	return canvasPatterns[`${url} ${repeat}`];
 }
-// this is memoized, so it only needs to handle setting cache values and not returning them
-loadCanvasPattern = memoizeAsyncFunction(async function loadCanvasPattern(url, repeat, context) {
-	if (!url || url === "null") {
-		return null;
-	}
-	const image = await loadImage(url); // separately cached because there could be different repeat values for the same image
-	const canvasPattern = context.createPattern(image, repeat || "repeat");
-	canvasPatterns[`${url} ${repeat}`] = canvasPattern;
+function makeCanvasPattern(image, repeat, context) {
+	const canvasPattern = context.createPattern(image, repeat);
 	if (!canvasPattern) {
 		throw new Error(`Failed to create pattern from image: ${url}`);
 	}
 	canvasPattern.width = image.width;
 	canvasPattern.height = image.height;
 	return canvasPattern;
+}
+// this is memoized, so it only needs to handle setting cache values and not returning them
+loadCanvasPattern = memoizeAsyncFunction(async function loadCanvasPattern(url, repeat, context) {
+	if (!url || url === "null") {
+		return null;
+	}
+	const image = await loadImage(url); // separately cached because there could be different repeat values for the same image
+	const canvasPattern = makeCanvasPattern(image, repeat, context);
+	canvasPatterns[`${url} ${repeat}`] = canvasPattern;
 });
 
 // function hash(el) {

@@ -961,7 +961,7 @@ function openWinamp(file_path) {
 				const skinPath = "programs/winamp/skins/base/MAIN.BMP";
 				const paint = new Paint(skinPath);
 				paint._on_image_change((canvas) => {
-					skinOverlay.setImage(canvas.toDataURL());
+					skinOverlay.setSkinImage("MAIN_WINDOW_BACKGROUND", canvas);
 				});
 				paint._$window.css("left", innerWidth*2/3);
 			}
