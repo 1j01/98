@@ -75,6 +75,9 @@ class SkinOverlay {
 					let canvasPattern;
 					const computedStyle = getComputedStyle(element);
 					ctx.globalAlpha = computedStyle.opacity * (computedStyle.display === "none" ? 0 : 1) * (computedStyle.visibility === "hidden" ? 0 : 1);
+					if (ctx.globalAlpha === 0) {
+						return;
+					}
 					if (computedStyle.backgroundColor !== "transparent" && computedStyle.backgroundColor !== "rgba(0, 0, 0, 0)") {
 						ctx.fillStyle = computedStyle.backgroundColor;
 						ctx.fillRect(offsetLeft, offsetTop, width, height);
