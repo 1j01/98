@@ -141,13 +141,13 @@ class SkinOverlay {
 									elementMatrix = elementMatrix.multiply(matrix);
 								}
 								// have some fun with matrix transforms
-								const arr = [1, 0, 0, 1, 0, 0];
-								for (let i = 0; i < arr.length; i++) {
-									arr[i] = Math.sin((Date.now() / 500) + i + hash(el) * 40.23) / 50;
-								}
-								arr[0] = 1 - arr[0];
-								arr[3] = 1 - arr[3];
-								elementMatrix = elementMatrix.multiply(new DOMMatrix(arr));
+								// const arr = [1, 0, 0, 1, 0, 0];
+								// for (let i = 0; i < arr.length; i++) {
+								// 	arr[i] = Math.sin((Date.now() / 500) + i + hash(el) * 40.23) / 50;
+								// }
+								// arr[0] = 1 - arr[0];
+								// arr[3] = 1 - arr[3];
+								// elementMatrix = elementMatrix.multiply(new DOMMatrix(arr));
 
 								// handle overflow clipping
 								// only the largest clip region, not handling nested clip regions
@@ -164,27 +164,21 @@ class SkinOverlay {
 							}
 							ctx.transform(elementMatrix.a, elementMatrix.b, elementMatrix.c, elementMatrix.d, elementMatrix.e, elementMatrix.f);
 							ctx.translate(offsetLeft, offsetTop);
-							// if (Math.random() < 0.5) {
-								ctx.fillRect(0, 0, width, height);
-							// }
+							ctx.fillRect(0, 0, width, height);
 						} catch (error) {
 							// console.warn(error);	
 						}
 						ctx.restore();
 					}
 					if (element instanceof HTMLCanvasElement || element instanceof HTMLImageElement || element instanceof HTMLVideoElement) {
-						// if (this.image) {
-						// 	ctx.drawImage(this.image, offsetLeft, offsetTop, width, height);
-						// } else {
-							ctx.drawImage(element, offsetLeft, offsetTop, width, height);
-						// }
+						ctx.drawImage(element, offsetLeft, offsetTop, width, height);
 					} else {
 						// only want direct text children, since we're iterating over all elements and we want to render the text only once
-						// const text = Array.prototype.filter
-						// 	.call(element.childNodes, (child) => child.nodeType === Node.TEXT_NODE)
-						// 	.map((child) => child.textContent)
-						// 	.join('');
-						const text = `${sourceX}`;// ${sourceY} ${width} ${height} ${offsetLeft} ${offsetTop} ${repeat}`;
+						const text = Array.prototype.filter
+							.call(element.childNodes, (child) => child.nodeType === Node.TEXT_NODE)
+							.map((child) => child.textContent)
+							.join('');
+						// const text = `${sourceX}`;// ${sourceY} ${width} ${height} ${offsetLeft} ${offsetTop} ${repeat}`;
 
 						if (text) {
 							const textIndent = parseFloat(computedStyle.textIndent);
@@ -280,10 +274,10 @@ loadCanvasPattern = memoizeAsyncFunction(async function loadCanvasPattern(url, r
 	return canvasPattern;
 });
 
-function hash(el) {
-	// too slow because it causes reflows
-	// return el.offsetLeft + el.offsetTop;
-	// this is faster:
-	const rect = el.getBoundingClientRect();
-	return rect.left + rect.top;
-}
+// function hash(el) {
+// 	// too slow because it causes reflows
+// 	// return el.offsetLeft + el.offsetTop;
+// 	// this is faster:
+// 	const rect = el.getBoundingClientRect();
+// 	return rect.left + rect.top;
+// }
