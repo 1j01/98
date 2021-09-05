@@ -426,6 +426,7 @@
     "konami.js": null,
     "os-gui": {
       "$MenuBar.js": null,
+      "$Window.js": null,
       "layout.css": null,
       "layout.css.map": null,
       "parse-theme.js": null,
@@ -3643,7 +3644,6 @@
     "$FolderView.js": null,
     "$FolderViewIcon.js": null,
     "$IframeWindow.js": null,
-    "$Window.js": null,
     "$desktop.js": null,
     "$start-menu.js": null,
     "$taskbar-time.js": null,
