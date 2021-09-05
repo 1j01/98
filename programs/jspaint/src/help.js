@@ -28,6 +28,7 @@ function open_help_viewer(options){
 	const $help_window = $Window({
 		title: options.title || "Help Topics",
 		icon: "chm",
+		resizable: true,
 	})
 	$help_window.addClass("help-window");
 

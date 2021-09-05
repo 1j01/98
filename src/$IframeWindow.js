@@ -122,6 +122,7 @@ function $Iframe(options){
 
 function $IframeWindow(options){
 	
+	options.resizable ??= true;
 	var $win = new $Window(options);
 	
 	var $iframe = $win.$iframe = $Iframe({src: options.src});

@@ -246,7 +246,10 @@ function Notepad(file_path){
 	var $win = new $IframeWindow({
 		src: "programs/notepad/index.html" + (file_path ? ("?path=" + file_path) : ""),
 		icon: "notepad",
-		title: win_title
+		title: win_title,
+		outerWidth: 480,
+		outerHeight: 321,
+		resizable: true,
 	});
 	$win.onFocus(()=> {
 		const textarea = $win.iframe.contentWindow.document.querySelector("textarea");
@@ -263,7 +266,11 @@ function Paint(file_path){
 		src: "programs/jspaint/index.html",
 		icon: "paint",
 		// NOTE: in Windows 98, "untitled" is lowercase, but TODO: we should just make it consistent
-		title: "untitled - Paint"
+		title: "untitled - Paint",
+		outerWidth: 275,
+		outerHeight: 400,
+		minWidth: 275,
+		minHeight: 400,
 	});
 
 	var contentWindow = $win.$iframe[0].contentWindow;
@@ -355,7 +362,8 @@ function Minesweeper(){
 		icon: "minesweeper",
 		title: "Minesweeper",
 		innerWidth: 280,
-		innerHeight: 320
+		innerHeight: 320,
+		resizable: false,
 	});
 	return new Task($win);
 }
@@ -370,7 +378,9 @@ function SoundRecorder(file_path){
 		icon: "speaker",
 		title: win_title,
 		innerWidth: 270,
-		innerHeight: 108
+		innerHeight: 108,
+		minWidth: 270,
+		minHeight: 108,
 	});
 	return new Task($win);
 }
@@ -469,6 +479,42 @@ function CommandPrompt() {
 		// TODO: default dimensions
 		innerWidth: 640,
 		innerHeight: 400 - 21, // HACK: remove `+ 21` added for menubar in $IframeWindow.js
+		constrainRect(rect, x_axis, y_axis) {
+			const char_width = 8;
+			const char_height = 16;
+			const border = ($win.outerWidth() - $win.$content.outerWidth()) / 2;
+			const inner_rect = {
+				x: rect.x + border,
+				y: rect.y + border + $win.$titlebar.outerHeight(),
+				width: rect.width - $win.outerWidth() + $win.$content.outerWidth(),
+				height: rect.height - $win.outerHeight() + $win.$content.outerHeight(),
+			};
+			const new_inner_rect = {
+				width: Math.floor(inner_rect.width / char_width) * char_width,
+				height: Math.floor(inner_rect.height / char_height) * char_height,
+			};
+			const new_rect = {
+				x: inner_rect.x - border,
+				y: inner_rect.y - border - $win.$titlebar.outerHeight(),
+				width: new_inner_rect.width + $win.outerWidth() - $win.$content.outerWidth(),
+				height: new_inner_rect.height + $win.outerHeight() - $win.$content.outerHeight(),
+			};
+			if (x_axis === -1) {
+				new_rect.x = rect.x + rect.width - new_rect.width;
+			}
+			if (y_axis === -1) {
+				new_rect.y = rect.y + rect.height - new_rect.height;
+			}
+			return new_rect;
+		},
+		// TODO: make the API simpler / more flexible like:
+		// constrainDimensions({ innerWidth, innerHeight }) {
+		// 	const charWidth = 8;
+		// 	const charHeight = 16;
+		// 	innerWidth = Math.floor(innerWidth / charWidth) * charWidth;
+		// 	innerHeight = Math.floor(innerHeight / charHeight) * charHeight;
+		// 	return { innerWidth, innerHeight };
+		// },
 	});
 	return new Task($win);
 }
@@ -480,6 +526,8 @@ function Calculator() {
 		title: "Calculator",
 		innerWidth: 256,
 		innerHeight: 208,
+		minWidth: 256,
+		minHeight: 208,
 	});
 	return new Task($win);
 }
