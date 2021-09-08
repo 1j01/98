@@ -427,6 +427,7 @@
     "os-gui": {
       "$MenuBar.js": null,
       "$Window.js": null,
+      "MenuBar.js": null,
       "layout.css": null,
       "layout.css.map": null,
       "parse-theme.js": null,
