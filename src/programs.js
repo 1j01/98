@@ -356,7 +356,7 @@ function Minesweeper(){
 		icon: "minesweeper",
 		title: "Minesweeper",
 		innerWidth: 280,
-		innerHeight: 320,
+		innerHeight: 320 + 21,
 		resizable: false,
 	});
 	return new Task($win);
@@ -372,9 +372,9 @@ function SoundRecorder(file_path){
 		icon: "speaker",
 		title: win_title,
 		innerWidth: 270,
-		innerHeight: 108,
-		minOuterWidth: 270,
-		minOuterHeight: 108,
+		innerHeight: 108 + 21,
+		minInnerWidth: 270,
+		minInnerHeight: 108 + 21,
 	});
 	return new Task($win);
 }
@@ -386,7 +386,7 @@ function Solitaire() {
 		icon: "solitaire",
 		title: "Solitaire",
 		innerWidth: 585,
-		innerHeight: 384,
+		innerHeight: 384 + 21,
 	});
 	return new Task($win);
 }
@@ -472,7 +472,7 @@ function CommandPrompt() {
 		title: "MS-DOS Prompt",
 		// TODO: default dimensions
 		innerWidth: 640,
-		innerHeight: 400 - 21, // HACK: remove `+ 21` added for menubar in $IframeWindow.js
+		innerHeight: 400,
 		constrainRect(rect, x_axis, y_axis) {
 			const char_width = 8;
 			const char_height = 16;
@@ -519,9 +519,9 @@ function Calculator() {
 		icon: "calculator",
 		title: "Calculator",
 		innerWidth: 256,
-		innerHeight: 208,
-		minOuterWidth: 256,
-		minOuterHeight: 208,
+		innerHeight: 208 + 21,
+		minInnerWidth: 256,
+		minInnerHeight: 208 + 21,
 	});
 	return new Task($win);
 }
@@ -536,7 +536,7 @@ function Explorer(address){
 		icon: "folder-open",
 		title: win_title,
 		innerWidth: 500,
-		innerHeight: 500,
+		innerHeight: 500 + 21,
 	});
 	return new Task($win);
 }
