@@ -262,15 +262,15 @@ var menus = {
 var go_outside_frame = false;
 if(frameElement){
 	try{
-		if(parent.$MenuBar){
-			$MenuBar = parent.$MenuBar;
+		if(parent.MenuBar){
+			MenuBar = parent.MenuBar;
 			go_outside_frame = true;
 		}
 	}catch(e){}
 }
-var $menu_bar = $MenuBar(menus);
+var menu_bar = MenuBar(menus);
 if(go_outside_frame){
-	$menu_bar.insertBefore(frameElement);
+	$(menu_bar.element).insertBefore(frameElement);
 }else{
-	$menu_bar.prependTo($("#app"));
+	$(menu_bar.element).prependTo($("#app"));
 }

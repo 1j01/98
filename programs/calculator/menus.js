@@ -82,20 +82,20 @@ var menus = {
 var go_outside_frame = false;
 if(frameElement){
 	try{
-		if(parent.$MenuBar){
-			$MenuBar = parent.$MenuBar;
+		if(parent.MenuBar){
+			MenuBar = parent.MenuBar;
 			go_outside_frame = true;
 		}
 	}catch(e){}
 }
-var $menu_bar = $MenuBar(menus);
+var menu_bar = new MenuBar(menus);
 if(go_outside_frame){
-	$menu_bar.insertBefore(frameElement);
+	$(menu_bar.element).insertBefore(frameElement);
 	$(function () {
 		$("body").addClass("menu-bar-is-outside-frame");
 	});
 }else{
 	$(function(){
-		$menu_bar.prependTo(jQuery("body"));
+		$(menu_bar.element).prependTo(jQuery("body"));
 	});
 }

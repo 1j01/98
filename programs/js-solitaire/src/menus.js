@@ -90,15 +90,15 @@ var menus = {
 var go_outside_frame = false;
 if(frameElement){
 	try{
-		if(parent.$MenuBar){
-			$MenuBar = parent.$MenuBar;
+		if(parent.MenuBar){
+			MenuBar = parent.MenuBar;
 			go_outside_frame = true;
 		}
 	}catch(e){}
 }
-var $menu_bar = $MenuBar(menus);
-if(go_outside_frame){
-	$menu_bar.insertBefore(frameElement);
-}else{
-	$menu_bar.prependTo("body");
+var menu_bar = new MenuBar(menus);
+if (go_outside_frame) {
+	frameElement.parentElement.insertBefore(menu_bar.element, frameElement);
+} else {
+	document.body.prepend(menu_bar.element);
 }
