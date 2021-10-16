@@ -136,7 +136,7 @@ function $IframeWindow(options){
 	$win.on("close", function(){
 		$iframe.destroy();
 	});
-	$win.onFocus($iframe.focus_contents);
+	// $win.onFocus($iframe.focus_contents);
 
 	$iframe.on("load", function(){
 		$win.show();

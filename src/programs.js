@@ -251,12 +251,6 @@ function Notepad(file_path){
 		outerHeight: 321,
 		resizable: true,
 	});
-	$win.onFocus(()=> {
-		const textarea = $win.iframe.contentWindow.document.querySelector("textarea");
-		if (textarea) {
-			textarea.focus();
-		}
-	});
 	return new Task($win);
 }
 Notepad.acceptsFilePaths = true;

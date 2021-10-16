@@ -23,7 +23,11 @@ function Task(win){
 	this.updateIcon();
 
 	$task.append($icon, $title);
-	$task.on("click", function(){
+	$task.on("pointerdown", function (e) {
+		e.preventDefault(); // prevent focus, so that the window keeps focus and we can know for minimization if it it should be focused or minimized
+		// @TODO: do it on whole taskbar
+	});
+	$task.on("click", function () {
 		if($task.hasClass("selected")){
 			win.minimize();
 			win.blur();
