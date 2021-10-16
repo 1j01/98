@@ -647,6 +647,7 @@ function initialise() {
                 const command = commands.shift();
                 if (!command) {
                     clearInterval(iid);
+                    return;
                 }
                 sendCommand(command, true);
             }, keystrokeDelay);
