@@ -480,9 +480,13 @@ body > .window-titlebar {
 	color: rgb(0, 0, 0);
 	color: var(--MenuText);
 }
+.menu-popup td {
+    padding: 0 1px;
+}
 .menu-item {
 	padding: 1px 3px;
 	margin: 2px;
+	height: 17px;
 }
 .menu-item[disabled] {
 	color: rgb(128, 128, 128);
@@ -490,12 +494,12 @@ body > .window-titlebar {
 	text-shadow: 0.8px 0.8px 0px rgb(255, 255, 255);
 	text-shadow: 0.8px 0.8px 0px var(--ButtonHilight);
 }
-.menu-item:focus:not([disabled]),
+.menu-item.highlight:not([disabled]),
 .menu-item.active:not([disabled]) {
 	color: rgb(255, 255, 255);
 	color: var(--HilightText);
 }
-.menu-item:focus,
+.menu-item.highlight,
 .menu-item.active {
 	background: rgb(0, 0, 128);
 	background: var(--Hilight);
@@ -511,10 +515,24 @@ body > .window-titlebar {
 	border-top: 1px solid var(--ButtonShadow);
 	border-bottom: 1px solid rgb(255, 255, 255);
 	border-bottom: 1px solid var(--ButtonHilight);
-	margin: 0px 2px;
+	margin: 0;
+	margin-top: 3px;
+	margin-bottom: 4px;
 }
 .menu-hotkey {
 	text-decoration: underline;
+}
+.menu-hotkey::-moz-selection {
+	/* prevent weird looking white underlines if menubar is contained in a selection, possible in the demo (minute edge case) */
+    text-decoration-color: rgb(0, 0, 0) !important;
+    text-decoration-color: var(--MenuText) !important;
+}
+.menu-hotkey::selection {
+	/* prevent weird looking white underlines if menubar is contained in a selection, possible in the demo (minute edge case) */
+    -webkit-text-decoration-color: rgb(0, 0, 0) !important;
+            text-decoration-color: rgb(0, 0, 0) !important;
+    -webkit-text-decoration-color: var(--MenuText) !important;
+            text-decoration-color: var(--MenuText) !important;
 }
 
 

@@ -263,8 +263,8 @@ function Paint(file_path){
 		title: "untitled - Paint",
 		outerWidth: 275,
 		outerHeight: 400,
-		minWidth: 275,
-		minHeight: 400,
+		minOuterWidth: 275,
+		minOuterHeight: 400,
 	});
 
 	var contentWindow = $win.$iframe[0].contentWindow;
@@ -373,8 +373,8 @@ function SoundRecorder(file_path){
 		title: win_title,
 		innerWidth: 270,
 		innerHeight: 108,
-		minWidth: 270,
-		minHeight: 108,
+		minOuterWidth: 270,
+		minOuterHeight: 108,
 	});
 	return new Task($win);
 }
@@ -520,8 +520,8 @@ function Calculator() {
 		title: "Calculator",
 		innerWidth: 256,
 		innerHeight: 208,
-		minWidth: 256,
-		minHeight: 208,
+		minOuterWidth: 256,
+		minOuterHeight: 208,
 	});
 	return new Task($win);
 }
