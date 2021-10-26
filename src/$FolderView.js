@@ -55,7 +55,7 @@ function $FolderView(folder_path) {
 
 	// TODO: different view options, e.g. list view, details view, large icons view (arranged towards the top primarily instead of the left), desktop view
 	
-	var $folder_view = $("<div class='folder-view'>");
+	var $folder_view = $(`<div class="folder-view" tabindex="0">`);
 	
 	// TODO: sort (by name I guess)
 	$folder_view.arrange_icons = function(){
