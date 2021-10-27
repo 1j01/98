@@ -118,7 +118,8 @@ const windowInterfaceMethods = [
 	// "unmaximize",
 	"bringToFront", // TODO: maybe setZIndex instead
 	"getTitle",
-	"getIconName",
+	// "getIconName",
+	"getIconAtSize",
 	"focus",
 	"blur",
 	"onFocus",

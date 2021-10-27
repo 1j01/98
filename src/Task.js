@@ -8,10 +8,12 @@ function Task(win){
 	};
 
 	let $icon;
-	this.updateIcon = ()=> {
-		const icon_name = win.getIconName() || "task";
+	this.updateIcon = () => {
 		const old_$icon = $icon;
-		$icon = $Icon(icon_name, TASKBAR_ICON_SIZE);
+		$icon = win.getIconAtSize(16);
+		if (!$icon) {
+			$icon = $("<img src='images/icons/task.png'/>");
+		}
 		if (old_$icon) {
 			old_$icon.replaceWith($icon);
 		} else {

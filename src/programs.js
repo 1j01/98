@@ -1,7 +1,7 @@
 function show_help(options){
 	const $help_window = $Window({
 		title: options.title || "Help Topics",
-		icon: "chm",
+		icons: iconsAtTwoSizes("chm"),
 	})
 	$help_window.addClass("help-window");
 
@@ -245,7 +245,7 @@ function Notepad(file_path){
 
 	var $win = new $IframeWindow({
 		src: "programs/notepad/index.html" + (file_path ? ("?path=" + file_path) : ""),
-		icon: "notepad",
+		icons: iconsAtTwoSizes("notepad"),
 		title: win_title,
 		outerWidth: 480,
 		outerHeight: 321,
@@ -258,7 +258,7 @@ Notepad.acceptsFilePaths = true;
 function Paint(file_path){
 	var $win = new $IframeWindow({
 		src: "programs/jspaint/index.html",
-		icon: "paint",
+		icons: iconsAtTwoSizes("paint"),
 		// NOTE: in Windows 98, "untitled" is lowercase, but TODO: we should just make it consistent
 		title: "untitled - Paint",
 		outerWidth: 275,
@@ -353,7 +353,7 @@ Paint.acceptsFilePaths = true;
 function Minesweeper(){
 	var $win = new $IframeWindow({
 		src: "programs/minesweeper/index.html",
-		icon: "minesweeper",
+		icons: iconsAtTwoSizes("minesweeper"),
 		title: "Minesweeper",
 		innerWidth: 280,
 		innerHeight: 320 + 21,
@@ -369,7 +369,7 @@ function SoundRecorder(file_path){
 	// TODO: focus existing window if file is currently open?
 	var $win = new $IframeWindow({
 		src: "programs/sound-recorder/index.html" + (file_path ? ("?path=" + file_path) : ""),
-		icon: "speaker",
+		icons: iconsAtTwoSizes("speaker"),
 		title: win_title,
 		innerWidth: 270,
 		innerHeight: 108 + 21,
@@ -383,7 +383,7 @@ SoundRecorder.acceptsFilePaths = true;
 function Solitaire() {
 	var $win = new $IframeWindow({
 		src: "programs/js-solitaire/index.html",
-		icon: "solitaire",
+		icons: iconsAtTwoSizes("solitaire"),
 		title: "Solitaire",
 		innerWidth: 585,
 		innerHeight: 384 + 21,
@@ -468,7 +468,7 @@ function FlowerBox() {
 function CommandPrompt() {
 	var $win = new $IframeWindow({
 		src: "programs/command/index.html",
-		icon: "msdos",
+		icons: iconsAtTwoSizes("msdos"),
 		title: "MS-DOS Prompt",
 		// TODO: default dimensions
 		innerWidth: 640,
@@ -516,7 +516,7 @@ function CommandPrompt() {
 function Calculator() {
 	var $win = new $IframeWindow({
 		src: "programs/calculator/index.html",
-		icon: "calculator",
+		icons: iconsAtTwoSizes("calculator"),
 		title: "Calculator",
 		innerWidth: 256,
 		innerHeight: 208 + 21,
@@ -533,7 +533,7 @@ function Explorer(address){
 	// TODO: focus existing window if folder is currently open
 	var $win = new $IframeWindow({
 		src: "programs/explorer/index.html" + (address ? ("?address=" + encodeURIComponent(address)) : ""),
-		icon: "folder-open",
+		icons: iconsAtTwoSizes("folder-open"),
 		title: win_title,
 		innerWidth: 500,
 		innerHeight: 500 + 21,
@@ -725,7 +725,14 @@ function openWinamp(file_path){
 			winamp_interface.onFocus = makeSimpleListenable("focus");
 			winamp_interface.onBlur = makeSimpleListenable("blur");
 			winamp_interface.onClosed = makeSimpleListenable("closed");
-			winamp_interface.getIconName = ()=> "winamp2";
+			winamp_interface.getIconAtSize = (target_icon_size) => {
+				if (target_icon_size !== 32 && target_icon_size !== 16) {
+					target_icon_size = 32;
+				}
+				const img = document.createElement("img");
+				img.src = getIconPath("winamp2", target_icon_size);
+				return img;
+			};
 			winamp_interface.bringToFront = ()=> {
 				$webamp.css({
 					zIndex: $Window.Z_INDEX++
@@ -1066,3 +1073,10 @@ add_icon_not_via_filesystem({
 });
 
 $folder_view.arrange_icons();
+
+function iconsAtTwoSizes(iconID) {
+	return {
+		16: `images/icons/${iconID}-16x16.png`,
+		32: `images/icons/${iconID}-32x32.png`,
+	};
+}
