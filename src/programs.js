@@ -977,96 +977,96 @@ function executeFile(file_path){
 // or Connect to the Internet, or Setup MSN Internet Access,
 // whereas `Desktop` does (that's the full address it shows; it's one of them "special locations")
 var add_icon_not_via_filesystem = function(options){
-	options.icon = $Icon(options.icon, DESKTOP_ICON_SIZE);
+	options.icon = $Icon(options.iconID, DESKTOP_ICON_SIZE);
 	new $FolderViewIcon(options).appendTo($folder_view);
 };
 add_icon_not_via_filesystem({
 	title: "My Computer",
-	icon: "my-computer",
+	iconID: "my-computer",
 	open: function(){ executeFile("/"); },
 });
 add_icon_not_via_filesystem({
 	title: "My Documents",
-	icon: "my-documents-folder",
+	iconID: "my-documents-folder",
 	open: function(){ executeFile("/my-documents"); },
 });
 add_icon_not_via_filesystem({
 	title: "Network Neighborhood",
-	icon: "network",
+	iconID: "network",
 	open: function(){ executeFile("/network-neighborhood"); },
 });
 add_icon_not_via_filesystem({
 	title: "Recycle Bin",
-	icon: "recycle-bin",
+	iconID: "recycle-bin",
 	open: function(){ Explorer("https://www.epa.gov/recycle/"); }
 });
 add_icon_not_via_filesystem({
 	title: "My Pictures",
-	icon: "folder",
+	iconID: "folder",
 	open: function(){ executeFile("/my-pictures"); },
 });
 add_icon_not_via_filesystem({
 	title: "Internet Explorer",
-	icon: "internet-explorer",
+	iconID: "internet-explorer",
 	open: function(){ Explorer("https://www.google.com/"); }
 });
 add_icon_not_via_filesystem({
 	title: "Paint",
-	icon: "paint",
+	iconID: "paint",
 	open: Paint,
 	shortcut: true
 });
 add_icon_not_via_filesystem({
 	title: "Minesweeper",
-	icon: "minesweeper",
+	iconID: "minesweeper",
 	open: Minesweeper,
 	shortcut: true
 });
 add_icon_not_via_filesystem({
 	title: "Sound Recorder",
-	icon: "speaker",
+	iconID: "speaker",
 	open: SoundRecorder,
 	shortcut: true
 });
 add_icon_not_via_filesystem({
 	title: "Solitaire",
-	icon: "solitaire",
+	iconID: "solitaire",
 	open: Solitaire,
 	shortcut: true
 });
 add_icon_not_via_filesystem({
 	title: "Notepad",
-	icon: "notepad",
+	iconID: "notepad",
 	open: Notepad,
 	shortcut: true
 });
 add_icon_not_via_filesystem({
 	title: "Winamp",
-	icon: "winamp2",
+	iconID: "winamp2",
 	open: openWinamp,
 	shortcut: true
 });
 add_icon_not_via_filesystem({
 	title: "3D Pipes",
-	icon: "pipes",
+	iconID: "pipes",
 	open: Pipes,
 	shortcut: true
 });
 add_icon_not_via_filesystem({
 	title: "3D Flower Box",
-	icon: "pipes",
+	iconID: "pipes",
 	open: FlowerBox,
 	shortcut: true
 });
 add_icon_not_via_filesystem({
 	title: "MS-DOS Prompt",
-	icon: "msdos",
+	iconID: "msdos",
 	open: CommandPrompt,
 	shortcut: true
 });
 add_icon_not_via_filesystem({
 	title: "Calculator",
-	icon: "calculator",
+	iconID: "calculator",
 	open: Calculator,
 	shortcut: true
 });

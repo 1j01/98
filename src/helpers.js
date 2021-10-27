@@ -44,15 +44,15 @@ const web_server_root_for_icons =
 	location.href.match(/.*98.js.org/)[0] + "/" :
 	"/";
 
-function getIconPath(name, size){
-	return web_server_root_for_icons + "images/icons/" + name + "-" + size + "x" + size + ".png";
+function getIconPath(iconID, size){
+	return web_server_root_for_icons + "images/icons/" + iconID + "-" + size + "x" + size + ".png";
 }
 
-function $Icon(name, size){
+function $Icon(iconID, size){
 	var $img = $("<img class='icon'/>");
 	$img.attr({
 		draggable: false,
-		src: getIconPath(name, size),
+		src: getIconPath(iconID, size),
 		width: size,
 		height: size,
 	});
@@ -69,10 +69,10 @@ function $IconByIDPromise(id_promise, size){
 		height: size,
 	});
 	// path_promise.then(function(path){
-	id_promise.then(function(name){
+	id_promise.then(function(iconID){
 		$img.attr({
 			// src: path,
-			src: getIconPath(name, size),
+			src: getIconPath(iconID, size),
 		});
 	});
 	return $img;
