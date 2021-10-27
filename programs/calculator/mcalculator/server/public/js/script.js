@@ -326,6 +326,9 @@ function initialise() {
         if (animate) {
             const commandStr = commandNames[commandID];
             const btn = document.getElementById(commandStr);
+            if (!btn) {
+                return;
+            }
             btn.classList.add('active');
             btn.style.borderImage = "var(--inset-deep-border-image)";
             setTimeout(() => {
