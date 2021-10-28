@@ -4,7 +4,8 @@
 		<meta charset="utf-8">
 		<title>MS-DOS Prompt</title>
 		<style>
-			html, body {
+			html,
+			body {
 				width: 100%;
 				height: 100%;
 				margin: 0;
@@ -38,22 +39,22 @@
 		</div>
 		<script src="https://js-dos.com/cdn/js-dos-api.js"></script>
 		<script>
-		var dosbox = new Dosbox({
-			id: "dosbox",
-			onload: function (dosbox) {
-				dosbox.run("command-message.zip", "./msg.bat");
-			},
-			onrun: function (dosbox, app) {
-				document.querySelector("#dosbox .dosbox-loader").hidden = true;
-				document.querySelector("#dosbox .dosbox-loader").style.display = "none";
-				document.getElementById("dosbox").hidden = false;
-				console.log("App '" + app + "' started up");
-			},
-			onprogress: (stage, total, loaded) => {
-				console.log(stage, loaded * 100 / total + "%");
-			},
-		});
-		dosbox.ui.start.click();
+			var dosbox = new Dosbox({
+				id: "dosbox",
+				onload: function (dosbox) {
+					dosbox.run("command-message.zip", "./msg.bat");
+				},
+				onrun: function (dosbox, app) {
+					document.querySelector("#dosbox .dosbox-loader").hidden = true;
+					document.querySelector("#dosbox .dosbox-loader").style.display = "none";
+					document.getElementById("dosbox").hidden = false;
+					console.log("App '" + app + "' started up");
+				},
+				onprogress: (stage, total, loaded) => {
+					console.log(stage, loaded * 100 / total + "%");
+				},
+			});
+			dosbox.ui.start.click();
 		</script>
 	</body>
 </html>

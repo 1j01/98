@@ -1,9 +1,9 @@
-function Task(win){
+function Task(win) {
 	win.task = this;
 	const $task = this.$task = $("<button class='task toggle'/>").appendTo($(".tasks"));
 	const $title = $("<span class='title'/>");
-	
-	this.updateTitle = ()=> {
+
+	this.updateTitle = () => {
 		$title.text(win.getTitle());
 	};
 
@@ -30,27 +30,27 @@ function Task(win){
 		// @TODO: do it on whole taskbar
 	});
 	$task.on("click", function () {
-		if($task.hasClass("selected")){
+		if ($task.hasClass("selected")) {
 			win.minimize();
 			win.blur();
-		}else{
+		} else {
 			win.unminimize();
 			win.bringToFront();
 			win.focus();
 		}
 	});
-	
-	win.onFocus(()=> {
+
+	win.onFocus(() => {
 		$task.addClass("selected");
 	});
-	win.onBlur(()=> {
+	win.onBlur(() => {
 		$task.removeClass("selected");
 	});
-	win.onClosed(()=> {
+	win.onClosed(() => {
 		$task.remove();
 	});
 
-	if(win.is && win.is(":visible")){
+	if (win.is && win.is(":visible")) {
 		win.focus();
 	}
 }

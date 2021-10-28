@@ -1,12 +1,12 @@
 
 // TODO: bullet point style radio button menu items (instead of check marks)
-var checkbox_for_view_mode = function(view_mode){
+var checkbox_for_view_mode = function (view_mode) {
 	return {
-		check: function(){
+		check: function () {
 			// TODO
 			return view_mode === "standard";
 		},
-		toggle: function(){
+		toggle: function () {
 			// TODO
 			current_view_mode = view_mode;
 		},
@@ -53,11 +53,11 @@ var menus = {
 	"&Help": [
 		{
 			item: "&Help Topics",
-			action: function(){
+			action: function () {
 				var show_help = window.show_help;
 				try {
 					show_help = parent.show_help;
-				} catch(e) {}
+				} catch (e) { }
 				if (show_help === undefined) {
 					return alert("Help Topics only works when inside of the 98.js.org desktop.");
 				}
@@ -71,7 +71,7 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			item: "&About Calculator",
-			action: function(){
+			action: function () {
 				// TODO: about dialog
 				window.open("https://github.com/muzam1l/mcalculator");
 			},
@@ -80,22 +80,22 @@ var menus = {
 };
 
 var go_outside_frame = false;
-if(frameElement){
-	try{
-		if(parent.MenuBar){
+if (frameElement) {
+	try {
+		if (parent.MenuBar) {
 			MenuBar = parent.MenuBar;
 			go_outside_frame = true;
 		}
-	}catch(e){}
+	} catch (e) { }
 }
 var menu_bar = new MenuBar(menus);
-if(go_outside_frame){
+if (go_outside_frame) {
 	$(menu_bar.element).insertBefore(frameElement);
 	$(function () {
 		$("body").addClass("menu-bar-is-outside-frame");
 	});
-}else{
-	$(function(){
+} else {
+	$(function () {
 		$(menu_bar.element).prependTo(jQuery("body"));
 	});
 }

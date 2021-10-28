@@ -1,9 +1,9 @@
 // TODO: include jquery and stuff; maybe even update script tags in html, with CDN URLs, integrity checksums, and fallbacks
 
-const {copySync, readFileSync, writeFileSync} = require("fs-extra");
-const {basename, join} = require("path");
+const { copySync, readFileSync, writeFileSync } = require("fs-extra");
+const { basename, join } = require("path");
 
-const copy = (from, toDir)=> {
+const copy = (from, toDir) => {
 	const to = join(toDir, basename(from));
 	console.log(`Copying ${from} => ${to}`);
 	copySync(from, to);
@@ -31,7 +31,7 @@ copy("node_modules/browserfs/dist/browserfs.min.js.map", "lib/");
 copy("node_modules/butterchurn/lib/butterchurn.min.js", "programs/winamp/lib/");
 copy("node_modules/butterchurn-presets/lib/butterchurnPresets.min.js", "programs/winamp/lib/");
 
-const copy_and_monkey_patch_webamp = (file_name)=> {
+const copy_and_monkey_patch_webamp = (file_name) => {
 	const from = `node_modules/webamp/built/${file_name}`;
 	const to = `programs/winamp/lib/${file_name}`;
 	console.log(`Monkey patching and copying ${from} => ${to}`);

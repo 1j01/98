@@ -13,7 +13,7 @@ function getOffset(element, fromElement) {
 	return { offsetLeft, offsetTop };
 }
 
-window.monkey_patch_render = (obj)=> obj.render();
+window.monkey_patch_render = (obj) => obj.render();
 
 class VisualizerOverlay {
 	constructor(visualizerCanvas, renderOptions) {
@@ -25,7 +25,7 @@ class VisualizerOverlay {
 		this.overlayCanvases = [];
 		this.animateFns = [];
 
-		window.monkey_patch_render = (obj)=> {
+		window.monkey_patch_render = (obj) => {
 			// check for Butterchurn's Visualizer class
 			if (obj.audio && obj.renderer) {
 				obj.render();
@@ -35,7 +35,7 @@ class VisualizerOverlay {
 			return obj.render();
 		};
 	}
-	
+
 	makeOverlayCanvas(windowEl) {
 		const canvas = document.createElement("canvas");
 		const ctx = canvas.getContext("2d");
@@ -173,7 +173,7 @@ class VisualizerOverlay {
 		this.overlayCanvases.forEach(canvas => {
 			canvas.remove();
 		});
-		window.monkey_patch_render = (obj)=> obj.render();
+		window.monkey_patch_render = (obj) => obj.render();
 	}
 	fadeOutAndCleanUp() {
 		this.fadeOut();

@@ -2,7 +2,7 @@
 var sprite_sheet = document.createElement("img");
 sprite_sheet.src = "img/buttons-spaced-out.png";
 
-var make_canvas = (width, height)=> {
+var make_canvas = (width, height) => {
 	var canvas = document.createElement("canvas");
 	canvas.width = width;
 	canvas.height = height;
@@ -13,11 +13,11 @@ var make_canvas = (width, height)=> {
 document.documentElement.style.setProperty("--icon-enabled", `url("${sprite_sheet.src}")`);
 
 function renderDisabledStateIcons() {
-	var {width, height} = sprite_sheet;
+	var { width, height } = sprite_sheet;
 
 	var disabled_canvas = make_canvas(width, height);
-	
-	var drawShadowOfImage = function(x, y, color){
+
+	var drawShadowOfImage = function (x, y, color) {
 		var temp_canvas = make_canvas(width, height);
 		var tmx = temp_canvas.ctx;
 		tmx.drawImage(sprite_sheet, 0, 0);
@@ -34,7 +34,7 @@ function renderDisabledStateIcons() {
 	drawShadowOfImage(1, 1, hilight);
 	drawShadowOfImage(0, 0, shadow);
 
-	disabled_canvas.toBlob((blob)=> {
+	disabled_canvas.toBlob((blob) => {
 		var blob_url = URL.createObjectURL(blob);
 		document.documentElement.style.setProperty("--icon-disabled", `url("${blob_url}")`);
 	});
@@ -48,38 +48,38 @@ function waitFor(condition, callback) {
 	}
 }
 
-$(sprite_sheet).load(function(){
+$(sprite_sheet).load(function () {
 	// Wait for stylesheet to be loaded
-	waitFor(()=> {
+	waitFor(() => {
 		var style = getComputedStyle(document.documentElement);
 		var hilight = style.getPropertyValue("--ButtonHilight");
 		return !!hilight;
-	}, ()=> {
+	}, () => {
 		renderDisabledStateIcons();
 		$(window).on("theme-changed", renderDisabledStateIcons);
 	});
 });
 
-var $Button = function(title, n){
+var $Button = function (title, n) {
 	var $button = $("<button/>").attr("title", title);
 
 	// These aren't really toggle buttons (except for their radio button behavior)...
 	// but they have a similar look while being clicked.
 	$button.addClass("toggle");
-	
+
 	$button.css({
 		"background-position": `-${n * 44}px 0`,
 	});
-	
-	$button.disable = function(){
+
+	$button.disable = function () {
 		$button.attr("disabled", true);
 		return $button;
 	};
-	$button.enable = function(){
+	$button.enable = function () {
 		$button.attr("disabled", false);
 		return $button;
 	};
 	$button.disable();
-	
+
 	return $button;
 };

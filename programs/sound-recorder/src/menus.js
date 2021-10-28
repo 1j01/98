@@ -33,15 +33,15 @@ var menus = {
 		},
 		{
 			item: "&Properties",
-			enabled: function(){},
-			action: function(){},
+			enabled: function () { },
+			action: function () { },
 			description: "Shows properties for this sound file.",
 		},
 		MENU_DIVIDER,
 		{
 			item: "E&xit",
 			shortcut: "Alt+F4",
-			action: function(){
+			action: function () {
 				close();
 			},
 			description: "Quits Sound Recorder.",
@@ -71,10 +71,10 @@ var menus = {
 		{
 			item: "&Copy",
 			shortcut: "Ctrl+C",
-			enabled: function(){
+			enabled: function () {
 				return (typeof chrome !== "undefined") && chrome.permissions;
 			},
-			action: function(){
+			action: function () {
 				document.execCommand("copy");
 			},
 			description: "Copies something to the Clipboard",
@@ -82,20 +82,20 @@ var menus = {
 		{
 			item: "&Paste Insert",
 			shortcut: "Ctrl+V",
-			enabled: function(){
+			enabled: function () {
 				return (typeof chrome !== "undefined") && chrome.permissions;
 			},
-			action: function(){
+			action: function () {
 				document.execCommand("paste");
 			},
 			description: "Inserts the contents of the Clipboard into the sound.",
 		},
 		{
 			item: "Paste Mi&x",
-			enabled: function(){
+			enabled: function () {
 				return (typeof chrome !== "undefined") && chrome.permissions;
 			},
-			action: function(){
+			action: function () {
 				document.execCommand("paste");
 			},
 			description: "Mixes the contents of the Clipboard into the sound.",
@@ -103,12 +103,12 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			item: "&Insert File...",
-			action: function(){},
+			action: function () { },
 			description: "Inserts a file into the sound.",
 		},
 		{
 			item: "&Mix with File",
-			action: function(){},
+			action: function () { },
 			description: "Mixes a file into the sound.",
 		},
 		MENU_DIVIDER,
@@ -127,7 +127,7 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			item: "A&udio Properties",
-			action: function(){},
+			action: function () { },
 			description: "Changes microphone and speaker settings.",
 		},
 	],
@@ -168,11 +168,11 @@ var menus = {
 	"&Help": [
 		{
 			item: "&Help Topics",
-			action: function(){
+			action: function () {
 				var show_help = window.show_help;
 				try {
 					show_help = parent.show_help;
-				} catch(e) {}
+				} catch (e) { }
 				if (show_help === undefined) {
 					return alert("Help Topics only works when inside of the 98.js.org desktop.");
 				}
@@ -187,7 +187,7 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			item: "&About Sound Recorder",
-			action: function(){
+			action: function () {
 				window.open("https://github.com/1j01/98/tree/master/programs/sound-recorder");
 			},
 			description: "Displays information about this application."
@@ -196,17 +196,17 @@ var menus = {
 };
 
 var go_outside_frame = false;
-if(frameElement){
-	try{
-		if(parent.MenuBar){
+if (frameElement) {
+	try {
+		if (parent.MenuBar) {
 			MenuBar = parent.MenuBar;
 			go_outside_frame = true;
 		}
-	}catch(e){}
+	} catch (e) { }
 }
 var menu_bar = MenuBar(menus);
-if(go_outside_frame){
+if (go_outside_frame) {
 	$(menu_bar.element).insertBefore(frameElement);
-}else{
+} else {
 	$(menu_bar.element).prependTo(".sound-recorder");
 }

@@ -23,13 +23,13 @@ var TAU =     //////|//////
 
 var $G = $(window);
 
-function Cursor(cursor_def){
+function Cursor(cursor_def) {
 	return "url(images/cursors/" + cursor_def[0] + ".png) " +
 		cursor_def[1].join(" ") +
 		", " + cursor_def[2]
 }
 
-function E(t){
+function E(t) {
 	return document.createElement(t);
 }
 
@@ -41,14 +41,14 @@ var TITLEBAR_ICON_SIZE = 16;
 // (also match URLs like https://98.js.org/ because why not)
 const web_server_root_for_icons =
 	location.href.match(/98.js.org/) ?
-	location.href.match(/.*98.js.org/)[0] + "/" :
-	"/";
+		location.href.match(/.*98.js.org/)[0] + "/" :
+		"/";
 
-function getIconPath(iconID, size){
+function getIconPath(iconID, size) {
 	return web_server_root_for_icons + "images/icons/" + iconID + "-" + size + "x" + size + ".png";
 }
 
-function $Icon(iconID, size){
+function $Icon(iconID, size) {
 	var $img = $("<img class='icon'/>");
 	$img.attr({
 		draggable: false,
@@ -60,8 +60,8 @@ function $Icon(iconID, size){
 }
 
 // function $IconByPathPromise(path_promise, size){
-function $IconByIDPromise(id_promise, size){
-	
+function $IconByIDPromise(id_promise, size) {
+
 	var $img = $("<img class='icon'/>");
 	$img.attr({
 		draggable: false,
@@ -69,7 +69,7 @@ function $IconByIDPromise(id_promise, size){
 		height: size,
 	});
 	// path_promise.then(function(path){
-	id_promise.then(function(iconID){
+	id_promise.then(function (iconID) {
 		$img.attr({
 			// src: path,
 			src: getIconPath(iconID, size),
@@ -78,20 +78,20 @@ function $IconByIDPromise(id_promise, size){
 	return $img;
 }
 
-function Canvas(width, height){
+function Canvas(width, height) {
 	var new_canvas = E("canvas");
 	var new_ctx = new_canvas.getContext("2d");
 	new_ctx.imageSmoothingEnabled = false;
 	new_ctx.mozImageSmoothingEnabled = false;
 	new_ctx.webkitImageSmoothingEnabled = false;
-	if(width && height){
+	if (width && height) {
 		// new Canvas(width, height)
 		new_canvas.width = width;
 		new_canvas.height = height;
-	}else{
+	} else {
 		// new Canvas(image)
 		var copy_of = width;
-		if(copy_of){
+		if (copy_of) {
 			new_canvas.width = copy_of.width;
 			new_canvas.height = copy_of.height;
 			new_ctx.drawImage(copy_of, 0, 0);
@@ -102,13 +102,13 @@ function Canvas(width, height){
 }
 
 function mustHaveMethods(obj, methodNames) {
-    for (const methodName of methodNames) {
-        if(typeof obj[methodName] != 'function') {
+	for (const methodName of methodNames) {
+		if (typeof obj[methodName] != 'function') {
 			console.error("Missing method", methodName, "on object", obj);
-            throw new TypeError("missing method " + methodName);
-        }
-    }
-    return true;
+			throw new TypeError("missing method " + methodName);
+		}
+	}
+	return true;
 }
 const windowInterfaceMethods = [
 	"close",

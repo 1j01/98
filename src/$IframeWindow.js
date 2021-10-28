@@ -1,59 +1,59 @@
 
 var programs_being_loaded = 0;
 
-function $Iframe(options){
+function $Iframe(options) {
 	var $iframe = $("<iframe allowfullscreen sandbox='allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-popups allow-downloads'>");
 	var iframe = $iframe[0];
 
 	var disable_delegate_pointerup = false;
-	
-	$iframe.focus_contents = function(){
+
+	$iframe.focus_contents = function () {
 		if (!iframe.contentWindow) {
 			return;
 		}
 		if (iframe.contentDocument.hasFocus()) {
 			return;
 		}
-		
+
 		disable_delegate_pointerup = true;
 		iframe.contentWindow.focus();
-		setTimeout(function(){
+		setTimeout(function () {
 			iframe.contentWindow.focus();
 			disable_delegate_pointerup = false;
 		});
 	};
-	
+
 	// Let the iframe to handle mouseup events outside itself
-	var delegate_pointerup = function(){
+	var delegate_pointerup = function () {
 		if (disable_delegate_pointerup) {
 			return;
 		}
-		if(iframe.contentWindow && iframe.contentWindow.jQuery){
+		if (iframe.contentWindow && iframe.contentWindow.jQuery) {
 			iframe.contentWindow.jQuery("body").trigger("pointerup");
 		}
-		if(iframe.contentWindow){
-			const event = new iframe.contentWindow.MouseEvent("mouseup", {button: 0});
+		if (iframe.contentWindow) {
+			const event = new iframe.contentWindow.MouseEvent("mouseup", { button: 0 });
 			iframe.contentWindow.dispatchEvent(event);
-			const event2 = new iframe.contentWindow.MouseEvent("mouseup", {button: 2});
+			const event2 = new iframe.contentWindow.MouseEvent("mouseup", { button: 2 });
 			iframe.contentWindow.dispatchEvent(event2);
 		}
 	};
 	$G.on("mouseup blur", delegate_pointerup);
-	$iframe.destroy = ()=> {
+	$iframe.destroy = () => {
 		$G.off("mouseup blur", delegate_pointerup);
 	};
-	
+
 	// @TODO: delegate pointermove events too?
 
 	$("body").addClass("loading-program");
 	programs_being_loaded += 1;
-	
-	$iframe.on("load", function(){
-		
-		if(--programs_being_loaded <= 0){
+
+	$iframe.on("load", function () {
+
+		if (--programs_being_loaded <= 0) {
 			$("body").removeClass("loading-program");
 		}
-		
+
 		if (window.themeCSSProperties) {
 			applyTheme(themeCSSProperties, iframe.contentDocument.documentElement);
 		}
@@ -78,37 +78,37 @@ function $Iframe(options){
 		}
 
 		var $contentWindow = $(iframe.contentWindow);
-		$contentWindow.on("pointerdown click", function(e){
+		$contentWindow.on("pointerdown click", function (e) {
 			iframe.$window && iframe.$window.focus();
-			
+
 			// from close_menus in $MenuBar
 			$(".menu-button").trigger("release");
 			// Close any rogue floating submenus
 			$(".menu-popup").hide();
 		});
 		// We want to disable pointer events for other iframes, but not this one
-		$contentWindow.on("pointerdown", function(e){
+		$contentWindow.on("pointerdown", function (e) {
 			$iframe.css("pointer-events", "all");
 			$("body").addClass("drag");
 		});
-		$contentWindow.on("pointerup", function(e){
+		$contentWindow.on("pointerup", function (e) {
 			$("body").removeClass("drag");
 			$iframe.css("pointer-events", "");
 		});
 		// $("iframe").css("pointer-events", ""); is called elsewhere.
 		// Otherwise iframes would get stuck in this interaction mode
-		
-		iframe.contentWindow.close = function(){
+
+		iframe.contentWindow.close = function () {
 			iframe.$window && iframe.$window.close();
 		};
 		// TODO: hook into saveAs (a la FileSaver.js) and another function for opening files
 		// iframe.contentWindow.saveAs = function(){
 		// 	saveAsDialog();
 		// };
-		
+
 	});
 	if (options.src) {
-		$iframe.attr({src: options.src});
+		$iframe.attr({ src: options.src });
 	}
 	$iframe.css({
 		minWidth: 0,
@@ -120,12 +120,12 @@ function $Iframe(options){
 	return $iframe;
 }
 
-function $IframeWindow(options){
-	
+function $IframeWindow(options) {
+
 	options.resizable ??= true;
 	var $win = new $Window(options);
-	
-	var $iframe = $win.$iframe = $Iframe({src: options.src});
+
+	var $iframe = $win.$iframe = $Iframe({ src: options.src });
 	$win.$content.append($iframe);
 	var iframe = $win.iframe = $iframe[0];
 	// TODO: should I instead of having iframe.$window, have a get$Window type of dealio?
@@ -133,40 +133,40 @@ function $IframeWindow(options){
 	// I know it's used from within the iframe contents as frameElement.$window
 	iframe.$window = $win;
 
-	$win.on("close", function(){
+	$win.on("close", function () {
 		$iframe.destroy();
 	});
 	// $win.onFocus($iframe.focus_contents);
 
-	$iframe.on("load", function(){
+	$iframe.on("load", function () {
 		$win.show();
 		$win.focus();
 		// $iframe.focus_contents();
 	});
-	
+
 	$win.$content.css({
 		display: "flex",
 		flexDirection: "column",
 	});
-	
+
 	// TODO: cascade windows
 	$win.center();
 	$win.hide();
-	
+
 	return $win;
 }
 
 // Fix dragging things (i.e. windows) over iframes (i.e. other windows)
 // (when combined with a bit of css, .drag iframe { pointer-events: none; })
 // (and a similar thing in $IframeWindow)
-$(window).on("pointerdown", function(e){
+$(window).on("pointerdown", function (e) {
 	//console.log(e.type);
 	$("body").addClass("drag");
 });
-$(window).on("pointerup dragend blur", function(e){
+$(window).on("pointerup dragend blur", function (e) {
 	//console.log(e.type);
-	if(e.type === "blur"){
-		if(document.activeElement.tagName.match(/iframe/i)){
+	if (e.type === "blur") {
+		if (document.activeElement.tagName.match(/iframe/i)) {
 			return;
 		}
 	}

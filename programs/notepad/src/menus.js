@@ -38,7 +38,7 @@ var menus = {
 		// },
 		{
 			item: "Page Se&tup...",
-			action: function(){
+			action: function () {
 				print();
 			},
 			description: "Prints the active document and sets printing options.",
@@ -47,7 +47,7 @@ var menus = {
 		{
 			item: "&Print...",
 			shortcut: "Ctrl+P",
-			action: function(){
+			action: function () {
 				print();
 			},
 			description: "Prints the active document and sets printing options.",
@@ -62,7 +62,7 @@ var menus = {
 		{
 			item: "E&xit",
 			// shortcut: "Alt+F4",
-			action: function(){
+			action: function () {
 				close();
 			},
 			description: "Quits Notepad.",
@@ -72,10 +72,10 @@ var menus = {
 		{
 			item: "&Undo",
 			shortcut: "Ctrl+Z",
-			enabled: function(){
+			enabled: function () {
 				return document.queryCommandEnabled("undo");
 			},
-			action: function(){
+			action: function () {
 				document.execCommand("undo");
 			},
 			description: "Undoes the last action.",
@@ -84,10 +84,10 @@ var menus = {
 		{
 			item: "&Repeat",
 			shortcut: "Ctrl+Shift+Z", //"F4",
-			enabled: function(){
+			enabled: function () {
 				return document.queryCommandEnabled("redo");
 			},
-			action: function(){
+			action: function () {
 				document.execCommand("redo");
 			},
 			description: "Redoes the previously undone action.",
@@ -99,10 +99,10 @@ var menus = {
 		{
 			item: "Cu&t",
 			shortcut: "Ctrl+X",
-			enabled: function(){
+			enabled: function () {
 				return document.queryCommandEnabled("cut");
 			},
-			action: function(){
+			action: function () {
 				$textarea.focus();
 				document.execCommand("cut");
 			},
@@ -111,10 +111,10 @@ var menus = {
 		{
 			item: "&Copy",
 			shortcut: "Ctrl+C",
-			enabled: function(){
+			enabled: function () {
 				return document.queryCommandEnabled("copy");
 			},
-			action: function(){
+			action: function () {
 				$textarea.focus();
 				document.execCommand("copy");
 			},
@@ -123,10 +123,10 @@ var menus = {
 		{
 			item: "&Paste",
 			shortcut: "Ctrl+V",
-			enabled: function(){
+			enabled: function () {
 				return document.queryCommandEnabled("paste");
 			},
-			action: function(){
+			action: function () {
 				$textarea.focus();
 				document.execCommand("paste");
 			},
@@ -135,17 +135,17 @@ var menus = {
 		{
 			item: "De&lete",
 			shortcut: "Del",
-			enabled: function(){
+			enabled: function () {
 				var textarea = $textarea.get(0);
 				var startPos = textarea.selectionStart;
 				var endPos = textarea.selectionEnd;
 				return (endPos !== startPos);
 			},
-			action: function(){
+			action: function () {
 				$textarea.focus();
-				if(document.queryCommandEnabled("delete")){
+				if (document.queryCommandEnabled("delete")) {
 					document.execCommand("delete");
-				}else{
+				} else {
 					// FIXME: breaks undo
 					var textarea = $textarea.get(0);
 					var startPos = textarea.selectionStart;
@@ -170,7 +170,7 @@ var menus = {
 		{
 			item: "Time/&Date",
 			shortcut: "F5",
-			enabled: function(){
+			enabled: function () {
 				return document.queryCommandEnabled("insertText");
 			},
 			action: insert_time_and_date,
@@ -187,7 +187,7 @@ var menus = {
 		},
 		{
 			item: "Set &Font...",
-			action: function(){}, // TODO: font options dialog
+			action: function () { }, // TODO: font options dialog
 			enabled: false,
 			description: "Sets the font and text size.", // NOTE: made up text
 		},
@@ -197,14 +197,14 @@ var menus = {
 			item: "&Find...",
 			// NOTE: Notepad in Windows 98 doesn't actually have Ctrl+F as a shortcut (although WordPad does)
 			shortcut: "Ctrl+F",
-			action: function(){}, // TODO
+			action: function () { }, // TODO
 			enabled: false,
 			description: "Finds the specified text.",
 		},
 		{
 			item: "Find &Next",
 			shortcut: "F3",
-			action: function(){}, // TODO
+			action: function () { }, // TODO
 			enabled: false,
 			description: "Repeats the last find.",
 		},
@@ -227,11 +227,11 @@ var menus = {
 	"&Help": [
 		{
 			item: "&Help Topics",
-			action: function(){
+			action: function () {
 				var show_help = window.show_help;
 				try {
 					show_help = parent.show_help;
-				} catch(e) {}
+				} catch (e) { }
 				if (show_help === undefined) {
 					return alert("Help Topics only works when inside of the 98.js.org desktop.");
 				}
@@ -249,7 +249,7 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			item: "&About Notepad",
-			action: function(){
+			action: function () {
 				// TODO: dialog
 				window.open("https://github.com/1j01/98/tree/master/programs/notepad");
 			},
@@ -260,17 +260,17 @@ var menus = {
 };
 
 var go_outside_frame = false;
-if(frameElement){
-	try{
-		if(parent.MenuBar){
+if (frameElement) {
+	try {
+		if (parent.MenuBar) {
 			MenuBar = parent.MenuBar;
 			go_outside_frame = true;
 		}
-	}catch(e){}
+	} catch (e) { }
 }
 var menu_bar = MenuBar(menus);
-if(go_outside_frame){
+if (go_outside_frame) {
 	$(menu_bar.element).insertBefore(frameElement);
-}else{
+} else {
 	$(menu_bar.element).prependTo($("#app"));
 }

@@ -16,22 +16,22 @@ $folder_view.appendTo($desktop);
 
 function loadThemeFile(file) {
 	var reader = new FileReader();
-	reader.onload = ()=> {
+	reader.onload = () => {
 		loadThemeFromText(reader.result);
 	};
 	reader.readAsText(file);
 }
-function applyTheme(cssProperties, documentElement=document.documentElement) {
+function applyTheme(cssProperties, documentElement = document.documentElement) {
 	applyCSSProperties(cssProperties, documentElement);
 
-	$(documentElement).find("iframe").each((i, iframe)=> {
+	$(documentElement).find("iframe").each((i, iframe) => {
 		try {
 			applyTheme(cssProperties, iframe.contentDocument.documentElement);
-		} catch(error) {
+		} catch (error) {
 			console.log("error applying theme to iframe", iframe, error);
 		}
 	});
-	
+
 	var win = documentElement.ownerDocument.defaultView;
 	if (win.$) {
 		win.$(win).trigger("theme-changed");
@@ -43,16 +43,16 @@ function loadThemeFromText(fileText) {
 	window.themeCSSProperties = cssProperties;
 }
 
-$("html").on("dragover", function(event) {
-	event.preventDefault();  
+$("html").on("dragover", function (event) {
+	event.preventDefault();
 	event.stopPropagation();
 });
-$("html").on("dragleave", function(event) {
-	event.preventDefault();  
+$("html").on("dragleave", function (event) {
+	event.preventDefault();
 	event.stopPropagation();
 });
-$("html").on("drop", function(event) {
-	event.preventDefault();  
+$("html").on("drop", function (event) {
+	event.preventDefault();
 	event.stopPropagation();
 	var files = [...event.originalEvent.dataTransfer.files];
 	for (var file of files) {

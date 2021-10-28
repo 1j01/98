@@ -2,9 +2,9 @@
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 window.URL = window.URL || window.webkitURL;
 
-if(window.AudioContext){
+if (window.AudioContext) {
 	var audio_context = new AudioContext;
-}else{
+} else {
 	alert('No web audio support in this browser!');
 }
 
@@ -20,37 +20,37 @@ var saved = true;
 var default_file_name_for_title = "Sound";
 var default_file_name_for_saving = "Sound.wav";
 
-var are_you_sure = function(callback){
-	if(saved){
+var are_you_sure = function (callback) {
+	if (saved) {
 		return callback();
 	}
 	// TODO: Use a proper dialog window! DRY with Notepad and Paint.
-	if(confirm("Discard changes to "+(file_path || file.name || default_file_name_for_saving)+"?")){
+	if (confirm("Discard changes to " + (file_path || file.name || default_file_name_for_saving) + "?")) {
 		callback();
 	}
 };
 
-var parse_query_string = function(queryString) {
-    var query = {};
-    var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
-    for (var i = 0; i < pairs.length; i++) {
-        var pair = pairs[i].split('=');
-        query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
-    }
-    return query;
+var parse_query_string = function (queryString) {
+	var query = {};
+	var pairs = (queryString[0] === '?' ? queryString.substr(1) : queryString).split('&');
+	for (var i = 0; i < pairs.length; i++) {
+		var pair = pairs[i].split('=');
+		query[decodeURIComponent(pair[0])] = decodeURIComponent(pair[1] || '');
+	}
+	return query;
 };
 
 var query = parse_query_string(location.search);
-if(query.path){
+if (query.path) {
 	var file_path = query.path;
 	var file_name = file_name_from_path(file_path);
 }
 
-var get_wav_file = function(file, callback){
+var get_wav_file = function (file, callback) {
 	file.updateBufferSize(file.length);
 
 	var worker = new Worker("lib/recorderWorker.js");
-	
+
 	worker.postMessage({
 		command: "init",
 		config: {
@@ -58,34 +58,34 @@ var get_wav_file = function(file, callback){
 			numChannels: file.numberOfChannels
 		}
 	});
-	
+
 	var buffer = [];
-	for (var channel = 0; channel < file.numberOfChannels; channel++){
+	for (var channel = 0; channel < file.numberOfChannels; channel++) {
 		buffer.push(file.buffer.getChannelData(channel));
 	}
 	worker.postMessage({
 		command: "record",
 		buffer: buffer,
 	});
-	
+
 	worker.postMessage({
 		command: "exportWAV",
 		type: "audio/wav",
 	});
-	
-	worker.onmessage = function(e){
+
+	worker.onmessage = function (e) {
 		callback(e.data);
 	};
 };
 
-var download_wav_file = function(file){
-	
+var download_wav_file = function (file) {
+
 	// FIXME: download click fails because of async
 	// TODO: display a window with a link to download, maybe prompt for a filename
 	// TODO: use Streams API to actually write in chunks where supported
 	// (There's a WritableStream but I don't think there's been a sink specified for writing to a file)
 
-	var gotWAV = function(blob){
+	var gotWAV = function (blob) {
 		var a = document.createElement('a');
 		a.href = URL.createObjectURL(blob);
 		a.download = file.name.replace(/(?:\.wav)?$/, ".wav");
@@ -95,50 +95,50 @@ var download_wav_file = function(file){
 	};
 
 	get_wav_file(file, gotWAV);
-	
+
 };
 
-var update_title = function(){
+var update_title = function () {
 	document.title = (file.name || default_file_name_for_title) + " - Sound Recorder";
-	if(frameElement && frameElement.$window){
+	if (frameElement && frameElement.$window) {
 		frameElement.$window.title(document.title);
 	}
 };
 
-var update = function(position_from_slider){
+var update = function (position_from_slider) {
 	update_title();
 
-	if(position_from_slider != null){
+	if (position_from_slider != null) {
 		file.position = position_from_slider;
-		
+
 		file.audio.seek(file.position);
-		if(playing){
+		if (playing) {
 			file.audio.play();
 		}
-	}else{
-		if(playing){
+	} else {
+		if (playing) {
 			var delta_time = audio_context.currentTime - previous_time;
 			previous_time = audio_context.currentTime;
 			file.position += delta_time;
 		}
 		// (not sure the (file.position >= file.availLength) needs to be within if(recording || playing){})
-		if(recording || playing){
-			if(file.position >= file.availLength){
+		if (recording || playing) {
+			if (file.position >= file.availLength) {
 				file.position = file.availLength;
 				stop();
 			}
-		}else{
+		} else {
 			if ($stop.is(":focus")) {
 				$play.focus();
 			}
 			$stop.disable();
 		}
-		if(recording){
+		if (recording) {
 			file.length = Math.max(file.length, file.position);
 		}
-		if(file.length && !playing && !recording){
+		if (file.length && !playing && !recording) {
 			$play.enable();
-		}else{
+		} else {
 			if ($play.is(":focus")) {
 				$stop.focus();
 			}
@@ -147,16 +147,16 @@ var update = function(position_from_slider){
 		$slider.slider("option", "max", file.availLength);
 		$slider.slider("value", file.position);
 	}
-	
+
 	$length.display(file.availLength);
 	$position.display(file.position);
 	$wave_display.display();
-	
+
 	var can_seek_to_start = file.length && file.position > 0;
 	// SLIDER_DUMBNESS: the slider doesn't slide all the way to the max value
 	var can_seek_to_end = file.length && file.position + SLIDER_DUMBNESS < file.length;
 
-	if(can_seek_to_start){
+	if (can_seek_to_start) {
 		$seek_to_start.enable();
 	}
 	if (can_seek_to_end) {
@@ -177,31 +177,31 @@ var update = function(position_from_slider){
 	}
 };
 
-var record = function(){
+var record = function () {
 	clearInterval(tid);
-	
+
 	$record.disable();
 	$stop.enable();
 	$stop.focus();
-	
+
 	audio_context.resume();
 
 	file.availLength = Math.max(file.length, file.position + 23.77);
 	file.updateBufferSize(file.availLength);
-	
+
 	previous_time = audio_context.currentTime;
 	tid = setInterval(update, 50);
 	recording = true;
 	saved = false;
 };
 
-var stop = function(){
+var stop = function () {
 	clearInterval(tid);
-	
+
 	file.audio.pause();
-	
-	if(input){ $record.enable(); }
-	if(file.length) { $play.enable(); }
+
+	if (input) { $record.enable(); }
+	if (file.length) { $play.enable(); }
 
 	if ($stop.is(":focus")) {
 		if (recording) {
@@ -213,50 +213,50 @@ var stop = function(){
 
 	recording = false;
 	playing = false;
-	
+
 	$stop.disable();
-	
+
 	file.availLength = file.length;
 	update();
 };
 
-var play = function(){
+var play = function () {
 	clearInterval(tid);
-	if(file.position >= file.length){
+	if (file.position >= file.length) {
 		file.position = 0;
 	}
 	audio_context.resume();
 	file.audio.seek(file.position);
 	file.audio.play();
-	
+
 	$stop.enable();
 	$stop.focus();
 	$play.disable();
-	
+
 	playing = true;
 	previous_time = audio_context.currentTime;
 	tid = setInterval(update, 50);
 	update();
 };
 
-var seek_to_start = function(){
+var seek_to_start = function () {
 	seek(0);
 	$seek_to_end.focus();
 };
 
-var seek_to_end = function(){
+var seek_to_end = function () {
 	seek(file.length);
 };
 
 
 
-var seek = function(t){
+var seek = function (t) {
 	file.position = t;
 	file.audio.seek(file.position);
-	if(playing){ file.audio.play(); }
+	if (playing) { file.audio.play(); }
 	update();
 };
-var reset = function(){
+var reset = function () {
 	recording = false;
 	playing = false;
 	file = new AudioFile;
@@ -264,19 +264,19 @@ var reset = function(){
 	saved = true; // the new nothingness is effectively saved, doesn't need a confirmation dialog
 	update();
 };
-var read_audio_data = function(file, callback){
+var read_audio_data = function (file, callback) {
 	var fileReader = new FileReader;
-	fileReader.onload = function(){
+	fileReader.onload = function () {
 		var arrayBuffer = this.result;
-		audio_context.decodeAudioData(arrayBuffer, callback, function(){
+		audio_context.decodeAudioData(arrayBuffer, callback, function () {
 			alert("Failed to read audio from file");
 		});
 	};
 	fileReader.readAsArrayBuffer(file);
 };
-var load_from_blob_warning_if_unsaved = function(blob){
-	read_audio_data(blob, function(buffer){
-		are_you_sure(function(){
+var load_from_blob_warning_if_unsaved = function (blob) {
+	read_audio_data(blob, function (buffer) {
+		are_you_sure(function () {
 			reset();
 			file.original_blob = blob;
 			file.name = blob.name;
@@ -288,60 +288,60 @@ var load_from_blob_warning_if_unsaved = function(blob){
 
 
 
-var file_new = function(){
+var file_new = function () {
 	are_you_sure(reset);
 };
-var file_open = function(){
-	$("<input type='file' accept='audio/*'>").click().change(function(e){
-		if(this.files[0]){
+var file_open = function () {
+	$("<input type='file' accept='audio/*'>").click().change(function (e) {
+		if (this.files[0]) {
 			load_from_blob_warning_if_unsaved(this.files[0]);
 		}
 	});
 };
-var can_revert_file = function(){
+var can_revert_file = function () {
 	return !!file.original_blob;
 };
-var file_revert = function(){
-	if(!file.original_blob){ throw new Error("No original_blob file"); }
+var file_revert = function () {
+	if (!file.original_blob) { throw new Error("No original_blob file"); }
 	load_from_blob_warning_if_unsaved(file.original_blob);
 };
-var file_save_as = function(){
-	if(file.length > 0){
+var file_save_as = function () {
+	if (file.length > 0) {
 		download_wav_file(file);
 	}
 };
 var file_save = file_save_as;
 
 
-var can_delete_before_current_position = function(){
+var can_delete_before_current_position = function () {
 	return file.position > 0;
 };
-var can_delete_after_current_position = function(){
+var can_delete_after_current_position = function () {
 	return file.position < file.length;
 };
-var delete_before_current_position = function(){
+var delete_before_current_position = function () {
 	var cut_position = file.position;
 	file.crop(cut_position, file.length);
 	seek(0);
 };
-var delete_after_current_position = function(){
+var delete_after_current_position = function () {
 	var cut_position = file.position;
 	file.crop(0, cut_position);
 	seek(cut_position);
 };
 
 
-if(file_path){
+if (file_path) {
 	// TODO: lock editing starting here
-	
+
 	file.name = file_name_from_path(file_path);
 	update_title();
 
-	withFilesystem(function(){
+	withFilesystem(function () {
 		var fs = BrowserFS.BFSRequire('fs');
-		fs.readFile(file_path, function(error, content){
-			if(error){
-				alert("Failed to load file: "+error);
+		fs.readFile(file_path, function (error, content) {
+			if (error) {
+				alert("Failed to load file: " + error);
 				throw error;
 			}
 			// NOTE: could be destroying changes, since this is (potentially) async
@@ -354,13 +354,13 @@ if(file_path){
 	});
 }
 
-if(frameElement && frameElement.$window){
-	frameElement.$window.on("close", function(e){
-		if(saved){
+if (frameElement && frameElement.$window) {
+	frameElement.$window.on("close", function (e) {
+		if (saved) {
 			return;
 		}
 		e.preventDefault();
-		are_you_sure(function(){
+		are_you_sure(function () {
 			frameElement.$window.close(true);
 		});
 	});
@@ -369,18 +369,18 @@ if(frameElement && frameElement.$window){
 
 var input;
 
-$(function(){
-	
-	var gotStream = function(stream){
+$(function () {
+
+	var gotStream = function (stream) {
 		input = audio_context.createMediaStreamSource(stream);
 		// console.log("Media stream created.");
-		
+
 		input.connect($wave_display.analyser);
 		input.connect(file.recorder);
-		
+
 		$record.enable();
 	};
-	var gotError = function(err){
+	var gotError = function (err) {
 		console.log("No live audio input: ", err);
 	};
 
@@ -400,10 +400,10 @@ $(function(){
 			audio: true
 		}).then(gotStream).catch(gotError);
 	}
-	
+
 	update();
-	
-	$(window).on("resize", ()=> {
+
+	$(window).on("resize", () => {
 		$wave_display.display();
 	});
 });

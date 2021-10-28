@@ -1,8 +1,8 @@
 
 var $position = $("<div class='inset-shallow position'><div class='center-me'>Position:<br/><span/> sec.</div></div>");
-$position.display = function(t){ $position.find("span").text(t.toFixed(2)); };
+$position.display = function (t) { $position.find("span").text(t.toFixed(2)); };
 var $length = $("<div class='inset-shallow length'><div class='center-me'>Length:<br/><span/> sec.</div></div>");
-$length.display = function(t){ $length.find("span").text(t.toFixed(2)); };
+$length.display = function (t) { $length.find("span").text(t.toFixed(2)); };
 var $wave_display = new $WaveDisplay;
 var $wave = $("<div class='inset-shallow wave'/>").append($wave_display);
 var $display = $("<div class='display'/>").append($position, $wave, $length);
@@ -29,36 +29,36 @@ $slider.slider({
 	// TODO: is there a way to have it be continuous when dragging, but still step reasonably?
 	// handle keyboard events manually and prevent the default I guess
 
-	slide: function(event, ui){
+	slide: function (event, ui) {
 		// $slider.slider("value") is not updated yet here so you have to use ui.value
 		update(ui.value);
 	}
 });
 $slider.find(".ui-slider-handle").addClass("outset-deep");
 
-$slider_container.on("mousedown pointerdown", ()=> {
+$slider_container.on("mousedown pointerdown", () => {
 	$slider.find(".ui-slider-handle").focus();
 });
 
 /* ------------------------------------- */
 
-$("body").on("mousedown selectstart contextmenu", function(e){
-	if(
+$("body").on("mousedown selectstart contextmenu", function (e) {
+	if (
 		e.target instanceof HTMLButtonElement ||
 		e.target instanceof HTMLSelectElement ||
 		e.target instanceof HTMLTextAreaElement ||
 		(e.target instanceof HTMLLabelElement && e.type !== "contextmenu") ||
 		(e.target instanceof HTMLInputElement && e.target.type !== "color")
-	){
+	) {
 		return;
 	}
 	e.preventDefault();
 });
 
-$("body").on("keydown", function(e){
-	if(e.ctrlKey){
+$("body").on("keydown", function (e) {
+	if (e.ctrlKey) {
 		var key = String.fromCharCode(e.keyCode).toUpperCase();
-		switch(key){
+		switch (key) {
 			// case "Z":
 			// 	e.shiftKey ? redo() : undo();
 			// break;
@@ -67,13 +67,13 @@ $("body").on("keydown", function(e){
 			// break;
 			case "O":
 				file_open();
-			break;
+				break;
 			case "N":
 				file_new();
-			break;
+				break;
 			case "S":
 				e.shiftKey ? file_save_as() : file_save();
-			break;
+				break;
 			default:
 				// This shortcut is not handled, do not try to prevent the default.
 				return true;
@@ -83,25 +83,25 @@ $("body").on("keydown", function(e){
 	}
 });
 
-function open_from_file_list_warning_if_unsaved(files){
-	$.each(files, function(i, file){
-		if(file.type.match(/audio/)){
+function open_from_file_list_warning_if_unsaved(files) {
+	$.each(files, function (i, file) {
+		if (file.type.match(/audio/)) {
 			load_from_blob_warning_if_unsaved(file);
 			return false;
-		}else{
+		} else {
 			alert("File not recognized as an audio file");
 		}
 	});
 }
 
-$("body").on("dragover dragenter", function(e){
+$("body").on("dragover dragenter", function (e) {
 	e.preventDefault();
 	e.stopPropagation();
-}).on("drop", function(e){
+}).on("drop", function (e) {
 	e.preventDefault();
 	e.stopPropagation();
 	var dt = e.originalEvent.dataTransfer;
-	if(dt && dt.files && dt.files.length){
+	if (dt && dt.files && dt.files.length) {
 		open_from_file_list_warning_if_unsaved(dt.files);
 	}
 });

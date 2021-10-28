@@ -1,5 +1,5 @@
 
-function $FolderViewIcon(options){
+function $FolderViewIcon(options) {
 	// TODO: rename element class to folder-view-icon, or find a better name (maybe desktop-icon and $DesktopIcon are still okay?)
 	var $container = $("<div class='desktop-icon' draggable='true'/>");
 	var $icon_wrapper = $("<div class='icon-wrapper'/>").appendTo($container);
@@ -11,8 +11,8 @@ function $FolderViewIcon(options){
 	$icon_wrapper.append($icon, $selection_effect);
 
 	var src = $icon.attr("src");
-	$icon.on("load", function(){
-		if($icon.attr("src") !== src){
+	$icon.on("load", function () {
+		if ($icon.attr("src") !== src) {
 			src = $icon.attr("src");
 			$selection_effect.attr("src", src);
 		}
@@ -22,13 +22,13 @@ function $FolderViewIcon(options){
 
 	// TODO: or if set to "web" mode, single click
 	// also Enter is currently implemented by triggering dblclick which is awkward
-	$container.on("dblclick", function(){
+	$container.on("dblclick", function () {
 		options.open();
 	});
 	// TODO: allow dragging files off FROM the desktop, with dataTransfer.setData("DownloadURL", ...)
 	// sadly will only work for a single file (unless it secretly supports text/uri-list (either as a separate type or for DownloadURL))
 
-	if(options.shortcut){
+	if (options.shortcut) {
 		$container.addClass("shortcut");
 	}
 	$container.css({
