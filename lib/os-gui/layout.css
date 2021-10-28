@@ -36,6 +36,7 @@ body > .window-titlebar {
 	align-items: center;
 	white-space: nowrap;
 	overflow: hidden;
+	flex-shrink: 0;
 }
 .os-window .window-title-area {
 	position: relative;
@@ -44,6 +45,11 @@ body > .window-titlebar {
 
 .os-window .window-titlebar .icon {
 	vertical-align: bottom;
+}
+
+.os-window.maximized .handle,
+.os-window.minimized-without-taskbar .handle {
+	display: none; /* prevent resizing when window is minimized */
 }
 
 /* Fix dragging things (like windows) over iframes */
