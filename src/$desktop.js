@@ -22,17 +22,7 @@ function loadThemeFile(file) {
 	reader.readAsText(file);
 }
 function applyTheme(cssProperties, documentElement = document.documentElement) {
-	applyCSSProperties(cssProperties, { element: documentElement });
-
-	$(documentElement).find("iframe").each((i, iframe) => {
-		try {
-			applyTheme(cssProperties, iframe.contentDocument.documentElement);
-		} catch (error) {
-			console.log("error applying theme to iframe", iframe, error);
-		}
-	});
-
-	documentElement.dispatchEvent(new CustomEvent("theme-changed", { bubbles: true }));
+	applyCSSProperties(cssProperties, { element: documentElement, recurseIntoIframes: true });
 }
 function loadThemeFromText(fileText) {
 	var cssProperties = parseThemeFileString(fileText);

@@ -66,12 +66,17 @@ body,
 	flex-grow: 0;
 	flex-shrink: 0;
 	display: flex;
-	background-image: var(--icon-enabled);
+}
+.controls button .icon {
+	width: 48px;
+	height: 24px;
+	background-image: url("../img/buttons-spaced-out.png");
 	background-clip: content-box;
 	background-origin: content-box;
 }
-.controls button[disabled] {
-	background-image: var(--icon-disabled);
+.controls button[disabled] .icon {
+	filter: saturate(0%) opacity(50%); /* fallback */
+	filter: url("#disabled-inset-filter");
 }
 .controls button:hover:active {
 	padding-left: 1px;
