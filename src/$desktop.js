@@ -22,7 +22,7 @@ function loadThemeFile(file) {
 	reader.readAsText(file);
 }
 function applyTheme(cssProperties, documentElement = document.documentElement) {
-	applyCSSProperties(cssProperties, documentElement);
+	applyCSSProperties(cssProperties, { element: documentElement });
 
 	$(documentElement).find("iframe").each((i, iframe) => {
 		try {
