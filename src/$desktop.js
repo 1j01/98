@@ -32,10 +32,7 @@ function applyTheme(cssProperties, documentElement = document.documentElement) {
 		}
 	});
 
-	var win = documentElement.ownerDocument.defaultView;
-	if (win.$) {
-		win.$(win).trigger("theme-changed");
-	}
+	documentElement.dispatchEvent(new CustomEvent("theme-changed", { bubbles: true }));
 }
 function loadThemeFromText(fileText) {
 	var cssProperties = parseThemeFileString(fileText);
