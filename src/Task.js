@@ -1,5 +1,5 @@
 function Task(win) {
-	win.task = this;
+	// win.task = this;
 	const $task = this.$task = $("<button class='task toggle'/>").appendTo($(".tasks"));
 	const $title = $("<span class='title'/>");
 
@@ -23,6 +23,11 @@ function Task(win) {
 
 	this.updateTitle();
 	this.updateIcon();
+
+	win.on("title-change", this.updateTitle);
+	win.on("icon-change", this.updateIcon);
+
+	win.setMinimizeTarget($task[0]);
 
 	$task.append($icon, $title);
 	$task.on("pointerdown", function (e) {
