@@ -1,6 +1,6 @@
 
 var $desktop = $(".desktop");
-$desktop.attr("touch-action", "none"); // TODO: should this be in $FolderView, or is it to prevent scrolling the page or what?
+$desktop.css("touch-action", "none"); // TODO: should this be in $FolderView, or is it to prevent scrolling the page or what?
 
 var $folder_view = $FolderView(desktop_folder_path);
 $folder_view.appendTo($desktop);
