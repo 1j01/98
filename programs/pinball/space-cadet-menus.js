@@ -5,8 +5,6 @@ var current_player_count = 1;
 // var music_enabled = true;
 var audio_enabled = true;
 
-var awaiting_deployment = false;
-
 var freezing_display = false;
 var menus_open = false;
 var triggering_menus = false;
@@ -17,13 +15,9 @@ let mouse_x = 0;
 let mouse_y = 0;
 
 var canvas = document.getElementById("canvas");
+var gl = canvas.getContext("webgl");
 var overlay_canvas = document.getElementById("overlay-canvas");
 var overlay_context = overlay_canvas.getContext("2d");
-var sampling_canvas = document.createElement("canvas");
-var sampling_context = sampling_canvas.getContext("2d");
-
-sampling_canvas.width = canvas.width;
-sampling_canvas.height = canvas.height;
 
 // left half of the screen will be handled automatically by the game, triggering the left flipper
 // right half, for touch, will be intercepted by us to trigger the right flipper, or as appropriate, the plunger
@@ -113,21 +107,14 @@ right_button.addEventListener("selectstart", function (event) {
 
 canvas.parentElement.appendChild(right_button);
 
-// @TODO: loop is not needed
-sampling_loop();
-function sampling_loop() {
-	requestAnimationFrame(sampling_loop);
-	sampling_context.drawImage(canvas, 0, 0);
-
-	awaiting_deployment = is_awaiting_deployment();
-}
 function is_awaiting_deployment() {
 	// ball at bottom (resting on plunger)
 	// Note that the ball bounces, so this state will bounce a bit too.
 	return pixel_match(325, 388, [88, 88, 88, 255]);
 }
 function pixel_match(x, y, reference_rgba, tolerance = 20) {
-	var pixel_rgba = sampling_context.getImageData(x, y, 1, 1).data;
+	var pixel_rgba = new Uint8Array(4);
+	gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel_rgba);
 	var r_diff = Math.abs(pixel_rgba[0] - reference_rgba[0]);
 	var g_diff = Math.abs(pixel_rgba[1] - reference_rgba[1]);
 	var b_diff = Math.abs(pixel_rgba[2] - reference_rgba[2]);
