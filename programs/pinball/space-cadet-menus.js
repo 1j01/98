@@ -5,8 +5,6 @@ var current_player_count = 1;
 // var music_enabled = true;
 var audio_enabled = true;
 
-var awaiting_deployment = false;
-
 var freezing_display = false;
 var menus_open = false;
 var triggering_menus = false;
@@ -17,13 +15,9 @@ let mouse_x = 0;
 let mouse_y = 0;
 
 var canvas = document.getElementById("canvas");
+var gl = canvas.getContext("webgl");
 var overlay_canvas = document.getElementById("overlay-canvas");
 var overlay_context = overlay_canvas.getContext("2d");
-var sampling_canvas = document.createElement("canvas");
-var sampling_context = sampling_canvas.getContext("2d");
-
-sampling_canvas.width = canvas.width;
-sampling_canvas.height = canvas.height;
 
 // left half of the screen will be handled automatically by the game, triggering the left flipper
 // right half, for touch, will be intercepted by us to trigger the right flipper, or as appropriate, the plunger
@@ -113,27 +107,28 @@ right_button.addEventListener("selectstart", function (event) {
 
 canvas.parentElement.appendChild(right_button);
 
-// @TODO: loop is not needed
-sampling_loop();
-function sampling_loop() {
-	requestAnimationFrame(sampling_loop);
-	sampling_context.drawImage(canvas, 0, 0);
-
-	awaiting_deployment = is_awaiting_deployment();
-}
 function is_awaiting_deployment() {
 	// ball at bottom (resting on plunger)
 	// Note that the ball bounces, so this state will bounce a bit too.
-	return pixel_match(325, 388, [88, 88, 88, 255]);
+	// @TODO: the ball can actually rest in different places
+	// I should probably check a region for gray pixels,
+	// rather than a specific pixel (or set of pixel possibilities)
+	return pixel_match(327, 388, [50, 50, 50, 255]);
 }
-function pixel_match(x, y, reference_rgba, tolerance = 20) {
-	var pixel_rgba = sampling_context.getImageData(x, y, 1, 1).data;
-	var r_diff = Math.abs(pixel_rgba[0] - reference_rgba[0]);
-	var g_diff = Math.abs(pixel_rgba[1] - reference_rgba[1]);
-	var b_diff = Math.abs(pixel_rgba[2] - reference_rgba[2]);
+function rgba_at(x, y) {
+	const pixel_rgba = new Uint8Array(4);
+	y = canvas.height - y;
+	gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, pixel_rgba);
+	return pixel_rgba;
+}
+function pixel_match(x, y, reference_rgba, tolerance = 50) {
+	const pixel_rgba = rgba_at(x, y);
+	const r_diff = Math.abs(pixel_rgba[0] - reference_rgba[0]);
+	const g_diff = Math.abs(pixel_rgba[1] - reference_rgba[1]);
+	const b_diff = Math.abs(pixel_rgba[2] - reference_rgba[2]);
+	// console.log(`${x},${y}: ${pixel_rgba[0]},${pixel_rgba[1]},${pixel_rgba[2]},${pixel_rgba[3]}`, `${reference_rgba[0]},${reference_rgba[1]},${reference_rgba[2]},${reference_rgba[3]}`, `${r_diff},${g_diff},${b_diff}`);
 	return r_diff <= tolerance && g_diff <= tolerance && b_diff <= tolerance;
 }
-
 
 function start_freeze_frame() {
 	if (freezing_display) {
@@ -203,7 +198,7 @@ addEventListener("mousemove", update_mouse_position);
 
 // addEventListener("keydown", function (event) {
 // 	if (event.key === "r" || event.key === "c") {
-// 		console.log(`(${mouse_x}, ${mouse_y}) color: ${sampling_context.getImageData(mouse_x, mouse_y, 1, 1).data}`);
+// 		console.log(`(${mouse_x}, ${mouse_y}) color: ${rgba_at(mouse_x, mouse_y)}`);
 // 		if (event.key === "c") {
 // 			click(mouse_x, mouse_y);
 // 		}
