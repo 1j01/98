@@ -40,6 +40,10 @@ right_button.style.touchAction = "none";
 
 right_button.addEventListener("pointerdown", function (event) {
 	if (event.button === 2) {
+		if (event.pointerType !== "touch") {
+			// normal-ish behavior for mouse
+			click(mouse_x, mouse_y, ["mousedown"], { button: event.button, buttons: event.buttons });
+		}
 		return; // prevent infinite recursion
 	}
 	update_mouse_position(event);
@@ -51,7 +55,7 @@ right_button.addEventListener("pointerdown", function (event) {
 	// because it could be confusing / feel broken otherwise.
 	// If ball is in play, always trigger the flipper, so there's a bigger hit region and less chance of
 	// an annoying "I pressed it but it didn't work" experience.
-	if (awaiting_deployment && near_plunger) {
+	if (is_awaiting_deployment() && near_plunger) {
 		click(mouse_x, mouse_y, ["mouseup"], { button: 2, buttons: 2 }); // in case flipper is stuck (not tested, but this is probably helpful idk)
 
 		const event = new KeyboardEvent("keydown", {
@@ -65,8 +69,21 @@ right_button.addEventListener("pointerdown", function (event) {
 	} else if (event.pointerType === "touch") {
 		click(mouse_x, mouse_y, ["mousedown"], { button: 2, buttons: 2 });
 		triggering_flipper = true;
+	} else {
+		// normal-ish behavior for mouse
+		click(mouse_x, mouse_y, ["mousedown"], { button: event.button, buttons: event.buttons });
+		prev_buttons = event.buttons;
 	}
 }, true);
+let prev_buttons;
+right_button.addEventListener("pointermove", function (event) {
+	if (event.buttons !== prev_buttons && event.buttons) {
+		// normal-ish behavior for mouse
+		click(mouse_x, mouse_y, ["mousedown"], { button: event.button, buttons: event.buttons });
+		prev_buttons = event.buttons;
+	}
+});
+
 addEventListener("pointerup", function (event) {
 	// console.log("pointerup", event.button, { triggering_flipper, triggering_plunger });
 	if (event.button === 2) {
