@@ -5,13 +5,118 @@ var current_player_count = 1;
 // var music_enabled = true;
 var audio_enabled = true;
 
+var awaiting_deployment = false;
+
 var freezing_display = false;
 var menus_open = false;
 var triggering_menus = false;
+let triggering_plunger = false;
+let triggering_flipper = false;
+
+let mouse_x = 0;
+let mouse_y = 0;
 
 var canvas = document.getElementById("canvas");
 var overlay_canvas = document.getElementById("overlay-canvas");
 var overlay_context = overlay_canvas.getContext("2d");
+var sampling_canvas = document.createElement("canvas");
+var sampling_context = sampling_canvas.getContext("2d");
+
+sampling_canvas.width = canvas.width;
+sampling_canvas.height = canvas.height;
+
+// left half of the screen will be handled automatically by the game, triggering the left flipper
+// right half, for touch, will be intercepted by us to trigger the right flipper, or as appropriate, the plunger
+// @TODO: support triggering both flippers at once (might need a full-canvas interception)
+var right_button = document.createElement("div");
+right_button.style.position = "absolute";
+right_button.style.left = "183px";
+right_button.style.top = "0px";
+right_button.style.width = "183px";
+right_button.style.bottom = "0px";
+right_button.style.display = "block";
+right_button.style.zIndex = "10";
+right_button.style.touchAction = "none";
+
+right_button.addEventListener("pointerdown", function (event) {
+	if (event.button === 2) {
+		return; // prevent infinite recursion
+	}
+	update_mouse_position(event);
+	event.stopImmediatePropagation();
+	// event.preventDefault(); // we need the subsequent pointerup so can't preventDefault
+	const near_plunger = mouse_x > 260;
+	// If ball is waiting to be launched, allow triggering the plunger by pressing further to the right,
+	// but still allow triggering the flipper in the mid-right (even thought it's technically pointless),
+	// because it could be confusing / feel broken otherwise.
+	// If ball is in play, always trigger the flipper, so there's a bigger hit region and less chance of
+	// an annoying "I pressed it but it didn't work" experience.
+	if (awaiting_deployment && near_plunger) {
+		click(mouse_x, mouse_y, ["mouseup"], { button: 2, buttons: 2 }); // in case flipper is stuck (not tested, but this is probably helpful idk)
+
+		const event = new KeyboardEvent("keydown", {
+			bubbles: true, cancelable: true,
+			keyCode: 32, which: 32, key: " ", code: "Space",
+			shiftKey: false, ctrlKey: false, altKey: false, metaKey: false,
+		});
+		triggering_plunger = true;
+		// console.log("dispatching keydown", event);
+		canvas.dispatchEvent(event);
+	} else if (event.pointerType === "touch") {
+		click(mouse_x, mouse_y, ["mousedown"], { button: 2, buttons: 2 });
+		triggering_flipper = true;
+	}
+}, true);
+addEventListener("pointerup", function (event) {
+	// console.log("pointerup", event.button, { triggering_flipper, triggering_plunger });
+	if (event.button === 2) {
+		return; // prevent infinite recursion
+	}
+	update_mouse_position(event);
+	if (triggering_plunger) {
+		const event = new KeyboardEvent("keyup", {
+			bubbles: true, cancelable: true,
+			keyCode: 32, which: 32, key: " ", code: "Space",
+			shiftKey: false, ctrlKey: false, altKey: false, metaKey: false,
+		});
+		triggering_plunger = false;
+		// console.log("dispatching keyup", event);
+		canvas.dispatchEvent(event);
+	} else if (triggering_flipper) {
+		click(mouse_x, mouse_y, ["mouseup"], { button: 2, buttons: 0 });
+		triggering_flipper = false;
+	}
+}, true);
+right_button.addEventListener("contextmenu", function (event) {
+	event.preventDefault();
+});
+right_button.addEventListener("selectstart", function (event) {
+	event.preventDefault();
+});
+
+canvas.parentElement.appendChild(right_button);
+
+// @TODO: loop is not needed
+sampling_loop();
+function sampling_loop() {
+	requestAnimationFrame(sampling_loop);
+	sampling_context.drawImage(canvas, 0, 0);
+
+	awaiting_deployment = is_awaiting_deployment();
+}
+function is_awaiting_deployment() {
+	// ball at bottom (resting on plunger)
+	// Note that the ball bounces, so this state will bounce a bit too.
+	return pixel_match(325, 388, [88, 88, 88, 255]);
+}
+function pixel_match(x, y, reference_rgba, tolerance = 20) {
+	var pixel_rgba = sampling_context.getImageData(x, y, 1, 1).data;
+	var r_diff = Math.abs(pixel_rgba[0] - reference_rgba[0]);
+	var g_diff = Math.abs(pixel_rgba[1] - reference_rgba[1]);
+	var b_diff = Math.abs(pixel_rgba[2] - reference_rgba[2]);
+	return r_diff <= tolerance && g_diff <= tolerance && b_diff <= tolerance;
+}
+
 
 function start_freeze_frame() {
 	if (freezing_display) {
@@ -28,11 +133,11 @@ function stop_freeze_frame() {
 	overlay_context.clearRect(0, 0, canvas.width, canvas.height);
 }
 
-function click(canvas_x, canvas_y) {
+function click(canvas_x, canvas_y, event_types = ["mouseenter", "mousedown", "mouseup"], options = {}) {
 	const rect = canvas.getBoundingClientRect();
 	const client_x = canvas_x + rect.left;
 	const client_y = canvas_y + rect.top;
-	const params = {
+	const params = Object.assign({
 		clientX: client_x,
 		clientY: client_y,
 		pageX: client_x,
@@ -54,14 +159,10 @@ function click(canvas_x, canvas_y) {
 		cancelable: true,
 		view: window,
 		target: canvas,
-	};
-	// canvas.dispatchEvent(new MouseEvent("mousemove", params));
-	canvas.dispatchEvent(new MouseEvent("mouseenter", params));
-	canvas.dispatchEvent(new MouseEvent("mousedown", params));
-	canvas.dispatchEvent(new MouseEvent("mouseup", params));
-	// canvas.dispatchEvent(new MouseEvent("click", params));
-	// canvas.dispatchEvent(new MouseEvent("mouseleave", params));
-
+	}, options);
+	for (const event_type of event_types) {
+		canvas.dispatchEvent(new MouseEvent(event_type, params));
+	}
 	// const click_effect_el = document.createElement("div");
 	// click_effect_el.style.position = "absolute";
 	// click_effect_el.style.left = client_x + "px";
@@ -76,24 +177,21 @@ function click(canvas_x, canvas_y) {
 	// }, 100);
 }
 
-// let mouse_x = 0;
-// let mouse_y = 0;
-// addEventListener("mousemove", function (event) {
-// 	const rect = canvas.getBoundingClientRect();
-// 	mouse_x = event.clientX - rect.left;
-// 	mouse_y = event.clientY - rect.top;
-// });
+function update_mouse_position(event) {
+	const rect = canvas.getBoundingClientRect();
+	mouse_x = ~~(event.clientX - rect.left);
+	mouse_y = ~~(event.clientY - rect.top);
+}
+addEventListener("mousemove", update_mouse_position);
 
 // addEventListener("keydown", function (event) {
-// 	if (event.key === "r") {
-// 		console.log(`${mouse_x}, ${mouse_y}`);
-// 		click(mouse_x, mouse_y);
+// 	if (event.key === "r" || event.key === "c") {
+// 		console.log(`(${mouse_x}, ${mouse_y}) color: ${sampling_context.getImageData(mouse_x, mouse_y, 1, 1).data}`);
+// 		if (event.key === "c") {
+// 			click(mouse_x, mouse_y);
+// 		}
 // 	}
 // });
-
-// setInterval(function () {
-// 	click(mouse_x, mouse_y);
-// }, 100);
 
 async function sleep(ms) {
 	return new Promise(resolve => setTimeout(resolve, ms));
