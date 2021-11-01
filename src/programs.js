@@ -526,6 +526,36 @@ function Calculator() {
 	return new Task($win);
 }
 
+function Pinball() {
+	var $win = new $IframeWindow({
+		src: "programs/pinball/space-cadet.html",
+		icons: iconsAtTwoSizes("pinball"),
+		title: "3D Pinball for Windows - Space Cadet",
+		innerWidth: 600,
+		innerHeight: 416 + 20, // @TODO: where's this 20 coming from?
+		minInnerWidth: 600,
+		minInnerHeight: 416 + 20,
+		// resizable: false, // @TODO (maybe) once gray maximized button is implemented
+	});
+	const $splash = $("<div>").css({
+		position: "fixed",
+		top: 0,
+		left: 0,
+		width: "100%",
+		height: "100%",
+		background: "url(images/pinball-splash.png) no-repeat center center",
+		backgroundColor: "black",
+		zIndex: $Window.Z_INDEX + 500,
+	}).appendTo("body");
+	setTimeout(() => {
+		$splash.remove(); // just in case
+	}, 5000);
+	$win.$content.find("iframe").on("game-loaded", () => { // custom event dispatched from within the iframe
+		$splash.remove();
+	});
+	return new Task($win);
+}
+
 function Explorer(address) {
 	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in $IframeWindow)
 	var document_title = address;
@@ -1068,6 +1098,12 @@ add_icon_not_via_filesystem({
 	title: "Calculator",
 	iconID: "calculator",
 	open: Calculator,
+	shortcut: true
+});
+add_icon_not_via_filesystem({
+	title: "Pinball",
+	iconID: "pinball",
+	open: Pinball,
 	shortcut: true
 });
 

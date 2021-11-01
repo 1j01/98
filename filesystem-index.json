@@ -319,6 +319,9 @@
       "paint-file-32x32.png": null,
       "paint-file-48x48-higher-color.png": null,
       "paint-file-48x48.png": null,
+      "pinball-16x16.png": null,
+      "pinball-32x32.png": null,
+      "pinball-48x48.png": null,
       "pipes-16x16.png": null,
       "pipes-32x32.png": null,
       "printer-16x16.png": null,
@@ -407,6 +410,8 @@
       "98.js.svg": null,
       "98.js.svg.png": null
     },
+    "pinball-overlay.png": null,
+    "pinball-splash.png": null,
     "start-logo.png": null,
     "start-menu-side-98-js-alt.png": null,
     "start-menu-side-98-js.gif": null,
@@ -3569,6 +3574,13 @@
         "app.js": null,
         "menus.js": null
       }
+    },
+    "pinball": {
+      "SpaceCadetPinball.data": null,
+      "SpaceCadetPinball.js": null,
+      "SpaceCadetPinball.wasm": null,
+      "space-cadet-menus.js": null,
+      "space-cadet.html": null
     },
     "pipes": {
       "LICENSE": null,
