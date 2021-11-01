@@ -6,11 +6,20 @@ https://github.com/1j01/98
 Apps
 ====----------------------------------
 
+Paint, Sound Recorder, Notepad, 3D Pipes, and the 98.js.org desktop
+by Isaiah Odhner
+	https://github.com/1j01/98
+	https://github.com/1j01/jspaint
+	https://github.com/1j01/pipes
+
 Minesweeper by Jon Ziebell
 	https://github.com/ziebelje/minesweeper
 
 Solitaire by Radovan Janjic
 	https://github.com/rjanjic/js-solitaire
+
+3D Pinball decompiled & ported by Muzychenko Andrey and Alula
+	https://github.com/alula/SpaceCadetPinball
 
 Webamp by Jordan Eldredge
 	https://github.com/captbaritone/webamp
@@ -28,14 +37,12 @@ MS-DOS Prompt
 		DOSBox  https://www.dosbox.com/
 		Em-DOSBox  https://github.com/dreamlayers/em-dosbox
 
-Paint, Sound Recorder, Notepad, 3D Pipes, and the 98.js.org desktop
-by Isaiah Odhner
-	https://github.com/1j01/98
-	https://github.com/1j01/jspaint
-	https://github.com/1j01/pipes
-
-Calculator by Isaiah Odhner, @muzam1l, and Windows Calculator engine developers
-(It uses the open-sourced calculation engine from Windows 10.)
+Calculator by:
+	Isaiah Odhner - Windows 98 interface
+	Muzam1l - Web port of the Windows 10 Calculator
+		https://github.com/muzam1l/mcalculator
+	Windows Calculator engine developers
+		https://github.com/microsoft/calculator
 
 --------------------------------------
 Assets
@@ -48,6 +55,9 @@ respectively, in the United States and/or other countries, respectively.
 --------------------------------------
 Libraries
 =========-----------------------------
+
+OS-GUI.js
+	https://os-gui.js.org
 
 BrowserFS
 	https://github.com/jvilk/BrowserFS

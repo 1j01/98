@@ -12,6 +12,7 @@ Includes:
 * ![](images/icons/pipes-16x16.png) 3D FlowerBox ([original repository](https://github.com/kevin-shannon/3D-FlowerBox)) by [Kevin Shannon](https://github.com/kevin-shannon)
 * ![](images/icons/minesweeper-16x16.png) Minesweeper ([separate README](programs/minesweeper/README.md); [original repository](https://github.com/ziebelje/minesweeper)) by [Jon Ziebell](https://github.com/ziebelje/)
 * ![](images/icons/solitaire-16x16.png) Solitaire ([original repository](https://github.com/rjanjic/js-solitaire)) by [Radovan Janjic](https://github.com/rjanjic)
+* ![](images/icons/pinball-16x16.png) Pinball ([original repository](https://github.com/alula/SpaceCadetPinball)) ported by [Muzychenko Andrey](https://github.com/k4zmu2a) and [Alula](https://github.com/alula)
 * ![](images/icons/winamp2-16x16.png) Winamp 2.9 ([separate README](programs/winamp/README.md); [original repository](https://github.com/captbaritone/webamp)) by [Jordan Eldredge](https://jordaneldredge.com/)
 * ![](images/icons/folder-open-16x16.png) Windows Explorer / ![](images/icons/internet-explorer-16x16.png) Internet Explorer ([separate README](programs/explorer/README.md))
 * ![](images/icons/chm-16x16.png) Help Viewer
@@ -63,13 +64,15 @@ Other online operating systems / web desktops:
 | [GUIdebook](https://guidebookgallery.org/guis/windows/)                                               | Screenshots, several OSes        |                                                                                                                                                        |                                         |
 
 
-Plus some other ones [on Wikipedia](https://en.wikipedia.org/wiki/Web_desktop)
+Plus many more [web desktops on Wikipedia](https://en.wikipedia.org/wiki/Web_desktop),
+[awesome-web-desktops](https://github.com/syxanash/awesome-web-desktops),
+and [awesome-OS](https://github.com/zriyans/awesome-OS).
 
 Libraries:
-* [![](images/icons/task-16x16.png) OS GUI](https://github.com/1j01/os-gui), which is in the process of being extracted from this project
-    * [Packard Belle](https://github.com/padraigfl/packard-belle/),
-      [React95](https://github.com/React95/React95/),
-      and another one called [React95](https://github.com/arturbien/React95), with similar goals!
+* [![](images/icons/task-16x16.png) OS-GUI](https://os-gui.js.org), which grew out of this project
+* ![](images/icons/task-16x16.png) [Packard Belle](https://github.com/padraigfl/packard-belle/),
+  [React95](https://github.com/React95/React95/),
+  and another one called [React95](https://github.com/arturbien/React95), with similar goals to OS-GUI
 * [![](images/icons/folder-16x16.png) BrowserFS](https://github.com/jvilk/BrowserFS), a filesystem abstraction library powering 98.js
 
 Also:
