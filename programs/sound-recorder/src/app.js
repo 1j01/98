@@ -150,7 +150,7 @@ var update = function (position_from_slider) {
 
 	$length.display(file.availLength);
 	$position.display(file.position);
-	$wave_display.display();
+	wave_display.display();
 
 	var can_seek_to_start = file.length && file.position > 0;
 	// SLIDER_DUMBNESS: the slider doesn't slide all the way to the max value
@@ -375,7 +375,7 @@ $(function () {
 		input = audio_context.createMediaStreamSource(stream);
 		// console.log("Media stream created.");
 
-		input.connect($wave_display.analyser);
+		input.connect(wave_display.analyser);
 		input.connect(file.recorder);
 
 		enable($record);
@@ -404,7 +404,7 @@ $(function () {
 	update();
 
 	$(window).on("resize", () => {
-		$wave_display.display();
+		wave_display.display();
 	});
 });
 

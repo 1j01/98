@@ -1,5 +1,5 @@
 
-function $WaveDisplay() {
+function WaveDisplay() {
 	var wave_canvas = document.createElement("canvas");
 	wave_canvas.width = 112;
 	wave_canvas.height = 35;
@@ -10,11 +10,10 @@ function $WaveDisplay() {
 	var analyser = audio_context.createAnalyser();
 	var data = new Uint8Array(analyser.fftSize = 2048);
 
-	var $wave_display = $(wave_canvas);
-	$wave_display.analyser = analyser;
+	this.element = wave_canvas;
+	this.analyser = analyser;
 
-	$wave_display.display = function () {
-
+	this.display = function () {
 		if (recording) {
 			analyser.getByteTimeDomainData(data);
 		} else {
@@ -56,6 +55,4 @@ function $WaveDisplay() {
 			wave_ctx.fillRect(x, middle - h, 1, h * 2 + 1);
 		}
 	};
-
-	return $wave_display;
 }

@@ -3,8 +3,8 @@ var $position = $("<div class='inset-shallow position'><div class='center-me'>Po
 $position.display = function (t) { $position.find("span").text(t.toFixed(2)); };
 var $length = $("<div class='inset-shallow length'><div class='center-me'>Length:<br/><span/> sec.</div></div>");
 $length.display = function (t) { $length.find("span").text(t.toFixed(2)); };
-var $wave_display = new $WaveDisplay;
-var $wave = $("<div class='inset-shallow wave'/>").append($wave_display);
+var wave_display = new WaveDisplay;
+var $wave = $("<div class='inset-shallow wave'/>").append(wave_display.element);
 var $display = $("<div class='display'/>").append($position, $wave, $length);
 
 var $slider = $("<div class='inset-shallow slider'/>");
