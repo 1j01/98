@@ -170,7 +170,7 @@ function show_help(options) {
 
 	let $last_expanded;
 
-	const $Item = text => {
+	const make_$item = text => {
 		const $item = $(E("div")).addClass("item").text(text);
 		$item.on("mousedown", () => {
 			$contents.find(".item").removeClass("selected");
@@ -190,28 +190,28 @@ function show_help(options) {
 	};
 
 	const $default_item_li = $(E("li")).addClass("page");
-	$default_item_li.append($Item("Welcome to Help").on("click", () => {
+	$default_item_li.append(make_$item("Welcome to Help").on("click", () => {
 		$iframe.attr({ src: "help/default.html" });
 	}));
 	$contents.append($default_item_li);
 
-	function renderItem(source_li, $folder_items_ul) {
+	function renderItemFromContents(source_li, $folder_items_ul) {
 		const object = parse_object_params($(source_li).children("object"));
 		if ($(source_li).find("li").length > 0) {
 
 			const $folder_li = $(E("li")).addClass("folder");
-			$folder_li.append($Item(object.Name));
+			$folder_li.append(make_$item(object.Name));
 			$contents.append($folder_li);
 
 			const $folder_items_ul = $(E("ul"));
 			$folder_li.append($folder_items_ul);
 
 			$(source_li).children("ul").children().get().forEach((li) => {
-				renderItem(li, $folder_items_ul);
+				renderItemFromContents(li, $folder_items_ul);
 			});
 		} else {
 			const $item_li = $(E("li")).addClass("page");
-			$item_li.append($Item(object.Name).on("click", () => {
+			$item_li.append(make_$item(object.Name).on("click", () => {
 				$iframe.attr({ src: `${options.root}/${object.Local}` });
 			}));
 			if ($folder_items_ul) {
@@ -224,7 +224,7 @@ function show_help(options) {
 
 	$.get(options.contentsFile, hhc => {
 		$($.parseHTML(hhc)).filter("ul").children().get().forEach((li) => {
-			renderItem(li, null);
+			renderItemFromContents(li, null);
 		});
 	});
 
