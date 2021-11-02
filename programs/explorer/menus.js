@@ -291,7 +291,9 @@ var menus = {
 		{
 			item: "&Refresh",
 			shortcut: "F5",
-			enabled: false, // @TODO
+			action: () => {
+				refresh();
+			},
 		},
 		{
 			item: "Folder &Options...",
@@ -302,16 +304,26 @@ var menus = {
 		{
 			item: "&Back",
 			shortcut: "Alt+Left Arrow",
-			enabled: false, // @TODO
+			action: () => {
+				go_back();
+			},
+			enabled: ()=> can_go_back(),
 		},
 		{
 			item: "&Forward",
 			shortcut: "Alt+Right Arrow",
-			enabled: false, // @TODO
+			action: () => {
+				go_forward();
+			},
+			enabled: ()=> can_go_forward(),
 		},
 		{
 			item: "&Up One Level",
-			enabled: false, // @TODO
+			// shortcut: "Alt+Up Arrow",
+			action: () => {
+				go_up();
+			},
+			enabled: ()=> can_go_up(),
 		},
 		MENU_DIVIDER,
 		{
@@ -330,7 +342,10 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			item: "My &Computer",
-			enabled: false, // @TODO
+			action: () => {
+				// @TODO: a real My Computer location
+				go_to("/");
+			},
 		},
 		{
 			item: "&Internet Call",
@@ -374,7 +389,7 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			item: "Map &Network Drive...",
-			enabled: false, // @TODO
+			enabled: false, // @TODO: could use BrowserFS Dropbox adapter
 		},
 		{
 			item: "&Disconnect Network Drive...",

@@ -70,6 +70,17 @@ function get_icon_for_address(address) {
 }
 
 var folder_view, $iframe;
+var active_address = "";
+setInterval(() => {
+	try {
+		if ($iframe && $iframe[0].contentWindow) {
+			active_address = $iframe[0].contentWindow.location.href;
+		}
+	} catch (e) {
+		// ignore
+	}
+}, 200);
+
 var go_to = function (address) {
 	if (folder_view) {
 		folder_view.element.remove();
@@ -129,6 +140,7 @@ var go_to = function (address) {
 	function address_determined() {
 		$("#address").val(address);
 		$("#address-icon").attr("src", getIconPath(get_icon_for_address(address), 16));
+		active_address = address;
 
 		set_title(get_display_name_for_address(address));
 		set_icon(get_icon_for_address(address));
@@ -165,6 +177,48 @@ var go_to = function (address) {
 		}
 	}
 };
+
+function refresh() {
+	// go to whatever the address was before
+	// ignoring changes to the address since navigation
+	go_to(active_address);
+}
+
+function go_back() {
+	// TODO: show message about why it doesn't work
+	// if it doesn't work - I mean, might as well have it try it!
+	$iframe[0].contentWindow.history.back();
+}
+function go_forward() {
+	$iframe[0].contentWindow.history.forward();
+}
+function can_go_back() {
+	try {
+		return $iframe[0].contentWindow.history.length > 1;
+	} catch (e) {
+		return false;
+	}
+}
+function can_go_forward() {
+	try {
+		return $iframe[0].contentWindow.history.length > 1;
+	} catch (e) {
+		return false;
+	}
+}
+
+function get_up_address(address) {
+	return address.replace(/[^\/]*\/?$/, "").replace(/(https?|ftps?|sftp|file):\/\/\/?$/, "") || "/";
+}
+
+function go_up() {
+	// can't use $iframe[0].contentWindow.location (unless page is on the same domain)
+	go_to(get_up_address(active_address));
+}
+function can_go_up() {
+	return get_up_address(active_address) !== active_address;
+}
+
 
 // called from FolderView
 function executeFile(file_path) {
@@ -206,36 +260,22 @@ $(function () {
 			go_to($("#address").val());
 		}
 	});
-	$("#go").on("click", function () {
-		go_to($("#address").val());
-	});
-	// $("#refresh").on("click", function(){
-	// 	go_to(address); // whatever the address was before (i.e. ignore changes to the address since navigation)
-	// });
-	$("#back").on("click", function () {
-		// TODO: show message about why it doesn't work
-		// if it doesn't work - I mean, might as well have it try it!
-		$iframe[0].contentWindow.history.back();
-	});
-	$("#forward").on("click", function () {
-		$iframe[0].contentWindow.history.forward();
-	});
+	$("#refresh").on("click", refresh);
+	$("#back").on("click", go_back);
+	$("#forward").on("click", go_forward);
+	$("#up").on("click", go_up);
 
 	$("#delete").on("click", function () {
 		folder_view.delete_selected();
 	});
 
-	var up_address = (address) =>
-		address.replace(/[^\/]*\/?$/, "").replace(/(https?|ftps?|sftp|file):\/\/\/?$/, "") || "/";
-
-	$("#up").on("click", function () {
-		// can't use $iframe[0].contentWindow.location (unless page is on the same domain)
-		go_to(up_address($("#address").val()));
-	});
-
 	var $up_button = $("#up");
+	var $back_button = $("#back");
+	var $forward_button = $("#forward");
 	setInterval(() => {
-		$up_button.attr("disabled", (up_address($("#address").val()) === $("#address").val()));
+		$up_button.attr("disabled", can_go_up() ? null : "disabled");
+		$back_button.attr("disabled", can_go_back() ? null : "disabled");
+		$forward_button.attr("disabled", can_go_forward() ? null : "disabled");
 	}, 100);
 
 	$(".toolbar button:not(#view-menu-button)").each((i, button) => {
@@ -247,4 +287,20 @@ $(function () {
 				backgroundPosition: `${-sprite_n * 20}px 0px`,
 			});
 	});
+
+	$(window).on("keydown", (event) => {
+		// @TODO: handle all modifiers explicitly
+		if (event.key === "F5") {
+			refresh();
+			event.preventDefault();
+		} else if (event.key === "BrowserBack" || (event.key === "ArrowLeft" && event.altKey)) {
+			go_back();
+			event.preventDefault();
+		} else if (event.key === "BrowserForward" || (event.key === "ArrowRight" && event.altKey)) {
+			go_forward();
+		} else if (event.key === "ArrowUp" && event.altKey) {
+			go_up();
+		}
+	});
+
 });
