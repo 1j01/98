@@ -78,20 +78,22 @@
 	border: 1px dotted #ffffff;
 	mix-blend-mode: exclusion;
 }
-.desktop-icon .selection-effect {
+.desktop-icon .icon-wrapper .selection-effect {
 	display: none;
-}
-.folder-view.focused .desktop-icon.selected .selection-effect {
-	display: block;
 	position: absolute;
 	left: 0;
 	top: 0;
-	filter: drop-shadow(32px 0 0 var(--Hilight));
-	transform: translateX(-32px);
-	clip-path: polygon(100% 0, 200% 0, 200% 100%, 100% 100%);
+	width: 32px;
+	height: 32px;
+	mask-image: var(--icon-image);
+	-webkit-mask-image: var(--icon-image);
+	background: var(--Hilight);
 	opacity: 0.5;
 }
-.desktop-icon.shortcut .icon-wrapper {
+.folder-view.focused .desktop-icon.selected .icon-wrapper .selection-effect {
+	display: block;
+}
+.desktop-icon .icon-wrapper {
 	position: relative;
 }
 .desktop-icon.shortcut .icon-wrapper:after {

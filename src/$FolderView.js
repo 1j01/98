@@ -181,7 +181,7 @@ function $FolderView(folder_path) {
 				width: max_x - min_x,
 				height: max_y - min_y,
 			});
-			$folder_view.find(".desktop-icon").removeClass("selected").each(function (i, folder_view_icon) {
+			$folder_view.find(".desktop-icon").each(function (i, folder_view_icon) {
 				// Note: this is apparently considerably more complex in Windows 98
 				// like things are not considered the same heights and/or positions based on the size of their names
 				var icon_offset = $(folder_view_icon).offset();
@@ -189,14 +189,12 @@ function $FolderView(folder_path) {
 				var icon_top = parseFloat($(folder_view_icon).css("top"));
 				var icon_width = $(folder_view_icon).width();
 				var icon_height = $(folder_view_icon).height();
-				if (
+				folder_view_icon.classList.toggle("selected",
 					icon_left < max_x &&
 					icon_top < max_y &&
 					icon_left + icon_width > min_x &&
 					icon_top + icon_height > min_y
-				) {
-					$(folder_view_icon).addClass("selected");
-				}
+				);
 			});
 		};
 		$folder_view.on("pointerdown", ".desktop-icon", function (e) {
