@@ -131,18 +131,18 @@ var update = function (position_from_slider) {
 			if ($stop.is(":focus")) {
 				$play.focus();
 			}
-			$stop.disable();
+			disable($stop);
 		}
 		if (recording) {
 			file.length = Math.max(file.length, file.position);
 		}
 		if (file.length && !playing && !recording) {
-			$play.enable();
+			enable($play);
 		} else {
 			if ($play.is(":focus")) {
 				$stop.focus();
 			}
-			$play.disable();
+			disable($play);
 		}
 		$slider.slider("option", "max", file.availLength);
 		$slider.slider("value", file.position);
@@ -157,31 +157,31 @@ var update = function (position_from_slider) {
 	var can_seek_to_end = file.length && file.position + SLIDER_DUMBNESS < file.length;
 
 	if (can_seek_to_start) {
-		$seek_to_start.enable();
+		enable($seek_to_start);
 	}
 	if (can_seek_to_end) {
-		$seek_to_end.enable();
+		enable($seek_to_end);
 	}
 
 	if (!can_seek_to_start) {
 		if ($seek_to_start.is(":focus")) {
 			$seek_to_end.focus();
 		}
-		$seek_to_start.disable();
+		disable($seek_to_start);
 	}
 	if (!can_seek_to_end) {
 		if ($seek_to_end.is(":focus")) {
 			$seek_to_start.focus();
 		}
-		$seek_to_end.disable();
+		disable($seek_to_end);
 	}
 };
 
 var record = function () {
 	clearInterval(tid);
 
-	$record.disable();
-	$stop.enable();
+	disable($record);
+	enable($stop);
 	$stop.focus();
 
 	audio_context.resume();
@@ -200,8 +200,8 @@ var stop = function () {
 
 	file.audio.pause();
 
-	if (input) { $record.enable(); }
-	if (file.length) { $play.enable(); }
+	if (input) { enable($record); }
+	if (file.length) { enable($play); }
 
 	if ($stop.is(":focus")) {
 		if (recording) {
@@ -214,7 +214,7 @@ var stop = function () {
 	recording = false;
 	playing = false;
 
-	$stop.disable();
+	disable($stop);
 
 	file.availLength = file.length;
 	update();
@@ -229,9 +229,9 @@ var play = function () {
 	file.audio.seek(file.position);
 	file.audio.play();
 
-	$stop.enable();
+	enable($stop);
 	$stop.focus();
-	$play.disable();
+	disable($play);
 
 	playing = true;
 	previous_time = audio_context.currentTime;
@@ -378,7 +378,7 @@ $(function () {
 		input.connect($wave_display.analyser);
 		input.connect(file.recorder);
 
-		$record.enable();
+		enable($record);
 	};
 	var gotError = function (err) {
 		console.log("No live audio input: ", err);

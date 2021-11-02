@@ -10,11 +10,33 @@ var $display = $("<div class='display'/>").append($position, $wave, $length);
 var $slider = $("<div class='inset-shallow slider'/>");
 var $slider_container = $("<div class='slider-container'/>").append($slider);
 
-var $seek_to_start = $Button("Seek To Start", 0).click(seek_to_start);
-var $seek_to_end = $Button("Seek To End", 1).click(seek_to_end);
-var $play = $Button("Play", 2).click(play);
-var $stop = $Button("Stop", 3).click(stop);
-var $record = $Button("Record", 4).click(record);
+var make_$button = function (title, n) {
+	var $button = $("<button/>").attr("title", title);
+
+	// These aren't really toggle buttons (except for their radio button behavior)...
+	// but they have a similar look while being clicked.
+	$button.addClass("toggle");
+
+	$("<span>").appendTo($button).addClass("icon").css({
+		"background-position": `-${n * 44}px 0`,
+	});
+
+	disable($button);
+
+	return $button;
+};
+function disable($button) {
+	$button.attr("disabled", true);
+}
+function enable($button) {
+	$button.attr("disabled", false);
+}
+
+var $seek_to_start = make_$button("Seek To Start", 0).click(seek_to_start);
+var $seek_to_end = make_$button("Seek To End", 1).click(seek_to_end);
+var $play = make_$button("Play", 2).click(play);
+var $stop = make_$button("Stop", 3).click(stop);
+var $record = make_$button("Record", 4).click(record);
 var $controls = $("<div class='controls'/>").append($seek_to_start, $seek_to_end, $play, $stop, $record);
 
 var $app = $("<div class='sound-recorder'/>").appendTo("body");

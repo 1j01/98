@@ -3622,7 +3622,6 @@
         "recorderWorker.js": null
       },
       "src": {
-        "$Button.js": null,
         "$WaveDisplay.js": null,
         "$app.js": null,
         "AudioFile.js": null,
