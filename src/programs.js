@@ -1007,8 +1007,10 @@ function executeFile(file_path) {
 // or Connect to the Internet, or Setup MSN Internet Access,
 // whereas `Desktop` does (that's the full address it shows; it's one of them "special locations")
 var add_icon_not_via_filesystem = function (options) {
-	options.icon = $Icon(options.iconID, DESKTOP_ICON_SIZE);
-	new $FolderViewIcon(options).appendTo($folder_view);
+	$folder_view.append(new FolderViewItem({
+		icon: $Icon(options.iconID, DESKTOP_ICON_SIZE),
+		...options,
+	}).element);
 };
 add_icon_not_via_filesystem({
 	title: "My Computer",

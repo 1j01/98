@@ -1,7 +1,6 @@
 
-function $FolderViewIcon(options) {
-	// TODO: rename element class to folder-view-icon, or find a better name (maybe desktop-icon and $DesktopIcon are still okay?)
-	// (also it's more of an item, not just an icon)
+function FolderViewItem(options) {
+	// TODO: rename CSS class to folder-view-item, or find a better name
 	var $container = $("<div class='desktop-icon' draggable='true'/>");
 	var $icon_wrapper = $("<div class='icon-wrapper'/>").appendTo($container);
 	var $icon = options.icon;
@@ -28,8 +27,10 @@ function $FolderViewIcon(options) {
 	$container.on("dblclick", function () {
 		options.open();
 	});
-	// TODO: allow dragging files off FROM the desktop, with dataTransfer.setData("DownloadURL", ...)
+	// TODO: allow dragging files out from this folder view to the system file browser, with dataTransfer.setData("DownloadURL", ...)
 	// sadly will only work for a single file (unless it secretly supports text/uri-list (either as a separate type or for DownloadURL))
+	// also it won't work if I want to do custom drag-and-drop (e.g. repositioning icons)
+	// so I have to choose one feature or the other (right?), probably custom drag-and-drop
 
 	if (options.shortcut) {
 		$container.addClass("shortcut");
@@ -40,5 +41,5 @@ function $FolderViewIcon(options) {
 		height: grid_size_y,
 	});
 	$container[0].dataset.filePath = options.file_path;
-	return $container;
+	return { element: $container[0] };
 }

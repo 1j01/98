@@ -304,14 +304,15 @@ function $FolderView(folder_path) {
 	// var add_icon_for_bfs_file = function(file_path, x, y){
 	var add_icon_for_bfs_file = function (file_name, x, y) {
 		var file_path = folder_path + file_name;
-		return $FolderViewIcon({
+		var item = new FolderViewItem({
 			title: file_name,
 			// icon: $IconByPathPromise(get_icon_for_file_path(file_path), DESKTOP_ICON_SIZE),
 			icon: $IconByIDPromise(get_icon_for_file_path(file_path), DESKTOP_ICON_SIZE),
 			open: function () { executeFile(file_path); },
 			shortcut: file_path.match(/\.url$/),
 			file_path,
-		}).appendTo($folder_view).css({
+		});
+		$(item.element).appendTo($folder_view).css({
 			left: x,
 			top: y,
 		});
