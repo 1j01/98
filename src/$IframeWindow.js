@@ -1,49 +1,8 @@
 
 var programs_being_loaded = 0;
 
-function $Iframe(options) {
-	var $iframe = $("<iframe allowfullscreen sandbox='allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-popups allow-downloads'>");
-	var iframe = $iframe[0];
-
-	var disable_delegate_pointerup = false;
-
-	$iframe.focus_contents = function () {
-		if (!iframe.contentWindow) {
-			return;
-		}
-		if (iframe.contentDocument.hasFocus()) {
-			return;
-		}
-
-		disable_delegate_pointerup = true;
-		iframe.contentWindow.focus();
-		setTimeout(function () {
-			iframe.contentWindow.focus();
-			disable_delegate_pointerup = false;
-		});
-	};
-
-	// Let the iframe to handle mouseup events outside itself
-	var delegate_pointerup = function () {
-		if (disable_delegate_pointerup) {
-			return;
-		}
-		if (iframe.contentWindow && iframe.contentWindow.jQuery) {
-			iframe.contentWindow.jQuery("body").trigger("pointerup");
-		}
-		if (iframe.contentWindow) {
-			const event = new iframe.contentWindow.MouseEvent("mouseup", { button: 0 });
-			iframe.contentWindow.dispatchEvent(event);
-			const event2 = new iframe.contentWindow.MouseEvent("mouseup", { button: 2 });
-			iframe.contentWindow.dispatchEvent(event2);
-		}
-	};
-	$G.on("mouseup blur", delegate_pointerup);
-	$iframe.destroy = () => {
-		$G.off("mouseup blur", delegate_pointerup);
-	};
-
-	// @TODO: delegate pointermove events too?
+function enhance_iframe(iframe) {
+	var $iframe = $(iframe);
 
 	$("body").addClass("loading-program");
 	programs_being_loaded += 1;
@@ -57,6 +16,33 @@ function $Iframe(options) {
 		if (window.themeCSSProperties) {
 			applyTheme(themeCSSProperties, iframe.contentDocument.documentElement);
 		}
+
+		// Let the iframe to handle mouseup events outside itself
+		// (without using setPointerCapture)
+		iframe.contentDocument.addEventListener("mousedown", (event) => {
+			var delegate_pointerup = function () {
+				if (iframe.contentWindow && iframe.contentWindow.jQuery) {
+					iframe.contentWindow.jQuery("body").trigger("pointerup");
+				}
+				if (iframe.contentWindow) {
+					const event = new iframe.contentWindow.MouseEvent("mouseup", { button: 0 });
+					iframe.contentWindow.dispatchEvent(event);
+					const event2 = new iframe.contentWindow.MouseEvent("mouseup", { button: 2 });
+					iframe.contentWindow.dispatchEvent(event2);
+				}
+				clean_up_delegation();
+			};
+			// @TODO: delegate pointermove events too?
+			// @TODO: do delegation in os-gui.js library instead
+			// is it delegation? I think I mean proxying (but I'm really tired and don't have internet right now so I can't say for sure haha)
+
+			$G.on("mouseup blur", delegate_pointerup);
+			iframe.contentDocument.addEventListener("mouseup", clean_up_delegation);
+			function clean_up_delegation() {
+				$G.off("mouseup blur", delegate_pointerup);
+				iframe.contentDocument.removeEventListener("mouseup", clean_up_delegation);
+			}
+		});
 
 		// on Wayback Machine, and iframe's url not saved yet
 		if (iframe.contentDocument.querySelector("#error #livewebInfo.available")) {
@@ -107,17 +93,12 @@ function $Iframe(options) {
 		// };
 
 	});
-	if (options.src) {
-		$iframe.attr({ src: options.src });
-	}
 	$iframe.css({
 		minWidth: 0,
 		minHeight: 0, // overrides user agent styling apparently, fixes Sound Recorder
 		flex: 1,
 		border: 0, // overrides user agent styling
 	});
-
-	return $iframe;
 }
 
 function $IframeWindow(options) {
@@ -125,7 +106,8 @@ function $IframeWindow(options) {
 	options.resizable ??= true;
 	var $win = new $Window(options);
 
-	var $iframe = $win.$iframe = $Iframe({ src: options.src });
+	var $iframe = $win.$iframe = $("<iframe>").attr({ src: options.src });
+	enhance_iframe($iframe[0]);
 	$win.$content.append($iframe);
 	var iframe = $win.iframe = $iframe[0];
 	// TODO: should I instead of having iframe.$window, have a get$Window type of dealio?
@@ -133,15 +115,9 @@ function $IframeWindow(options) {
 	// I know it's used from within the iframe contents as frameElement.$window
 	iframe.$window = $win;
 
-	$win.on("close", function () {
-		$iframe.destroy();
-	});
-	// $win.onFocus($iframe.focus_contents);
-
 	$iframe.on("load", function () {
 		$win.show();
 		$win.focus();
-		// $iframe.focus_contents();
 	});
 
 	$win.$content.css({

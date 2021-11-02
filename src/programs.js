@@ -78,8 +78,11 @@ function show_help(options) {
 		iframe.src = "help/online_support.htm";
 	});
 
-	const $iframe = $Iframe({ src: "help/default.html" }).addClass("inset-deep");
+	const $iframe = $("<iframe sandbox='allow-same-origin allow-scripts allow-forms allow-modals allow-popups allow-downloads'>")
+		.attr({ src: "help/default.html" })
+		.addClass("inset-deep");
 	const iframe = $iframe[0];
+	enhance_iframe(iframe);
 	iframe.$window = $help_window; // for focus handling integration
 	const $resizer = $(E("div")).addClass("resizer");
 	const $contents = $(E("ul")).addClass("contents inset-deep");
