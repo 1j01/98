@@ -205,12 +205,10 @@ function FolderView(folder_path) {
 			});
 		};
 		$folder_view.on("pointerdown", ".desktop-icon", function (e) {
-			$folder_view.find(".desktop-icon").removeClass("focused");
+			$folder_view.find(".desktop-icon").each(function (i, folder_view_icon) {
+				folder_view_icon.classList.toggle("selected", folder_view_icon === e.currentTarget);
+			});
 			$(this).addClass("focused");
-			if (!$(this).hasClass("selected")) {
-				$folder_view.find(".desktop-icon").removeClass("selected");
-				$(this).addClass("selected");
-			}
 		});
 		$folder_view.on("pointerdown", function (e) {
 			// TODO: allow a margin of mouse movement before starting selecting
