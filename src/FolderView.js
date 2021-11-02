@@ -1,6 +1,23 @@
 
-var grid_size_x = 75;
-var grid_size_y = 75;
+const grid_size_x_for_large_icons = 75;
+const grid_size_y_for_large_icons = 75;
+// @TODO: this is supposed to be dynamic based on length of names
+const grid_size_x_for_small_icons = 150;
+const grid_size_y_for_small_icons = 16;
+
+const icon_size_by_view_mode = {
+	LARGE_ICONS: 32,
+	SMALL_ICONS: 16,
+	DETAILS: 16,
+	LIST: 16,
+};
+
+FolderView.VIEW_MODES = {
+	LARGE_ICONS: "LARGE_ICONS",
+	SMALL_ICONS: "SMALL_ICONS",
+	DETAILS: "DETAILS",
+	LIST: "LIST",
+};
 
 // TODO: what's the "right" way to do file type / program associations for icons?
 
@@ -60,12 +77,39 @@ function FolderView(folder_path) {
 
 	this.element = $folder_view[0];
 
+	this.items = [];
+
 	this.add_item = (folder_view_item) => {
 		$folder_view.append(folder_view_item.element);
+		this.items.push(folder_view_item);
+	};
+
+	this.view_mode = FolderView.VIEW_MODES.LARGE_ICONS;
+	var storage_key = `folder-view-mode:${folder_path}`;
+	try {
+		this.view_mode = localStorage.getItem(storage_key) ?? FolderView.VIEW_MODES.LARGE_ICONS;
+	} catch (e) {
+		console.error("Can't read localStorage:", e);
+	}
+	this.element.dataset.viewMode = this.view_mode;
+	this.set_view_mode = (mode) => {
+		this.view_mode = mode;
+		this.element.dataset.viewMode = this.view_mode;
+		this.arrange_icons();
+		try {
+			localStorage.setItem(storage_key, mode);
+		} catch (e) {
+			console.error("Can't write localStorage:", e);
+		}
+	};
+	this.get_view_mode = () => {
+		return this.view_mode;
 	};
 
 	// TODO: sort (by name I guess)
 	this.arrange_icons = function () {
+		var grid_size_x = self.view_mode === FolderView.VIEW_MODES.LARGE_ICONS ? grid_size_x_for_large_icons : grid_size_x_for_small_icons;
+		var grid_size_y = self.view_mode === FolderView.VIEW_MODES.LARGE_ICONS ? grid_size_y_for_large_icons : grid_size_y_for_small_icons;
 		var x = 0;
 		var y = 0;
 		// $folder_view.find(".desktop-icon")
@@ -89,6 +133,10 @@ function FolderView(folder_path) {
 				y = 0;
 			}
 		});
+		const icon_size = icon_size_by_view_mode[self.view_mode] || 32;
+		for (const item of self.items) {
+			item.setIconSize(icon_size);
+		}
 	};
 
 	function deleteRecursiveSync(fs, itemPath) {
@@ -175,8 +223,8 @@ function FolderView(folder_path) {
 				var path = folder_path + fname;
 				var x = Math.random() * innerWidth;
 				var y = Math.random() * innerHeight;
-				// add_icon_for_bfs_file(path, x, y);
-				add_icon_for_bfs_file(fname, x, y);
+				// add_fs_item(path, x, y);
+				add_fs_item(fname, x, y);
 			}
 			self.arrange_icons();
 		});
@@ -322,14 +370,15 @@ function FolderView(folder_path) {
 			});
 		});
 	};
-	// var add_icon_for_bfs_file = function(file_path, x, y){
-	var add_icon_for_bfs_file = function (file_name, x, y) {
+	// var add_fs_item = function(file_path, x, y){
+	var add_fs_item = function (file_name, x, y) {
 		var file_path = folder_path + file_name;
 		var item = new FolderViewItem({
 			title: file_name,
 			open: function () { executeFile(file_path); },
 			shortcut: file_path.match(/\.url$/),
 			file_path,
+			iconSize: icon_size_by_view_mode[self.view_mode],
 		});
 		get_icon_id_for_file_path(file_path).then((icon_id) => {
 			// @TODO: know which sizes are available
@@ -339,7 +388,8 @@ function FolderView(folder_path) {
 				48: getIconPath(icon_id, 48),
 			});
 		});
-		$(item.element).appendTo($folder_view).css({
+		self.add_item(item);
+		$(item.element).css({
 			left: x,
 			top: y,
 		});
@@ -367,7 +417,7 @@ function FolderView(folder_path) {
 				}
 				// TODO: could do utimes as well with file.lastModified or file.lastModifiedDate
 
-				add_icon_for_bfs_file(file.name, x, y);
+				add_fs_item(file.name, x, y);
 			});
 		};
 		reader.readAsArrayBuffer(file);

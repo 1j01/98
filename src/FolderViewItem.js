@@ -23,32 +23,43 @@ function FolderViewItem(options) {
 	if (options.shortcut) {
 		$container.addClass("shortcut");
 	}
-	$container.css({
-		position: "absolute",
-		width: grid_size_x,
-		height: grid_size_y,
-	});
 	$container[0].dataset.filePath = options.file_path;
 
 	this.element = $container[0];
 
-	this.setIcons = (icons) => {
-		if ($icon) {
-			$icon.remove();
+	this.icons = options.icons;
+	this.iconSize = options.iconSize || DESKTOP_ICON_SIZE;
+
+	this._update_icon = () => {
+		if (this.icons) {
+			const src = this.icons[this.iconSize];
+			if ($icon) {
+				$icon.remove();
+			}
+			$icon = $("<img class='icon'/>");
+			$icon.attr({
+				draggable: false,
+				src,
+				width: this.iconSize,
+				height: this.iconSize,
+			});
+			$selection_effect[0].style.setProperty("--icon-image", `url("${src}")`);
+			$icon_wrapper.prepend($icon);
+		} else {
+			$icon?.remove();
+			$icon = null;
+			$selection_effect[0].style.setProperty("--icon-image", "none");
 		}
-		const size = DESKTOP_ICON_SIZE;
-		const src = icons[size];
-		$icon = $("<img class='icon'/>");
-		$icon.attr({
-			draggable: false,
-			src,
-			width: size,
-			height: size,
-		});
-		$selection_effect[0].style.setProperty("--icon-image", `url("${src}")`);
-		$icon_wrapper.prepend($icon);
+		$icon_wrapper[0].style.setProperty("--icon-size", this.iconSize + "px");
+		$icon_wrapper[0].style.setProperty("--shortcut-icon", `url("${getIconPath("shortcut", this.iconSize)}")`);
 	};
-	if (options.icons) {
-		this.setIcons(options.icons);
-	}
+	this.setIcons = (new_icons) => {
+		this.icons = new_icons;
+		this._update_icon();
+	};
+	this.setIconSize = (new_size) => {
+		this.iconSize = new_size;
+		this._update_icon();
+	};
+	this._update_icon();
 }

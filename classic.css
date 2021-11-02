@@ -54,8 +54,21 @@
 .task.selected {
 	font-weight: bold;
 }
+.desktop-icon {
+	position: absolute;
+}
+.folder-view:not([data-view-mode="LARGE_ICONS"]) .desktop-icon {
+	display: flex;
+	flex-direction: row;
+	min-width: 150px;
+	height: 16px;
+}
+
+.folder-view[data-view-mode="LARGE_ICONS"] .desktop-icon {
+	width: 75px;
+	height: 75px;
+}
 .desktop-icon .title {
-	margin-top: 5px;
 	font-family: sans-serif;
 	font-family: "MS Sans Serif", "Segoe UI", sans-serif;
 	/*font-size: 10px;*/
@@ -64,6 +77,14 @@
 	color: white;
 	position: relative;
 }
+.folder-view[data-view-mode="LARGE_ICONS"] .desktop-icon .title {
+	margin-top: 5px;
+}
+.folder-view:not([data-view-mode="LARGE_ICONS"]) .desktop-icon .title {
+	text-align: start;
+	white-space: nowrap;
+}
+
 .folder-view.focused .desktop-icon.selected .title {
 	background: var(--Hilight);
 	color: var(--HilightText);
@@ -83,8 +104,8 @@
 	position: absolute;
 	left: 0;
 	top: 0;
-	width: 32px;
-	height: 32px;
+	width: var(--icon-size, 32px);
+	height: var(--icon-size, 32px);
 	mask-image: var(--icon-image);
 	-webkit-mask-image: var(--icon-image);
 	background: var(--Hilight);
@@ -97,10 +118,10 @@
 	position: relative;
 }
 .desktop-icon.shortcut .icon-wrapper:after {
-	content: url("images/icons/shortcut-32x32.png");
+	content: var(--shortcut-icon, url("images/icons/shortcut-32x32.png"));
 	position: absolute;
 	left: 0;
-	vertical-align: bottom;
+	top: 0;
 }
 .folder-view .marquee {
 	border: 1px dotted #ffffff;
@@ -149,4 +170,10 @@
 * {
 	image-rendering: crisp-edges;
 	image-rendering: pixelated;
+}
+
+.menu-hotkey {
+	/* TODO: remove once this is in os-gui */
+	text-decoration-skip: none;
+    text-decoration-skip-ink: none;
 }

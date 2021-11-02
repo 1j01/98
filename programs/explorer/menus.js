@@ -1,14 +1,10 @@
 
 // TODO: bullet point style radio button menu items (instead of check marks)
-var current_view_mode = "LARGE_ICONS";
 var checkbox_for_view_mode = function (menu_item_view_mode) {
 	return {
-		check: function () {
-			return menu_item_view_mode === current_view_mode;
-		},
-		toggle: function () {
-			current_view_mode = menu_item_view_mode;
-			// @TODO: update the view
+		check: ()=> folder_view.get_view_mode() === menu_item_view_mode,
+		toggle: ()=> {
+			folder_view.set_view_mode(menu_item_view_mode);
 		},
 	};
 };
@@ -232,24 +228,24 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "&Large Icons",
+			item: "Lar&ge Icons",
 			checkbox: checkbox_for_view_mode("LARGE_ICONS"),
-			enabled: false, // @TODO
+			enabled: ()=> !!folder_view,
 		},
 		{
-			item: "&Small Icons",
+			item: "S&mall Icons",
 			checkbox: checkbox_for_view_mode("SMALL_ICONS"),
-			enabled: false, // @TODO
+			enabled: ()=> !!folder_view,
 		},
 		{
 			item: "&List",
 			checkbox: checkbox_for_view_mode("LIST"),
-			enabled: false, // @TODO
+			enabled: ()=> !!folder_view,
 		},
 		{
 			item: "&Details",
 			checkbox: checkbox_for_view_mode("DETAILS"),
-			enabled: false, // @TODO
+			enabled: ()=> !!folder_view,
 		},
 		MENU_DIVIDER,
 		{
