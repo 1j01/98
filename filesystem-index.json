@@ -3652,7 +3652,6 @@
   "safari-pinned-tab.svg": null,
   "site.webmanifest": null,
   "src": {
-    "$IframeWindow.js": null,
     "$desktop.js": null,
     "$start-menu.js": null,
     "$taskbar-time.js": null,
@@ -3662,6 +3661,7 @@
     "Task.js": null,
     "filesystem-setup.js": null,
     "helpers.js": null,
+    "iframe-windows.js": null,
     "programs.js": null,
     "visualizer-overlay.js": null
   }

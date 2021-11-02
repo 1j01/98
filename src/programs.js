@@ -242,12 +242,12 @@ function show_help(options) {
 }
 
 function Notepad(file_path) {
-	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in $IframeWindow)
+	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in make_iframe_window)
 	var document_title = file_path ? file_name_from_path(file_path) : "Untitled";
 	var win_title = document_title + " - Notepad";
 	// TODO: focus existing window if file is currently open?
 
-	var $win = new $IframeWindow({
+	var $win = make_iframe_window({
 		src: "programs/notepad/index.html" + (file_path ? ("?path=" + file_path) : ""),
 		icons: iconsAtTwoSizes("notepad"),
 		title: win_title,
@@ -260,7 +260,7 @@ function Notepad(file_path) {
 Notepad.acceptsFilePaths = true;
 
 function Paint(file_path) {
-	var $win = new $IframeWindow({
+	var $win = make_iframe_window({
 		src: "programs/jspaint/index.html",
 		icons: iconsAtTwoSizes("paint"),
 		// NOTE: in Windows 98, "untitled" is lowercase, but TODO: we should just make it consistent
@@ -355,7 +355,7 @@ function Paint(file_path) {
 Paint.acceptsFilePaths = true;
 
 function Minesweeper() {
-	var $win = new $IframeWindow({
+	var $win = make_iframe_window({
 		src: "programs/minesweeper/index.html",
 		icons: iconsAtTwoSizes("minesweeper"),
 		title: "Minesweeper",
@@ -367,11 +367,11 @@ function Minesweeper() {
 }
 
 function SoundRecorder(file_path) {
-	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in $IframeWindow)
+	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in make_iframe_window)
 	var document_title = file_path ? file_name_from_path(file_path) : "Sound";
 	var win_title = document_title + " - Sound Recorder";
 	// TODO: focus existing window if file is currently open?
-	var $win = new $IframeWindow({
+	var $win = make_iframe_window({
 		src: "programs/sound-recorder/index.html" + (file_path ? ("?path=" + file_path) : ""),
 		icons: iconsAtTwoSizes("speaker"),
 		title: win_title,
@@ -385,7 +385,7 @@ function SoundRecorder(file_path) {
 SoundRecorder.acceptsFilePaths = true;
 
 function Solitaire() {
-	var $win = new $IframeWindow({
+	var $win = make_iframe_window({
 		src: "programs/js-solitaire/index.html",
 		icons: iconsAtTwoSizes("solitaire"),
 		title: "Solitaire",
@@ -470,7 +470,7 @@ function FlowerBox() {
 }
 
 function CommandPrompt() {
-	var $win = new $IframeWindow({
+	var $win = make_iframe_window({
 		src: "programs/command/index.html",
 		icons: iconsAtTwoSizes("msdos"),
 		title: "MS-DOS Prompt",
@@ -518,7 +518,7 @@ function CommandPrompt() {
 }
 
 function Calculator() {
-	var $win = new $IframeWindow({
+	var $win = make_iframe_window({
 		src: "programs/calculator/index.html",
 		icons: iconsAtTwoSizes("calculator"),
 		title: "Calculator",
@@ -531,7 +531,7 @@ function Calculator() {
 }
 
 function Pinball() {
-	var $win = new $IframeWindow({
+	var $win = make_iframe_window({
 		src: "programs/pinball/space-cadet.html",
 		icons: iconsAtTwoSizes("pinball"),
 		title: "3D Pinball for Windows - Space Cadet",
@@ -561,11 +561,11 @@ function Pinball() {
 }
 
 function Explorer(address) {
-	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in $IframeWindow)
+	// TODO: DRY the default file names and title code (use document.title of the page in the iframe, in make_iframe_window)
 	var document_title = address;
 	var win_title = document_title;
 	// TODO: focus existing window if folder is currently open
-	var $win = new $IframeWindow({
+	var $win = make_iframe_window({
 		src: "programs/explorer/index.html" + (address ? ("?address=" + encodeURIComponent(address)) : ""),
 		icons: iconsAtTwoSizes("folder-open"),
 		title: win_title,

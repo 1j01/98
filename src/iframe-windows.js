@@ -101,7 +101,7 @@ function enhance_iframe(iframe) {
 	});
 }
 
-function $IframeWindow(options) {
+function make_iframe_window(options) {
 
 	options.resizable ??= true;
 	var $win = new $Window(options);
@@ -134,7 +134,7 @@ function $IframeWindow(options) {
 
 // Fix dragging things (i.e. windows) over iframes (i.e. other windows)
 // (when combined with a bit of css, .drag iframe { pointer-events: none; })
-// (and a similar thing in $IframeWindow)
+// (and a similar thing in make_iframe_window)
 $(window).on("pointerdown", function (e) {
 	//console.log(e.type);
 	$("body").addClass("drag");
