@@ -102,6 +102,22 @@ function FolderView(folder_path) {
 		}
 	}
 
+	self.focus = function () {
+		$folder_view.focus();
+		// @TODO: base focused class on actual focus! yeah?
+		$folder_view.addClass("focused");
+	};
+
+	self.select_all = function () {
+		$folder_view.find(".desktop-icon").addClass("selected");
+	};
+
+	self.select_inverse = function () {
+		$folder_view.find(".desktop-icon").each(function () {
+			$(this).toggleClass("selected");
+		});
+	};
+
 	self.delete_selected = function () {
 		const selected_file_paths = $folder_view.find(".desktop-icon.selected")
 			.toArray().map((icon_el) => icon_el.dataset.filePath);
@@ -278,7 +294,7 @@ function FolderView(folder_path) {
 			if (e.key == "Enter") {
 				$folder_view.find(".desktop-icon.selected").trigger("dblclick");
 			} else if (e.ctrlKey && e.key == "a") {
-				$folder_view.find(".desktop-icon").addClass("selected");
+				folder_view.select_all();
 				e.preventDefault();
 			} else if (e.key == "Delete") {
 				self.delete_selected();

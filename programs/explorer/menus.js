@@ -111,11 +111,17 @@ var menus = {
 		{
 			item: "Select &All",
 			shortcut: "Ctrl+A",
-			enabled: false, // @TODO
+			action: function () {
+				folder_view.select_all();
+				folder_view.focus();
+			},
 		},
 		{
 			item: "&Invert Selection",
-			enabled: false, // @TODO
+			action: function () {
+				folder_view.select_inverse();
+				folder_view.focus();
+			},
 		},
 	],
 	"&View": [
