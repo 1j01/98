@@ -79,7 +79,9 @@ var menus = {
 		},
 		{
 			item: "&Close",
-			enabled: false, // @TODO
+			action: function () {
+				close();
+			},
 		},
 	],
 	"&Edit": [
