@@ -289,7 +289,7 @@ function FolderView(folder_path) {
 		}
 	});
 
-	var get_icon_for_file_path = function (file_path) {
+	var get_icon_id_for_file_path = function (file_path) {
 		// fs should be guaranteed available at this point
 		// as this function is currently used
 		var fs = BrowserFS.BFSRequire('fs');
@@ -313,11 +313,17 @@ function FolderView(folder_path) {
 		var file_path = folder_path + file_name;
 		var item = new FolderViewItem({
 			title: file_name,
-			// icon: $IconByPathPromise(get_icon_for_file_path(file_path), DESKTOP_ICON_SIZE),
-			icon: $IconByIDPromise(get_icon_for_file_path(file_path), DESKTOP_ICON_SIZE),
 			open: function () { executeFile(file_path); },
 			shortcut: file_path.match(/\.url$/),
 			file_path,
+		});
+		get_icon_id_for_file_path(file_path).then((icon_id) => {
+			// @TODO: know which sizes are available
+			item.setIcons({
+				16: getIconPath(icon_id, 16),
+				32: getIconPath(icon_id, 32),
+				48: getIconPath(icon_id, 48),
+			});
 		});
 		$(item.element).appendTo($folder_view).css({
 			left: x,

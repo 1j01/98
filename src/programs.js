@@ -1012,7 +1012,10 @@ function executeFile(file_path) {
 // whereas `Desktop` does (that's the full address it shows; it's one of them "special locations")
 var add_icon_not_via_filesystem = function (options) {
 	folder_view.add_item(new FolderViewItem({
-		icon: $Icon(options.iconID, DESKTOP_ICON_SIZE),
+		icons: {
+			// @TODO: know what sizes are available
+			[DESKTOP_ICON_SIZE]: getIconPath(options.iconID, DESKTOP_ICON_SIZE),
+		},
 		...options,
 	}));
 };

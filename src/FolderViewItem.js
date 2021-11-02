@@ -3,23 +3,11 @@ function FolderViewItem(options) {
 	// TODO: rename CSS class to folder-view-item, or find a better name
 	var $container = $("<div class='desktop-icon' draggable='true'/>");
 	var $icon_wrapper = $("<div class='icon-wrapper'/>").appendTo($container);
-	var $icon = options.icon;
-	var $selection_effect = $("<div class='selection-effect'/>");
-
+	var $selection_effect = $("<div class='selection-effect'/>").appendTo($icon_wrapper);
 	var $title = $("<div class='title'/>").text(options.title);
+	var $icon;
 	$container.append($icon_wrapper, $title);
-	$icon_wrapper.append($icon, $selection_effect);
 
-	var src = $icon.attr("src");
-	if (src) {
-		$selection_effect[0].style.setProperty("--icon-image", `url("${src}")`);
-	}
-	$icon.on("load", function () {
-		if ($icon.attr("src") !== src) {
-			src = $icon.attr("src");
-			$selection_effect[0].style.setProperty("--icon-image", `url("${src}")`);
-		}
-	});
 	// TODO: handle the loading state display in some intentional way
 
 	// TODO: or if set to "web" mode, single click
@@ -41,5 +29,26 @@ function FolderViewItem(options) {
 		height: grid_size_y,
 	});
 	$container[0].dataset.filePath = options.file_path;
-	return { element: $container[0] };
+
+	this.element = $container[0];
+
+	this.setIcons = (icons) => {
+		if ($icon) {
+			$icon.remove();
+		}
+		const size = DESKTOP_ICON_SIZE;
+		const src = icons[size];
+		$icon = $("<img class='icon'/>");
+		$icon.attr({
+			draggable: false,
+			src,
+			width: size,
+			height: size,
+		});
+		$selection_effect[0].style.setProperty("--icon-image", `url("${src}")`);
+		$icon_wrapper.prepend($icon);
+	};
+	if (options.icons) {
+		this.setIcons(options.icons);
+	}
 }
