@@ -8,13 +8,38 @@ body {
 	display: flex;
 	flex-direction: row;
 	padding: 5px;
+	align-items: center;
+}
+#address-compound-input {
+	background: var(--Window);
+	color: var(--WindowText);
+	flex: 1;
+	display: flex;
+}
+#address-icon {
+	display: inline-block;
+	margin-right: 5px;
+	margin-left: 1px;
+	align-self: center;
 }
 #address {
 	flex: 1;
-	background: var(--Window);
-	color: var(--WindowText);
-	border: inset 1px gray; /* not particularly accurate */
+	background: transparent;
+	color: inherit;
+	border: 0;
+	outline: 0;
 }
+#address-dropdown-button {
+	width: 17px;
+	height: 19px;
+	padding: 0;
+}
+label[for="address"] {
+	margin-right: 5px;
+	font-family: sans-serif;
+	font-size: 10pt;
+}
+
 button {
 	padding: 5px;
 }

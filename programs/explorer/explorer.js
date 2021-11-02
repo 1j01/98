@@ -128,6 +128,7 @@ var go_to = function (address) {
 
 	function address_determined() {
 		$("#address").val(address);
+		$("#address-icon").attr("src", getIconPath(get_icon_for_address(address), 16));
 
 		set_title(get_display_name_for_address(address));
 		set_icon(get_icon_for_address(address));

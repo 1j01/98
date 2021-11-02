@@ -22,11 +22,6 @@
 		<link href="explorer.css" rel="stylesheet" type="text/css">
 	</head>
 	<body>
-		<div id="address-bar">
-			<!-- TODO: compound input with an icon representing the resource, and a dropdown -->
-			<input type="text" id="address" autocomplete="off">
-			<button id="go">Go</button>
-		</div>
 		<div class="toolbar windows-explorer-toolbar">
 			<button class="lightweight" disabled id="back">
 				<span class="label-text">Back</span>
@@ -72,7 +67,17 @@
 			<button class="lightweight" disabled id="mail">Mail<button class="lightweight" disabled id="mail-menu-button">&#x25BE;</button></button>
 			<button class="lightweight" disabled id="print">Print</button>
 		</div> -->
-		<div id="content"></div>
+		<div id="address-bar">
+			<!-- @TODO: d access key -->
+			<label for="address">Address</label>
+			<div id="address-compound-input" class="inset-deep">
+				<img id="address-icon" width="16" height="16" src="../../images/icons/folder-16x16.png" alt="">
+				<input type="text" id="address" autocomplete="off">
+				<button id="address-dropdown-button" disabled>&#x25BC;</button>
+			</div>
+			<!-- TODO: compound input with an icon representing the resource, and a dropdown -->
+		</div>
+		<div id="content" class="inset-deep"></div>
 		<!-- TODO: status bar including thing that says "Internet" or "My Computer" -->
 
 		<!-- TODO: DRY -->
