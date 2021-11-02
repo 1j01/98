@@ -2,6 +2,7 @@ function show_help(options) {
 	const $help_window = $Window({
 		title: options.title || "Help Topics",
 		icons: iconsAtTwoSizes("chm"),
+		resizable: true,
 	})
 	$help_window.addClass("help-window");
 
