@@ -50,15 +50,22 @@ const set_dragging_file_paths = (dragging_file_paths) => {
 	}
 };
 
-function $FolderView(folder_path) {
+function FolderView(folder_path) {
+	const self = this;
 	// TODO: ensure a trailing slash / use path.join where appropriate
 
 	// TODO: different view options, e.g. list view, details view, large icons view (arranged towards the top primarily instead of the left), desktop view
 
 	var $folder_view = $(`<div class="folder-view" tabindex="0">`);
 
+	this.element = $folder_view[0];
+
+	this.add_item = (folder_view_item) => {
+		$folder_view.append(folder_view_item.element);
+	};
+
 	// TODO: sort (by name I guess)
-	$folder_view.arrange_icons = function () {
+	this.arrange_icons = function () {
 		var x = 0;
 		var y = 0;
 		// $folder_view.find(".desktop-icon")
@@ -95,7 +102,7 @@ function $FolderView(folder_path) {
 		}
 	}
 
-	$folder_view.delete_selected = function () {
+	self.delete_selected = function () {
 		const selected_file_paths = $folder_view.find(".desktop-icon.selected")
 			.toArray().map((icon_el) => icon_el.dataset.filePath);
 		if (selected_file_paths.length === 0) {
@@ -127,7 +134,7 @@ function $FolderView(folder_path) {
 				if (num_deleted < selected_file_paths.length) {
 					alert(`Failed to delete ${selected_file_paths.length - num_deleted} items.`);
 				}
-				// $folder_view.refresh();
+				// self.refresh();
 			});
 		}
 	};
@@ -155,13 +162,13 @@ function $FolderView(folder_path) {
 				// add_icon_for_bfs_file(path, x, y);
 				add_icon_for_bfs_file(fname, x, y);
 			}
-			$folder_view.arrange_icons();
+			self.arrange_icons();
 		});
 	});
 
 	// NOTE: in Windows, icons normally only get moved if they go offscreen (by maybe half the grid size)
 	// we're essentially handling it as if Auto Arrange is on
-	$(window).on("resize", $folder_view.arrange_icons);
+	$(window).on("resize", self.arrange_icons);
 
 	// Handle selecting icons
 	(function () {
@@ -276,7 +283,7 @@ function $FolderView(folder_path) {
 				$folder_view.find(".desktop-icon").addClass("selected");
 				e.preventDefault();
 			} else if (e.key == "Delete") {
-				$folder_view.delete_selected();
+				self.delete_selected();
 				e.preventDefault();
 			}
 		}
@@ -367,6 +374,4 @@ function $FolderView(folder_path) {
 			});
 		});
 	});
-
-	return $folder_view;
 }

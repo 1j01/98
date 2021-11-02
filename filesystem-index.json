@@ -3653,12 +3653,12 @@
   "safari-pinned-tab.svg": null,
   "site.webmanifest": null,
   "src": {
-    "$FolderView.js": null,
     "$IframeWindow.js": null,
     "$desktop.js": null,
     "$start-menu.js": null,
     "$taskbar-time.js": null,
     "3d-fun.js": null,
+    "FolderView.js": null,
     "FolderViewItem.js": null,
     "Task.js": null,
     "filesystem-setup.js": null,

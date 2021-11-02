@@ -69,11 +69,11 @@ function get_icon_for_address(address) {
 	}
 }
 
-var $folder_view, $iframe;
+var folder_view, $iframe;
 var go_to = function (address) {
-	if ($folder_view) {
-		$folder_view.remove();
-		$folder_view = null;
+	if (folder_view) {
+		folder_view.element.remove();
+		folder_view = null;
 	}
 	if ($iframe) {
 		$iframe.remove();
@@ -159,13 +159,13 @@ var go_to = function (address) {
 			// 	set_title($iframe[0].contentDocument.title + " - Explorer"); // " - Microsoft Internet Explorer"
 			// });
 		} else {
-			$folder_view = $FolderView(address);
-			$folder_view.appendTo("#content");
+			folder_view = new FolderView(address);
+			$(folder_view.element).appendTo("#content");
 		}
 	}
 };
 
-// called from $FolderView
+// called from FolderView
 function executeFile(file_path) {
 	// I don't think this withFilesystem is necessary
 	withFilesystem(function () {
@@ -221,7 +221,7 @@ $(function () {
 	});
 
 	$("#delete").on("click", function () {
-		$folder_view.delete_selected();
+		folder_view.delete_selected();
 	});
 
 	var up_address = (address) =>

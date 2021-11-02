@@ -1,9 +1,9 @@
 
 var $desktop = $(".desktop");
-$desktop.css("touch-action", "none"); // TODO: should this be in $FolderView, or is it to prevent scrolling the page or what?
+$desktop.css("touch-action", "none"); // TODO: should this be in FolderView, or is it to prevent scrolling the page or what?
 
-var $folder_view = $FolderView(desktop_folder_path);
-$folder_view.appendTo($desktop);
+var folder_view = new FolderView(desktop_folder_path);
+$(folder_view.element).appendTo($desktop);
 
 // Prevent drag and drop from redirecting the page (the browser default behavior for files)
 // TODO: only prevent if there are actually files; there's nothing that uses text inputs atm that's not in an iframe, so it doesn't matter YET (afaik)
