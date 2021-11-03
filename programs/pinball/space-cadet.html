@@ -133,18 +133,51 @@
 		}
 
 		window.alert = (message) => {
-			new $Window({
-				title: "Alert",
+			const $win = new $Window({
+				title: "3D Pinball",
 				resizable: false,
 				innerWidth: 400,
 				maximizeButton: false,
 				minimizeButton: false,
-			}).$content.append(
+			});
+			$win.$content.append(
+				$("<img>").attr("src", "../../images/icons/error-32x32-8bpp.png").css({
+					width: "32px",
+					height: "32px",
+					margin: "16px",
+					display: "block",
+					float: "left",
+				}),
 				$("<p>").text(message).css({
 					whiteSpace: "pre-wrap",
+					textAlign: "left",
+					fontFamily: "MS Sans Serif, Arial, sans-serif",
+					fontSize: "14px",
 				})
-			);
+			).css({
+				textAlign: "center",
+			});
+			// emscripten (or the game) is overzealously preventing default behavior for events,
+			// so we need to handle this default button behavior manually
+			$win.$Button("OK", () => $win.close()).focus().on("keydown", (e) => {
+				if (e.key === "Enter") {
+					$win.close();
+				}
+			}).on("keyup", (e) => {
+				if (e.key === " ") {
+					$win.close();
+				}
+			}).css({
+				width: 100,
+				margin: "16px",
+				alignSelf: "center",
+			}).addClass("default");
+			$win.center();
 		};
+
+		// setTimeout(()=> {
+		// 	alert("TEST message.\n\nApparently it doesn't get centered without a delay.");
+		// }, 500);
 
         var statusElement = document.getElementById('status');
         var progressElement = document.getElementById('progress');
