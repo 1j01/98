@@ -5,11 +5,20 @@ const grid_size_y_for_large_icons = 75;
 const grid_size_x_for_small_icons = 150;
 const grid_size_y_for_small_icons = 16;
 
+window.resetAllFolderCustomizations = () => {
+	for (let i = 0; i < localStorage.length; i++) {
+		if (localStorage.key(i).startsWith("folder-view-mode:")) {
+			localStorage.removeItem(localStorage.key(i));
+		}
+	}
+}
+
 const icon_size_by_view_mode = {
 	LARGE_ICONS: 32,
 	SMALL_ICONS: 16,
 	DETAILS: 16,
 	LIST: 16,
+	DESKTOP: 32,
 };
 
 FolderView.VIEW_MODES = {
@@ -17,6 +26,15 @@ FolderView.VIEW_MODES = {
 	SMALL_ICONS: "SMALL_ICONS",
 	DETAILS: "DETAILS",
 	LIST: "LIST",
+	DESKTOP: "DESKTOP",
+};
+
+FolderView.SORT_MODES = {
+	NAME: "NAME",
+	TYPE: "TYPE",
+	SIZE: "SIZE",
+	DATE: "DATE",
+	// there are many other attributes, some for specific types of files/objects
 };
 
 // TODO: what's the "right" way to do file type / program associations for icons?
@@ -67,11 +85,9 @@ const set_dragging_file_paths = (dragging_file_paths) => {
 	}
 };
 
-function FolderView(folder_path) {
+function FolderView(folder_path, { asDesktop = false } = {}) {
 	const self = this;
 	// TODO: ensure a trailing slash / use path.join where appropriate
-
-	// TODO: different view options, e.g. list view, details view, large icons view (arranged towards the top primarily instead of the left), desktop view
 
 	var $folder_view = $(`<div class="folder-view" tabindex="0">`);
 
@@ -84,12 +100,16 @@ function FolderView(folder_path) {
 		this.items.push(folder_view_item);
 	};
 
-	this.view_mode = FolderView.VIEW_MODES.LARGE_ICONS;
-	var storage_key = `folder-view-mode:${folder_path}`;
+	var storage_key = `folder-view-mode:${asDesktop ? "desktop" : folder_path}`;
 	try {
-		this.view_mode = localStorage.getItem(storage_key) ?? FolderView.VIEW_MODES.LARGE_ICONS;
+		this.view_mode = localStorage.getItem(storage_key);
 	} catch (e) {
 		console.error("Can't read localStorage:", e);
+	}
+	if (!FolderView.VIEW_MODES[this.view_mode]) {
+		this.view_mode = asDesktop ?
+			FolderView.VIEW_MODES.DESKTOP :
+			FolderView.VIEW_MODES.LARGE_ICONS;
 	}
 	this.element.dataset.viewMode = this.view_mode;
 	this.set_view_mode = (mode) => {
@@ -107,9 +127,15 @@ function FolderView(folder_path) {
 	};
 
 	// TODO: sort (by name I guess)
-	this.arrange_icons = function () {
-		var grid_size_x = self.view_mode === FolderView.VIEW_MODES.LARGE_ICONS ? grid_size_x_for_large_icons : grid_size_x_for_small_icons;
-		var grid_size_y = self.view_mode === FolderView.VIEW_MODES.LARGE_ICONS ? grid_size_y_for_large_icons : grid_size_y_for_small_icons;
+	this.arrange_icons = () => {
+		var horizontal_first =
+			this.view_mode === FolderView.VIEW_MODES.LARGE_ICONS ||
+			this.view_mode === FolderView.VIEW_MODES.SMALL_ICONS;
+		var large_icons =
+			self.view_mode === FolderView.VIEW_MODES.LARGE_ICONS ||
+			self.view_mode === FolderView.VIEW_MODES.DESKTOP;
+		var grid_size_x = large_icons ? grid_size_x_for_large_icons : grid_size_x_for_small_icons;
+		var grid_size_y = large_icons ? grid_size_y_for_large_icons : grid_size_y_for_small_icons;
 		var x = 0;
 		var y = 0;
 		// $folder_view.find(".desktop-icon")
@@ -127,10 +153,18 @@ function FolderView(folder_path) {
 				left: x,
 				top: y,
 			});
-			y += grid_size_y;
-			if (y + grid_size_y > innerHeight) {
+			if (horizontal_first) {
 				x += grid_size_x;
-				y = 0;
+				if (x + grid_size_x > innerWidth) {
+					y += grid_size_y;
+					x = 0;
+				}
+			} else {
+				y += grid_size_y;
+				if (y + grid_size_y > innerHeight) {
+					x += grid_size_x;
+					y = 0;
+				}
 			}
 		});
 		const icon_size = icon_size_by_view_mode[self.view_mode] || 32;

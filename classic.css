@@ -57,13 +57,14 @@
 .desktop-icon {
 	position: absolute;
 }
-.folder-view:not([data-view-mode="LARGE_ICONS"]) .desktop-icon {
+.folder-view:not([data-view-mode="DESKTOP"]):not([data-view-mode="LARGE_ICONS"]) .desktop-icon {
 	display: flex;
 	flex-direction: row;
-	min-width: 150px;
+	width: 150px;
 	height: 16px;
 }
 
+.folder-view[data-view-mode="DESKTOP"] .desktop-icon,
 .folder-view[data-view-mode="LARGE_ICONS"] .desktop-icon {
 	width: 75px;
 	height: 75px;
@@ -77,10 +78,11 @@
 	color: white;
 	position: relative;
 }
+.folder-view[data-view-mode="DESKTOP"] .desktop-icon .title,
 .folder-view[data-view-mode="LARGE_ICONS"] .desktop-icon .title {
 	margin-top: 5px;
 }
-.folder-view:not([data-view-mode="LARGE_ICONS"]) .desktop-icon .title {
+.folder-view:not([data-view-mode="DESKTOP"]):not([data-view-mode="LARGE_ICONS"]) .desktop-icon .title {
 	text-align: start;
 	white-space: nowrap;
 }

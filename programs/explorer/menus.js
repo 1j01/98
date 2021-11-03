@@ -227,6 +227,11 @@ var menus = {
 			],
 		},
 		MENU_DIVIDER,
+		// {
+		// 	item: "As Desktop (Debug)",
+		// 	checkbox: checkbox_for_view_mode("DESKTOP"),
+		// 	enabled: ()=> !!folder_view,
+		// },
 		{
 			item: "Lar&ge Icons",
 			checkbox: checkbox_for_view_mode("LARGE_ICONS"),
@@ -245,7 +250,8 @@ var menus = {
 		{
 			item: "&Details",
 			checkbox: checkbox_for_view_mode("DETAILS"),
-			enabled: ()=> !!folder_view,
+			// enabled: ()=> !!folder_view,
+			enabled: false, // @TODO
 		},
 		MENU_DIVIDER,
 		{
