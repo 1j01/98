@@ -540,6 +540,7 @@ function Pinball() {
 		minInnerWidth: 600,
 		minInnerHeight: 416 + 20,
 		// resizable: false, // @TODO (maybe) once gray maximized button is implemented
+		override_alert: false, // to handle the alert as a fatal error, and to compensate for overzealous preventDefault()
 	});
 	const $splash = $("<div>").css({
 		position: "fixed",

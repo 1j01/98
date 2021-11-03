@@ -1,7 +1,7 @@
 
 var programs_being_loaded = 0;
 
-function enhance_iframe(iframe) {
+function enhance_iframe(iframe, { override_alert = true } = {}) {
 	var $iframe = $(iframe);
 
 	$("body").addClass("loading-program");
@@ -92,6 +92,15 @@ function enhance_iframe(iframe) {
 		// 	saveAsDialog();
 		// };
 
+		if (override_alert) {
+			iframe.contentWindow.alert = (message) => {
+				showMessageBox({
+					title: "Alert",
+					message,
+					buttons: ["OK"],
+				});
+			};
+		}
 	});
 	$iframe.css({
 		minWidth: 0,
@@ -107,7 +116,7 @@ function make_iframe_window(options) {
 	var $win = new $Window(options);
 
 	var $iframe = $win.$iframe = $("<iframe>").attr({ src: options.src });
-	enhance_iframe($iframe[0]);
+	enhance_iframe($iframe[0], options);
 	$win.$content.append($iframe);
 	var iframe = $win.iframe = $iframe[0];
 	// TODO: should I instead of having iframe.$window, have a get$Window type of dealio?
