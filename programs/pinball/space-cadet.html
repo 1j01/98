@@ -80,6 +80,8 @@
 
 <body>
 	<script src="../../lib/os-gui/MenuBar.js"></script>
+	<script src="../../lib/jquery.min.js"></script>
+	<script src="../../lib/os-gui/$Window.js"></script>
 	
 	<div id="canvas-container">
         <div class="emscripten" id="status">Downloading...</div>
@@ -129,6 +131,20 @@
 			Module.SDL2.audio.scriptProcessorNode.disconnect();
 			Module.SDL2.audio.scriptProcessorNode.connect(gainNode);
 		}
+
+		window.alert = (message) => {
+			new $Window({
+				title: "Alert",
+				resizable: false,
+				innerWidth: 400,
+				maximizeButton: false,
+				minimizeButton: false,
+			}).$content.append(
+				$("<p>").text(message).css({
+					whiteSpace: "pre-wrap",
+				})
+			);
+		};
 
         var statusElement = document.getElementById('status');
         var progressElement = document.getElementById('progress');
