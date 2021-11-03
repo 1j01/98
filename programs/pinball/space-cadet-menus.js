@@ -283,12 +283,9 @@ var menus = {
 	"&Options": [
 		{
 			item: "&Full Screen",
+			shortcut: "F4",
 			action: function () {
-				if (document.fullscreenElement) {
-					document.exitFullscreen();
-				} else {
-					document.body.requestFullscreen();
-				}
+				toggle_fullscreen();
 			},
 		},
 		{
@@ -443,4 +440,19 @@ observer.observe(menu_bar.element, {
 	attributes: true,
 	attributeFilter: ["aria-expanded"],
 	subtree: true,
+});
+
+function toggle_fullscreen() {
+	if (document.fullscreenElement) {
+		document.exitFullscreen();
+	} else {
+		document.body.requestFullscreen();
+	}
+}
+
+window.addEventListener("keydown", function (e) {
+	if (e.key === "F4") {
+		e.preventDefault();
+		toggle_fullscreen();
+	}
 });
