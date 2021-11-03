@@ -557,6 +557,17 @@ function Pinball() {
 	$win.$content.find("iframe").on("game-loaded", () => { // custom event dispatched from within the iframe
 		$splash.remove();
 	});
+	$win.$content.find("iframe").on("game-load-failed", () => { // custom event dispatched from within the iframe
+		$splash.remove();
+		// on some systems, if the game fails to load,
+		// it may result in the canvas showing through to the desktop behind the browser window
+		// let's call it a feature, tie it in thematically,
+		// and pretend like we did it on purpose, to baffle and amuse.
+		// This happens for me on Chrome on Ubuntu with Xfce, when coming out of suspend.
+		// It says "Could not create renderer / Couldn't find matching render driver"
+		// It keeps happening with live reload, but stops on a regular reload, or duplicating the tab.
+		$win.title("Wormhole Window - Space Cadet");
+	});
 	return new Task($win);
 }
 

@@ -101,12 +101,20 @@
 		document.getElementById("canvas").getContext("webgl", {preserveDrawingBuffer: true}); // to allow screenshot for freeze frame
 
 		function gameLoaded() {
-			document.getElementById("overlay-img").style.display = "";
+			let event_name = "game-loaded";
+			if (Module.SDL2) {
+				document.getElementById("overlay-img").style.display = "";
+			} else {
+				event_name = "game-load-failed";
+			}
 			// Send an event for hiding the splash screen
 			try {
-				frameElement?.dispatchEvent(new CustomEvent('game-loaded'));
+				frameElement?.dispatchEvent(new CustomEvent(event_name));
 			} catch (e) {
-				console.warn('error dispatching game-loaded event: ', e);
+				console.warn(`error dispatching ${event_name} event: `, e);
+			}
+			if (!Module.SDL2) {
+				return;
 			}
 			// set up audio muting
 			var audioContext = Module.SDL2.audioContext;
