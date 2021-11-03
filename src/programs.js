@@ -844,6 +844,20 @@ function openWinamp(file_path) {
 				}
 				return taskTitle;
 			};
+			winamp_interface.setMinimizeTarget = () => {
+				// dummy function; it won't animate to the minimize target anyway
+				// (did Winamp on Windows 98 animate minimize/restore?)
+			};
+			// @TODO: this wasn't supposed to be part of the API, but it's needed for the taskbar
+			winamp_interface.on = (event_name, callback) => {
+				if (event_name === "title-change") {
+					webamp.onTrackDidChange(callback);
+				} else if (event_name === "icon-change") {
+					// icon will never change
+				} else {
+					console.warn(`Unsupported event: ${event_name}`);
+				}
+			};
 
 			mustHaveMethods(winamp_interface, windowInterfaceMethods);
 
@@ -860,12 +874,6 @@ function openWinamp(file_path) {
 			webamp.onMinimize(function () {
 				winamp_interface.minimize();
 			});
-			const updateTitle = (_trackInfo) => {
-				const taskTitle = winamp_interface.getTitle();
-				winamp_task.$task.find(".title").text(taskTitle)
-			};
-			webamp.onTrackDidChange(updateTitle);
-			updateTitle();
 
 			$webamp.on("pointerdown", () => {
 				winamp_interface.focus();
