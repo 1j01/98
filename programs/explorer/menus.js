@@ -275,6 +275,10 @@ var menus = {
 				MENU_DIVIDER,
 				{
 					item: "&Auto Arrange",
+					checkbox: {
+						check: ()=> true,
+						toggle: ()=> {}, // @TODO
+					},
 					enabled: false, // @TODO
 				},
 			],
