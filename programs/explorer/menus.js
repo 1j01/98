@@ -2,9 +2,17 @@
 // TODO: bullet point style radio button menu items (instead of check marks)
 var checkbox_for_view_mode = function (menu_item_view_mode) {
 	return {
-		check: ()=> folder_view.get_view_mode() === menu_item_view_mode,
+		check: ()=> folder_view.config.view_mode === menu_item_view_mode,
 		toggle: ()=> {
-			folder_view.set_view_mode(menu_item_view_mode);
+			folder_view.configure({ view_mode: menu_item_view_mode });
+		},
+	};
+};
+var checkbox_for_sort_mode = function (menu_item_sort_mode) {
+	return {
+		check: ()=> folder_view.config.sort_mode === menu_item_sort_mode,
+		toggle: ()=> {
+			folder_view.configure({ sort_mode: menu_item_sort_mode });
 		},
 	};
 };
@@ -264,19 +272,19 @@ var menus = {
 				// These apparently are not checkboxes, by the way.
 				{
 					item: "by &Name",
-					enabled: false, // @TODO
+					checkbox: checkbox_for_sort_mode("NAME"),
 				},
 				{
 					item: "by &Type",
-					enabled: false, // @TODO
+					checkbox: checkbox_for_sort_mode("TYPE"),
 				},
 				{
 					item: "by &Size",
-					enabled: false, // @TODO
+					checkbox: checkbox_for_sort_mode("SIZE"),
 				},
 				{
 					item: "by &Date",
-					enabled: false, // @TODO
+					checkbox: checkbox_for_sort_mode("DATE"),
 				},
 				MENU_DIVIDER,
 				{

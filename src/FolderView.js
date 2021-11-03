@@ -100,56 +100,99 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		this.items.push(folder_view_item);
 	};
 
-	var storage_key = `folder-view-mode:${asDesktop ? "desktop" : folder_path}`;
+	// config:
+	// - [x] view_mode
+	// - [x] sort_mode
+	// - [ ] auto_arrange
+	// - [ ] icon_positions
+	// - [ ] view_as_web_page
+
+	this.config = {};
+	var storage_key = `folder-config:${asDesktop ? "desktop" : folder_path}`;
 	try {
-		this.view_mode = localStorage.getItem(storage_key);
+		const config_json = localStorage.getItem(storage_key);
+		const config = JSON.parse(config_json);
+		if (config) {
+			Object.assign(this.config, config);
+		}
 	} catch (e) {
-		console.error("Can't read localStorage:", e);
+		console.error("Failed to read folder config:", e);
 	}
-	if (!FolderView.VIEW_MODES[this.view_mode]) {
-		this.view_mode = asDesktop ?
+	// Handling defaults and invalid values at the same time
+	if (!FolderView.VIEW_MODES[this.config.view_mode]) {
+		this.config.view_mode = asDesktop ?
 			FolderView.VIEW_MODES.DESKTOP :
 			FolderView.VIEW_MODES.LARGE_ICONS;
 	}
-	this.element.dataset.viewMode = this.view_mode;
-	this.set_view_mode = (mode) => {
-		this.view_mode = mode;
-		this.element.dataset.viewMode = this.view_mode;
+	if (!FolderView.SORT_MODES[this.config.sort_mode]) {
+		this.config.sort_mode = FolderView.SORT_MODES.NAME;
+	}
+
+	this.element.dataset.viewMode = this.config.view_mode;
+	this.configure = (config_props) => {
+		Object.assign(this.config, config_props);
+		if (config_props.view_mode) {
+			this.element.dataset.viewMode = config_props.view_mode;
+		}
 		this.arrange_icons();
 		try {
-			localStorage.setItem(storage_key, mode);
+			localStorage.setItem(storage_key, JSON.stringify(this.config));
 		} catch (e) {
-			console.error("Can't write localStorage:", e);
+			console.error("Can't write to localStorage:", e);
 		}
 	};
-	this.get_view_mode = () => {
-		return this.view_mode;
-	};
 
-	// TODO: sort (by name I guess)
-	this.arrange_icons = () => {
-		var horizontal_first =
-			this.view_mode === FolderView.VIEW_MODES.LARGE_ICONS ||
-			this.view_mode === FolderView.VIEW_MODES.SMALL_ICONS;
-		var large_icons =
-			self.view_mode === FolderView.VIEW_MODES.LARGE_ICONS ||
-			self.view_mode === FolderView.VIEW_MODES.DESKTOP;
-		var grid_size_x = large_icons ? grid_size_x_for_large_icons : grid_size_x_for_small_icons;
-		var grid_size_y = large_icons ? grid_size_y_for_large_icons : grid_size_y_for_small_icons;
+	// Note: debounce is NEEDED to avoid infinite recursion
+	// in the case that stats are loading
+	this.arrange_icons = debounce(() => {
+		for (const item of this.items) {
+			if (item.pendingStatPromise) {
+				item.pendingStatPromise.then(() => {
+					self.arrange_icons();
+				});
+			}
+			// console.log(
+			// 	"item.element", item.element,
+			// 	"item.pendStatPromise", item.pendingStatPromise,
+			// 	"item.resolvedStats?.isDirectory()", item.resolvedStats ? item.resolvedStats.isDirectory() : "no resolvedStats");
+		}
+		const horizontal_first =
+			this.config.view_mode === FolderView.VIEW_MODES.LARGE_ICONS ||
+			this.config.view_mode === FolderView.VIEW_MODES.SMALL_ICONS;
+		const large_icons =
+			this.config.view_mode === FolderView.VIEW_MODES.LARGE_ICONS ||
+			this.config.view_mode === FolderView.VIEW_MODES.DESKTOP;
+		const icon_size = icon_size_by_view_mode[this.config.view_mode] || 32;
+
+		const grid_size_x = large_icons ? grid_size_x_for_large_icons : grid_size_x_for_small_icons;
+		const grid_size_y = large_icons ? grid_size_y_for_large_icons : grid_size_y_for_small_icons;
 		var x = 0;
 		var y = 0;
-		// $folder_view.find(".desktop-icon")
-		// .toArray()
-		// .sort(function(a, b){
-		// 	return (
-		// 		$(a).find(".title").text().toLowerCase() >
-		// 		$(b).find(".title").text().toLowerCase()
-		// 	);
-		// })
-		// .forEach(function(el){
-		// 	$(el).css({
-		$folder_view.find(".desktop-icon").each(function () {
-			$(this).css({
+		const dir_ness = (item) => item.resolvedStats?.isDirectory() ? 1 : 0;
+		const get_ext = (item) => (item.file_path ?? "").split(".").pop();
+		if (this.config.sort_mode === FolderView.SORT_MODES.NAME) {
+			this.items.sort((a, b) =>
+				dir_ness(b) - dir_ness(a) ||
+				(a.title ?? "").localeCompare(b.title ?? "")
+			);
+		} else if (this.config.sort_mode === FolderView.SORT_MODES.TYPE) {
+			this.items.sort((a, b) =>
+				dir_ness(b) - dir_ness(a) ||
+				(get_ext(a) ?? "").localeCompare(get_ext(b) ?? "")
+			);
+		} else if (this.config.sort_mode === FolderView.SORT_MODES.SIZE) {
+			this.items.sort((a, b) =>
+				dir_ness(b) - dir_ness(a) ||
+				(a.resolvedStats?.size ?? 0) - (b.resolvedStats?.size ?? 0)
+			);
+		} else if (this.config.sort_mode === FolderView.SORT_MODES.DATE) {
+			this.items.sort((a, b) =>
+				dir_ness(b) - dir_ness(a) ||
+				(a.resolvedStats?.mtime ?? 0) - (b.resolvedStats?.mtime ?? 0)
+			);
+		}
+		for (const item of this.items) {
+			$(item.element).css({
 				left: x,
 				top: y,
 			});
@@ -166,12 +209,13 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 					y = 0;
 				}
 			}
-		});
-		const icon_size = icon_size_by_view_mode[self.view_mode] || 32;
-		for (const item of self.items) {
+
 			item.setIconSize(icon_size);
+
+			// apply sort
+			this.element.appendChild(item.element);
 		}
-	};
+	}, 100);
 
 	function deleteRecursiveSync(fs, itemPath) {
 		if (fs.statSync(itemPath).isDirectory()) {
@@ -237,13 +281,7 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		}
 	};
 
-	// // Refresh or initially render the icons
-	// function renderContents() {
-	// 	// TODO: preserve selection if applicable
-	// 	$folder_view.find(".desktop-icon").remove();
-
-	// 	// ...
-	// }
+	// Read the folder and create icon items
 	withFilesystem(function () {
 		var fs = BrowserFS.BFSRequire('fs');
 		fs.readdir(folder_path, function (error, contents) {
@@ -254,11 +292,7 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 
 			for (var i = 0; i < contents.length; i++) {
 				var fname = contents[i];
-				var path = folder_path + fname;
-				var x = Math.random() * innerWidth;
-				var y = Math.random() * innerHeight;
-				// add_fs_item(path, x, y);
-				add_fs_item(fname, x, y);
+				add_fs_item(fname, -1000, -1000);
 			}
 			self.arrange_icons();
 		});
@@ -385,7 +419,7 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		}
 	});
 
-	var get_icon_id_for_file_path = function (file_path) {
+	var stat = function (file_path) {
 		// fs should be guaranteed available at this point
 		// as this function is currently used
 		var fs = BrowserFS.BFSRequire('fs');
@@ -394,16 +428,22 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 				if (err) {
 					return reject(err);
 				}
-				if (stats.isDirectory()) {
-					return resolve("folder");
-				}
-				var file_extension = file_extension_from_path(file_path);
-				// TODO: look inside exe for icons
-				var icon_name = file_extension_icons[file_extension];
-				resolve(icon_name || "file");
+				resolve(stats);
 			});
 		});
 	};
+	var icon_id_from_stats_and_path = function (stats, file_path) {
+		if (stats.isDirectory()) {
+			// if extending this to different folder icons,
+			// note that "folder" is relied on (for sorting)
+			return "folder";
+		}
+		var file_extension = file_extension_from_path(file_path);
+		// TODO: look inside exe for icons
+		var icon_name = file_extension_icons[file_extension];
+		return icon_name || "file";
+	};
+
 	// var add_fs_item = function(file_path, x, y){
 	var add_fs_item = function (file_name, x, y) {
 		var file_path = folder_path + file_name;
@@ -412,10 +452,14 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 			open: function () { executeFile(file_path); },
 			shortcut: file_path.match(/\.url$/),
 			file_path,
-			iconSize: icon_size_by_view_mode[self.view_mode],
+			iconSize: icon_size_by_view_mode[self.config.view_mode],
 		});
-		get_icon_id_for_file_path(file_path).then((icon_id) => {
+		item.pendingStatPromise = stat(file_path);
+		item.pendingStatPromise.then((stats) => {
+			item.pendingStatPromise = null;
+			item.resolvedStats = stats; // trying to indicate in the name the async nature
 			// @TODO: know which sizes are available
+			const icon_id = icon_id_from_stats_and_path(stats, file_path);
 			item.setIcons({
 				16: getIconPath(icon_id, 16),
 				32: getIconPath(icon_id, 32),
@@ -478,4 +522,19 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 			});
 		});
 	});
+
+	function debounce(func, wait, immediate) {
+		var timeout;
+		return function () {
+			var context = this, args = arguments;
+			var later = function () {
+				timeout = null;
+				if (!immediate) func.apply(context, args);
+			};
+			var callNow = immediate && !timeout;
+			clearTimeout(timeout);
+			timeout = setTimeout(later, wait);
+			if (callNow) func.apply(context, args);
+		};
+	};
 }

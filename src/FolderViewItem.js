@@ -1,5 +1,7 @@
 
 function FolderViewItem(options) {
+	// TODO: rename options to be consistent,
+	// like is_folder, is_shortcut, etc.
 	// TODO: rename CSS class to folder-view-item, or find a better name
 	var $container = $("<div class='desktop-icon' draggable='true'/>");
 	var $icon_wrapper = $("<div class='icon-wrapper'/>").appendTo($container);
@@ -30,12 +32,12 @@ function FolderViewItem(options) {
 	this.icons = options.icons;
 	this.iconSize = options.iconSize || DESKTOP_ICON_SIZE;
 
+	this.file_path = options.file_path;
+
 	this._update_icon = () => {
 		if (this.icons) {
+			const $old_icon = $icon;
 			const src = this.icons[this.iconSize];
-			if ($icon) {
-				$icon.remove();
-			}
 			$icon = $("<img class='icon'/>");
 			$icon.attr({
 				draggable: false,
@@ -44,7 +46,11 @@ function FolderViewItem(options) {
 				height: this.iconSize,
 			});
 			$selection_effect[0].style.setProperty("--icon-image", `url("${src}")`);
-			$icon_wrapper.prepend($icon);
+			if ($old_icon) {
+				$old_icon.replaceWith($icon);
+			} else {
+				$icon_wrapper.prepend($icon);
+			}
 		} else {
 			$icon?.remove();
 			$icon = null;
