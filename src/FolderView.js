@@ -441,7 +441,7 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		var file_extension = file_extension_from_path(file_path);
 		// TODO: look inside exe for icons
 		var icon_name = file_extension_icons[file_extension];
-		return icon_name || "file";
+		return icon_name || "document";
 	};
 
 	// var add_fs_item = function(file_path, x, y){
