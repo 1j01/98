@@ -250,11 +250,12 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		if (selected_file_paths.length === 0) {
 			return;
 		}
-		const to_name = (file_path) => file_path.split("/").pop().split(".").shift();
+		// @NOTE: if system setting for displaying file extensions was implemented, this should be changed...
+		const name_of_first = $folder_view.find(".desktop-icon.selected .title").text().replace(/\.([^.]+)$/, "");
 		showMessageBox({
 			title: selected_file_paths.length === 1 ? "Confirm File Delete" : "Confirm Multiple File Delete",
 			message: selected_file_paths.length === 1 ?
-				`Are you sure you want to delete '${to_name(selected_file_paths[0])}'?` :
+				`Are you sure you want to delete '${name_of_first}'?` :
 				`Are you sure you want to delete these ${selected_file_paths.length} items?`,
 			buttons: [
 				{
