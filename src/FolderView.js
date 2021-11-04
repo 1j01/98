@@ -250,11 +250,26 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		if (selected_file_paths.length === 0) {
 			return;
 		}
-		// TODO: pluralization, and be more specific about folders vs files vs selected items
+		const to_name = (file_path) => file_path.split("/").pop().split(".").shift();
 		showMessageBox({
-			message: `Permanently delete ${selected_file_paths.length} items?`
+			title: selected_file_paths.length === 1 ? "Confirm File Delete" : "Confirm Multiple File Delete",
+			message: selected_file_paths.length === 1 ?
+				`Are you sure you want to delete '${to_name(selected_file_paths[0])}'?` :
+				`Are you sure you want to delete these ${selected_file_paths.length} items?`,
+			buttons: [
+				{
+					label: "Yes",
+					value: "yes",
+					default: true,
+				},
+				{
+					label: "No",
+					value: "no",
+				},
+			],
+			iconID: "nuke",
 		}).then((result) => {
-			if (result !== "ok") {
+			if (result !== "yes") {
 				return;
 			}
 			withFilesystem(function () {
