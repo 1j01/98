@@ -57,6 +57,12 @@ window.showMessageBox = window.showMessageBox || (({
 				margin: "16px 2px",
 			});
 		}
+		$window.on("focusin", "button", (event) => {
+			$(event.currentTarget).addClass("default");
+		});
+		$window.on("focusout", "button", (event) => {
+			$(event.currentTarget).removeClass("default");
+		});
 		$window.center();
 	});
 	promise.$window = $window;

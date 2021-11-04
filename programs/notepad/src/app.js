@@ -68,6 +68,7 @@ function are_you_sure(callback) {
 			{
 				label: "Yes",
 				value: "save",
+				default: true,
 			},
 			{
 				label: "No",
