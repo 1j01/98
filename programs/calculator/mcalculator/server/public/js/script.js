@@ -416,6 +416,19 @@ function initialise() {
         if (ev.defaultPrevented)
             return;
         const ctrlOrMeta = ev.ctrlKey || ev.metaKey; // macOS has meta key used similarly to ctrl key on Windows
+        
+        // in case of menus, or dialogs, don't intercept
+        // but still allow it globally (i.e. with nothing focused)
+        if (
+            document.activeElement &&
+            document.activeElement !== window &&
+            document.activeElement !== document.documentElement &&
+            document.activeElement !== document.body &&
+            !document.activeElement.closest('#container')
+        ) {
+            return;
+        }
+
         if (!ev.altKey) {
             //just standard for now
             let commandStr = standardKeyboardMap[ctrlOrMeta ? `Ctrl+${ev.key.toUpperCase()}` : ev.key];
