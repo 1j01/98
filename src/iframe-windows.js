@@ -1,7 +1,7 @@
 
 var programs_being_loaded = 0;
 
-function enhance_iframe(iframe, { override_alert = true } = {}) {
+function enhance_iframe(iframe) {
 	var $iframe = $(iframe);
 
 	$("body").addClass("loading-program");
@@ -92,15 +92,11 @@ function enhance_iframe(iframe, { override_alert = true } = {}) {
 		// 	saveAsDialog();
 		// };
 
-		if (override_alert) {
-			iframe.contentWindow.alert = (message) => {
-				showMessageBox({
-					title: "Alert",
-					message,
-					buttons: ["OK"],
-				});
-			};
-		}
+		// Don't override alert (except within the specific pages)
+		// but override the underlying message box function that
+		// the alert override uses, so that the message boxes can
+		// go outside the window.
+		iframe.contentWindow.showMessageBox = showMessageBox;
 	});
 	$iframe.css({
 		minWidth: 0,
@@ -116,7 +112,7 @@ function make_iframe_window(options) {
 	var $win = new $Window(options);
 
 	var $iframe = $win.$iframe = $("<iframe>").attr({ src: options.src });
-	enhance_iframe($iframe[0], options);
+	enhance_iframe($iframe[0]);
 	$win.$content.append($iframe);
 	var iframe = $win.iframe = $iframe[0];
 	// TODO: should I instead of having iframe.$window, have a get$Window type of dealio?

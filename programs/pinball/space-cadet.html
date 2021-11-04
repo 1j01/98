@@ -82,6 +82,7 @@
 	<script src="../../lib/os-gui/MenuBar.js"></script>
 	<script src="../../lib/jquery.min.js"></script>
 	<script src="../../lib/os-gui/$Window.js"></script>
+	<script src="../../src/msgbox.js"></script>
 	
 	<div id="canvas-container">
         <div class="emscripten" id="status">Downloading...</div>
@@ -132,47 +133,26 @@
 			Module.SDL2.audio.scriptProcessorNode.connect(gainNode);
 		}
 
+
 		window.alert = (message) => {
-			const $win = new $Window({
+			const $win = showMessageBox({
 				title: "3D Pinball",
-				resizable: false,
-				innerWidth: 400,
-				maximizeButton: false,
-				minimizeButton: false,
+				message,
+				buttons: ["OK"],
+				iconID: "error", // alert will only happen for a fatal error
 			});
-			$win.$content.append(
-				$("<img>").attr("src", "../../images/icons/error-32x32-8bpp.png").css({
-					width: "32px",
-					height: "32px",
-					margin: "16px",
-					display: "block",
-					float: "left",
-				}),
-				$("<p>").text(message).css({
-					whiteSpace: "pre-wrap",
-					textAlign: "left",
-					fontFamily: "MS Sans Serif, Arial, sans-serif",
-					fontSize: "14px",
-				})
-			).css({
-				textAlign: "center",
-			});
-			// emscripten (or the game) is overzealously preventing default behavior for events,
+
+			// the emscripten app is overzealously preventing default behavior for events,
 			// so we need to handle this default button behavior manually
-			$win.$Button("OK", () => $win.close()).focus().on("keydown", (e) => {
-				if (e.key === "Enter") {
-					$win.close();
+			$win.$content.on("keydown", "button", (event)=> {
+				if (event.key === "Enter") {
+					event.currentTarget.click();
 				}
-			}).on("keyup", (e) => {
-				if (e.key === " ") {
-					$win.close();
+			}).on("keyup", "button", (event)=> {
+				if (event.key === " ") {
+					event.currentTarget.click();
 				}
-			}).css({
-				width: 100,
-				margin: "16px",
-				alignSelf: "center",
-			}).addClass("default");
-			$win.center();
+			});
 		};
 
 		// setTimeout(()=> {
