@@ -136,16 +136,15 @@
 
 
 		window.alert = (message) => {
-			const $win = showMessageBox({
+			const { $window } = showMessageBox({
 				title: "3D Pinball",
 				message,
-				buttons: ["OK"],
 				iconID: "error", // alert will only happen for a fatal error
 			});
 
 			// the emscripten app is overzealously preventing default behavior for events,
 			// so we need to handle this default button behavior manually
-			$win.$content.on("keydown", "button", (event) => {
+			$window.$content.on("keydown", "button", (event) => {
 				if (event.key === "Enter") {
 					event.currentTarget.click();
 				}

@@ -97,7 +97,7 @@ function enhance_iframe(iframe) {
 		// the alert override uses, so that the message boxes can
 		// go outside the window.
 		iframe.contentWindow.showMessageBox = (options) => {
-			showMessageBox({
+			return showMessageBox({
 				title: options.title ?? iframe.contentWindow.defaultMessageBoxTitle,
 				...options,
 			});

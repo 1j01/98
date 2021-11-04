@@ -251,7 +251,12 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 			return;
 		}
 		// TODO: pluralization, and be more specific about folders vs files vs selected items
-		if (confirm(`Permanently delete ${selected_file_paths.length} items?`)) {
+		showMessageBox({
+			message: `Permanently delete ${selected_file_paths.length} items?`
+		}).then((confirmed) => {
+			if (!confirmed) {
+				return;
+			}
 			withFilesystem(function () {
 				const fs = BrowserFS.BFSRequire('fs');
 				let num_deleted = 0;
@@ -278,7 +283,7 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 				}
 				// self.refresh();
 			});
-		}
+		});
 	};
 
 	// Read the folder and create icon items
