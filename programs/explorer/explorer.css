@@ -1,6 +1,8 @@
 body {
 	display: flex;
 	flex-direction: column;
+	background: var(--ButtonFace);
+	color: var(--ButtonText);
 }
 #address-bar,
 .toolbar {
