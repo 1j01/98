@@ -14,7 +14,7 @@ var open_start_menu = function () {
 	$start_button.addClass("selected");
 	$start_menu.attr("hidden", null);
 	$start_menu.slideDown(100); // DOWN AS IN UP (stupid jQuery)
-	$start_menu.css({ zIndex: ++$Window.Z_INDEX });
+	$start_menu.css({ zIndex: ++$Window.Z_INDEX + 5001 });
 };
 var close_start_menu = function () {
 	$start_button.removeClass("selected");

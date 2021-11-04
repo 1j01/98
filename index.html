@@ -25,7 +25,7 @@
 	</head>
 	<body>
 		<div class="desktop" style="background-image: url(images/clouds.jpg); background-size: cover; background-position: center;"></div>
-		<div class="taskbar">
+		<div class="taskbar" style="z-index: 5000;">
 			<button class="start-button toggle" title="Click here to begin.">
 				<img src="images/start.png"/><b>Start</b>
 			</button>
@@ -41,7 +41,7 @@
 				<div class="taskbar-time" ondblclick="showMessageBox({iconID: 'info', message: 'Time to get an old clock!'})"></div>
 			</div>
 		</div>
-		<div class="start-menu outset-deep" hidden style="display: none;">
+		<div class="start-menu outset-deep" hidden style="display: none; z-index: 5001;">
 			<div class="start-menu-titlebar"></div>
 			<div class="start-menu-content">
 				<h1 style="font-family: cursive; font-size: 2em;">’S tart</h1>

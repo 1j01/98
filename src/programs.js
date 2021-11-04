@@ -550,7 +550,7 @@ function Pinball() {
 		height: "100%",
 		background: "url(images/pinball-splash.png) no-repeat center center",
 		backgroundColor: "black",
-		zIndex: $Window.Z_INDEX + 500,
+		zIndex: $Window.Z_INDEX + 6000,
 	}).appendTo("body");
 	setTimeout(() => {
 		$splash.remove(); // just in case
