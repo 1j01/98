@@ -253,8 +253,8 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		// TODO: pluralization, and be more specific about folders vs files vs selected items
 		showMessageBox({
 			message: `Permanently delete ${selected_file_paths.length} items?`
-		}).then((confirmed) => {
-			if (!confirmed) {
+		}).then((result) => {
+			if (result !== "ok") {
 				return;
 			}
 			withFilesystem(function () {

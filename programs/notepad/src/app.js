@@ -51,22 +51,43 @@ function are_you_sure(callback) {
 	if (saved) {
 		return callback();
 	}
-	// TODO: Use a proper dialog window!
-	if (confirm("Discard changes to " + (file_path || file_name || default_file_name_for_saving) + "?")) {
-		callback();
-	}
-	// // TODO: warning symbol
-	// var $win = new $FormWindow;
-	// $win.$content.html("The text in the "+(file_path || file_name || default_file_name_for_saving)+" file has changed.<br><br>Do you want to save the changes?");
-	// $win.$Button("Yes", function(){
-	// 	file_save_as_ish();
-	// });
-	// $win.$Button("No", function(){
-	// 	callback();
-	// });
-	// $win.$Button("Cancel", function(){
-	// 	// NOP
-	// });
+	showMessageBox({
+		// @TODO: how does Windows 98 handle long paths?
+		// message: `Discard changes to ${file_path || file_name || default_file_name_for_title}?`,
+		// buttons: [
+		// 	{
+		// 		label: "Discard",
+		// 		action: callback,
+		// 	},
+		// 	{
+		// 		label: "Cancel",
+		// 	},
+		// ],
+		message: `The text in the ${file_path || file_name || default_file_name_for_title} file has changed.\n\nDo you want to save the changes?`,
+		buttons: [
+			{
+				label: "Yes",
+				value: "save",
+			},
+			{
+				label: "No",
+				value: "discard",
+			},
+			{
+				label: "Cancel",
+				value: "cancel",
+			},
+		],
+	}).then((result) => {
+		// console.log("message box gave", result);
+		if (result === "save") {
+			file_save(() => {
+				callback();
+			});
+		} else if (result === "discard") {
+			callback();
+		}
+	});
 }
 
 if (frameElement) {
@@ -122,7 +143,7 @@ function file_open() {
 	});
 }
 
-function file_save() {
+function file_save(saved_callback) {
 	if (!file_path) {
 		return file_save_as();
 	}
@@ -137,6 +158,7 @@ function file_save() {
 				throw error;
 			}
 			saved = true;
+			saved_callback?.();
 		});
 	});
 }

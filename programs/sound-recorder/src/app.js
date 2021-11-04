@@ -20,15 +20,50 @@ var saved = true;
 var default_file_name_for_title = "Sound";
 var default_file_name_for_saving = "Sound.wav";
 
-var are_you_sure = function (callback) {
+// @TODO: DRY with Notepad, Paint (except for messages)
+function are_you_sure(callback) {
 	if (saved) {
 		return callback();
 	}
-	// TODO: Use a proper dialog window! DRY with Notepad and Paint.
-	if (confirm("Discard changes to " + (file_path || file.name || default_file_name_for_saving) + "?")) {
-		callback();
-	}
-};
+	showMessageBox({
+		// @TODO: how does Windows 98 handle long paths?
+		// message: `Discard changes to ${file_path || file_name || default_file_name_for_title}?`,
+		// buttons: [
+		// 	{
+		// 		label: "Discard",
+		// 		action: callback,
+		// 	},
+		// 	{
+		// 		label: "Cancel",
+		// 	},
+		// ],
+		message: `The file '${file_path || file_name || default_file_name_for_title}' file has changed.\n\nDo you want to save these changes?`,
+		buttons: [
+			{
+				label: "Yes",
+				value: "save",
+			},
+			{
+				label: "No",
+				value: "discard",
+			},
+			{
+				label: "Cancel",
+				value: "cancel",
+			},
+		],
+	}).then((result) => {
+		// console.log("message box gave", result);
+		if (result === "save") {
+			file_save(() => {
+				callback();
+			});
+		} else if (result === "discard") {
+			callback();
+		}
+	});
+}
+
 
 var parse_query_string = function (queryString) {
 	var query = {};
@@ -78,7 +113,7 @@ var get_wav_file = function (file, callback) {
 	};
 };
 
-var download_wav_file = function (file) {
+var download_wav_file = function (file, callback) {
 
 	// FIXME: download click fails because of async
 	// TODO: display a window with a link to download, maybe prompt for a filename
@@ -92,10 +127,14 @@ var download_wav_file = function (file) {
 		var click = document.createEvent("Event");
 		click.initEvent("click", true, true);
 		a.dispatchEvent(click);
+		// Will the download go through if the page closes?
+		// @TODO: test
+		setTimeout(() => {
+			callback();
+		}, 100);
 	};
 
 	get_wav_file(file, gotWAV);
-
 };
 
 var update_title = function () {
@@ -305,9 +344,9 @@ var file_revert = function () {
 	if (!file.original_blob) { throw new Error("No original_blob file"); }
 	load_from_blob_warning_if_unsaved(file.original_blob);
 };
-var file_save_as = function () {
+var file_save_as = function (callback) {
 	if (file.length > 0) {
-		download_wav_file(file);
+		download_wav_file(file, callback);
 	}
 };
 var file_save = file_save_as;

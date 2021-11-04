@@ -43,7 +43,10 @@ window.showMessageBox = window.showMessageBox || (({
 			textAlign: "center",
 		});
 		for (const button of buttons) {
-			const $button = $window.$Button(button.label);
+			const $button = $window.$Button(button.label, () => {
+				resolve(button.value);
+				$window.close(); // actually happens automatically
+			});
 			if (button.default) {
 				$button.addClass("default");
 				$button.focus();
@@ -51,7 +54,7 @@ window.showMessageBox = window.showMessageBox || (({
 			$button.css({
 				width: 75,
 				height: 23,
-				margin: "16px",
+				margin: "16px 2px",
 			});
 		}
 		$window.center();
