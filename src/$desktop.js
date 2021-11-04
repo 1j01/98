@@ -167,7 +167,7 @@ uniform vec2 iResolution;
 // }
 
 const float cloudscale = 1.3;
-const float speed = 0.01;
+const float speed = 0.003;
 const float clouddark = 0.5;
 const float cloudlight = 0.3;
 const float cloudcover = 0.2;
@@ -300,7 +300,7 @@ function render(time) {
 	requestAnimationFrame(render);
 
 	skip++;
-	if (skip % 4 != 0) {
+	if (skip % 6 != 0) {
 		return;
 	}
 
