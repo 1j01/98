@@ -2,7 +2,16 @@
 // Prefer a function injected from outside an iframe,
 // which will make dialogs that can go outside the iframe.
 
-window.showMessageBox = window.showMessageBox || (({ title, message, buttons, callback, iconID = "warning" }) => {
+// Note `defaultMessageBoxTitle` handling in make_iframe_window
+// Any other default parameters need to be handled there (as it works now)
+
+window.showMessageBox = window.showMessageBox || (({
+	title = window.defaultMessageBoxTitle ?? "Alert",
+	message,
+	// buttons,
+	// callback,
+	iconID = "warning" // "error", "warning", or "info"
+}) => {
 	const $win = new $Window({
 		title,
 		resizable: false,
@@ -36,14 +45,9 @@ window.showMessageBox = window.showMessageBox || (({ title, message, buttons, ca
 	return $win;
 });
 
-if (!window.alert.overridden) {
-	window.alert = (message) => {
-		showMessageBox({
-			title: "Alert",
-			message,
-			buttons: ["OK"],
-		});
-	};
-	window.alert.overridden = true;
-}
-
+window.alert = (message) => {
+	showMessageBox({
+		message,
+		buttons: ["OK"],
+	});
+};

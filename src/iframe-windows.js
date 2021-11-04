@@ -96,7 +96,12 @@ function enhance_iframe(iframe) {
 		// but override the underlying message box function that
 		// the alert override uses, so that the message boxes can
 		// go outside the window.
-		iframe.contentWindow.showMessageBox = showMessageBox;
+		iframe.contentWindow.showMessageBox = (options) => {
+			showMessageBox({
+				title: options.title ?? iframe.contentWindow.defaultMessageBoxTitle,
+				...options,
+			});
+		};
 	});
 	$iframe.css({
 		minWidth: 0,
