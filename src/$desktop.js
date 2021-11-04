@@ -107,7 +107,7 @@ const svg_source = `
 				dur="50s" repeatCount="indefinite" />
 			</feDisplacementMap>
 			<feComponentTransfer in="displacement-map" result="displacement-debug">
-			  <feFuncA type="linear" slope="0" id='displacement-debug-feFuncA'/>
+				<feFuncA type="linear" slope="0" id='displacement-debug-feFuncA'/>
 			</feComponentTransfer>
 			<feMerge>
 				<feMergeNode in="displaced"/>
@@ -145,11 +145,8 @@ console.log(document.querySelector("feImage").href);
 // GLSL shader for animating the desktop background
 var vert = `
 attribute vec4 a_position;
-varying vec4 v_color;
-
 void main() {
-  gl_Position = vec4(a_position.xy, 0.0, 1.0);
-  v_color = gl_Position * 0.5 + 0.5;
+	gl_Position = vec4(a_position.xy, 0.0, 1.0);
 }
 `;
 var frag = `
@@ -157,14 +154,8 @@ var frag = `
 
 precision mediump float;
 
-varying vec4 v_color;
-
 uniform float iTime;
 uniform vec2 iResolution;
-
-// void main() {
-//   gl_FragColor = vec4(fract(v_color.rgb + time), 1);
-// }
 
 const float cloud_scale = 1.0;
 const float speed = 0.003;
