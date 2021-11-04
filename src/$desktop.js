@@ -166,7 +166,7 @@ uniform vec2 iResolution;
 //   gl_FragColor = vec4(fract(v_color.rgb + time), 1);
 // }
 
-const float cloud_scale = 1.3;
+const float cloud_scale = 1.0;
 const float speed = 0.003;
 const float cloud_dark = 0.5;
 const float cloud_light = 0.3;
@@ -176,8 +176,8 @@ const float sky_tint = 0.5;
 // https://airtightinteractive.com/util/hex-to-glsl/
 const vec3 sky_colour1 = vec3(0.475,0.682,0.839); // #79aed6
 const vec3 sky_colour2 = vec3(0.455,0.678,0.855); // #74adda
-// const vec3 cloud_colour1 = vec3(0.937,0.941,0.957); // #eff0f4
-// const vec3 cloud_colour2 = vec3(0.627,0.769,0.894); // #a0c4e4
+const vec3 cloud_colour1 = vec3(0.937,0.941,0.957); // #eff0f4
+const vec3 cloud_colour2 = vec3(0.627,0.769,0.894); // #a0c4e4
 
 const mat2 m = mat2( 1.6,  1.2, -1.2,  1.6 );
 
@@ -221,7 +221,7 @@ void main() {
 	uv *= cloud_scale;
 	uv -= q - time;
 	float weight = 0.8;
-	for (int i=0; i<8; i++){
+	for (int i=0; i<4; i++){
 		r += abs(weight*noise( uv ));
 		uv = m*uv + time;
 		weight *= 0.7;
@@ -265,10 +265,11 @@ void main() {
 
 	c += c1;
 	vec3 sky_colour = mix(sky_colour2, sky_colour1, p.y);
-	vec3 cloud_colour = vec3(1.1, 1.1, 1.1) * clamp((cloud_dark + cloud_light*c), 0.0, 1.0);
 
 	f = cloud_cover + cloud_alpha*f*r;
-	vec3 result = mix(sky_colour, clamp(sky_tint * sky_colour + cloud_colour, 0.0, 1.0), clamp(f + c, 0.0, 1.0));
+
+	vec3 cloud_colour = mix(cloud_colour2, cloud_colour1, f*0.4);
+	vec3 result = mix(sky_colour, cloud_colour, clamp(f + c, 0.0, 1.0));
 	gl_FragColor = vec4( result, 1.0 );
 }
 `;
