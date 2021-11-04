@@ -59,7 +59,7 @@ $(window).on("scroll focusin", () => {
 });
 
 // SVG filter for animating the desktop background
-
+/*
 const map_url = "images/swirl.webp";
 const displacement_scale = 0;
 const svg_source = `
@@ -81,7 +81,6 @@ const svg_source = `
 				width="100%" height="100%"
 				x="0" y="0"
 				flood-color="rgb(127,127,127)"
-				
 				result="identity-displacement"
 			/>
 			<feImage
@@ -114,7 +113,7 @@ const svg_source = `
 				<feMergeNode in="displaced"/>
 				<feMergeNode in="displacement-debug"/>
 			</feMerge>
-		</filter>	
+		</filter>
 	</defs></svg>
 `;
 let svg = document.getElementById("wallpaper-distortion-filter-svg");
@@ -141,3 +140,233 @@ addEventListener("keydown", (event) => {
 // 	);
 // });
 console.log(document.querySelector("feImage").href);
+*/
+
+// GLSL shader for animating the desktop background
+var vert = `
+attribute vec4 a_position;
+varying vec4 v_color;
+
+void main() {
+  gl_Position = vec4(a_position.xy, 0.0, 1.0);
+  v_color = gl_Position * 0.5 + 0.5;
+}
+`;
+var frag = `
+// Based on https://www.shadertoy.com/view/4tdSWr
+
+precision mediump float;
+
+varying vec4 v_color;
+
+uniform float iTime;
+uniform vec2 iResolution;
+
+// void main() {
+//   gl_FragColor = vec4(fract(v_color.rgb + time), 1);
+// }
+
+const float cloudscale = 1.3;
+const float speed = 0.01;
+const float clouddark = 0.5;
+const float cloudlight = 0.3;
+const float cloudcover = 0.2;
+const float cloudalpha = 8.0;
+const float skytint = 0.5;
+// #79aed6, #74adda
+const vec3 skycolour1 = vec3(0.475,0.682,0.839);
+const vec3 skycolour2 = vec3(0.455,0.678,0.855);
+
+const mat2 m = mat2( 1.6,  1.2, -1.2,  1.6 );
+
+vec2 hash( vec2 p ) {
+	p = vec2(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)));
+	return -1.0 + 2.0*fract(sin(p)*43758.5453123);
+}
+
+float noise( in vec2 p ) {
+	const float K1 = 0.366025404; // (sqrt(3)-1)/2;
+	const float K2 = 0.211324865; // (3-sqrt(3))/6;
+	vec2 i = floor(p + (p.x+p.y)*K1);
+	vec2 a = p - i + (i.x+i.y)*K2;
+	vec2 o = (a.x>a.y) ? vec2(1.0,0.0) : vec2(0.0,1.0); //vec2 of = 0.5 + 0.5*vec2(sign(a.x-a.y), sign(a.y-a.x));
+	vec2 b = a - o + K2;
+	vec2 c = a - 1.0 + 2.0*K2;
+	vec3 h = max(0.5-vec3(dot(a,a), dot(b,b), dot(c,c) ), 0.0 );
+	vec3 n = h*h*h*h*vec3( dot(a,hash(i+0.0)), dot(b,hash(i+o)), dot(c,hash(i+1.0)));
+	return dot(n, vec3(70.0));
+}
+
+float fbm(vec2 n) {
+	float total = 0.0, amplitude = 0.1;
+	for (int i = 0; i < 7; i++) {
+		total += noise(n) * amplitude;
+		n = m * n;
+		amplitude *= 0.4;
+	}
+	return total;
+}
+
+// -----------------------------------------------
+
+void main() {
+	vec2 p = gl_FragCoord.xy / iResolution.xy;
+	vec2 uv = p*vec2(iResolution.x/iResolution.y,1.0);
+	float time = iTime * speed;
+	float q = fbm(uv * cloudscale * 0.5);
+	//ridged noise shape
+	float r = 0.0;
+	uv *= cloudscale;
+	uv -= q - time;
+	float weight = 0.8;
+	for (int i=0; i<8; i++){
+		r += abs(weight*noise( uv ));
+		uv = m*uv + time;
+		weight *= 0.7;
+	}
+	//noise shape
+	float f = 0.0;
+	uv = p*vec2(iResolution.x/iResolution.y,1.0);
+	uv *= cloudscale;
+	uv -= q - time;
+	weight = 0.7;
+	for (int i=0; i<8; i++){
+		f += weight*noise( uv );
+		uv = m*uv + time;
+		weight *= 0.6;
+	}
+	f *= r + f;
+	//noise colour
+	float c = 0.0;
+	time = iTime * speed * 2.0;
+	uv = p*vec2(iResolution.x/iResolution.y,1.0);
+	uv *= cloudscale*2.0;
+	uv -= q - time;
+	weight = 0.4;
+	for (int i=0; i<7; i++){
+		c += weight*noise( uv );
+		uv = m*uv + time;
+		weight *= 0.6;
+	}
+	//noise ridge colour
+	float c1 = 0.0;
+	time = iTime * speed * 3.0;
+	uv = p*vec2(iResolution.x/iResolution.y,1.0);
+	uv *= cloudscale*3.0;
+	uv -= q - time;
+	weight = 0.4;
+	for (int i=0; i<7; i++){
+		c1 += abs(weight*noise( uv ));
+		uv = m*uv + time;
+		weight *= 0.6;
+	}
+
+	c += c1;
+	vec3 skycolour = mix(skycolour2, skycolour1, p.y);
+	vec3 cloudcolour = vec3(1.1, 1.1, 1.1) * clamp((clouddark + cloudlight*c), 0.0, 1.0);
+
+	f = cloudcover + cloudalpha*f*r;
+	vec3 result = mix(skycolour, clamp(skytint * skycolour + cloudcolour, 0.0, 1.0), clamp(f + c, 0.0, 1.0));
+	gl_FragColor = vec4( result, 1.0 );
+}
+`;
+
+var wallpaperCanvas = document.createElement("canvas");
+document.querySelector(".wallpaper").appendChild(wallpaperCanvas);
+wallpaperCanvas.style.width = "100%";
+wallpaperCanvas.style.height = "100%";
+wallpaperCanvas.style.imageRendering = "smooth";
+var gl = wallpaperCanvas.getContext('webgl');
+var vertexShader = createShader(gl, gl.VERTEX_SHADER, window.vert);
+var fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, window.frag);
+var program = createProgram(gl, vertexShader, fragmentShader);
+const timeLocation = gl.getUniformLocation(program, "iTime");
+const resolutionLocation = gl.getUniformLocation(program, "iResolution");
+var positionAttributeLocation = gl.getAttribLocation(program, "a_position");
+var positionBuffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+var positions = [
+	-1, -1,
+	-1, +1,
+	+1, +1,
+	+1, +1,
+	+1, -1,
+	-1, -1,
+];
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
+
+var skip = 0;
+function render(time) {
+	requestAnimationFrame(render);
+
+	skip++;
+	if (skip % 4 != 0) {
+		return;
+	}
+
+	resizeCanvas(gl);
+	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
+	gl.clearColor(0, 0, 0, 0);
+	gl.clear(gl.COLOR_BUFFER_BIT);
+	gl.useProgram(program);
+	gl.enableVertexAttribArray(positionAttributeLocation);
+	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+	// Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
+	var size = 2;          // 2 components per iteration
+	var type = gl.FLOAT;   // the data is 32bit floats
+	var normalize = false; // don't normalize the data
+	var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
+	var offset = 0;        // start at the beginning of the buffer
+	gl.vertexAttribPointer(
+		positionAttributeLocation, size, type, normalize, stride, offset)
+
+	gl.uniform1f(timeLocation, time * 0.001);
+	gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+	// draw
+	var primitiveType = gl.TRIANGLES;
+	var offset = 0;
+	var count = 6;
+	gl.drawArrays(primitiveType, offset, count);
+}
+requestAnimationFrame(render);
+
+function resizeCanvas(gl) {
+	var width = window.innerWidth;
+	var height = window.innerHeight;
+	var aspect = width / height;
+	var maxWidth = 640;
+	var maxHeight = 640;
+	if (width > maxWidth) {
+		width = maxWidth;
+		height = width / aspect;
+	}
+	if (height > maxHeight) {
+		height = maxHeight;
+		width = height * aspect;
+	}
+	gl.canvas.width = width;
+	gl.canvas.height = height;
+	gl.viewport(0, 0, width, height);
+}
+
+function createProgram(gl, vs, fs) {
+	const p = gl.createProgram();
+	gl.attachShader(p, vs);
+	gl.attachShader(p, fs);
+	gl.linkProgram(p);
+	if (!gl.getProgramParameter(p, gl.LINK_STATUS)) {
+		throw new Error(gl.getProgramInfoLog(p));
+	}
+	return p;
+}
+
+function createShader(gl, type, src) {
+	const s = gl.createShader(type);
+	gl.shaderSource(s, src);
+	gl.compileShader(s);
+	if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) {
+		throw new Error(gl.getShaderInfoLog(s));
+	}
+	return s;
+}
+
