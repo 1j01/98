@@ -35,10 +35,10 @@
 			<div class="taskbar-divider"></div>
 			<div class="tray inset-shallow">
 				<div class="tray-icons">
-					<img class="tray-icon" src="images/icons/task-scheduler-16x16.png" title="Task Scheduler is not ready." onclick="alert('Good day to you!')">
-					<img class="tray-icon" src="images/icons/audio-okay-16x16.png" title="Volume" onclick="alert('Have a good day!')">
+					<img class="tray-icon" src="images/icons/task-scheduler-16x16.png" title="Task Scheduler is not ready." onclick="showMessageBox({iconID: 'info', message: 'Good day to you!'})">
+					<img class="tray-icon" src="images/icons/audio-okay-16x16.png" title="Volume" onclick="showMessageBox({iconID: 'info', message: 'Have a wonderful day!'})">
 				</div>
-				<div class="taskbar-time"></div>
+				<div class="taskbar-time" ondblclick="showMessageBox({iconID: 'info', message: 'Time to get an old clock!'})"></div>
 			</div>
 		</div>
 		<div class="start-menu outset-deep" hidden style="display: none;">
