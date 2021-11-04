@@ -360,8 +360,8 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		$folder_view.on("pointerdown", ".desktop-icon", function (e) {
 			$folder_view.find(".desktop-icon").each(function (i, folder_view_icon) {
 				folder_view_icon.classList.toggle("selected", folder_view_icon === e.currentTarget);
+				folder_view_icon.classList.toggle("focused", folder_view_icon === e.currentTarget);
 			});
-			$(this).addClass("focused");
 		});
 		$folder_view.on("pointerdown", function (e) {
 			// TODO: allow a margin of mouse movement before starting selecting
