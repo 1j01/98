@@ -116,23 +116,40 @@ var get_wav_file = function (file, callback) {
 
 var download_wav_file = function (file, callback) {
 
-	// FIXME: download click fails because of async
-	// TODO: display a window with a link to download, maybe prompt for a filename
 	// TODO: use Streams API to actually write in chunks where supported
 	// (There's a WritableStream but I don't think there's been a sink specified for writing to a file)
 
 	var gotWAV = function (blob) {
-		var a = document.createElement('a');
-		a.href = URL.createObjectURL(blob);
-		a.download = file.name.replace(/(?:\.wav)?$/, ".wav");
-		var click = document.createEvent("Event");
-		click.initEvent("click", true, true);
-		a.dispatchEvent(click);
-		// Will the download go through if the page closes?
-		// @TODO: test
-		setTimeout(() => {
-			callback();
-		}, 100);
+		// We have to show a download dialog here,
+		// because browsers only allow downloads during user interaction.
+		// @TODO: use this to prompt for a filename?
+		showMessageBox({
+			// message: `Are you sure you want to download ${file_name || default_file_name_for_saving}?\n\nI'm legally obligated to ask you this.`,
+			message: `This will download a file to your computer. Continue?`,
+			buttons: [
+				{
+					label: "Yes",
+					default: true,
+					action: () => {
+						const file_name = file.name.replace(/(?:\.wav)?$/, ".wav");
+						const a = document.createElement("a");
+						a.download = file_name;
+						a.href = URL.createObjectURL(blob);
+						a.click();
+						// Will the download go through if the page closes?
+						// @TODO: test
+						setTimeout(() => {
+							saved = true;
+							a.remove();
+							callback?.();
+						}, 1000);
+					},
+				},
+				{
+					label: "No",
+				},
+			],
+		});
 	};
 
 	get_wav_file(file, gotWAV);
@@ -301,7 +318,7 @@ var reset = function () {
 	playing = false;
 	file = new AudioFile;
 	file_path = null;
-	saved = true; // the new nothingness is effectively saved, doesn't need a confirmation dialog
+	saved = true; // doesn't need a confirmation dialog
 	update();
 };
 var read_audio_data = function (file, callback) {

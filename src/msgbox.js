@@ -44,6 +44,7 @@ window.showMessageBox = window.showMessageBox || (({
 		});
 		for (const button of buttons) {
 			const $button = $window.$Button(button.label, () => {
+				button.action?.(); // API may be required for using user gesture requiring APIs
 				resolve(button.value);
 				$window.close(); // actually happens automatically
 			});
