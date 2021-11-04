@@ -190,15 +190,15 @@ float noise(in vec2 p) {
 	return dot(n, vec3(70.0));
 }
 
-float fbm(vec2 n) {
-	float total = 0.0, amplitude = 0.1;
-	for (int i = 0; i < 7; i++) {
-		total += noise(n) * amplitude;
-		n = m * n;
-		amplitude *= 0.4;
-	}
-	return total;
-}
+// float fbm(vec2 n) {
+// 	float total = 0.0, amplitude = 0.1;
+// 	for (int i = 0; i < 7; i++) {
+// 		total += noise(n) * amplitude;
+// 		n = m * n;
+// 		amplitude *= 0.4;
+// 	}
+// 	return total;
+// }
 
 // -----------------------------------------------
 
@@ -206,7 +206,7 @@ void main() {
 	vec2 p = gl_FragCoord.xy / iResolution.xy;
 	vec2 uv = p * vec2(iResolution.x / iResolution.y, 1.0);
 	float time = iTime * speed;
-	float q = fbm(uv * cloud_scale * 0.5);
+	float q = 0.0; // fbm(uv * cloud_scale * 0.5);
 	// ridged noise shape
 	float r = 0.0;
 	uv *= cloud_scale;
