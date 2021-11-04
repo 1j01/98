@@ -2,7 +2,7 @@
 <html lang="en-us">
 
 <head>
-    <meta charset="utf-8">
+	<meta charset="utf-8">
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 	<title>3D Pinball for Windows - Space Cadet</title>
 	<link href="../../lib/os-gui/layout.css" rel="stylesheet" type="text/css">
@@ -36,7 +36,7 @@
 			background-color: #000;
 			z-index: 1;
 		}
-		
+
 		canvas.emscripten,
 		#overlay-canvas {
 			position: absolute;
@@ -58,6 +58,7 @@
 			left: 0;
 			z-index: 3;
 		}
+
 		.menus {
 			position: relative;
 			z-index: 4;
@@ -83,25 +84,25 @@
 	<script src="../../lib/jquery.min.js"></script>
 	<script src="../../lib/os-gui/$Window.js"></script>
 	<script src="../../src/msgbox.js"></script>
-	
+
 	<div id="canvas-container">
-        <div class="emscripten" id="status">Downloading...</div>
-        <div class="emscripten">
-            <progress value="0" max="100" id="progress" hidden=1></progress>
-        </div>
+		<div class="emscripten" id="status">Downloading...</div>
+		<div class="emscripten">
+			<progress value="0" max="100" id="progress" hidden=1></progress>
+		</div>
 		<!-- tabindex=0 lets os-gui know to focus this control when refocusing the window, e.g. when closing the menus -->
-        <canvas class="emscripten" id="canvas" style="display:none;" oncontextmenu="event.preventDefault()"
-		tabindex="0" width="600" height="440"></canvas>
+		<canvas class="emscripten" id="canvas" style="display:none;" oncontextmenu="event.preventDefault()" tabindex="0"
+			width="600" height="440"></canvas>
 		<!-- This overlay canvas is for freezing the display while the menus are open (especially the non-thematic ImGui menus). -->
 		<canvas id="overlay-canvas" width="600" height="440"></canvas>
 		<!-- This overlay image covers up the bit of the ImGui menus that are rendered over the game (visually and functionally). -->
 		<img id="overlay-img" draggable="false" src="../../images/pinball-overlay.png" style="display: none;">
 	</div>
 
-    <!--<textarea class="emscripten" id="output" rows="8"></textarea>-->
+	<!--<textarea class="emscripten" id="output" rows="8"></textarea>-->
 
 	<script>
-		document.getElementById("canvas").getContext("webgl", {preserveDrawingBuffer: true}); // to allow screenshot for freeze frame
+		document.getElementById("canvas").getContext("webgl", { preserveDrawingBuffer: true }); // to allow screenshot for freeze frame
 
 		function gameLoaded() {
 			let event_name = "game-loaded";
@@ -122,10 +123,10 @@
 			// set up audio muting
 			var audioContext = Module.SDL2.audioContext;
 			var gainNode = audioContext.createGain();
-			window.mute_game_audio = function() {
+			window.mute_game_audio = function () {
 				gainNode.gain.value = 0;
 			};
-			window.unmute_game_audio = function() {
+			window.unmute_game_audio = function () {
 				gainNode.gain.value = 1;
 			};
 			gainNode.connect(audioContext.destination);
@@ -144,11 +145,11 @@
 
 			// the emscripten app is overzealously preventing default behavior for events,
 			// so we need to handle this default button behavior manually
-			$win.$content.on("keydown", "button", (event)=> {
+			$win.$content.on("keydown", "button", (event) => {
 				if (event.key === "Enter") {
 					event.currentTarget.click();
 				}
-			}).on("keyup", "button", (event)=> {
+			}).on("keyup", "button", (event) => {
 				if (event.key === " ") {
 					event.currentTarget.click();
 				}
@@ -159,88 +160,88 @@
 		// 	alert("TEST message.\n\nApparently it doesn't get centered without a delay.");
 		// }, 500);
 
-        var statusElement = document.getElementById('status');
-        var progressElement = document.getElementById('progress');
+		var statusElement = document.getElementById('status');
+		var progressElement = document.getElementById('progress');
 
-        var Module = {
-            preRun: [],
-            postRun: [gameLoaded],
-            print: (function () {
-                var element = document.getElementById('output');
-                if (element) element.value = ''; // clear browser cache
-                return function (text) {
-                    if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-                    // These replacements are necessary if you render to raw HTML
-                    //text = text.replace(/&/g, "&amp;");
-                    //text = text.replace(/</g, "&lt;");
-                    //text = text.replace(/>/g, "&gt;");
-                    //text = text.replace('\n', '<br>', 'g');
-                    console.log(text);
-                    /*if (element) {
-                        element.value += text + "\n";
-                        element.scrollTop = element.scrollHeight; // focus on bottom
-                    }*/
-                };
-            })(),
-            printErr: function (text) {
-                if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
-                console.error(text);
-            },
-            canvas: (function () {
-                var canvas = document.getElementById('canvas');
+		var Module = {
+			preRun: [],
+			postRun: [gameLoaded],
+			print: (function () {
+				var element = document.getElementById('output');
+				if (element) element.value = ''; // clear browser cache
+				return function (text) {
+					if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+					// These replacements are necessary if you render to raw HTML
+					//text = text.replace(/&/g, "&amp;");
+					//text = text.replace(/</g, "&lt;");
+					//text = text.replace(/>/g, "&gt;");
+					//text = text.replace('\n', '<br>', 'g');
+					console.log(text);
+					/*if (element) {
+						element.value += text + "\n";
+						element.scrollTop = element.scrollHeight; // focus on bottom
+					}*/
+				};
+			})(),
+			printErr: function (text) {
+				if (arguments.length > 1) text = Array.prototype.slice.call(arguments).join(' ');
+				console.error(text);
+			},
+			canvas: (function () {
+				var canvas = document.getElementById('canvas');
 
-                // As a default initial behavior, pop up an alert when webgl context is lost. To make your
-                // application robust, you may want to override this behavior before shipping!
-                // See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
-                canvas.addEventListener("webglcontextlost", function (e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
+				// As a default initial behavior, pop up an alert when webgl context is lost. To make your
+				// application robust, you may want to override this behavior before shipping!
+				// See http://www.khronos.org/registry/webgl/specs/latest/1.0/#5.15.2
+				canvas.addEventListener("webglcontextlost", function (e) { alert('WebGL context lost. You will need to reload the page.'); e.preventDefault(); }, false);
 
-                return canvas;
-            })(),
-            setStatus: function (text) {
-                if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
-                if (text === Module.setStatus.last.text) return;
+				return canvas;
+			})(),
+			setStatus: function (text) {
+				if (!Module.setStatus.last) Module.setStatus.last = { time: Date.now(), text: '' };
+				if (text === Module.setStatus.last.text) return;
 
-                var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
-                var now = Date.now();
-                if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
-                Module.setStatus.last.time = now;
-                Module.setStatus.last.text = text;
-                if (m) {
-                    text = m[1];
-                    progressElement.value = parseInt(m[2]) * 100;
-                    progressElement.max = parseInt(m[4]) * 100;
-                    progressElement.hidden = false;
-                } else {
-                    progressElement.value = null;
-                    progressElement.max = null;
-                    progressElement.hidden = true;
+				var m = text.match(/([^(]+)\((\d+(\.\d+)?)\/(\d+)\)/);
+				var now = Date.now();
+				if (m && now - Module.setStatus.last.time < 30) return; // if this is a progress update, skip it if too soon
+				Module.setStatus.last.time = now;
+				Module.setStatus.last.text = text;
+				if (m) {
+					text = m[1];
+					progressElement.value = parseInt(m[2]) * 100;
+					progressElement.max = parseInt(m[4]) * 100;
+					progressElement.hidden = false;
+				} else {
+					progressElement.value = null;
+					progressElement.max = null;
+					progressElement.hidden = true;
 
-                    var canvas = document.getElementById('canvas');
-                    canvas.style.display = "";
-                }
-                statusElement.innerHTML = text;
+					var canvas = document.getElementById('canvas');
+					canvas.style.display = "";
+				}
+				statusElement.innerHTML = text;
 
-                if (text === "") {
-                    statusElement.style.display = "none";
-                    progressElement.style.display = "none";
-                } else {
-                    statusElement.style.display = "";
-                    progressElement.style.display = "";
-                }
-            },
-            totalDependencies: 0,
-            monitorRunDependencies: function (left) {
-                this.totalDependencies = Math.max(this.totalDependencies, left);
-                Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
-            }
-        };
-        Module.setStatus('Downloading...');
-        window.onerror = function () {
-            Module.setStatus('Exception thrown, see JavaScript console');
-            Module.setStatus = function (text) {
-                if (text) Module.printErr('[post-exception status] ' + text);
-            };
-        };
+				if (text === "") {
+					statusElement.style.display = "none";
+					progressElement.style.display = "none";
+				} else {
+					statusElement.style.display = "";
+					progressElement.style.display = "";
+				}
+			},
+			totalDependencies: 0,
+			monitorRunDependencies: function (left) {
+				this.totalDependencies = Math.max(this.totalDependencies, left);
+				Module.setStatus(left ? 'Preparing... (' + (this.totalDependencies - left) + '/' + this.totalDependencies + ')' : 'All downloads complete.');
+			}
+		};
+		Module.setStatus('Downloading...');
+		window.onerror = function () {
+			Module.setStatus('Exception thrown, see JavaScript console');
+			Module.setStatus = function (text) {
+				if (text) Module.printErr('[post-exception status] ' + text);
+			};
+		};
 	</script>
 	<script async="" src="SpaceCadetPinball.js"></script>
 	<script src="space-cadet-menus.js"></script>
