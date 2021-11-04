@@ -20,11 +20,11 @@ window.showMessageBox = window.showMessageBox || (({
 			maximizeButton: false,
 			minimizeButton: false,
 		});
-		$window.$content.append(
+		
+		$("<div>").append(
 			$("<img width='32' height='32'>").attr("src", `../../images/icons/${iconID}-32x32-8bpp.png`).css({
 				margin: "16px",
 				display: "block",
-				float: "left",
 			}),
 			$("<p>").text(message).css({
 				whiteSpace: "pre-wrap",
@@ -32,8 +32,14 @@ window.showMessageBox = window.showMessageBox || (({
 				fontFamily: "MS Sans Serif, Arial, sans-serif",
 				fontSize: "14px",
 				marginTop: "22px",
+				flex: 1,
 			})
 		).css({
+			display: "flex",
+			flexDirection: "row",
+		}).appendTo($window.$content);
+
+		$window.$content.css({
 			textAlign: "center",
 		});
 		for (const button of buttons) {
