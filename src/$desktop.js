@@ -165,28 +165,28 @@ const float cloud_cover = 0.2;
 const float cloud_alpha = 8.0;
 const float sky_tint = 0.5;
 // https://airtightinteractive.com/util/hex-to-glsl/
-const vec3 sky_colour1 = vec3(0.475,0.682,0.839); // #79aed6
-const vec3 sky_colour2 = vec3(0.455,0.678,0.855); // #74adda
-const vec3 cloud_colour1 = vec3(0.937,0.941,0.957); // #eff0f4
-const vec3 cloud_colour2 = vec3(0.627,0.769,0.894); // #a0c4e4
+const vec3 sky_colour1 = vec3(0.475, 0.682, 0.839); // #79aed6
+const vec3 sky_colour2 = vec3(0.455, 0.678, 0.855); // #74adda
+const vec3 cloud_colour1 = vec3(0.937, 0.941, 0.957); // #eff0f4
+const vec3 cloud_colour2 = vec3(0.627, 0.769, 0.894); // #a0c4e4
 
-const mat2 m = mat2( 1.6,  1.2, -1.2,  1.6 );
+const mat2 m = mat2(1.6, 1.2, -1.2, 1.6);
 
-vec2 hash( vec2 p ) {
-	p = vec2(dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)));
-	return -1.0 + 2.0*fract(sin(p)*43758.5453123);
+vec2 hash(vec2 p) {
+	p = vec2(dot(p, vec2(127.1, 311.7)), dot(p, vec2(269.5, 183.3)));
+	return -1.0 + 2.0 * fract(sin(p) * 43758.5453123);
 }
 
-float noise( in vec2 p ) {
+float noise(in vec2 p) {
 	const float K1 = 0.366025404; // (sqrt(3)-1)/2;
 	const float K2 = 0.211324865; // (3-sqrt(3))/6;
-	vec2 i = floor(p + (p.x+p.y)*K1);
-	vec2 a = p - i + (i.x+i.y)*K2;
-	vec2 o = (a.x>a.y) ? vec2(1.0,0.0) : vec2(0.0,1.0); //vec2 of = 0.5 + 0.5*vec2(sign(a.x-a.y), sign(a.y-a.x));
+	vec2 i = floor(p + (p.x + p.y) * K1);
+	vec2 a = p - i + (i.x + i.y) * K2;
+	vec2 o = (a.x > a.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0); // vec2 of = 0.5 + 0.5*vec2(sign(a.x-a.y), sign(a.y-a.x));
 	vec2 b = a - o + K2;
-	vec2 c = a - 1.0 + 2.0*K2;
-	vec3 h = max(0.5-vec3(dot(a,a), dot(b,b), dot(c,c) ), 0.0 );
-	vec3 n = h*h*h*h*vec3( dot(a,hash(i+0.0)), dot(b,hash(i+o)), dot(c,hash(i+1.0)));
+	vec2 c = a - 1.0 + 2.0 * K2;
+	vec3 h = max(0.5 - vec3(dot(a, a), dot(b, b), dot(c, c)), 0.0);
+	vec3 n = h * h * h * h * vec3(dot(a, hash(i + 0.0)), dot(b, hash(i + o)), dot(c, hash(i + 1.0)));
 	return dot(n, vec3(70.0));
 }
 
@@ -204,64 +204,64 @@ float fbm(vec2 n) {
 
 void main() {
 	vec2 p = gl_FragCoord.xy / iResolution.xy;
-	vec2 uv = p*vec2(iResolution.x/iResolution.y,1.0);
+	vec2 uv = p * vec2(iResolution.x / iResolution.y, 1.0);
 	float time = iTime * speed;
 	float q = fbm(uv * cloud_scale * 0.5);
-	//ridged noise shape
+	// ridged noise shape
 	float r = 0.0;
 	uv *= cloud_scale;
 	uv -= q - time;
 	float weight = 0.8;
-	for (int i=0; i<4; i++){
-		r += abs(weight*noise( uv ));
-		uv = m*uv + time;
+	for (int i = 0; i < 4; i++) {
+		r += abs(weight * noise(uv));
+		uv = m * uv + time;
 		weight *= 0.7;
 	}
-	//noise shape
+	// noise shape
 	float f = 0.0;
-	uv = p*vec2(iResolution.x/iResolution.y,1.0);
+	uv = p * vec2(iResolution.x / iResolution.y, 1.0);
 	uv *= cloud_scale;
 	uv -= q - time;
 	weight = 0.7;
-	for (int i=0; i<8; i++){
-		f += weight*noise( uv );
-		uv = m*uv + time;
+	for (int i = 0; i < 8; i++) {
+		f += weight * noise(uv);
+		uv = m * uv + time;
 		weight *= 0.6;
 	}
 	f *= r + f;
-	//noise colour
+	// noise colour
 	float c = 0.0;
 	time = iTime * speed * 2.0;
-	uv = p*vec2(iResolution.x/iResolution.y,1.0);
-	uv *= cloud_scale*2.0;
+	uv = p * vec2(iResolution.x / iResolution.y, 1.0);
+	uv *= cloud_scale * 2.0;
 	uv -= q - time;
 	weight = 0.4;
-	for (int i=0; i<7; i++){
-		c += weight*noise( uv );
-		uv = m*uv + time;
+	for (int i = 0; i < 7; i++) {
+		c += weight * noise(uv);
+		uv = m * uv + time;
 		weight *= 0.6;
 	}
-	//noise ridge colour
+	// noise ridge colour
 	float c1 = 0.0;
 	time = iTime * speed * 3.0;
-	uv = p*vec2(iResolution.x/iResolution.y,1.0);
-	uv *= cloud_scale*3.0;
+	uv = p * vec2(iResolution.x / iResolution.y, 1.0);
+	uv *= cloud_scale * 3.0;
 	uv -= q - time;
 	weight = 0.4;
-	for (int i=0; i<7; i++){
-		c1 += abs(weight*noise( uv ));
-		uv = m*uv + time;
+	for (int i = 0; i < 7; i++) {
+		c1 += abs(weight * noise(uv));
+		uv = m * uv + time;
 		weight *= 0.6;
 	}
 
 	c += c1;
 	vec3 sky_colour = mix(sky_colour2, sky_colour1, p.y);
 
-	f = cloud_cover + cloud_alpha*f*r;
+	f = cloud_cover + cloud_alpha * f * r;
 
-	vec3 cloud_colour = mix(cloud_colour2, cloud_colour1, f*0.4);
+	vec3 cloud_colour = mix(cloud_colour2, cloud_colour1, f * 0.4);
 	vec3 result = mix(sky_colour, cloud_colour, clamp(f + c, 0.0, 1.0));
-	gl_FragColor = vec4( result, 1.0 );
+	gl_FragColor = vec4(result, 1.0);
 }
 `;
 
