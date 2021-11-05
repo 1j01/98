@@ -300,7 +300,7 @@ wallpaperCanvas.style.opacity = "0";
 function render(time) {
 	requestAnimationFrame(render);
 	if (wallpaperCanvas.style.opacity < 1) {
-		wallpaperCanvas.style.opacity = skip / 1000;
+		wallpaperCanvas.style.opacity = Math.pow(frameId / 1000, 0.5);
 	}
 
 	skip++;
