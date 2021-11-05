@@ -349,7 +349,7 @@ function render(time) {
 	gl.vertexAttribPointer(
 		positionAttributeLocation, size, type, normalize, stride, offset)
 
-	gl.uniform1f(timeLocation, t * 0.001 - 1000); // initial offset must not be too large/small for devices that use low-precision floats
+	gl.uniform1f(timeLocation, t * 0.001); // initial offset must not be too large/small for devices that use low-precision floats
 	gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
 	// draw
 	var primitiveType = gl.TRIANGLES;
