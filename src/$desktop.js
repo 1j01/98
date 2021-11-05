@@ -289,9 +289,19 @@ var positions = [
 ];
 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
+// @TODO: for performance:
+// - Check if the canvas is occluded by a maximized window, or an element is fullscreened (other than the wallpaper)
+//   and if so, don't draw, but reset skip counter so it draws immediately once visible again.
+// - Render tiles of cloud texture and translate them.
+//   This would give up the subtle shifting of the clouds, but keep infinite scrolling,
+//   and cut the processing time by like 50x probably.
 var skip = 0;
+wallpaperCanvas.style.opacity = "0";
 function render(time) {
 	requestAnimationFrame(render);
+	if (wallpaperCanvas.style.opacity < 1) {
+		wallpaperCanvas.style.opacity = skip / 1000;
+	}
 
 	skip++;
 	if (skip % 6 != 0) {
@@ -314,7 +324,7 @@ function render(time) {
 	gl.vertexAttribPointer(
 		positionAttributeLocation, size, type, normalize, stride, offset)
 
-	gl.uniform1f(timeLocation, time * 0.001);
+	gl.uniform1f(timeLocation, time * 0.001 - 270360);
 	gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
 	// draw
 	var primitiveType = gl.TRIANGLES;
