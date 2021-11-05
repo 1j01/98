@@ -142,20 +142,20 @@ addEventListener("keydown", (event) => {
 console.log(document.querySelector("feImage").href);
 */
 
-// GLSL shader for animating the desktop background
-var vert = `
+// GLSL shader(s) for animating the desktop background
+var cloud_vert_glsl = `
 attribute vec4 a_position;
 void main() {
 	gl_Position = vec4(a_position.xy, 0.0, 1.0);
 }
 `;
-var frag = `
+var cloud_fragment_glsl = `
 // Based on https://www.shadertoy.com/view/4tdSWr
 
 precision mediump float;
 
-uniform float iTime;
-uniform vec2 iResolution;
+uniform float a_time;
+uniform vec2 a_resolution;
 
 const float cloud_scale = 1.0;
 const float speed = 0.003;
@@ -203,9 +203,9 @@ float noise(in vec2 p) {
 // -----------------------------------------------
 
 void main() {
-	vec2 p = gl_FragCoord.xy / iResolution.xy;
-	vec2 uv = p * vec2(iResolution.x / iResolution.y, 1.0);
-	float time = iTime * speed;
+	vec2 p = gl_FragCoord.xy / a_resolution.xy;
+	vec2 uv = p * vec2(a_resolution.x / a_resolution.y, 1.0);
+	float time = a_time * speed;
 	float q = 0.0; // fbm(uv * cloud_scale * 0.5);
 	// ridged noise shape
 	float r = 0.0;
@@ -219,7 +219,7 @@ void main() {
 	}
 	// noise shape
 	float f = 0.0;
-	uv = p * vec2(iResolution.x / iResolution.y, 1.0);
+	uv = p * vec2(a_resolution.x / a_resolution.y, 1.0);
 	uv *= cloud_scale;
 	uv -= q - time;
 	weight = 0.7;
@@ -231,8 +231,8 @@ void main() {
 	f *= r + f;
 	// noise colour
 	float c = 0.0;
-	time = iTime * speed * 2.0;
-	uv = p * vec2(iResolution.x / iResolution.y, 1.0);
+	time = a_time * speed * 2.0;
+	uv = p * vec2(a_resolution.x / a_resolution.y, 1.0);
 	uv *= cloud_scale * 2.0;
 	uv -= q - time;
 	weight = 0.4;
@@ -243,8 +243,8 @@ void main() {
 	}
 	// noise ridge colour
 	float c1 = 0.0;
-	time = iTime * speed * 3.0;
-	uv = p * vec2(iResolution.x / iResolution.y, 1.0);
+	time = a_time * speed * 3.0;
+	uv = p * vec2(a_resolution.x / a_resolution.y, 1.0);
 	uv *= cloud_scale * 3.0;
 	uv -= q - time;
 	weight = 0.4;
@@ -265,12 +265,12 @@ void main() {
 }
 `;
 
-var wallpaperCanvas = document.createElement("canvas");
-document.querySelector(".wallpaper").appendChild(wallpaperCanvas);
-wallpaperCanvas.style.width = "100%";
-wallpaperCanvas.style.height = "100%";
-wallpaperCanvas.style.imageRendering = "smooth";
-var gl = wallpaperCanvas.getContext('webgl');
+var wallpaper_canvas = document.createElement("canvas");
+document.querySelector(".wallpaper").appendChild(wallpaper_canvas);
+wallpaper_canvas.style.width = "100%";
+wallpaper_canvas.style.height = "100%";
+wallpaper_canvas.style.imageRendering = "smooth";
+var gl = wallpaper_canvas.getContext('webgl');
 function give_up() {
 	// give up, it's not worth restoring
 	// hide the canvas so it doesn't show a crashed page icon (ᕁ︵ᕁ face in chrome)
@@ -278,24 +278,24 @@ function give_up() {
 	// which, while cool, is ruined when you click on the desktop because of `mix-blend-mode: exclusion;`
 	// on the marquee, and I don't want to worry about stuff like that interfering with a "cool effect" from an error case.
 	// I have taken advantage of the cool effect in Space Cadet anyways. └(★o★)┐ ヾ(*⌣*)ﾉ
-	wallpaperCanvas.remove();
+	wallpaper_canvas.remove();
 }
 if (!gl) {
 	give_up();
 	// can't return from top level
 	throw new Error("Failed to get WebGL context");
 }
-wallpaperCanvas.addEventListener("webglcontextlost", function(event) {
+wallpaper_canvas.addEventListener("webglcontextlost", function(event) {
 	give_up();
 }, false);
-var vertexShader = createShader(gl, gl.VERTEX_SHADER, window.vert);
-var fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, window.frag);
-var program = createProgram(gl, vertexShader, fragmentShader);
-const timeLocation = gl.getUniformLocation(program, "iTime");
-const resolutionLocation = gl.getUniformLocation(program, "iResolution");
-var positionAttributeLocation = gl.getAttribLocation(program, "a_position");
-var positionBuffer = gl.createBuffer();
-gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+var cloud_vertex_shader = createShader(gl, gl.VERTEX_SHADER, window.cloud_vert_glsl);
+var cloud_fragment_shader = createShader(gl, gl.FRAGMENT_SHADER, window.cloud_fragment_glsl);
+var program = createProgram(gl, cloud_vertex_shader, cloud_fragment_shader);
+const time_location = gl.getUniformLocation(program, "a_time");
+const resolution_location = gl.getUniformLocation(program, "a_resolution");
+var position_attribute_location = gl.getAttribLocation(program, "a_position");
+var position_buffer = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, position_buffer);
 var positions = [
 	-1, -1,
 	-1, +1,
@@ -312,17 +312,17 @@ gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 // - Render tiles of cloud texture and translate them.
 //   This would give up the subtle shifting of the clouds, but keep infinite scrolling,
 //   and cut the processing time by like 50x probably.
-var startTime = performance.now();
-var lastRenderTime = -Infinity;
-var frameCounter = 0;
-var targetFPS = 15;
-wallpaperCanvas.style.opacity = "0";
+var start_time = performance.now();
+var last_render_time = -Infinity;
+var frame_counter = 0;
+var target_fps = 15;
+wallpaper_canvas.style.opacity = "0";
 // var debugDiv = document.createElement("div");
 // document.querySelector(".wallpaper").appendChild(debugDiv);
 // debugDiv.style.position = "absolute";
 // debugDiv.style.top = "0";
 // debugDiv.style.left = "50%";
-function easeInOut(t, a) {
+function ease_in_out(t, a) {
 	return Math.pow(t, a) / (Math.pow(t, a) + Math.pow(1 - t, a));
 }
 function render(time) {
@@ -330,12 +330,12 @@ function render(time) {
 
 	// in case it's rendering slow (especially initially),
 	// limit time in based on frames, so it can't jump too much
-	const t = Math.min(time, frameCounter * 500 / targetFPS);
+	const t = Math.min(time, frame_counter * 500 / target_fps);
 
-	if (wallpaperCanvas.style.opacity < 1) {
-		wallpaperCanvas.style.opacity = easeInOut(t / 30000, 1);
+	if (wallpaper_canvas.style.opacity < 1) {
+		wallpaper_canvas.style.opacity = ease_in_out(t / 30000, 1);
 	}
-	frameCounter++;
+	frame_counter++;
 
 	// debugDiv.textContent = `
 	// ${Math.round(1000 / (time - lastRenderTime))} FPS
@@ -345,18 +345,18 @@ function render(time) {
 	// `;
 	// debugDiv.style.whiteSpace = "pre-wrap";
 
-	if (time - lastRenderTime < 1000 / targetFPS) {
+	if (time - last_render_time < 1000 / target_fps) {
 		return;
 	}
-	lastRenderTime = time;
+	last_render_time = time;
 
 	resizeCanvas(gl);
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 	gl.clearColor(0, 0, 0, 0);
 	gl.clear(gl.COLOR_BUFFER_BIT);
 	gl.useProgram(program);
-	gl.enableVertexAttribArray(positionAttributeLocation);
-	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+	gl.enableVertexAttribArray(position_attribute_location);
+	gl.bindBuffer(gl.ARRAY_BUFFER, position_buffer);
 	// Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
 	var size = 2;          // 2 components per iteration
 	var type = gl.FLOAT;   // the data is 32bit floats
@@ -364,15 +364,16 @@ function render(time) {
 	var stride = 0;        // 0 = move forward size * sizeof(type) each iteration to get the next position
 	var offset = 0;        // start at the beginning of the buffer
 	gl.vertexAttribPointer(
-		positionAttributeLocation, size, type, normalize, stride, offset)
+		position_attribute_location, size, type, normalize, stride, offset
+	);
 
-	gl.uniform1f(timeLocation, t * 0.001); // initial offset must not be too large/small for devices that use low-precision floats
-	gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
+	gl.uniform1f(time_location, t * 0.001); // initial offset must not be too large/small for devices that use low-precision floats
+	gl.uniform2f(resolution_location, gl.canvas.width, gl.canvas.height);
 	// draw
-	var primitiveType = gl.TRIANGLES;
+	var primitive_type = gl.TRIANGLES;
 	var offset = 0;
 	var count = 6;
-	gl.drawArrays(primitiveType, offset, count);
+	gl.drawArrays(primitive_type, offset, count);
 }
 requestAnimationFrame(render);
 
@@ -380,14 +381,14 @@ function resizeCanvas(gl) {
 	var width = window.innerWidth;
 	var height = window.innerHeight;
 	var aspect = width / height;
-	var maxWidth = 640;
-	var maxHeight = 640;
-	if (width > maxWidth) {
-		width = maxWidth;
+	var max_width = 640;
+	var max_height = 640;
+	if (width > max_width) {
+		width = max_width;
 		height = width / aspect;
 	}
-	if (height > maxHeight) {
-		height = maxHeight;
+	if (height > max_height) {
+		height = max_height;
 		width = height * aspect;
 	}
 	gl.canvas.width = width;
