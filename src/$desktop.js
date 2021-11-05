@@ -314,6 +314,14 @@ var positions = [
 ];
 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
+var cache_texture = gl.createTexture();
+gl.bindTexture(gl.TEXTURE_2D, cache_texture);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+
 // @TODO: for performance:
 // - Check if the canvas is occluded by a maximized window, or an element is fullscreened (other than the wallpaper)
 //   and if so, don't draw, but make sure it draws immediately once visible again.
@@ -365,7 +373,7 @@ function render(time) {
 	gl.useProgram(program);
 	gl.enableVertexAttribArray(position_attribute_location);
 	gl.bindBuffer(gl.ARRAY_BUFFER, position_buffer);
-	gl.bindTexture(gl.TEXTURE_2D, texture);
+	gl.bindTexture(gl.TEXTURE_2D, cache_texture);
 	// Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
 	var size = 2;          // 2 components per iteration
 	var type = gl.FLOAT;   // the data is 32bit floats
