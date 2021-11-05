@@ -405,7 +405,7 @@ function showScreensaver(iframeSrc) {
 		top: 0,
 		width: "100%",
 		height: "100%",
-		zIndex: 999,
+		zIndex: $Window.Z_INDEX + 9998,
 		cursor: "none",
 	});
 	$iframe.css({
@@ -414,7 +414,7 @@ function showScreensaver(iframeSrc) {
 		top: 0,
 		width: "100%",
 		height: "100%",
-		zIndex: 1000,
+		zIndex: $Window.Z_INDEX + 9999,
 		border: 0,
 		pointerEvents: "none",
 	});
