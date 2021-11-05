@@ -271,6 +271,23 @@ wallpaperCanvas.style.width = "100%";
 wallpaperCanvas.style.height = "100%";
 wallpaperCanvas.style.imageRendering = "smooth";
 var gl = wallpaperCanvas.getContext('webgl');
+function give_up() {
+	// give up, it's not worth restoring
+	// hide the canvas so it doesn't show a crashed page icon (ᕁ︵ᕁ face in chrome)
+	// also avoid the canvas showing through to your computer's desktop, on some platforms,
+	// which, while cool, is ruined when you click on the desktop because of `mix-blend-mode: exclusion;`
+	// on the marquee, and I don't want to worry about stuff like that interfering with a "cool effect" from an error case.
+	// I have taken advantage of the cool effect in Space Cadet anyways. └(★o★)┐ ヾ(*⌣*)ﾉ
+	wallpaperCanvas.remove();
+}
+if (!gl) {
+	give_up();
+	// can't return from top level
+	throw new Error("Failed to get WebGL context");
+}
+wallpaperCanvas.addEventListener("webglcontextlost", function(event) {
+	give_up();
+}, false);
 var vertexShader = createShader(gl, gl.VERTEX_SHADER, window.vert);
 var fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, window.frag);
 var program = createProgram(gl, vertexShader, fragmentShader);
@@ -399,3 +416,4 @@ function createShader(gl, type, src) {
 	return s;
 }
 
+// don't put anything after here, or it'll depend on WebGL successfully initializing
