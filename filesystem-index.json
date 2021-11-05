@@ -443,6 +443,7 @@
     "browserfs.min.js.map": null,
     "jquery.min.js": null,
     "konami.js": null,
+    "m4.js": null,
     "os-gui": {
       "$MenuBar.js": null,
       "$Window.js": null,
@@ -456,7 +457,8 @@
       "windows-98.css.map": null,
       "windows-default.css": null,
       "windows-default.css.map": null
-    }
+    },
+    "webgl-utils.js": null
   },
   "mstile-150x150.png": null,
   "my-documents": {
