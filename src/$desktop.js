@@ -142,11 +142,19 @@ addEventListener("keydown", (event) => {
 console.log(document.querySelector("feImage").href);
 */
 
-// GLSL shader(s) for animating the desktop background
-var cloud_vert_glsl = `
+// GLSL-based desktop background animation
+var simple_quad_vertex_glsl = `
 attribute vec4 a_position;
 void main() {
 	gl_Position = vec4(a_position.xy, 0.0, 1.0);
+}
+`;
+var textured_quad_fragment_glsl = `
+precision mediump float;
+uniform sampler2D u_texture;
+varying vec2 v_texture_coord;
+void main() {
+	gl_FragColor = texture2D(u_texture, v_texture_coord);
 }
 `;
 var cloud_fragment_glsl = `
@@ -288,7 +296,7 @@ if (!gl) {
 wallpaper_canvas.addEventListener("webglcontextlost", function(event) {
 	give_up();
 }, false);
-var cloud_vertex_shader = createShader(gl, gl.VERTEX_SHADER, window.cloud_vert_glsl);
+var cloud_vertex_shader = createShader(gl, gl.VERTEX_SHADER, window.simple_quad_vertex_glsl);
 var cloud_fragment_shader = createShader(gl, gl.FRAGMENT_SHADER, window.cloud_fragment_glsl);
 var program = createProgram(gl, cloud_vertex_shader, cloud_fragment_shader);
 const time_location = gl.getUniformLocation(program, "a_time");
@@ -357,6 +365,7 @@ function render(time) {
 	gl.useProgram(program);
 	gl.enableVertexAttribArray(position_attribute_location);
 	gl.bindBuffer(gl.ARRAY_BUFFER, position_buffer);
+	gl.bindTexture(gl.TEXTURE_2D, texture);
 	// Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
 	var size = 2;          // 2 components per iteration
 	var type = gl.FLOAT;   // the data is 32bit floats
