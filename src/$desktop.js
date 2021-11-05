@@ -291,22 +291,47 @@ gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
 // @TODO: for performance:
 // - Check if the canvas is occluded by a maximized window, or an element is fullscreened (other than the wallpaper)
-//   and if so, don't draw, but reset skip counter so it draws immediately once visible again.
+//   and if so, don't draw, but make sure it draws immediately once visible again.
 // - Render tiles of cloud texture and translate them.
 //   This would give up the subtle shifting of the clouds, but keep infinite scrolling,
 //   and cut the processing time by like 50x probably.
-var skip = 0;
+var startTime = performance.now();
+var lastRenderTime = -Infinity;
+var frameCounter = 0;
+var targetFPS = 15;
 wallpaperCanvas.style.opacity = "0";
+// var debugDiv = document.createElement("div");
+// document.querySelector(".wallpaper").appendChild(debugDiv);
+// debugDiv.style.position = "absolute";
+// debugDiv.style.top = "0";
+// debugDiv.style.left = "50%";
+function easeInOut(t, a) {
+	return Math.pow(t, a) / (Math.pow(t, a) + Math.pow(1 - t, a));
+}
 function render(time) {
 	requestAnimationFrame(render);
-	if (wallpaperCanvas.style.opacity < 1) {
-		wallpaperCanvas.style.opacity = Math.pow(frameId / 1000, 0.5);
-	}
 
-	skip++;
-	if (skip % 6 != 0) {
+	// in case it's rendering slow (especially initially),
+	// limit time in based on frames, so it can't jump too much
+	const t = Math.min(time, frameCounter * 500 / targetFPS);
+
+	if (wallpaperCanvas.style.opacity < 1) {
+		wallpaperCanvas.style.opacity = easeInOut(t / 30000, 1);
+	}
+	frameCounter++;
+
+	// debugDiv.textContent = `
+	// ${Math.round(1000 / (time - lastRenderTime))} FPS
+	// time: ${Math.round(time)}
+	// frame: ${frameCounter}
+	// opacity: ${wallpaperCanvas.style.opacity}
+	// `;
+	// debugDiv.style.whiteSpace = "pre-wrap";
+
+	if (time - lastRenderTime < 1000 / targetFPS) {
 		return;
 	}
+	lastRenderTime = time;
 
 	resizeCanvas(gl);
 	gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -324,7 +349,7 @@ function render(time) {
 	gl.vertexAttribPointer(
 		positionAttributeLocation, size, type, normalize, stride, offset)
 
-	gl.uniform1f(timeLocation, time * 0.001 - 1000); // initial offset must not be too large/small for devices that use low-precision floats
+	gl.uniform1f(timeLocation, t * 0.001 - 1000); // initial offset must not be too large/small for devices that use low-precision floats
 	gl.uniform2f(resolutionLocation, gl.canvas.width, gl.canvas.height);
 	// draw
 	var primitiveType = gl.TRIANGLES;
