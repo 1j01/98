@@ -149,6 +149,19 @@ void main() {
 	gl_Position = vec4(a_position.xy, 0.0, 1.0);
 }
 `;
+var textured_quad_vertex_glsl = `
+attribute vec4 a_position;
+attribute vec2 a_texture_coord;
+ 
+uniform mat4 u_matrix;
+ 
+varying vec2 v_texture_coord;
+ 
+void main() {
+   gl_Position = u_matrix * a_position;
+   v_texture_coord = a_texture_coord;
+}
+`;
 var textured_quad_fragment_glsl = `
 precision mediump float;
 uniform sampler2D u_texture;
@@ -293,7 +306,7 @@ if (!gl) {
 	// can't return from top level
 	throw new Error("Failed to get WebGL context");
 }
-wallpaper_canvas.addEventListener("webglcontextlost", function(event) {
+wallpaper_canvas.addEventListener("webglcontextlost", function (event) {
 	give_up();
 }, false);
 var cloud_vertex_shader = createShader(gl, gl.VERTEX_SHADER, window.simple_quad_vertex_glsl);
@@ -314,20 +327,64 @@ var positions = [
 ];
 gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW);
 
+// we will store tiles in a texture atlas, as a cache of the shader's output
+var tile_size = 256;
+var tiles_x = 4;
+var tiles_y = 4;
+var cache_texture_width = tiles_x * tile_size;
+var cache_texture_height = tiles_y * tile_size;
 var cache_texture = gl.createTexture();
+gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, cache_texture_width, cache_texture_height, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
 gl.bindTexture(gl.TEXTURE_2D, cache_texture);
 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+
+var frame_buffer = gl.createFramebuffer();
+gl.bindFramebuffer(gl.FRAMEBUFFER, frame_buffer);
+var attachment_point = gl.COLOR_ATTACHMENT0;
+gl.framebufferTexture2D(gl.FRAMEBUFFER, attachment_point, gl.TEXTURE_2D, cache_texture, 0);
+
+// Unlike images, textures do not have a width and height associated
+// with them so we'll pass in the width and height of the texture
+function draw_texture_to_canvas(tex, tex_width, tex_height, destination_x, destination_y) {
+	gl.bindTexture(gl.TEXTURE_2D, tex);
+
+	// Tell WebGL to use our shader program pair
+	gl.useProgram(program);
+
+	// Setup the attributes to pull data from our buffers
+	gl.bindBuffer(gl.ARRAY_BUFFER, position_buffer);
+	gl.enableVertexAttribArray(position_location);
+	gl.vertexAttribPointer(position_location, 2, gl.FLOAT, false, 0, 0);
+	gl.bindBuffer(gl.ARRAY_BUFFER, texture_coord_buffer);
+	gl.enableVertexAttribArray(texture_coord_location);
+	gl.vertexAttribPointer(texture_coord_location, 2, gl.FLOAT, false, 0, 0);
+
+	// this matrix will convert from pixels to clip space
+	var matrix = m4.orthographic(0, gl.canvas.width, gl.canvas.height, 0, -1, 1);
+
+	// this matrix will translate our quad to dstX, dstY
+	matrix = m4.translate(matrix, destination_x, destination_y, 0);
+
+	// this matrix will scale our 1 unit quad
+	// from 1 unit to texWidth, texHeight units
+	matrix = m4.scale(matrix, tex_width, tex_height, 1);
+
+	// Set the matrix.
+	gl.uniformMatrix4fv(matrixLocation, false, matrix);
+
+	// Tell the shader to get the texture from texture unit 0
+	gl.uniform1i(textureLocation, 0);
+
+	// draw the quad (2 triangles, 6 vertices)
+	gl.drawArrays(gl.TRIANGLES, 0, 6);
+}
 
 
 // @TODO: for performance:
 // - Check if the canvas is occluded by a maximized window, or an element is fullscreened (other than the wallpaper)
 //   and if so, don't draw, but make sure it draws immediately once visible again.
-// - Render tiles of cloud texture and translate them.
-//   This would give up the subtle shifting of the clouds, but keep infinite scrolling,
-//   and cut the processing time by like 50x probably.
 var start_time = performance.now();
 var last_render_time = -Infinity;
 var frame_counter = 0;
@@ -374,7 +431,7 @@ function render(time) {
 	gl.enableVertexAttribArray(position_attribute_location);
 	gl.bindBuffer(gl.ARRAY_BUFFER, position_buffer);
 	gl.bindTexture(gl.TEXTURE_2D, cache_texture);
-	// Tell the attribute how to get data out of positionBuffer (ARRAY_BUFFER)
+	// Tell the attribute how to get data out of position_buffer (ARRAY_BUFFER)
 	var size = 2;          // 2 components per iteration
 	var type = gl.FLOAT;   // the data is 32bit floats
 	var normalize = false; // don't normalize the data
