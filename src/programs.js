@@ -407,6 +407,7 @@ function showScreensaver(iframeSrc) {
 		height: "100%",
 		zIndex: $Window.Z_INDEX + 9998,
 		cursor: "none",
+		backgroundColor: "black",
 	});
 	$iframe.css({
 		position: "fixed",
