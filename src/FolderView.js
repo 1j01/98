@@ -79,7 +79,7 @@ var file_extension_icons = {
 // @TODO: maintain less fake naming abstraction
 // base it more on the actual filesystem
 // @TODO: bring system folders, icons, and file associations into one place
-const system_folder_to_name = {
+const system_folder_path_to_name = {
 	"/": "(C:)", //"My Computer",
 	"/my-pictures/": "My Pictures",
 	"/my-documents/": "My Documents",
@@ -88,6 +88,9 @@ const system_folder_to_name = {
 	"/programs/": "Program Files",
 	"/recycle-bin/": "Recycle Bin",
 };
+const system_folder_name_to_path = Object.fromEntries(
+	Object.entries(system_folder_path_to_name).map(([key, value]) => [value, key])
+);
 
 
 const set_dragging_file_paths = (dragging_file_paths) => {
@@ -191,8 +194,8 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		const dir_ness = (item) =>
 			// system folders always go first
 			// not all system folder shortcuts on the desktop have real paths (currently)
-			// so we can't check system_folder_to_name, need a separate attribute.
-			// system_folder_to_name[item.file_path] ? 2 :
+			// so we can't check system_folder_path_to_name, need a separate attribute.
+			// system_folder_path_to_name[item.file_path] ? 2 :
 			item.is_system_folder ? 2 :
 				// then folders, then everything else
 				item.resolvedStats?.isDirectory() ? 1 : 0;
@@ -285,7 +288,7 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 	self.delete_selected = function () {
 		const selected_file_paths = $folder_view.find(".desktop-icon.selected")
 			.toArray().map((icon_el) => icon_el.dataset.filePath)
-			.filter((file_path) => system_folder_to_name[file_path] === undefined);
+			.filter((file_path) => system_folder_path_to_name[file_path] === undefined);
 
 		if (selected_file_paths.length === 0) {
 			return;

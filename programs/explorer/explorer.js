@@ -30,8 +30,8 @@ function set_icon(icon_id) {
 // @TODO: maintain less fake naming abstraction
 // base it more on the actual filesystem
 function get_display_name_for_address(address) {
-	if (system_folder_to_name[address]) {
-		return system_folder_to_name[address];
+	if (system_folder_path_to_name[address]) {
+		return system_folder_path_to_name[address];
 	} else if (address.match(/\w+:\/\//)) {
 		return address;
 	} else {
@@ -87,13 +87,19 @@ var go_to = function (address) {
 		if (!address.match(/^https?:\/\/web.archive.org\//) && !address.startsWith(window.location.origin)) {
 			if (address.match(/^https?:\/\/(www\.)?(windows93.net)/)) {
 				address = "https://web.archive.org/web/2015-05-05/" + address;
-			} else if (!address.match(/^https?:\/\/(www\.)?(copy.sh)/)) {
+			} else if (
+				!address.match(/^https?:\/\/(www\.)?(copy.sh)/) &&
+				!address.match(/^(file|data|blob):\/\//)
+			) {
 				address = "https://web.archive.org/web/1998/" + address;
 			}
 		}
 		address_determined();
 	}
-	if (is_url) {
+	if (system_folder_name_to_path[address]) {
+		address = system_folder_name_to_path[address];
+		address_determined();
+	} else if (is_url) {
 		handle_url_case();
 	} else {
 		withFilesystem(function () {
@@ -128,7 +134,11 @@ var go_to = function (address) {
 	}
 
 	function address_determined() {
-		$("#address").val(address);
+		if (system_folder_path_to_name[address]) {
+			$("#address").val(system_folder_path_to_name[address]);
+		} else {
+			$("#address").val(address);
+		}
 		$("#address-icon").attr("src", getIconPath(get_icon_for_address(address), 16));
 		active_address = address;
 
