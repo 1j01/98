@@ -449,65 +449,62 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		});
 	})();
 
-	// @TODO: $folder_view.on
-	$(window).on("keydown", function (e) {
-		if ($folder_view.is(":focus-within")) {
-			if (e.key == "Enter") {
-				$folder_view.find(".desktop-icon.selected").trigger("dblclick");
-			} else if (e.ctrlKey && e.key == "a") {
-				folder_view.select_all();
-				e.preventDefault();
-			} else if (e.key == "Delete") {
-				self.delete_selected();
-				e.preventDefault();
-			} else if (
-				e.key == "ArrowLeft" ||
-				e.key == "ArrowRight" ||
-				e.key == "ArrowUp" ||
-				e.key == "ArrowDown"
-			) {
-				e.preventDefault();
-				const move_x = e.key == "ArrowLeft" ? -1 : e.key == "ArrowRight" ? 1 : 0;
-				const move_y = e.key == "ArrowUp" ? -1 : e.key == "ArrowDown" ? 1 : 0;
-				navigate_grid(move_x, move_y);
-				// @TODO: wrap around columns in list view
-			} else if (
-				e.key == "PageUp" ||
-				e.key == "PageDown"
-			) {
-				e.preventDefault();
-				if (self.config.view_mode === FolderView.VIEW_MODES.LIST) {
-					const x_dir = e.key == "PageUp" ? -1 : 1;
-					const full_page_size = $folder_view.width();
-					const item_width = $folder_view.find(".desktop-icon").outerWidth();
-					const page_increment = full_page_size - item_width;
-					for (let increment = page_increment; increment > 0; increment -= item_width) {
-						if (navigate_grid(x_dir * increment / item_width, 0)) { // grid units
-							break;
-						}
-					}
-				} else {
-					const y_dir = e.key == "PageUp" ? -1 : 1;
-					const full_page_size = $folder_view.height();
-					const item_height = $folder_view.find(".desktop-icon").outerHeight();
-					const page_increment = full_page_size - item_height;
-					for (let increment = page_increment; increment > 0; increment -= item_height) {
-						if (navigate_grid(0, y_dir * increment / item_height)) { // grid units
-							break;
-						}
+	$folder_view.on("keydown", function (e) {
+		if (e.key == "Enter") {
+			$folder_view.find(".desktop-icon.selected").trigger("dblclick");
+		} else if (e.ctrlKey && e.key == "a") {
+			folder_view.select_all();
+			e.preventDefault();
+		} else if (e.key == "Delete") {
+			self.delete_selected();
+			e.preventDefault();
+		} else if (
+			e.key == "ArrowLeft" ||
+			e.key == "ArrowRight" ||
+			e.key == "ArrowUp" ||
+			e.key == "ArrowDown"
+		) {
+			e.preventDefault();
+			const move_x = e.key == "ArrowLeft" ? -1 : e.key == "ArrowRight" ? 1 : 0;
+			const move_y = e.key == "ArrowUp" ? -1 : e.key == "ArrowDown" ? 1 : 0;
+			navigate_grid(move_x, move_y);
+			// @TODO: wrap around columns in list view
+		} else if (
+			e.key == "PageUp" ||
+			e.key == "PageDown"
+		) {
+			e.preventDefault();
+			if (self.config.view_mode === FolderView.VIEW_MODES.LIST) {
+				const x_dir = e.key == "PageUp" ? -1 : 1;
+				const full_page_size = $folder_view.width();
+				const item_width = $folder_view.find(".desktop-icon").outerWidth();
+				const page_increment = full_page_size - item_width;
+				for (let increment = page_increment; increment > 0; increment -= item_width) {
+					if (navigate_grid(x_dir * increment / item_width, 0)) { // grid units
+						break;
 					}
 				}
-			} else if (e.key == "Home") {
-				e.preventDefault();
-				$folder_view.find(".desktop-icon").first()
-					.trigger("pointerdown")
-					[0].scrollIntoView({ block: "nearest" });
-			} else if (e.key == "End") {
-				e.preventDefault();
-				$folder_view.find(".desktop-icon").last()
-					.trigger("pointerdown")
-					[0].scrollIntoView({ block: "nearest" });
+			} else {
+				const y_dir = e.key == "PageUp" ? -1 : 1;
+				const full_page_size = $folder_view.height();
+				const item_height = $folder_view.find(".desktop-icon").outerHeight();
+				const page_increment = full_page_size - item_height;
+				for (let increment = page_increment; increment > 0; increment -= item_height) {
+					if (navigate_grid(0, y_dir * increment / item_height)) { // grid units
+						break;
+					}
+				}
 			}
+		} else if (e.key == "Home") {
+			e.preventDefault();
+			$folder_view.find(".desktop-icon").first()
+				.trigger("pointerdown")
+				[0].scrollIntoView({ block: "nearest" });
+		} else if (e.key == "End") {
+			e.preventDefault();
+			$folder_view.find(".desktop-icon").last()
+				.trigger("pointerdown")
+				[0].scrollIntoView({ block: "nearest" });
 		}
 	});
 
