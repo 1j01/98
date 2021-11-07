@@ -83,6 +83,7 @@ var go_to = function (address) {
 
 	address = address || "/";
 	var is_url = !!address.match(/\w+:\/\//);
+	var drive_match = address.match(/^\(?([a-z]):\)?[/\\]?\)?$/i);
 	function handle_url_case() {
 		if (!address.match(/^https?:\/\/web.archive.org\//) && !address.startsWith(window.location.origin)) {
 			if (address.match(/^https?:\/\/(www\.)?(windows93.net)/)) {
@@ -99,6 +100,13 @@ var go_to = function (address) {
 	if (system_folder_lowercase_name_to_path[address.toLowerCase()]) {
 		address = system_folder_lowercase_name_to_path[address.toLowerCase()];
 		address_determined();
+	} else if (drive_match) {
+		if (drive_match[1].toUpperCase() === "C") {
+			address = "/";
+			address_determined();
+		} else {
+			alert("Drive not found.");
+		}
 	} else if (is_url) {
 		handle_url_case();
 	} else {
