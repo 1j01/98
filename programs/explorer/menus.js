@@ -137,18 +137,16 @@ var menus = {
 				{
 					item: "&Standard Buttons",
 					checkbox: {
-						check: ()=> true,
-						toggle: ()=> {}, // @TODO
+						check: ()=> $("#standard-buttons-toolbar").is(":visible"),
+						toggle: ()=> $("#standard-buttons-toolbar").toggle(),
 					},
-					enabled: false, // @TODO
 				},
 				{
 					item: "&Address Bar",
 					checkbox: {
-						check: ()=> true,
-						toggle: ()=> {}, // @TODO
+						check: ()=> $("#address-bar-toolbar").is(":visible"),
+						toggle: ()=> $("#address-bar-toolbar").toggle(),
 					},
-					enabled: false, // @TODO
 				},
 				{
 					item: "&Links",
