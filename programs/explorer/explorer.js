@@ -270,6 +270,9 @@ $(function () {
 	$("#address").on("focus", function (e) {
 		$(this).select();
 	});
+	$("#address").on("dragstart", function (e) {
+		e.preventDefault();
+	});
 	$("#back").on("click", go_back);
 	$("#forward").on("click", go_forward);
 	$("#up").on("click", go_up);
