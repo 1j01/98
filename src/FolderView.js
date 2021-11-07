@@ -112,6 +112,10 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 	this.add_item = (folder_view_item) => {
 		$folder_view.append(folder_view_item.element);
 		this.items.push(folder_view_item);
+		// if (this.items.length === 1) {
+		// 	// this.items[0].element.focus();
+		// 	this.items[0].element.classList.add("focused");
+		// }
 	};
 
 	// config:
@@ -159,11 +163,13 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 	// Note: debounce is NEEDED to avoid infinite recursion
 	// in the case that stats are loading
 	this.arrange_icons = debounce(() => {
+		let any_pending = false;
 		for (const item of this.items) {
 			if (item.pendingStatPromise) {
 				item.pendingStatPromise.then(() => {
 					self.arrange_icons();
 				});
+				any_pending = true;
 			}
 			// console.log(
 			// 	"item.element", item.element,
@@ -237,6 +243,13 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 			// apply sort
 			this.element.appendChild(item.element);
 		}
+
+		if (!any_pending) {
+			// this.items[0].element.classList.add("focused");
+			this.items.forEach((item, index) => {
+				item.element.classList.toggle("focused", index === 0);
+			});
+		}
 	}, 100);
 
 	function deleteRecursiveSync(fs, itemPath) {
@@ -252,9 +265,11 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 
 	self.focus = function () {
 		$folder_view.focus();
+		// This doesn't do much if it's yet to be populated:
 		if ($folder_view.find(".desktop-icon.focused").length === 0) {
 			$folder_view.find(".desktop-icon").first().focus();
 		}
+		// Initial focus is handled in arrange_icons currently.
 	};
 
 	self.select_all = function () {
