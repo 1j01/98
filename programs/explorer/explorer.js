@@ -96,8 +96,8 @@ var go_to = function (address) {
 		}
 		address_determined();
 	}
-	if (system_folder_name_to_path[address]) {
-		address = system_folder_name_to_path[address];
+	if (system_folder_lowercase_name_to_path[address.toLowerCase()]) {
+		address = system_folder_lowercase_name_to_path[address.toLowerCase()];
 		address_determined();
 	} else if (is_url) {
 		handle_url_case();

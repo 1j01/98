@@ -91,6 +91,9 @@ const system_folder_path_to_name = {
 const system_folder_name_to_path = Object.fromEntries(
 	Object.entries(system_folder_path_to_name).map(([key, value]) => [value, key])
 );
+const system_folder_lowercase_name_to_path = Object.fromEntries(
+	Object.entries(system_folder_name_to_path).map(([key, value]) => [key.toLowerCase(), value])
+);
 
 
 const set_dragging_file_paths = (dragging_file_paths) => {
