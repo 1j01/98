@@ -92,11 +92,11 @@
 	padding-left: 3px;
 }
 
-.folder-view.focused .desktop-icon.selected .title {
+.folder-view:focus-within .desktop-icon.selected .title {
 	background: var(--Hilight);
 	color: var(--HilightText);
 }
-.folder-view.focused .desktop-icon.focused .title::after {
+.folder-view:focus-within .desktop-icon.focused .title::after {
 	content: "";
 	position: absolute;
 	left: 0;
@@ -116,7 +116,7 @@
 	background: var(--Hilight);
 	opacity: 0.5;
 }
-.folder-view.focused .desktop-icon.selected .icon-wrapper .selection-effect {
+.folder-view:focus-within .desktop-icon.selected .icon-wrapper .selection-effect {
 	display: block;
 }
 .desktop-icon .icon-wrapper {

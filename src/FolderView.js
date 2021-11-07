@@ -252,8 +252,6 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 
 	self.focus = function () {
 		$folder_view.focus();
-		// @TODO: base focused class on actual focus! yeah?
-		$folder_view.addClass("focused");
 	};
 
 	self.select_all = function () {
@@ -389,8 +387,8 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		});
 		$folder_view.on("pointerdown", function (e) {
 			// TODO: allow a margin of mouse movement before starting selecting
-			var view_was_focused = $folder_view.hasClass("focused");
-			$folder_view.addClass("focused");
+			var view_was_focused = $folder_view.is(":focus-within");
+			self.focus();
 			var $icon = $(e.target).closest(".desktop-icon");
 			$marquee.hide();
 			var folder_view_offset = $folder_view.offset();
@@ -410,20 +408,6 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 				if (view_was_focused) {
 					drag_update();
 				}
-			}
-		});
-		const unfocus = () => {
-			$folder_view.removeClass("focused");
-		};
-		$(window).on("pointerdown", function (e) {
-			if (!$(e.target).closest(".folder-view").is($folder_view)) {
-				unfocus();
-			}
-		});
-		$(window).on("focusout", function (e) {
-			if (e.target === window) {
-				// focus may have gone to an iframe, or outside the browser window
-				unfocus();
 			}
 		});
 		$(window).on("pointermove", function (e) {
@@ -465,8 +449,9 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		});
 	})();
 
+	// @TODO: $folder_view.on
 	$(window).on("keydown", function (e) {
-		if ($folder_view.is(".focused")) {
+		if ($folder_view.is(":focus-within")) {
 			if (e.key == "Enter") {
 				$folder_view.find(".desktop-icon.selected").trigger("dblclick");
 			} else if (e.ctrlKey && e.key == "a") {
@@ -485,6 +470,7 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 				const move_x = e.key == "ArrowLeft" ? -1 : e.key == "ArrowRight" ? 1 : 0;
 				const move_y = e.key == "ArrowUp" ? -1 : e.key == "ArrowDown" ? 1 : 0;
 				navigate_grid(move_x, move_y);
+				// @TODO: wrap around columns in list view
 			} else if (
 				e.key == "PageUp" ||
 				e.key == "PageDown"
@@ -533,6 +519,7 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		let $starting_icon = $folder_view.find(".desktop-icon.focused");
 		// ideally we'd keep a focused icon always,
 		// use the nearest icon upwards after a delete etc.
+		// but I can't guarantee that
 		if ($starting_icon.length == 0) {
 			$starting_icon = $folder_view.find(".desktop-icon");
 		}
