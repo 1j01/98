@@ -61,7 +61,9 @@ var menus = {
 		},
 		{
 			item: "&Delete",
-			enabled: false, // @TODO
+			action: () => {
+				folder_view.delete_selected();
+			},
 		},
 		{
 			item: "Rena&me",
