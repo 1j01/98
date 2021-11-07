@@ -252,6 +252,9 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 
 	self.focus = function () {
 		$folder_view.focus();
+		if ($folder_view.find(".desktop-icon.focused").length === 0) {
+			$folder_view.find(".desktop-icon").first().focus();
+		}
 	};
 
 	self.select_all = function () {

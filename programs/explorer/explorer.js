@@ -164,6 +164,7 @@ var go_to = function (address) {
 		} else {
 			folder_view = new FolderView(address);
 			$(folder_view.element).appendTo("#content");
+			folder_view.focus();
 		}
 	}
 };
