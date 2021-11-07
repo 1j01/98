@@ -478,6 +478,16 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 						break;
 					}
 				}
+			} else if (e.key == "Home") {
+				e.preventDefault();
+				$folder_view.find(".desktop-icon").first()
+					.trigger("pointerdown")
+					[0].scrollIntoView({ block: "nearest" });
+			} else if (e.key == "End") {
+				e.preventDefault();
+				$folder_view.find(".desktop-icon").last()
+					.trigger("pointerdown")
+					[0].scrollIntoView({ block: "nearest" });
 			}
 		}
 	});
