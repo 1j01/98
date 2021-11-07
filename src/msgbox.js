@@ -13,7 +13,7 @@ window.showMessageBox = window.showMessageBox || (({
 }) => {
 	let $window;
 	const promise = new Promise((resolve, reject) => {
-		const $window = new $Window({
+		$window = new $Window({
 			title,
 			resizable: false,
 			innerWidth: 400,
