@@ -96,12 +96,13 @@ button {
 #status-bar-left {
 	width: 250px; /* estimated */
 }
-#status-bar-right {
+#status-bar-middle {
 	flex: 1;
+}
+#status-bar-right {
+	width: 170px; /* estimated */
 	display: flex;
-	flex-direction: row;
-	align-items: center;
-	justify-content: flex-end;
+	gap: 3px;
 }
 
 #content {

@@ -95,6 +95,7 @@ var go_to = function (address) {
 				address = "https://web.archive.org/web/1998/" + address;
 			}
 		}
+		is_url = true;
 		address_determined();
 	}
 	if (system_folder_lowercase_name_to_path[address.toLowerCase()]) {
@@ -179,6 +180,12 @@ var go_to = function (address) {
 			// $iframe.on("load", function(){
 			// 	set_title($iframe[0].contentDocument.title + " - Explorer"); // " - Microsoft Internet Explorer"
 			// });
+
+			$("#status-bar-right-icon").attr({
+				src: getIconPath("zone-internet", 16),
+				hidden: false,
+			});
+			$("#status-bar-right-text").text("Internet");
 		} else {
 			folder_view = new FolderView(address, {
 				onStatus: ({ items, selectedItems }) => {
@@ -191,6 +198,23 @@ var go_to = function (address) {
 			});
 			$(folder_view.element).appendTo("#content");
 			folder_view.focus();
+
+			if (
+				address !== "/desktop/" &&
+				address !== "/recycle-bin/" &&
+				address !== "/network-neighborhood/"
+			) {
+				$("#status-bar-right-icon").attr({
+					src: getIconPath("my-computer", 16),
+					hidden: false,
+				});
+				$("#status-bar-right-text").text("My Computer");
+			} else {
+				$("#status-bar-right-icon").attr({
+					hidden: true,
+				});
+				$("#status-bar-right-text").text("");
+			}
 		}
 	}
 };
