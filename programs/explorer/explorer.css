@@ -92,6 +92,10 @@ button {
 }
 #status-bar > * {
 	height: 16px;
+	white-space: nowrap;
+	overflow: hidden;
+	pointer-events: none;
+	user-select: none;
 }
 #status-bar-left {
 	width: 250px; /* estimated */
