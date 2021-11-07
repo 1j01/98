@@ -76,6 +76,20 @@ var file_extension_icons = {
 	themepack: "themes",
 };
 
+// @TODO: maintain less fake naming abstraction
+// base it more on the actual filesystem
+// @TODO: bring system folders, icons, and file associations into one place
+const system_folder_to_name = {
+	"/": "(C:)", //"My Computer",
+	"/my-pictures/": "My Pictures",
+	"/my-documents/": "My Documents",
+	"/network-neighborhood/": "Network Neighborhood",
+	"/desktop/": "Desktop",
+	"/programs/": "Program Files",
+	"/recycle-bin/": "Recycle Bin",
+};
+
+
 const set_dragging_file_paths = (dragging_file_paths) => {
 	window.dragging_file_paths = dragging_file_paths;
 	let frame = window;
@@ -168,7 +182,14 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		const grid_size_y = large_icons ? grid_size_y_for_large_icons : grid_size_y_for_small_icons;
 		var x = 0;
 		var y = 0;
-		const dir_ness = (item) => item.resolvedStats?.isDirectory() ? 1 : 0;
+		const dir_ness = (item) =>
+			// system folders always go first
+			// not all system folder shortcuts on the desktop have real paths (currently)
+			// so we can't check system_folder_to_name, need a separate attribute.
+			// system_folder_to_name[item.file_path] ? 2 :
+			item.is_system_folder ? 2 :
+				// then folders, then everything else
+				item.resolvedStats?.isDirectory() ? 1 : 0;
 		const get_ext = (item) => (item.file_path ?? "").split(".").pop();
 		if (this.config.sort_mode === FolderView.SORT_MODES.NAME) {
 			this.items.sort((a, b) =>
@@ -246,7 +267,9 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 
 	self.delete_selected = function () {
 		const selected_file_paths = $folder_view.find(".desktop-icon.selected")
-			.toArray().map((icon_el) => icon_el.dataset.filePath);
+			.toArray().map((icon_el) => icon_el.dataset.filePath)
+			.filter((file_path) => system_folder_to_name[file_path] === undefined);
+
 		if (selected_file_paths.length === 0) {
 			return;
 		}

@@ -27,21 +27,11 @@ function set_icon(icon_id) {
 	}
 }
 
+// @TODO: maintain less fake naming abstraction
+// base it more on the actual filesystem
 function get_display_name_for_address(address) {
-	// TODO: maintain less fake naming abstraction
-	// base it more on the actual filesystem
-	if (address === "/") {
-		return "(C:)";
-	} else if (address === "/my-pictures/") {
-		return "My Pictures";
-	} else if (address === "/my-documents/") {
-		return "My Documents";
-	} else if (address === "/network-neighborhood/") {
-		return "Network Neighborhood";
-	} else if (address === "/desktop/") {
-		return "Desktop";
-	} else if (address === "/programs/") {
-		return "Program Files";
+	if (system_folder_to_name[address]) {
+		return system_folder_to_name[address];
 	} else if (address.match(/\w+:\/\//)) {
 		return address;
 	} else {

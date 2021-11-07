@@ -33,6 +33,7 @@ function FolderViewItem(options) {
 	this.iconSize = options.iconSize || DESKTOP_ICON_SIZE;
 
 	this.file_path = options.file_path;
+	this.is_system_folder = options.is_system_folder;
 
 	this._update_icon = () => {
 		if (this.icons) {

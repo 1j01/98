@@ -1044,26 +1044,35 @@ add_icon_not_via_filesystem({
 	title: "My Computer",
 	iconID: "my-computer",
 	open: function () { executeFile("/"); },
+	// file_path: "/",
+	is_system_folder: true,
 });
 add_icon_not_via_filesystem({
 	title: "My Documents",
 	iconID: "my-documents-folder",
 	open: function () { executeFile("/my-documents"); },
+	// file_path: "/my-documents/",
+	is_system_folder: true,
 });
 add_icon_not_via_filesystem({
 	title: "Network Neighborhood",
 	iconID: "network",
 	open: function () { executeFile("/network-neighborhood"); },
+	// file_path: "/network-neighborhood/",
+	is_system_folder: true,
 });
 add_icon_not_via_filesystem({
 	title: "Recycle Bin",
 	iconID: "recycle-bin",
-	open: function () { Explorer("https://www.epa.gov/recycle/"); }
+	open: function () { Explorer("https://www.epa.gov/recycle/"); },
+	is_system_folder: true,
 });
 add_icon_not_via_filesystem({
 	title: "My Pictures",
 	iconID: "folder",
 	open: function () { executeFile("/my-pictures"); },
+	// file_path: "/my-pictures/",
+	is_system_folder: true,
 });
 add_icon_not_via_filesystem({
 	title: "Internet Explorer",
