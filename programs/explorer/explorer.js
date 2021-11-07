@@ -59,6 +59,8 @@ function get_icon_for_address(address) {
 	}
 }
 
+var offline_mode = false;
+
 var folder_view, $iframe;
 var active_address = "";
 setInterval(() => {
@@ -96,7 +98,32 @@ var go_to = function (address) {
 			}
 		}
 		is_url = true;
-		address_determined();
+		if (offline_mode) {
+			showMessageBox({
+				title: "Web page unavailable while offline",
+				message: "The Web page you requested is not available while offline.\n\n" +
+					"To view this page, click Connect.",
+				buttons: [
+					// @TODO: accelerators &C and &S
+					{
+						label: "Connect",
+						value: "connect",
+						default: true,
+					},
+					{
+						label: "Stay Offline",
+					},
+				],
+				iconID: "offline",
+			}).then((result) => {
+				if (result === "connect") {
+					offline_mode = false;
+					address_determined();
+				}
+			});
+		} else {
+			address_determined();
+		}
 	}
 	if (system_folder_lowercase_name_to_path[address.toLowerCase()]) {
 		address = system_folder_lowercase_name_to_path[address.toLowerCase()];

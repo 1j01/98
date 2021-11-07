@@ -53,7 +53,7 @@ window.showMessageBox = window.showMessageBox || (({
 				$button.focus();
 			}
 			$button.css({
-				width: 75,
+				minWidth: 75,
 				height: 23,
 				margin: "16px 2px",
 			});

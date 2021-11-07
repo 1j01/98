@@ -81,7 +81,12 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			item: "&Work Offline",
-			enabled: false, // @TODO
+			checkbox: {
+				check: () => offline_mode,
+				toggle: () => {
+					offline_mode = !offline_mode;
+				},
+			},
 		},
 		{
 			item: "&Close",
