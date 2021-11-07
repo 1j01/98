@@ -433,22 +433,28 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 			// 1. it improves the visual coherence of the marquee as an object
 			// 2. it makes the marquee not cause a scrollbar
 			// 3. it prevents selecting things you can't see
-			// if (!asDesktop) {
-			// 	console.log(current.x, current.y, $folder_view.scrollLeft(), $folder_view.scrollTop());
-			// }
 			const scrollbar_width = $folder_view.width() - $folder_view[0].clientWidth;
 			const scrollbar_height = $folder_view.height() - $folder_view[0].clientHeight;
-			current.x = Math.max(
-				$folder_view[0].scrollLeft,
-				Math.min(current.x, $folder_view.width() + $folder_view[0].scrollLeft - scrollbar_width - 4)
-			);
-			current.y = Math.max(
-				$folder_view[0].scrollTop,
-				Math.min(current.y, $folder_view.height() + $folder_view[0].scrollTop - scrollbar_height - 4)
-			);
-			// @TODO: scroll the view by dragging
+			const clamp_left = $folder_view[0].scrollLeft;
+			const clamp_top = $folder_view[0].scrollTop;
+			const clamp_right = $folder_view.width() + $folder_view[0].scrollLeft - scrollbar_width - 4;
+			const clamp_bottom = $folder_view.height() + $folder_view[0].scrollTop - scrollbar_height - 4;
+			current.x = Math.max(clamp_left, Math.min(clamp_right, current.x));
+			current.y = Math.max(clamp_top, Math.min(clamp_bottom, current.y));
 			if (dragging) {
 				drag_update();
+				// scroll the view by dragging the mouse at/past the edge
+				const scroll_speed = 10;
+				if (current.x === clamp_left) {
+					$folder_view[0].scrollLeft -= scroll_speed;
+				} else if (current.x === clamp_right) {
+					$folder_view[0].scrollLeft += scroll_speed;
+				}
+				if (current.y === clamp_top) {
+					$folder_view[0].scrollTop -= scroll_speed;
+				} else if (current.y === clamp_bottom) {
+					$folder_view[0].scrollTop += scroll_speed;
+				}
 			}
 		});
 		$(window).on("pointerup blur", function () {
