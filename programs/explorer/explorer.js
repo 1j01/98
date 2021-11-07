@@ -180,7 +180,15 @@ var go_to = function (address) {
 			// 	set_title($iframe[0].contentDocument.title + " - Explorer"); // " - Microsoft Internet Explorer"
 			// });
 		} else {
-			folder_view = new FolderView(address);
+			folder_view = new FolderView(address, {
+				onStatus: ({ items, selectedItems }) => {
+					$("#status-bar-left-text").text(
+						selectedItems.length > 0 ?
+							selectedItems.length + " object(s) selected" :
+							items.length + " object(s)"
+					);
+				},
+			});
 			$(folder_view.element).appendTo("#content");
 			folder_view.focus();
 		}

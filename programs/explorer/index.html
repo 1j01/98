@@ -77,11 +77,23 @@
 				<img id="address-icon" width="16" height="16" src="../../images/icons/folder-16x16.png" alt="">
 				<input type="text" id="address" autocomplete="off">
 				<button id="address-dropdown-button" disabled>&#x25BC;</button>
+				<!-- TODO: functional dropdown, autocompleting file/folder paths -->
 			</div>
-			<!-- TODO: compound input with an icon representing the resource, and a dropdown -->
 		</div>
 		<div id="content" class="inset-deep"></div>
-		<!-- TODO: status bar including thing that says "Internet" or "My Computer" -->
+		<div id="status-bar">
+			<div id="status-bar-left" class="inset-shallow">
+				<img id="status-bar-left-icon" hidden width="16" height="16" src="../../images/icons/folder-16x16.png" alt="">
+				<span id="status-bar-left-text"></span>
+			</div>
+			<div id="status-bar-middle" class="inset-shallow" hidden>
+				<span id="status-bar-middle-text"></span>
+			</div>
+			<!-- TODO: status bar thing that says "Internet" or "My Computer" -->
+			<div id="status-bar-right" class="inset-shallow" hidden>
+				<span id="status-bar-right-text"></span>
+			</div>
+		</div>
 
 		<!-- TODO: DRY -->
 		<svg style="position: absolute; pointer-events: none; bottom: 100%;">

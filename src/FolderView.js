@@ -105,7 +105,7 @@ const set_dragging_file_paths = (dragging_file_paths) => {
 	}
 };
 
-function FolderView(folder_path, { asDesktop = false } = {}) {
+function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 	const self = this;
 	// TODO: ensure a trailing slash / use path.join where appropriate
 
@@ -255,8 +255,16 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 			this.items.forEach((item, index) => {
 				item.element.classList.toggle("focused", index === 0);
 			});
+			updateStatus();
 		}
 	}, 100);
+
+	function updateStatus() {
+		onStatus?.({
+			items: self.items,
+			selectedItems: self.items.filter((item) => item.element.classList.contains("selected")),
+		});
+	}
 
 	function deleteRecursiveSync(fs, itemPath) {
 		if (fs.statSync(itemPath).isDirectory()) {
@@ -280,12 +288,14 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 
 	self.select_all = function () {
 		$folder_view.find(".desktop-icon").addClass("selected");
+		updateStatus();
 	};
 
 	self.select_inverse = function () {
 		$folder_view.find(".desktop-icon").each(function () {
 			$(this).toggleClass("selected");
 		});
+		updateStatus();
 	};
 
 	self.delete_selected = function () {
@@ -335,6 +345,7 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 						$folder_view.find(".desktop-icon").toArray().forEach((icon_el) => {
 							if (icon_el.dataset.filePath === file_path) {
 								icon_el.remove();
+								updateStatus();
 							}
 						});
 					}
@@ -402,6 +413,7 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 					icon_top + icon_height > min_y
 				);
 			});
+			updateStatus();
 		};
 		$folder_view.on("pointerdown", ".desktop-icon", function (e) {
 			select_item(e.currentTarget, true);
@@ -532,6 +544,7 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 			} else {
 				select_item($folder_view.find(".desktop-icon.focused")[0]);
 			}
+			updateStatus();
 		}
 	});
 
@@ -555,6 +568,7 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		} else {
 			item_el_to_select.scrollIntoView({ block: "nearest" });
 		}
+		updateStatus();
 	}
 
 	function navigate_grid(move_x, move_y) {
