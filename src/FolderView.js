@@ -437,8 +437,8 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 			const scrollbar_height = $folder_view.height() - $folder_view[0].clientHeight;
 			const clamp_left = $folder_view[0].scrollLeft;
 			const clamp_top = $folder_view[0].scrollTop;
-			const clamp_right = $folder_view.width() + $folder_view[0].scrollLeft - scrollbar_width - 4;
-			const clamp_bottom = $folder_view.height() + $folder_view[0].scrollTop - scrollbar_height - 4;
+			const clamp_right = $folder_view.width() + $folder_view[0].scrollLeft - scrollbar_width;
+			const clamp_bottom = $folder_view.height() + $folder_view[0].scrollTop - scrollbar_height;
 			current.x = Math.max(clamp_left, Math.min(clamp_right, current.x));
 			current.y = Math.max(clamp_top, Math.min(clamp_bottom, current.y));
 			if (dragging) {

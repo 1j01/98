@@ -130,6 +130,7 @@
 }
 .folder-view .marquee {
 	border: 1px dotted #ffffff;
+	box-sizing: border-box;
 	mix-blend-mode: exclusion;
 	/* TODO: fallback for browsers that don't support mix-blend-mode (something like #FF7F7F)... Edge doesn't support @supports either :/ */
 	z-index: 1;
