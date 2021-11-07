@@ -490,13 +490,25 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 				e.key == "PageDown"
 			) {
 				e.preventDefault();
-				const y_dir = e.key == "PageUp" ? -1 : 1;
-				const full_page_size = $folder_view.height();
-				const item_height = $folder_view.find(".desktop-icon").height();
-				const page_increment = full_page_size - item_height;
-				for (let increment = page_increment; increment > 0; increment -= item_height) {
-					if (navigate_grid(0, y_dir * increment / item_height)) { // grid units
-						break;
+				if (self.config.view_mode === FolderView.VIEW_MODES.LIST) {
+					const x_dir = e.key == "PageUp" ? -1 : 1;
+					const full_page_size = $folder_view.width();
+					const item_width = $folder_view.find(".desktop-icon").width();
+					const page_increment = full_page_size - item_width;
+					for (let increment = page_increment; increment > 0; increment -= item_width) {
+						if (navigate_grid(x_dir * increment / item_width, 0)) { // grid units
+							break;
+						}
+					}
+				} else {
+					const y_dir = e.key == "PageUp" ? -1 : 1;
+					const full_page_size = $folder_view.height();
+					const item_height = $folder_view.find(".desktop-icon").height();
+					const page_increment = full_page_size - item_height;
+					for (let increment = page_increment; increment > 0; increment -= item_height) {
+						if (navigate_grid(0, y_dir * increment / item_height)) { // grid units
+							break;
+						}
 					}
 				}
 			} else if (e.key == "Home") {
