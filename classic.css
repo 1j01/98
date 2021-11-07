@@ -57,6 +57,9 @@
 .desktop-icon {
 	position: absolute;
 }
+.folder-view:focus {
+	outline: none;
+}
 .folder-view:not([data-view-mode="DESKTOP"]):not([data-view-mode="LARGE_ICONS"]) .desktop-icon {
 	display: flex;
 	flex-direction: row;

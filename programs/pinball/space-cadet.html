@@ -91,8 +91,14 @@
 			<progress value="0" max="100" id="progress" hidden=1></progress>
 		</div>
 		<!-- tabindex=0 lets os-gui know to focus this control when refocusing the window, e.g. when closing the menus -->
-		<canvas class="emscripten" id="canvas" style="display:none;" oncontextmenu="event.preventDefault()" tabindex="0"
-			width="600" height="440"></canvas>
+		<canvas
+			class="emscripten"
+			id="canvas"
+			style="display: none; outline: 0;"
+			oncontextmenu="event.preventDefault()"
+			tabindex="0"
+			width="600" height="440"
+		></canvas>
 		<!-- This overlay canvas is for freezing the display while the menus are open (especially the non-thematic ImGui menus). -->
 		<canvas id="overlay-canvas" width="600" height="440"></canvas>
 		<!-- This overlay image covers up the bit of the ImGui menus that are rendered over the game (visually and functionally). -->
