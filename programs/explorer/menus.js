@@ -430,20 +430,28 @@ var menus = {
 	],
 };
 
-var go_outside_frame = false;
-if (frameElement) {
-	try {
-		if (parent.MenuBar) {
-			MenuBar = parent.MenuBar;
-			go_outside_frame = true;
-		}
-	} catch (e) { }
-}
+// @TODO: let menus go outside the window (outside the iframe)
+// This app is a bit special, because it has a menu bar that can be
+// dragged around.
+
+// var go_outside_frame = false;
+// if (frameElement) {
+// 	try {
+// 		if (parent.MenuBar) {
+// 			MenuBar = parent.MenuBar;
+// 			go_outside_frame = true;
+// 		}
+// 	} catch (e) { }
+// }
 var menu_bar = new MenuBar(menus);
-if (go_outside_frame) {
-	$(menu_bar.element).insertBefore(frameElement);
-} else {
-	$(function () {
-		$(menu_bar.element).prependTo("body");
-	});
-}
+// if (go_outside_frame) {
+// 	$(menu_bar.element).insertBefore(frameElement);
+// } else {
+// 	$(function () {
+// 		$(menu_bar.element).prependTo("body");
+// 	});
+// }
+
+$(function () {
+	$("#menu-bar-toolbar").append(menu_bar.element);
+});

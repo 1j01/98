@@ -6,19 +6,70 @@ body {
 	font-family: sans-serif;
 	font-size: 10pt;
 }
-#address-bar,
+.toolbars {
+	display: flex;
+	flex-direction: column;
+	padding: 1px;
+	margin-top: 1px;
+	margin-bottom: 5px;
+	border: 1px solid var(--ButtonShadow);
+	box-shadow: 0 1px 0 var(--ButtonHilight), 0 1px 0 var(--ButtonHilight) inset;
+}
 .toolbar {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	/* border: 1px solid var(--ButtonShadow); */
+	/* margin: 2px; */
+	overflow: hidden;
+}
+.toolbar-drag-handle {
+	flex: 0 0 auto;
+	width: 10px;
+	box-sizing: border-box;
+	height: 100%;
+	position: relative;
+	touch-action: none;
+}
+.toolbar-drag-handle::before {
+	content: "";
+	display: block;
+	position: absolute;
+	left: 2px;
+	top: 2px;
+	width: 4px;
+	bottom: 1px;
+	box-sizing: border-box;
+
+	/* copied from .outset-shallow class (CSS is bad at composition) */
+	border: 1px solid;
+	border-color: rgb(255, 255, 255) rgb(128, 128, 128) rgb(128, 128, 128) rgb(255, 255, 255);
+	border-color: var(--ButtonHilight) var(--ButtonShadow) var(--ButtonShadow) var(--ButtonHilight);
+}
+.toolbar + .toolbar {
+	border-top: 1px solid var(--ButtonHilight);
+	box-shadow: 0px -1px 0px var(--ButtonShadow);
+	margin-top: 2px;
+}
+
+#address-bar,
+#standard-buttons,
+.menus {
 	flex: 0 0 auto;
 	display: flex;
 	flex-direction: row;
-	padding: 5px;
 	align-items: center;
+}
+#address-bar {
+	flex: 1;
 }
 #address-compound-input {
 	background: var(--Window);
 	color: var(--WindowText);
 	flex: 1;
 	display: flex;
+	margin-top: 1px;
+	margin-bottom: 1px;
 }
 #address-icon {
 	display: inline-block;
@@ -46,14 +97,14 @@ label[for="address"] {
 button {
 	padding: 5px;
 }
-.toolbar button:not(#view-menu-button) {
+.toolbar-button:not(#view-menu-button) {
 	width: 55px;
 	height: 40px;
 	padding: 0;
 	font-size: 12px;
 	line-height: 12px;
 }
-.toolbar button .label-text {
+.toolbar-button .label-text {
 	margin-top: 24px;
 }
 #view-menu-button {
@@ -61,24 +112,24 @@ button {
 	width: 10px;
 	line-height: 30px;
 }
-.toolbar button {
+.toolbar-button {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
 	position: relative;
 }
-.toolbar button .icon {
+.toolbar-button .icon {
 	width: 20px;
 	height: 20px;
 	position: absolute;
 }
-.toolbar button .icon {
+.toolbar-button .icon {
 	background-image: url("../../images/browse-ui-icons-grayscale.png");
 }
-.toolbar button:not([disabled]):hover .icon {
+.toolbar-button:not([disabled]):hover .icon {
 	background-image: url("../../images/browse-ui-icons.png");
 }
-.toolbar button[disabled] .icon {
+.toolbar-button[disabled] .icon {
 	filter: saturate(0%) opacity(50%); /* fallback */
 	filter: url("#disabled-inset-filter");
 }

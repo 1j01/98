@@ -25,51 +25,61 @@
 		<link href="explorer.css" rel="stylesheet" type="text/css">
 	</head>
 	<body>
-		<div class="toolbar windows-explorer-toolbar">
-			<button class="lightweight" disabled id="back">
+		<div class="toolbars">
+		<div class="toolbar" id="menu-bar-toolbar">
+			<div class="toolbar-drag-handle"></div>
+		</div>
+		<div class="toolbar">
+		<div class="toolbar-drag-handle"></div>
+		<div id="standard-buttons">
+			<button class="toolbar-button lightweight" disabled id="back">
 				<span class="label-text">Back</span>
 			</button>
-			<button class="lightweight" disabled id="forward">
+			<button class="toolbar-button lightweight" disabled id="forward">
 				<span class="label-text">Forward</span>
 			</button>
-			<button class="lightweight" id="up">
+			<button class="toolbar-button lightweight" id="up">
 				<span class="label-text">Up</span>
 			</button>
-			<button class="lightweight" disabled id="cut">
+			<button class="toolbar-button lightweight" disabled id="cut">
 				<span class="label-text">Cut</span>
 			</button>
-			<button class="lightweight" disabled id="copy">
+			<button class="toolbar-button lightweight" disabled id="copy">
 				<span class="label-text">Copy</span>
 			</button>
-			<button class="lightweight" disabled id="paste">
+			<button class="toolbar-button lightweight" disabled id="paste">
 				<span class="label-text">Paste</span>
 			</button>
-			<button class="lightweight" disabled id="undo">
+			<button class="toolbar-button lightweight" disabled id="undo">
 				<span class="label-text">Undo</span>
 			</button>
-			<button class="lightweight" id="delete">
+			<button class="toolbar-button lightweight" id="delete">
 				<span class="label-text">Delete</span>
 			</button>
-			<button class="lightweight" disabled id="properties">
+			<button class="toolbar-button lightweight" disabled id="properties">
 				<span class="label-text">Properties</span>
 			</button>
-			<button class="lightweight" disabled id="view">
+			<button class="toolbar-button lightweight" disabled id="view">
 				<span class="label-text">View</span>
-				<button class="lightweight" disabled id="view-menu-button">&#x25BE;</button>
+				<!-- @TODO: this dropdown button probably shouldn't be .toolbar-button, I'm just migrating styles... -->
+				<button class="toolbar-button lightweight" disabled id="view-menu-button">&#x25BE;</button>
 			</button>
 		</div>
-		<!-- <div class="toolbar ie-toolbar">
-			<button class="lightweight" disabled id="back">Back</button>
-			<button class="lightweight" disabled id="forward">Forward</button>
-			<button class="lightweight" disabled id="stop">Stop</button>
-			<button class="lightweight" disabled id="refresh">Refresh</button>
-			<button class="lightweight" disabled id="home">Home</button>
-			<button class="lightweight" disabled id="search">Search</button>
-			<button class="lightweight" disabled id="favorites">Favorites</button>
-			<button class="lightweight" disabled id="history">History</button>
-			<button class="lightweight" disabled id="mail">Mail<button class="lightweight" disabled id="mail-menu-button">&#x25BE;</button></button>
-			<button class="lightweight" disabled id="print">Print</button>
+		<!-- <div class="ie-toolbar">
+			<button class="toolbar-button lightweight" disabled id="back">Back</button>
+			<button class="toolbar-button lightweight" disabled id="forward">Forward</button>
+			<button class="toolbar-button lightweight" disabled id="stop">Stop</button>
+			<button class="toolbar-button lightweight" disabled id="refresh">Refresh</button>
+			<button class="toolbar-button lightweight" disabled id="home">Home</button>
+			<button class="toolbar-button lightweight" disabled id="search">Search</button>
+			<button class="toolbar-button lightweight" disabled id="favorites">Favorites</button>
+			<button class="toolbar-button lightweight" disabled id="history">History</button>
+			<button class="toolbar-button lightweight" disabled id="mail">Mail<button class="toolbar-button lightweight" disabled id="mail-menu-button">&#x25BE;</button></button>
+			<button class="toolbar-button lightweight" disabled id="print">Print</button>
 		</div> -->
+		</div>
+		<div class="toolbar">
+		<div class="toolbar-drag-handle"></div>
 		<div id="address-bar">
 			<!-- @TODO: d access key -->
 			<label for="address">Address</label>
@@ -79,6 +89,8 @@
 				<button id="address-dropdown-button" disabled>&#x25BC;</button>
 				<!-- TODO: functional dropdown, autocompleting file/folder paths -->
 			</div>
+		</div>
+		</div>
 		</div>
 		<div id="content" class="inset-deep"></div>
 		<div id="status-bar">

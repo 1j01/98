@@ -340,6 +340,49 @@ $(function () {
 			});
 	});
 
+	$(document).on("pointerdown", ".toolbar-drag-handle", (event) => {
+		// console.log("pointerdown", event.currentTarget);
+		const pointer_id = event.pointerId ?? event.originalEvent.pointerId;
+		const toolbar_el = event.currentTarget.closest(".toolbar");
+		function release_drag(event) {
+			if ((event.pointerId ?? event.originalEvent.pointerId) === pointer_id) {
+				$(window).off("pointerup", release_drag);
+				$(window).off("pointercancel", release_drag);
+				$(window).off("pointermove", drag);
+				toolbar_el.style.cursor = "";
+			}
+		}
+		function drag(event) {
+			const el_under_pointer = document.elementFromPoint(event.clientX, event.clientY);
+			if (!el_under_pointer) {
+				return;
+			}
+			const toolbar_el_under_pointer = el_under_pointer.closest(".toolbar");
+			if (
+				!toolbar_el_under_pointer ||
+				toolbar_el_under_pointer === toolbar_el
+			) {
+				return;
+			}
+			// swap the two toolbars
+			const toolbar_el_prev_sibling = toolbar_el.nextElementSibling;
+			const toolbar_el_under_pointer_prev_sibling = toolbar_el_under_pointer.nextElementSibling;
+			toolbar_el.parentNode.insertBefore(toolbar_el_under_pointer, toolbar_el_prev_sibling);
+			toolbar_el_under_pointer.parentNode.insertBefore(toolbar_el, toolbar_el_under_pointer_prev_sibling);
+		}
+		$(window).on("pointerup", release_drag);
+		$(window).on("pointercancel", release_drag);
+		$(window).on("pointermove", drag);
+		toolbar_el.style.cursor = "move";
+		toolbar_el.setPointerCapture(pointer_id);
+		event.preventDefault();
+	});
+	$(window).on("selectstart", ".toolbar", (event) => {
+		console.log("selectstart", event.currentTarget);
+		event.preventDefault();
+	});
+
+
 	$(window).on("keydown", (event) => {
 		// @TODO: handle all modifiers explicitly
 		if (event.key === "F5") {
