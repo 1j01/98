@@ -155,6 +155,11 @@ html, body {
 	vertical-align: bottom; /* with inline-block, always */
 	position: relative;
 }
+.desktop-icon .icon-wrapper,
+.desktop-icon .icon-wrapper .selection-effect {
+	width: var(--icon-size, 32px);
+	height: var(--icon-size, 32px);
+}
 .desktop-icon .title {
 	line-height: 13px;
 	font-size: 9px;

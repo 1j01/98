@@ -62,6 +62,7 @@
 	flex-direction: row;
 	width: 150px;
 	height: 16px;
+    align-items: center;
 }
 
 .folder-view[data-view-mode="DESKTOP"] .desktop-icon,
@@ -85,6 +86,7 @@
 .folder-view:not([data-view-mode="DESKTOP"]):not([data-view-mode="LARGE_ICONS"]) .desktop-icon .title {
 	text-align: start;
 	white-space: nowrap;
+	padding-left: 3px;
 }
 
 .folder-view.focused .desktop-icon.selected .title {
@@ -106,8 +108,6 @@
 	position: absolute;
 	left: 0;
 	top: 0;
-	width: var(--icon-size, 32px);
-	height: var(--icon-size, 32px);
 	mask-image: var(--icon-image);
 	-webkit-mask-image: var(--icon-image);
 	background: var(--Hilight);

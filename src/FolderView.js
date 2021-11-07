@@ -3,7 +3,7 @@ const grid_size_x_for_large_icons = 75;
 const grid_size_y_for_large_icons = 75;
 // @TODO: this is supposed to be dynamic based on length of names
 const grid_size_x_for_small_icons = 150;
-const grid_size_y_for_small_icons = 16;
+const grid_size_y_for_small_icons = 17;
 
 window.resetAllFolderCustomizations = () => {
 	for (let i = 0; i < localStorage.length; i++) {
