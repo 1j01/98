@@ -398,7 +398,7 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 			});
 		};
 		$folder_view.on("pointerdown", ".desktop-icon", function (e) {
-			select_item(e.currentTarget);
+			select_item(e.currentTarget, true);
 		});
 		$folder_view.on("pointerdown", function (e) {
 			// TODO: allow a margin of mouse movement before starting selecting
@@ -527,14 +527,23 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 	// @TODO: extend selection with Shift + arrow keys,
 	// as well as PageUp / PageDown / Home / End
 
-	function select_item(item_or_item_el) {
+	function select_item(item_or_item_el, delay_scroll) {
 		const item_el_to_select = item_or_item_el instanceof Element ? item_or_item_el : item_or_item_el.element;
 
 		$folder_view.find(".desktop-icon").each(function (i, item_el) {
 			item_el.classList.toggle("selected", item_el === item_el_to_select);
 			item_el.classList.toggle("focused", item_el === item_el_to_select);
 		});
-		item_el_to_select.scrollIntoView({ block: "nearest" });
+		if (delay_scroll) {
+			// Windows 98 does this for clicks.
+			// I'm not sure if it's to make it less jarring (I feel like there's a case for that),
+			// or if it's to avoid some problems with drag and drop perhaps.
+			setTimeout(() => {
+				item_el_to_select.scrollIntoView({ block: "nearest" });
+			}, 500);
+		} else {
+			item_el_to_select.scrollIntoView({ block: "nearest" });
+		}
 	}
 
 	function navigate_grid(move_x, move_y) {
