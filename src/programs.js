@@ -925,6 +925,19 @@ function openWinamp(file_path) {
 }
 openWinamp.acceptsFilePaths = true;
 
+function JunkBot() {
+	var $win = make_iframe_window({
+		src: "https://1j01.github.io/janitorial-android/",
+		icons: {
+			32: "https://1j01.github.io/janitorial-android/images/bin-thicker-outline-32x32.png",
+		},
+		title: "JunkBot",
+		innerWidth: 700,
+		innerHeight: 500 + 21,
+	});
+	return new Task($win);
+}
+
 /*
 function saveAsDialog(){
 	var $win = new $Window();
@@ -1064,7 +1077,7 @@ add_icon_not_via_filesystem({
 add_icon_not_via_filesystem({
 	title: "Recycle Bin",
 	iconID: "recycle-bin",
-	open: function () { Explorer("https://www.epa.gov/recycle/"); },
+	open: JunkBot,
 	is_system_folder: true,
 });
 add_icon_not_via_filesystem({
