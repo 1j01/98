@@ -91,6 +91,8 @@ button {
 	flex: 1;
 }
 .desktop-icon .title {
-	background: transparent;
+	/* background: transparent; */
+	/* mix-blend-mode seems to need a background (for the dotted focus effect) */
+	background: var(--Window);
 	color: var(--WindowText);
 }
