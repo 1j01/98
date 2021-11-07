@@ -219,13 +219,14 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 			});
 			if (horizontal_first) {
 				x += grid_size_x;
-				if (x + grid_size_x > innerWidth) {
+				// @TODO: handle scrollbar width/height
+				if (x + grid_size_x > $folder_view.width()) {
 					y += grid_size_y;
 					x = 0;
 				}
 			} else {
 				y += grid_size_y;
-				if (y + grid_size_y > innerHeight) {
+				if (y + grid_size_y > $folder_view.height()) {
 					x += grid_size_x;
 					y = 0;
 				}
