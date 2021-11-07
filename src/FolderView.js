@@ -398,10 +398,7 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 			});
 		};
 		$folder_view.on("pointerdown", ".desktop-icon", function (e) {
-			$folder_view.find(".desktop-icon").each(function (i, folder_view_icon) {
-				folder_view_icon.classList.toggle("selected", folder_view_icon === e.currentTarget);
-				folder_view_icon.classList.toggle("focused", folder_view_icon === e.currentTarget);
-			});
+			select_item(e.currentTarget);
 		});
 		$folder_view.on("pointerdown", function (e) {
 			// TODO: allow a margin of mouse movement before starting selecting
@@ -515,23 +512,30 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 			}
 		} else if (e.key == "Home") {
 			e.preventDefault();
-			$folder_view.find(".desktop-icon").first()
-				.trigger("pointerdown")
-				[0].scrollIntoView({ block: "nearest" });
+			select_item($folder_view.find(".desktop-icon")[0]);
 		} else if (e.key == "End") {
 			e.preventDefault();
-			$folder_view.find(".desktop-icon").last()
-				.trigger("pointerdown")
-				[0].scrollIntoView({ block: "nearest" });
+			select_item($folder_view.find(".desktop-icon").last()[0]);
 		} else if (e.key == " ") {
 			// Usually there's something focused,
 			// so this is pretty "niche", but space bar selects the focused item.
 			e.preventDefault();
-			$folder_view.find(".desktop-icon.focused")
-				.trigger("pointerdown")
-				[0].scrollIntoView({ block: "nearest" });
+			select_item($folder_view.find(".desktop-icon.focused")[0]);
 		}
 	});
+
+	// @TODO: extend selection with Shift + arrow keys,
+	// as well as PageUp / PageDown / Home / End
+
+	function select_item(item_or_item_el) {
+		const item_el_to_select = item_or_item_el instanceof Element ? item_or_item_el : item_or_item_el.element;
+
+		$folder_view.find(".desktop-icon").each(function (i, item_el) {
+			item_el.classList.toggle("selected", item_el === item_el_to_select);
+			item_el.classList.toggle("focused", item_el === item_el_to_select);
+		});
+		item_el_to_select.scrollIntoView({ block: "nearest" });
+	}
 
 	function navigate_grid(move_x, move_y) {
 		// @TODO: how this is supposed to work for icons not aligned to the grid?
@@ -566,11 +570,7 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		});
 		const $icon = $(candidates[0]);
 		if ($icon.length > 0) {
-			$folder_view.find(".desktop-icon").each(function (i, icon) {
-				icon.classList.toggle("selected", icon === $icon[0]);
-				icon.classList.toggle("focused", icon === $icon[0]);
-			});
-			$icon[0].scrollIntoView({ block: "nearest" });
+			select_item($icon[0]);
 			return true;
 		}
 		return false;
