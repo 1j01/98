@@ -523,6 +523,13 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 			$folder_view.find(".desktop-icon").last()
 				.trigger("pointerdown")
 				[0].scrollIntoView({ block: "nearest" });
+		} else if (e.key == " ") {
+			// Usually there's something focused,
+			// so this is pretty "niche", but space bar selects the focused item.
+			e.preventDefault();
+			$folder_view.find(".desktop-icon.focused")
+				.trigger("pointerdown")
+				[0].scrollIntoView({ block: "nearest" });
 		}
 	});
 
