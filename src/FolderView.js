@@ -393,8 +393,8 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 			var $icon = $(e.target).closest(".desktop-icon");
 			$marquee.hide();
 			var folder_view_offset = $folder_view.offset();
-			start = { x: e.pageX - folder_view_offset.left, y: e.pageY - folder_view_offset.top };
-			current = { x: e.pageX - folder_view_offset.left, y: e.pageY - folder_view_offset.top };
+			start = { x: e.pageX - folder_view_offset.left + $folder_view[0].scrollLeft, y: e.pageY - folder_view_offset.top + $folder_view[0].scrollTop };
+			current = { x: e.pageX - folder_view_offset.left + $folder_view[0].scrollLeft, y: e.pageY - folder_view_offset.top + $folder_view[0].scrollTop };
 			if ($icon.length > 0) {
 				$marquee.hide();
 				set_dragging_file_paths($(".desktop-icon.selected").get().map((icon) =>
@@ -427,12 +427,26 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		});
 		$(window).on("pointermove", function (e) {
 			var folder_view_offset = $folder_view.offset();
-			current = { x: e.pageX - folder_view_offset.left, y: e.pageY - folder_view_offset.top };
-			// TODO: bind/clamp coordinates to within folder view
-			// (The marquee border should always show up, against the edge of the screen,
-			// it shouldn't overlap the address bar,
-			// and it shouldn't cause a scrollbar)
-			// also scroll the view by dragging
+			current = { x: e.pageX - folder_view_offset.left + $folder_view[0].scrollLeft, y: e.pageY - folder_view_offset.top + $folder_view[0].scrollTop };
+			// clamp coordinates to within folder view
+			// This accomplishes three things:
+			// 1. it improves the visual coherence of the marquee as an object
+			// 2. it makes the marquee not cause a scrollbar
+			// 3. it prevents selecting things you can't see
+			// if (!asDesktop) {
+			// 	console.log(current.x, current.y, $folder_view.scrollLeft(), $folder_view.scrollTop());
+			// }
+			const scrollbar_width = $folder_view.width() - $folder_view[0].clientWidth;
+			const scrollbar_height = $folder_view.height() - $folder_view[0].clientHeight;
+			current.x = Math.max(
+				$folder_view[0].scrollLeft,
+				Math.min(current.x, $folder_view.width() + $folder_view[0].scrollLeft - scrollbar_width - 4)
+			);
+			current.y = Math.max(
+				$folder_view[0].scrollTop,
+				Math.min(current.y, $folder_view.height() + $folder_view[0].scrollTop - scrollbar_height - 4)
+			);
+			// @TODO: scroll the view by dragging
 			if (dragging) {
 				drag_update();
 			}

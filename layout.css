@@ -38,6 +38,10 @@ html, body {
 .folder-view {
 	position: relative;
 	flex: 1;
+	overflow: auto;
+}
+.desktop .folder-view {
+	overflow: hidden;
 }
 .taskbar {
 	position: absolute;

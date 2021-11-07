@@ -86,7 +86,6 @@ button {
 	display: flex;
 	background: var(--Window);
 	color: var(--WindowText);
-	overflow: auto; /* TODO: should the folder-view have overflow: auto instead? */
 }
 #content iframe {
 	flex: 1;
