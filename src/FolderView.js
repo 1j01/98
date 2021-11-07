@@ -7,11 +7,11 @@ const grid_size_y_for_small_icons = 17;
 
 window.resetAllFolderCustomizations = () => {
 	for (let i = 0; i < localStorage.length; i++) {
-		if (localStorage.key(i).startsWith("folder-view-mode:")) {
+		if (localStorage.key(i).startsWith("folder-config:")) {
 			localStorage.removeItem(localStorage.key(i));
 		}
 	}
-}
+};
 
 const icon_size_by_view_mode = {
 	LARGE_ICONS: 32,
