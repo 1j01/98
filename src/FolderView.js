@@ -519,8 +519,13 @@ function FolderView(folder_path, { asDesktop = false } = {}) {
 		} else if (e.key == " ") {
 			// Usually there's something focused,
 			// so this is pretty "niche", but space bar selects the focused item.
+			// Ctrl+Space toggles selection of the focused item.
 			e.preventDefault();
-			select_item($folder_view.find(".desktop-icon.focused")[0]);
+			if ((e.ctrlKey || e.metaKey) && $folder_view.find(".desktop-icon.selected").length > 0) {
+				$folder_view.find(".desktop-icon.focused").toggleClass("selected");
+			} else {
+				select_item($folder_view.find(".desktop-icon.focused")[0]);
+			}
 		}
 	});
 
