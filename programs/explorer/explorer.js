@@ -261,7 +261,15 @@ $(function () {
 			go_to($("#address").val());
 		}
 	});
-	$("#refresh").on("click", refresh);
+	$("#address").on("pointerdown", function (e) {
+		if (this !== document.activeElement) {
+			$(this).select();
+			e.preventDefault(); // prevents starting a selection
+		}
+	});
+	$("#address").on("focus", function (e) {
+		$(this).select();
+	});
 	$("#back").on("click", go_back);
 	$("#forward").on("click", go_forward);
 	$("#up").on("click", go_up);
