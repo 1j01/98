@@ -464,15 +464,43 @@ $(function () {
 						);
 						if ($toolbar_el.is("#menu-bar-toolbar")) {
 							// display menu bar overflow items like a normal menu
-							// ...bar; @TODO: like a normal menu
 							const overflow_menus = {};
 							for (const [menu_key, menu] of Object.entries(menus)) {
 								if (overflowed_items.some((item) => item.textContent === remove_hotkey(menu_key))) {
 									overflow_menus[menu_key] = menu;
 								}
 							}
-							const overflow_menu_bar = new MenuBar(overflow_menus);
-							$menu.append(overflow_menu_bar.element);
+							// translate menus into menu items
+							// @TODO: in a future version of OS-GUI,
+							// top level menus should have a similar structure
+							// and there should be an API for context menus
+							// which we could use here. (or perhaps overflow menus should be part of the library)
+							const menu_items = Object.entries(overflow_menus).map(([menu_key, menu]) => {
+								return {
+									item: menu_key,
+									submenu: menu,
+								};
+							});
+							const dummy_menu_bar = new MenuBar({"Dummy": menu_items});
+							$menu.append(dummy_menu_bar.element);
+							$menu.css({
+								top: $toolbar_el.offset().top,
+							});
+							$menu.find(".menu-button")[0].dispatchEvent(new Event("pointerdown"));
+							// @TODO: don't involve $menu in the first place
+							// $menu.remove(); // breaks positioning
+							$menu.css({
+								visibility: "hidden",
+								pointerEvents: "none", // is this necessary?
+							});
+							// If you hit Escape, refocus the real menu bar
+							// @TODO: doesn't work because Escape closes all menus in a "just in case" way
+							// dummy_menu_bar.element.addEventListener("focusin", (event) => {
+							// 	console.log("hello");
+							// 	menu_bar.focus();
+							// });
+							// @TODO: there's some case where the popup menu repositions badly
+							// when hovering over it, moving the mouse from a submenu
 						} else {
 							for (const item of items) {
 								if (item.offsetLeft + item.offsetWidth > toolbar_el.clientWidth) {
