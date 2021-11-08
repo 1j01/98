@@ -138,5 +138,13 @@
 				</filter>
 			</defs>
 		</svg>
+		<script>
+			window.addEventListener("resize", ()=> {
+				// work around a browser bug in Chrome where
+				// the SVG filter behaves differently based on the INITIAL zoom level
+				// (if you zoom in, the icons get cut off, if you zoom out, the effect is too thick)
+				document.getElementById("disabled-inset-filter").setAttribute("x", "0");
+			});
+		</script>
 	</body>
 </html>
