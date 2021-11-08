@@ -431,8 +431,17 @@ $(function () {
 					$overflow_button = $("<button class='toolbar-overflow-menu-button lightweight'/>")
 						.appendTo($toolbar_el)
 						.text("»"); // @TODO: SVG
-					// @TODO: don't open if just clicked to close
-					$overflow_button.on("click", (event) => {
+					let open = false;
+					let opening = false;
+					$overflow_button.on("pointerdown", (event) => {
+						if (open) {
+							return; // will close from global pointerdown
+						}
+						open = true;
+						opening = true;
+						setTimeout(() => {
+							opening = false;
+						}, 100);
 						const $menu = $("<div class='toolbar-overflow-menu outset-deep'/>");
 						$menu.css({
 							position: "fixed",
@@ -446,9 +455,14 @@ $(function () {
 						$(window).on("pointerdown", global_pointerdown);
 						$(window).on("blur", close_menu);
 						function close_menu() {
+							if (opening) { // pretty ridiculous that this flag is needed
+								return;
+							}
 							$menu.remove();
 							$(window).off("pointerdown", global_pointerdown);
 							$(window).off("blur", close_menu);
+							open = false;
+							opening = false;
 						}
 						function global_pointerdown(event) {
 							if (event.target.closest(".toolbar-overflow-menu, .menu-popup")) {
