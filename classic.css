@@ -56,6 +56,7 @@
 }
 .desktop-icon {
 	position: absolute;
+	outline: none;
 }
 .folder-view:focus {
 	outline: none;
@@ -96,7 +97,7 @@
 	background: var(--Hilight);
 	color: var(--HilightText);
 }
-.folder-view:focus-within .desktop-icon.focused .title::after {
+.folder-view:focus-within .desktop-icon.focused:not(.renaming) .title::after {
 	content: "";
 	position: absolute;
 	left: 0;
@@ -105,6 +106,14 @@
 	right: 0;
 	border: 1px dotted #ffffff;
 	mix-blend-mode: exclusion;
+}
+.desktop-icon .title input {
+	font: inherit;
+	outline: none;
+	border: none;
+	background: var(--Window);
+	color: var(--WindowText);
+	text-align: inherit;
 }
 .desktop-icon .icon-wrapper .selection-effect {
 	display: none;

@@ -67,7 +67,9 @@ var menus = {
 		},
 		{
 			item: "Rena&me",
-			enabled: false, // @TODO
+			action: () => {
+				folder_view.start_rename();
+			},
 		},
 		{
 			item: "P&roperties",

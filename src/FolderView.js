@@ -364,6 +364,15 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 		}, 0);
 	};
 
+	self.start_rename = () => {
+		for (const item of self.items) {
+			if (item.element.classList.contains("focused")) {
+				item.start_rename();
+				break;
+			}
+		}
+	};
+
 	// Read the folder and create icon items
 	withFilesystem(function () {
 		var fs = BrowserFS.BFSRequire('fs');
@@ -421,7 +430,9 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 			updateStatus();
 		};
 		$folder_view.on("pointerdown", ".desktop-icon", function (e) {
-			select_item(e.currentTarget, true);
+			const item_el = e.currentTarget;
+			item_el._was_selected_at_pointerdown = item_el.classList.contains("selected");
+			select_item(item_el, true);
 		});
 		$folder_view.on("pointerdown", function (e) {
 			// TODO: allow a margin of mouse movement before starting selecting
@@ -488,6 +499,9 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 	})();
 
 	$folder_view.on("keydown", function (e) {
+		if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") {
+			return;
+		}
 		if (e.key == "Enter") {
 			$folder_view.find(".desktop-icon.selected").trigger("dblclick");
 		} else if (e.ctrlKey && e.key == "a") {
@@ -550,6 +564,9 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 				select_item($folder_view.find(".desktop-icon.focused")[0]);
 			}
 			updateStatus();
+		} else if (e.key === "F2") {
+			e.preventDefault();
+			self.start_rename();
 		}
 	});
 
@@ -639,28 +656,50 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 		var icon_name = file_extension_icons[file_extension];
 		return icon_name || "document";
 	};
+	var icons_from_icon_id = function (icon_id) {
+		return {
+			16: getIconPath(icon_id, 16),
+			32: getIconPath(icon_id, 32),
+			48: getIconPath(icon_id, 48),
+		};
+	};
 
 	// var add_fs_item = function(file_path, x, y){
 	var add_fs_item = function (file_name, x, y) {
-		var file_path = folder_path + file_name;
+		var initial_file_path = folder_path + file_name;
 		var item = new FolderViewItem({
 			title: file_name,
-			open: function () { executeFile(file_path); },
-			shortcut: file_path.match(/\.url$/),
-			file_path,
+			open: function () { executeFile(item.file_path); },
+			rename: (new_name) => {
+				var fs = BrowserFS.BFSRequire('fs');
+				return new Promise(function (resolve, reject) {
+					const new_file_path = folder_path + new_name;
+					fs.rename(item.file_path, new_file_path, function (err) {
+						if (err) {
+							return reject(err);
+						}
+						resolve();
+						item.file_path = new_file_path;
+						item.title = new_name;
+						item.element.dataset.filePath = new_file_path;
+						if (item.resolvedStats) {
+							const icon_id = icon_id_from_stats_and_path(item.resolvedStats, new_file_path);
+							item.setIcons(icons_from_icon_id(icon_id));
+						} // else the icon will be updated when the stats are resolved
+					});
+				});
+			},
+			shortcut: initial_file_path.match(/\.url$/),
+			file_path: initial_file_path,
 			iconSize: icon_size_by_view_mode[self.config.view_mode],
 		});
-		item.pendingStatPromise = stat(file_path);
+		item.pendingStatPromise = stat(initial_file_path);
 		item.pendingStatPromise.then((stats) => {
 			item.pendingStatPromise = null;
 			item.resolvedStats = stats; // trying to indicate in the name the async nature
 			// @TODO: know which sizes are available
-			const icon_id = icon_id_from_stats_and_path(stats, file_path);
-			item.setIcons({
-				16: getIconPath(icon_id, 16),
-				32: getIconPath(icon_id, 32),
-				48: getIconPath(icon_id, 48),
-			});
+			const icon_id = icon_id_from_stats_and_path(stats, item.file_path);
+			item.setIcons(icons_from_icon_id(icon_id));
 		});
 		self.add_item(item);
 		$(item.element).css({

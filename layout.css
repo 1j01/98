@@ -177,7 +177,11 @@ html, body {
 	max-height: calc(13px * 2);
 }
 .desktop-icon.focused {
-	z-index: 1;
+	z-index: 1; /* for multi-line title display */
+}
+.desktop-icon .title input {
+	display: flex;
+	width: 100%;
 }
 /* Fix dragging things (like windows) over iframes */
 .drag iframe {
