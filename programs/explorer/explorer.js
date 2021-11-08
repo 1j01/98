@@ -433,16 +433,20 @@ $(function () {
 						.text("»"); // @TODO: SVG
 					let open = false;
 					let opening = false;
+					let $menu;
 					$overflow_button.on("pointerdown", (event) => {
 						if (open) {
-							return; // will close from global pointerdown
+							$menu.remove();
+							open = false;
+							opening = false;
+							return;
 						}
 						open = true;
 						opening = true;
 						setTimeout(() => {
 							opening = false;
 						}, 100);
-						const $menu = $("<div class='toolbar-overflow-menu outset-deep'/>");
+						$menu = $("<div class='toolbar-overflow-menu outset-deep'/>");
 						$menu.css({
 							position: "fixed",
 							top: $toolbar_el.offset().top + $toolbar_el.outerHeight(),
@@ -465,7 +469,7 @@ $(function () {
 							opening = false;
 						}
 						function global_pointerdown(event) {
-							if (event.target.closest(".toolbar-overflow-menu, .menu-popup")) {
+							if (event.target.closest(".toolbar-overflow-menu, .menu-popup, .toolbar-overflow-menu-button")) {
 								return;
 							}
 							close_menu();
