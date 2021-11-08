@@ -458,20 +458,31 @@ $(function () {
 						}
 
 						// add copies of the overflowed items to the menu
-						// @TODO: display menu bar overflow items like a normal menu
 						const items = $toolbar_el.find("button, .menu-button").toArray();
-						for (const item of items) {
-							if (item.offsetLeft + item.offsetWidth > toolbar_el.clientWidth) {
-								// $(item).clone(true).appendTo($menu); // would only work with jQuery event listeners
-								$(item).clone().appendTo($menu).on("click", (event) => {
-									// $(item).trigger(new $.Event("pointerdown", {
-									// 	target: item,
-									// 	pointerId: 101010101010101,
-									// })); // doesn't work
-									item.dispatchEvent(new Event("pointerdown")); // for menu buttons
-									item.click();
-									close_menu();
-								});
+						const overflowed_items = items.filter((item) =>
+							item.offsetLeft + item.offsetWidth > toolbar_el.clientWidth
+						);
+						if ($toolbar_el.is("#menu-bar-toolbar")) {
+							// display menu bar overflow items like a normal menu
+							// ...bar; @TODO: like a normal menu
+							const overflow_menus = {};
+							for (const [menu_key, menu] of Object.entries(menus)) {
+								if (overflowed_items.some((item) => item.textContent === remove_hotkey(menu_key))) {
+									overflow_menus[menu_key] = menu;
+								}
+							}
+							const overflow_menu_bar = new MenuBar(overflow_menus);
+							$menu.append(overflow_menu_bar.element);
+						} else {
+							for (const item of items) {
+								if (item.offsetLeft + item.offsetWidth > toolbar_el.clientWidth) {
+									// $(item).clone(true).appendTo($menu); // would only work with jQuery event listeners
+									$(item).clone().appendTo($menu).on("click", (event) => {
+										// item.dispatchEvent(new Event("pointerdown")); // was for menu buttons
+										item.click();
+										close_menu();
+									});
+								}
 							}
 						}
 					});
@@ -497,4 +508,8 @@ $(function () {
 		}
 	});
 
+	// @TODO: expose this in OS-GUI library
+	function remove_hotkey(text) {
+		return text.replace(/\s?\(&.\)/, "").replace(/([^&]|^)&([^&\s])/, "$1$2");
+	}
 });
