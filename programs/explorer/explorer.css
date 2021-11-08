@@ -68,6 +68,18 @@ body {
 	display: flex;
 	flex-direction: row;
 }
+.toolbar hr[aria-orientation="vertical"] {
+	display: block;
+	width: 0px;
+	height: 100%; /* @TODO: why is this not working? */
+    height: 37px; /* I have to do this instead */
+	margin: 0;
+	border: 0;
+	border-left: 1px solid var(--ButtonShadow);
+	border-right: 1px solid var(--ButtonHilight);
+	margin-left: 4px;
+	margin-right: 4px;
+}
 
 #address-bar,
 #standard-buttons,
