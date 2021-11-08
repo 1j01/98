@@ -181,6 +181,8 @@ var go_to = function (address) {
 		set_title(get_display_name_for_address(address));
 		set_icon(get_icon_for_address(address));
 
+		$("#status-bar-left-text").empty();
+
 		if (is_url) {
 			$iframe = $("<iframe>").attr({
 				src: address,
