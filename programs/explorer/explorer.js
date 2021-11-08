@@ -451,7 +451,7 @@ $(function () {
 							$(window).off("blur", close_menu);
 						}
 						function global_pointerdown(event) {
-							if (event.target.closest(".toolbar-overflow-menu")) {
+							if (event.target.closest(".toolbar-overflow-menu, .menu-popup")) {
 								return;
 							}
 							close_menu();
@@ -499,8 +499,6 @@ $(function () {
 							// 	console.log("hello");
 							// 	menu_bar.focus();
 							// });
-							// @TODO: there's some case where the popup menu repositions badly
-							// when hovering over it, moving the mouse from a submenu
 						} else {
 							for (const item of items) {
 								if (item.offsetLeft + item.offsetWidth > toolbar_el.clientWidth) {
