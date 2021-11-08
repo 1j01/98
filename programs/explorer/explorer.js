@@ -396,6 +396,8 @@ $(function () {
 			const toolbar_el_under_pointer_prev_sibling = toolbar_el_under_pointer.nextElementSibling;
 			toolbar_el.parentNode.insertBefore(toolbar_el_under_pointer, toolbar_el_prev_sibling);
 			toolbar_el_under_pointer.parentNode.insertBefore(toolbar_el, toolbar_el_under_pointer_prev_sibling);
+
+			update_toolbar_overflow();
 		}
 		$(window).on("pointerup", release_drag);
 		$(window).on("pointercancel", release_drag);
@@ -408,7 +410,75 @@ $(function () {
 		console.log("selectstart", event.currentTarget);
 		event.preventDefault();
 	});
+	$(window).on("resize", () => {
+		update_toolbar_overflow();
+	});
+	update_toolbar_overflow();
 
+	function update_toolbar_overflow() {
+		// each toolbar should get an overflow menu button
+		// if there's not enough space.
+		// Windows 98 doesn't actually hide the items that are cut off;
+		// you can sometimes see a partially cut off item,
+		// but it should appear in the overflow menu.
+		$(".toolbar").each((i, toolbar_el) => {
+			const $toolbar_el = $(toolbar_el);
+			let $overflow_button = $toolbar_el.find(".toolbar-overflow-menu-button");
+			if (toolbar_el.scrollWidth > toolbar_el.clientWidth) {
+				if (!$overflow_button.length) {
+					$overflow_button = $("<button class='toolbar-overflow-menu-button lightweight'/>")
+						.appendTo($toolbar_el)
+						.text("»"); // @TODO: SVG
+					// @TODO: don't open if just clicked to close
+					$overflow_button.on("click", (event) => {
+						const $menu = $("<div class='toolbar-overflow-menu outset-deep'/>");
+						$menu.css({
+							position: "fixed",
+							top: $toolbar_el.offset().top + $toolbar_el.outerHeight(),
+							right: document.body.clientWidth - $toolbar_el.offset().left - $toolbar_el.outerWidth(),
+						});
+						$menu.appendTo(document.body);
+
+						// click outside the menu to close
+						// including clicking outside the iframe
+						$(window).on("pointerdown", global_pointerdown);
+						$(window).on("blur", close_menu);
+						function close_menu() {
+							$menu.remove();
+							$(window).off("pointerdown", global_pointerdown);
+							$(window).off("blur", close_menu);
+						}
+						function global_pointerdown(event) {
+							if (event.target.closest(".toolbar-overflow-menu")) {
+								return;
+							}
+							close_menu();
+						}
+
+						// add copies of the overflowed items to the menu
+						// @TODO: display menu bar overflow items like a normal menu
+						const items = $toolbar_el.find("button, .menu-button").toArray();
+						for (const item of items) {
+							if (item.offsetLeft + item.offsetWidth > toolbar_el.clientWidth) {
+								// $(item).clone(true).appendTo($menu); // would only work with jQuery event listeners
+								$(item).clone().appendTo($menu).on("click", (event) => {
+									// $(item).trigger(new $.Event("pointerdown", {
+									// 	target: item,
+									// 	pointerId: 101010101010101,
+									// })); // doesn't work
+									item.dispatchEvent(new Event("pointerdown")); // for menu buttons
+									item.click();
+									close_menu();
+								});
+							}
+						}
+					});
+				}
+			} else {
+				$overflow_button.remove();
+			}
+		});
+	}
 
 	$(window).on("keydown", (event) => {
 		// @TODO: handle all modifiers explicitly

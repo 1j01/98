@@ -122,6 +122,7 @@ html, body {
 }
 .desktop,
 .folder-view,
+.menu-button, /* for overflow menu in explorer, at small window sizes */
 .taskbar,
 .start-button,
 .tasks,
