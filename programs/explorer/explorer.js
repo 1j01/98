@@ -311,7 +311,7 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 	html = html.replaceAll(named_color_regexp, (match, color_name) =>
 		lowercase_named_color_to_css_var[color_name.toLowerCase()]
 	);
-	
+
 	const doc = new DOMParser().parseFromString(html, "text/html");
 	$(doc).find("script").each((i, script) => {
 		if (script.getAttribute("language") === "JavaScript") {
@@ -400,10 +400,10 @@ ${doc.documentElement.outerHTML}`;
 				});
 
 			$window.$content.find(".error-pre").text(event.error);
-				
+
 			const srcdoc = frameElement.srcdoc;
 			const lines = srcdoc.split(/\r\n|\r|\n/g);
-			
+
 			$window.$content.find(".location-pre").append(
 				lines.map((line, index) =>
 					$("<div>").text(
@@ -412,7 +412,7 @@ ${doc.documentElement.outerHTML}`;
 					).css({
 						background: (index + 1 == event.lineno) ? "var(--Hilight)" : "",
 						color: (index + 1 == event.lineno) ? "var(--HilightText)" : "",
-    					width: "1000%", // because ugh highlight doesn't extend to whole line if it scrolls
+						width: "1000%", // because ugh highlight doesn't extend to whole line if it scrolls
 					})
 				)
 					.slice(event.lineno - 5, event.lineno + 4)
@@ -465,7 +465,7 @@ ${doc.documentElement.outerHTML}`;
 			var attribute = object.attributes[i];
 			folder_view.element.setAttribute(attribute.name, attribute.value);
 		}
-		
+
 		// not working:
 		// var range = doc.createRange();
 		// range.selectNode(doc.head); // sets context node
@@ -747,7 +747,7 @@ $(function () {
 									submenu: menu,
 								};
 							});
-							const dummy_menu_bar = new MenuBar({"Dummy": menu_items});
+							const dummy_menu_bar = new MenuBar({ "Dummy": menu_items });
 							$menu.append(dummy_menu_bar.element);
 							$menu.css({
 								top: $toolbar_el.offset().top,
