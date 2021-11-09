@@ -334,8 +334,8 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 			/var\s([a-zA-Z_$][\w$]*)[;\n\r]/g,
 			"/*var*/ window.$1 = undefined;"
 		);
-		// then handle `var foo = bar;` (if this was first, it would generate statements like `foo;`, giving ReferenceError)
-		script.textContent = script.textContent.replaceAll(/var\s/g, "/*var*/ ");
+		// then handle `var foo = bar;`
+		script.textContent = script.textContent.replaceAll(/var\s/g, "/*var*/ window.");
 
 		if (script.hasAttribute("event")) {
 			const event_name = script.getAttribute("event");
