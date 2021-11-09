@@ -225,7 +225,7 @@ var go_to = function (address) {
 					);
 				},
 			});
-			$(folder_view.element).appendTo("#content");
+			render_folder_template(folder_view, address);
 			folder_view.focus();
 
 			if (
@@ -247,6 +247,36 @@ var go_to = function (address) {
 		}
 	}
 };
+
+async function render_folder_template(folder_view, address) {
+	$("#content").empty();
+	// $(folder_view.element).appendTo("#content");
+
+	const template_url = new URL("../../src/WEB/FOLDER.HTT", window.location.href);
+	const htt = await (await fetch(template_url)).text();
+	const percent_vars = {
+		THISDIRPATH: address,
+		THISDIRNAME: get_display_name_for_address(address),
+		TEMPLATEDIR: template_url.href.split("/").slice(0, -1).join("/"),
+	};
+	const percent_var_regexp = /%([A-Z_]+)%/gi;
+	let html = htt;
+	while (true) {
+		const match = percent_var_regexp.exec(html);
+		if (!match) {
+			break;
+		}
+		const var_name = match[1];
+		const var_value = percent_vars[var_name];
+		if (!var_value) {
+			throw new Error("No value for percent variable " + var_name);
+		}
+		html = html.replace(match[0], var_value);
+	}
+	$("#content").html(html);
+	$("#content").find("object[classid=clsid:1820FED0-473E-11D0-A96C-00C04FD705A2]")
+		.replaceWith(folder_view.element);
+}
 
 function refresh() {
 	// go to whatever the address was before
