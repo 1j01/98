@@ -376,42 +376,39 @@ ${doc.documentElement.outerHTML}`;
 			const { $window } = showMessageBox({
 				message: "An error occurred.",
 			});
-			$window.$content.append(
-				$("<details><summary>Details</summary><pre></pre></details>")
-					.find("pre")
-					.text(event.error)
-					.css({
-						overflow: "auto",
-						maxHeight: 400,
-						textAlign: "left",
-						background: "var(--Window)",
-						color: "var(--WindowText)",
-						margin: 10,
-					})
-			);
+			$window.$content.append(`
+				<details>
+					<summary>Details</summary>
+					<pre class='error-pre'></pre>
+					<pre class='location-pre'></pre>
+				</details>
+			`)
+			$window.$content.find("pre")
+				.css({
+					overflow: "auto",
+					maxHeight: 400,
+					textAlign: "left",
+					background: "var(--Window)",
+					color: "var(--WindowText)",
+					margin: 10,
+					padding: 5,
+					// whiteSpace: "pre-wrap",
+				});
+
+			$window.$content.find(".error-pre").text(event.error);
 				
 			const srcdoc = frameElement.srcdoc;
 			const lines = srcdoc.split(/\r\n|\r|\n/g);
-			$window.$content.append(
-				$("<details><summary>Location</summary><pre></pre></details>")
-					.find("pre")
-					.text(
-						lines.map((line, index) =>
-							((index + 1 == event.lineno) ? "--->" : "    ") +
-							(index + 1 + "").padStart(4, " ") + ": " + line
-						)
-							.slice(event.lineno - 5, event.lineno + 4)
-							.join("\n")
+
+			$window.$content.find(".location-pre")
+				.text(
+					lines.map((line, index) =>
+						((index + 1 == event.lineno) ? "--->" : "    ") +
+						(index + 1 + "").padStart(4, " ") + ": " + line
 					)
-					.css({
-						overflow: "auto",
-						maxHeight: 400,
-						textAlign: "left",
-						background: "var(--Window)",
-						color: "var(--WindowText)",
-						margin: 10,
-					})
-			);
+						.slice(event.lineno - 5, event.lineno + 4)
+						.join("\n")
+				);
 		});
 
 		// Allow message boxes to go outside the window.
