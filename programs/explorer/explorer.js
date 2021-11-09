@@ -498,6 +498,7 @@ ${doc.documentElement.outerHTML}`;
 				return {
 					Name: item.title,
 					Size: item.resolvedStats?.size,
+					Path: item.file_path,
 				};
 			},
 		};
@@ -507,11 +508,13 @@ ${doc.documentElement.outerHTML}`;
 		2: "type",
 		3: "date",
 	};
-	folder_view.element.GetDetailsOf = (item, detail_id) => {
-		if (item == null) {
+	folder_view.element.Folder = {
+		GetDetailsOf: (item, detail_id) => {
+			if (item == null) {
 
-		} else {
+			} else {
 
+			}
 		}
 	};
 }
