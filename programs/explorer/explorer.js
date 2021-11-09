@@ -309,6 +309,10 @@ ${script.textContent}}());`;
 				background: var(--Window);
 				color: var(--WindowText);
 			}
+			.folder-view {
+				background: var(--Window); /* needed for mix-blend-mode */
+				color: var(--WindowText);
+			}
 		</style>
 	`;
 
