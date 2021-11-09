@@ -89,6 +89,9 @@ function FolderViewItem(options) {
 		if (!options.rename) {
 			return;
 		}
+		if ($container.hasClass("renaming")) {
+			return;
+		}
 		$container.addClass("renaming");
 		$container.attr("draggable", false);
 		const old_title = $title.text();
