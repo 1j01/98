@@ -357,7 +357,9 @@ ${exports}
 ${doc.documentElement.outerHTML}`;
 
 	// This function will be run in the context of the iframe.
-	// It is here for syntax highlighting/checking/formatting, but will be stringified.
+	// It is here for syntax highlighting/checking/formatting,
+	// and avoiding escaping complexities, but it will be stringified,
+	// so note that variables can not be referenced from the outer scope.
 	const head_inject_script_fn = () => {
 		// Usually the scripts refer to "document.all.FileList", but sometimes use just "FileList",
 		// relying on the fact that IDs pollute the global namespace.
@@ -385,7 +387,7 @@ ${doc.documentElement.outerHTML}`;
 			);
 				
 			const srcdoc = frameElement.srcdoc;
-			const lines = srcdoc.split(/\\r\\n|\\r|\\n/);
+			const lines = srcdoc.split(/\r\n|\r|\n/g);
 			$window.$content.append(
 				$("<details><summary>Location</summary><pre></pre></details>")
 					.find("pre")
