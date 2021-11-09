@@ -330,7 +330,7 @@ ${script.textContent}}());`;
 		// 	.append(head_inject_html);
 
 		eventHandlers.onStatus = ({ items, selectedItems }) => {
-		
+			doc.dispatchEvent(new CustomEvent("SelectionChanged"));
 		};
 	});
 
