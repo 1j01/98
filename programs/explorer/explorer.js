@@ -360,7 +360,7 @@ ${doc.documentElement.outerHTML}`;
 	// It is here for syntax highlighting/checking/formatting,
 	// and avoiding escaping complexities, but it will be stringified,
 	// so note that variables can not be referenced from the outer scope.
-	const head_inject_script_fn = () => {
+	const head_injected_script_fn = () => {
 		// Usually the scripts refer to "document.all.FileList", but sometimes use just "FileList",
 		// relying on the fact that IDs pollute the global namespace.
 		Object.defineProperty(window, "FileList", {
@@ -424,7 +424,7 @@ ${doc.documentElement.outerHTML}`;
 		// Allow message boxes to go outside the window.
 		showMessageBox = parent.showMessageBox || showMessageBox;
 	};
-	const head_inject_html = `
+	const head_injected_html = `
 		<meta charset="utf-8">
 		<title>Folder Template</title>
 		<link href="../../layout.css" rel="stylesheet" type="text/css">
@@ -449,11 +449,11 @@ ${doc.documentElement.outerHTML}`;
 			}
 		</style>
 		<script>
-			(${head_inject_script_fn})();
+			(${head_injected_script_fn})();
 		</script>
 	`;
 
-	html = html.replace(/\s+<\/head>/i, (match) => `${head_inject_html}\n${match}`);
+	html = html.replace(/\s+<\/head>/i, (match) => `${head_injected_html}\n${match}`);
 
 	$iframe = $("<iframe>").attr({
 		srcdoc: html,
