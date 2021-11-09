@@ -303,7 +303,14 @@ ${script.textContent}}());`;
 		<script src="../../lib/os-gui/$Window.js"></script>
 		<script src="../../src/msgbox.js"></script>
 		<script>defaultMessageBoxTitle = "Explorer";</script>
-		<link href="/programs/explorer/explorer.css" rel="stylesheet" type="text/css">
+		<style>
+			.desktop-icon .title {
+				/* background: transparent; */
+				/* mix-blend-mode seems to need a background (for the dotted focus effect) */
+				background: var(--Window);
+				color: var(--WindowText);
+			}
+		</style>
 	`;
 
 	html = html.replace(/\s+<\/head>/i, (match) => `${head_inject_html}\n${match}`);
