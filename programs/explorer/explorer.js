@@ -250,7 +250,6 @@ var go_to = function (address) {
 
 async function render_folder_template(folder_view, address) {
 	$("#content").empty();
-	// $(folder_view.element).appendTo("#content");
 
 	const template_url = new URL("../../src/WEB/FOLDER.HTT", window.location.href);
 	const htt = await (await fetch(template_url)).text();
@@ -273,9 +272,21 @@ async function render_folder_template(folder_view, address) {
 		}
 		html = html.replace(match[0], var_value);
 	}
-	$("#content").html(html);
-	$("#content").find("object[classid=clsid:1820FED0-473E-11D0-A96C-00C04FD705A2]")
-		.replaceWith(folder_view.element);
+	try {
+		$("#content").html(html);
+		$("#content").find("object[classid=clsid:1820FED0-473E-11D0-A96C-00C04FD705A2]")
+			.replaceWith(folder_view.element);
+	} catch (error) {
+		console.error(`Failed to render ${template_url}:
+
+`, error, `
+
+This is likely an error from evaluating scripts.
+
+Falling back to simple folder view.`);
+		$("#content").empty();
+		$(folder_view.element).appendTo("#content");
+	}
 }
 
 function refresh() {
