@@ -777,4 +777,13 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 			if (callNow) func.apply(context, args);
 		};
 	};
+
+	// Ancient API for HTT (Hyper Text Templates) folder templates to use
+	self.element.SelectedItems = () => {
+		const selected_items = this.items.filter((item) => item.element.classList.contains("selected"));
+		return {
+			Count: () => selected_items.length,
+			Item: (index) => selected_items[index],
+		}
+	};	
 }
