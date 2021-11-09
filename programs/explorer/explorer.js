@@ -383,6 +383,10 @@ ${doc.documentElement.outerHTML}`;
 					.css({
 						overflow: "auto",
 						maxHeight: 400,
+						textAlign: "left",
+						background: "var(--Window)",
+						color: "var(--WindowText)",
+						margin: 10,
 					})
 			);
 				
@@ -396,10 +400,16 @@ ${doc.documentElement.outerHTML}`;
 							((index + 1 == event.lineno) ? "--->" : "    ") +
 							(index + 1 + "").padStart(4, " ") + ": " + line
 						)
+							.slice(event.lineno - 5, event.lineno + 4)
+							.join("\n")
 					)
 					.css({
 						overflow: "auto",
 						maxHeight: 400,
+						textAlign: "left",
+						background: "var(--Window)",
+						color: "var(--WindowText)",
+						margin: 10,
 					})
 			);
 		});
