@@ -216,6 +216,9 @@ var go_to = function (address) {
 			});
 			$("#status-bar-right-text").text("Internet");
 		} else {
+			const eventHandlers = {}; // @TODO: less hacky event duct tape
+			// (just wanna have multiple listeners, but I gave myself a single-listener API)
+			// (I could just use DOM events on folder_view.element)
 			folder_view = new FolderView(address, {
 				onStatus: ({ items, selectedItems }) => {
 					$("#status-bar-left-text").text(
@@ -223,9 +226,10 @@ var go_to = function (address) {
 							selectedItems.length + " object(s) selected" :
 							items.length + " object(s)"
 					);
+					eventHandlers.onStatus?.({ items, selectedItems });
 				},
 			});
-			$(folder_view.element).appendTo("#content");
+			render_folder_template(folder_view, address, eventHandlers);
 			folder_view.focus();
 
 			if (
@@ -247,6 +251,274 @@ var go_to = function (address) {
 		}
 	}
 };
+
+async function render_folder_template(folder_view, address, eventHandlers) {
+	$("#content").empty();
+
+	const template_url = new URL("../../src/WEB/FOLDER.HTT", location.href);
+	const htt = await (await fetch(template_url)).text();
+	const percent_vars = {
+		THISDIRPATH: new URL(address, location.href),
+		THISDIRNAME: get_display_name_for_address(address),
+		TEMPLATEDIR: new URL(".", template_url).toString(),
+		//template_url.href.split("/").slice(0, -1).join("/"),
+	};
+	const percent_var_regexp = /%([A-Z_]+)%/gi;
+	const named_color_to_css_var = {
+		ActiveBorder: "var(--ActiveBorder)", // Active window border.
+		ActiveCaption: "var(--ActiveTitle)", // Active window caption.
+		AppWorkspace: "var(--AppWorkspace)", // Background color of multiple document interface.
+		Background: "var(--Background)", // Desktop background.
+		ButtonFace: "var(--ButtonFace)", // Face color for three-dimensional display elements.
+		ButtonHighlight: "var(--ButtonHilight)", // Dark shadow for three-dimensional display elements(for edges facing away from the light source).
+		ButtonShadow: "var(--ButtonShadow)", // Shadow color for three-dimensional display elements.
+		ButtonText: "var(--ButtonText)", // Text on push buttons.
+		CaptionText: "var(--TitleText)", // Text in caption, size box, and scrollbar arrow box.
+		GrayText: "var(--GrayText)", // Grayed(disabled) text.This color is set to #000 if the current display driver does not support a solid gray color.
+		Highlight: "var(--Hilight)", // Item(s) selected in a control.
+		HighlightText: "var(--HilightText)", // Text of item(s) selected in a control.
+		InactiveBorder: "var(--InactiveBorder)", // Inactive window border.
+		InactiveCaption: "var(--InactiveTitle)", // Inactive window caption.
+		InactiveCaptionText: "var(--InactiveTitleText)", // Color of text in an inactive caption.
+		InfoBackground: "var(--InfoWindow)", // Background color for tooltip controls.
+		InfoText: "var(--InfoText)", // Text color for tooltip controls.
+		Menu: "var(--Menu)", // Menu background.
+		MenuText: "var(--MenuText)", // Text in menus.
+		Scrollbar: "var(--Scrollbar)", // Scroll bar gray area.
+		ThreeDDarkShadow: "var(--ButtonDkShadow)", // Dark shadow for three-dimensional display elements.
+		ThreeDFace: "var(--ButtonFace)", // Face color for three-dimensional display elements.
+		ThreeDHighlight: "var(--ButtonHilight)", // Highlight color for three-dimensional display elements.
+		ThreeDLightShadow: "var(--ButtonLight)", // Light color for three-dimensional display elements(for edges facing the light source).
+		ThreeDShadow: "var(--ButtonShadow)", // Dark shadow for three-dimensional display elements.
+		Window: "var(--Window)", // Window background.
+		WindowFrame: "var(--WindowFrame)", // Window frame.
+		WindowText: "var(--WindowText)", // Text in windows.
+	};
+	const lowercase_named_color_to_css_var = Object.fromEntries(
+		Object.entries(named_color_to_css_var)
+			.map(([key, value]) => [key.toLowerCase(), value])
+	);
+	const named_color_regexp = new RegExp(`(${Object.keys(named_color_to_css_var).join("|")})(?!\s*[)?.:=\[])`, "gi");
+	// @TODO: replace \ in paths after percent vars with /, and de-dupe by stripping slash from var values
+	let html = htt.replaceAll(percent_var_regexp, (match, var_name) => {
+		if (var_name in percent_vars) {
+			return percent_vars[var_name];
+		} else {
+			console.warn("Unknown percent variable:", match);
+			return match;
+		}
+	});
+	html = html.replaceAll(named_color_regexp, (match, color_name) =>
+		lowercase_named_color_to_css_var[color_name.toLowerCase()]
+	);
+
+	const doc = new DOMParser().parseFromString(html, "text/html");
+	$(doc).find("script").each((i, script) => {
+		if (script.getAttribute("language") === "JavaScript") {
+			script.removeAttribute("language");
+		}
+		if (script.hasAttribute("for")) {
+			script.removeAttribute("for");
+		}
+		// HACK: making everything global so I can wrap things in functions
+		// JUSTIFICATION: most stuff is probably global already in this ancient HTML
+		// const to_export = script.textContent.matchAll(/(function|var)\s+([a-zA-Z_$][\w$]*)\s*[(;=]/g);
+		const func_matches = script.textContent.matchAll(/function\s+([a-zA-Z_$][\w$]*)\s*\(/g);
+		let exports = "";
+		for (const func_match of func_matches) {
+			const func_name = func_match[1];
+			exports += `window.${func_name} = ${func_name};\n`;
+		}
+		// first handle `var foo;`
+		script.textContent = script.textContent.replaceAll(
+			/var\s([a-zA-Z_$][\w$]*)[;\n\r]/g,
+			"/*var*/ window.$1 = undefined;"
+		);
+		// then handle `var foo = bar;`
+		script.textContent = script.textContent.replaceAll(/var\s/g, "/*var*/ window.");
+
+		if (script.hasAttribute("event")) {
+			const event_name = script.getAttribute("event");
+			script.removeAttribute("event");
+			script.textContent = `addEventListener("${event_name}", (event) => {
+${script.textContent}
+${exports}
+});`;
+		} else {
+			script.textContent = `(() => { /* make top level return valid */
+${script.textContent}
+${exports}
+})();`;
+		}
+	});
+
+	// html = new XMLSerializer().serializeToString(doc);
+	html = `<!doctype html>
+${doc.documentElement.outerHTML}`;
+
+	// This function will be run in the context of the iframe.
+	// It is here for syntax highlighting/checking/formatting,
+	// and avoiding escaping complexities, but it will be stringified,
+	// so note that variables can not be referenced from the outer scope.
+	const head_injected_script_fn = () => {
+		// Usually the scripts refer to "document.all.FileList", but sometimes use just "FileList",
+		// relying on the fact that IDs pollute the global namespace.
+		// FileList is a built-in API nowadays, so it conflicts.
+		Object.defineProperty(window, "FileList", {
+			get() { return document.getElementById("FileList"); }
+		});
+
+		// Neither Chrome or Firefox are working for debugging srcdoc iframes.
+		// Chrome gives wildly incorrect line numbers,
+		// and Firefox just gives "Error loading this URI: Unknown source"
+		// or sometimes it opens view-source:about:srcdoc in a new tab ("Hmm. That address doesn’t look right.")
+		// Of course, as I'm implementing this, finally Firefox is starting working... sometimes.
+		addEventListener("error", (event) => {
+			const { $window } = showMessageBox({
+				message: "An error occurred.",
+			});
+			// $window.$content.append(`
+			// 	<details>
+			// 		<summary>Details</summary>
+			// 		<pre class='error-pre inset-deep'></pre>
+			// 		<pre class='location-pre inset-deep'></pre>
+			// 	</details>
+			// `)
+			$window.$content.append(`
+				<pre class='error-pre inset-deep'></pre>
+				<pre class='location-pre inset-deep'></pre>
+			`)
+			$window.$content.find("pre")
+				.css({
+					overflow: "auto",
+					maxHeight: 400,
+					textAlign: "left",
+					background: "var(--Window)",
+					color: "var(--WindowText)",
+					margin: 10,
+					padding: 5,
+					userSelect: "text",
+					cursor: "auto",
+					// whiteSpace: "pre-wrap",
+				});
+
+			$window.$content.find(".error-pre").text(event.error);
+
+			const srcdoc = frameElement.srcdoc;
+			const lines = srcdoc.split(/\r\n|\r|\n/g);
+
+			$window.$content.find(".location-pre").append(
+				lines.map((line, index) =>
+					$("<div>").text(
+						// ((index + 1 == event.lineno) ? "--->" : "    ") +
+						(index + 1 + "").padStart(4, " ") + ": " + line
+					).css({
+						background: (index + 1 == event.lineno) ? "var(--Hilight)" : "",
+						color: (index + 1 == event.lineno) ? "var(--HilightText)" : "",
+						width: "1000%", // because ugh highlight doesn't extend to whole line if it scrolls
+					})
+				)
+					.slice(event.lineno - 5, event.lineno + 4)
+			);
+		});
+
+		// Allow message boxes to go outside the window.
+		showMessageBox = parent.showMessageBox || showMessageBox;
+	};
+	const head_injected_html = `
+		<meta charset="utf-8">
+		<title>Folder Template</title>
+		<link href="../../layout.css" rel="stylesheet" type="text/css">
+		<link href="../../classic.css" rel="stylesheet" type="text/css">
+		<link href="../../lib/os-gui/layout.css" rel="stylesheet" type="text/css">
+		<link href="../../lib/os-gui/windows-98.css" rel="stylesheet" type="text/css">
+		<meta name="viewport" content="width=device-width, user-scalable=no">
+		<script src="../../lib/jquery.min.js"></script>
+		<script src="../../lib/os-gui/$Window.js"></script>
+		<script src="../../src/msgbox.js"></script>
+		<script>defaultMessageBoxTitle = "Explorer";</script>
+		<style>
+			.desktop-icon .title {
+				/* background: transparent; */
+				/* mix-blend-mode seems to need a background (for the dotted focus effect) */
+				background: var(--Window);
+				color: var(--WindowText);
+			}
+			.folder-view {
+				background: var(--Window); /* needed for mix-blend-mode */
+				color: var(--WindowText);
+			}
+		</style>
+		<script>
+			(${head_injected_script_fn})();
+		</script>
+	`;
+
+	html = html.replace(/\s+<\/head>/i, (match) => `${head_injected_html}\n${match}`);
+
+	$iframe = $("<iframe>").attr({
+		srcdoc: html,
+	}).appendTo("#content");
+
+	$iframe.on("load", () => {
+		var doc = $iframe[0].contentDocument;
+		const object = doc.querySelector("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']");
+		$(object).replaceWith(folder_view.element);
+		for (var i = 0; i < object.attributes.length; i++) {
+			var attribute = object.attributes[i];
+			folder_view.element.setAttribute(attribute.name, attribute.value);
+		}
+
+		// not working:
+		// var range = doc.createRange();
+		// range.selectNode(doc.head); // sets context node
+		// var document_fragment = range.createContextualFragment(head_inject_html);
+		// document.head.appendChild(document_fragment);
+
+		// not working:
+		// $iframe.contents()
+		// 	.find("head")
+		// 	.append(head_inject_html);
+
+		eventHandlers.onStatus = ({ items, selectedItems }) => {
+			doc.dispatchEvent(new CustomEvent("SelectionChanged", { bubbles: true }));
+			// @TODO: render preview of selected item(s?), and trigger OnThumbnailReady
+		};
+	});
+
+	// Implement ancient API used by HTT (Hyper Text Template) folder template scripts
+	folder_view.element.SelectedItems = () => {
+		const selected_items = folder_view.items.filter((item) => item.element.classList.contains("selected"));
+		return {
+			Count: () => selected_items.length,
+			Item: (index) => {
+				const item = selected_items[index];
+				if (!item) {
+					return {}; // ???
+				}
+				return {
+					Name: item.title,
+					Size: item.resolvedStats?.size,
+					Path: item.file_path,
+				};
+			},
+		};
+	};
+	const detail_key = {
+		0: "name",
+		2: "type",
+		3: "date",
+	};
+	folder_view.element.Folder = {
+		GetDetailsOf: (item, detail_id) => {
+			if (item == null) {
+
+			} else {
+
+			}
+		}
+	};
+}
 
 function refresh() {
 	// go to whatever the address was before
@@ -481,7 +753,7 @@ $(function () {
 									submenu: menu,
 								};
 							});
-							const dummy_menu_bar = new MenuBar({"Dummy": menu_items});
+							const dummy_menu_bar = new MenuBar({ "Dummy": menu_items });
 							$menu.append(dummy_menu_bar.element);
 							$menu.css({
 								top: $toolbar_el.offset().top,
