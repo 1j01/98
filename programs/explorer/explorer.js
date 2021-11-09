@@ -321,20 +321,21 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 			script.removeAttribute("for");
 		}
 		// HACK: making everything global so I can wrap things in functions
-		// const to_export = script.textContent.matchAll(/(function|var)\s+([a-zA-Z_$][\w$]+)\s*[(;=]/g);
-		const funcs = script.textContent.matchAll(/function\s+([a-zA-Z_$][\w$]+)\s*\(/g);
+		// JUSTIFICATION: most stuff is probably global already in this ancient HTML
+		// const to_export = script.textContent.matchAll(/(function|var)\s+([a-zA-Z_$][\w$]*)\s*[(;=]/g);
+		const func_matches = script.textContent.matchAll(/function\s+([a-zA-Z_$][\w$]*)\s*\(/g);
 		let exports = "";
-		for (const func_match of funcs) {
+		for (const func_match of func_matches) {
 			const func_name = func_match[1];
 			exports += `window.${func_name} = ${func_name};\n`;
 		}
 		// first handle `var foo;`
 		script.textContent = script.textContent.replaceAll(
-			/var\s([a-zA-Z_$][\w$]+)[;\n\r]/g,
-			"window.$1 = undefined;"
+			/var\s([a-zA-Z_$][\w$]*)[;\n\r]/g,
+			"/*var*/ window.$1 = undefined;"
 		);
 		// then handle `var foo = bar;` (if this was first, it would generate statements like `foo;`, giving ReferenceError)
-		script.textContent = script.textContent.replaceAll(/var\s/g, "");
+		script.textContent = script.textContent.replaceAll(/var\s/g, "/*var*/ ");
 
 		if (script.hasAttribute("event")) {
 			const event_name = script.getAttribute("event");
