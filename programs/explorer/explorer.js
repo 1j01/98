@@ -216,6 +216,9 @@ var go_to = function (address) {
 			});
 			$("#status-bar-right-text").text("Internet");
 		} else {
+			const eventHandlers = {}; // @TODO: less hacky event duct tape
+			// (just wanna have multiple listeners, but I gave myself a single-listener API)
+			// (I could just use DOM events on folder_view.element)
 			folder_view = new FolderView(address, {
 				onStatus: ({ items, selectedItems }) => {
 					$("#status-bar-left-text").text(
@@ -223,9 +226,10 @@ var go_to = function (address) {
 							selectedItems.length + " object(s) selected" :
 							items.length + " object(s)"
 					);
+					eventHandlers.onStatus?.({ items, selectedItems });
 				},
 			});
-			render_folder_template(folder_view, address);
+			render_folder_template(folder_view, address, eventHandlers);
 			folder_view.focus();
 
 			if (
@@ -248,7 +252,7 @@ var go_to = function (address) {
 	}
 };
 
-async function render_folder_template(folder_view, address) {
+async function render_folder_template(folder_view, address, eventHandlers) {
 	$("#content").empty();
 
 	const template_url = new URL("../../src/WEB/FOLDER.HTT", window.location.href);
@@ -256,9 +260,11 @@ async function render_folder_template(folder_view, address) {
 	const percent_vars = {
 		THISDIRPATH: address,
 		THISDIRNAME: get_display_name_for_address(address),
-		TEMPLATEDIR: template_url.href.split("/").slice(0, -1).join("/"),
+		TEMPLATEDIR: new URL("..", template_url).toString(),
+		//template_url.href.split("/").slice(0, -1).join("/"),
 	};
 	const percent_var_regexp = /%([A-Z_]+)%/gi;
+	const named_color_regexp = /(ButtonFace|)/
 	const html = htt.replaceAll(percent_var_regexp, (match, var_name) => {
 		if (var_name in percent_vars) {
 			return percent_vars[var_name];
@@ -271,6 +277,9 @@ async function render_folder_template(folder_view, address) {
 		$("#content").html(html);
 		$("#content").find("object[classid=clsid:1820FED0-473E-11D0-A96C-00C04FD705A2]")
 			.replaceWith(folder_view.element);
+		eventHandlers.onStatus = ({ items, selectedItems }) => {
+			
+		};
 	} catch (error) {
 		console.error(
 `Failed to render ${template_url}:
