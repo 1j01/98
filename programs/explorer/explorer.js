@@ -300,6 +300,7 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 	);
 	const named_color_regexp = new RegExp(`(${Object.keys(named_color_to_css_var).join("|")})(?!\s*[)?.:=\[])`, "gi");
 	// @TODO: replace \ in paths after percent vars with /, and de-dupe by stripping slash from var values
+	// and protocol e.g. file://%TEMPLATEDIR%\wvleft.bmp
 	let html = htt.replaceAll(percent_var_regexp, (match, var_name) => {
 		if (var_name in percent_vars) {
 			return percent_vars[var_name];
@@ -423,6 +424,46 @@ ${doc.documentElement.outerHTML}`;
 
 		// Allow message boxes to go outside the window.
 		showMessageBox = parent.showMessageBox || showMessageBox;
+
+		// Implement <object-hack>, which we'll convert <object ...> to.
+		class ObjectHack extends HTMLElement {
+			constructor() {
+				super();
+
+				const params = {};
+				for (const param_el of this.querySelectorAll("param")) {
+					params[param_el.name] = param_el.value;
+				}
+
+				// Create a shadow root
+				var shadow = this.attachShadow({mode: 'open'});
+
+				switch (this.getAttribute("classid")) {
+					case "clsid:1D2B4F40-1F10-11D1-9E88-00C04FDCAB92":
+						// thumbnail
+						const img = document.createElement("img");
+						shadow.append(img);
+						this.haveThumbnail = () => {
+							return false;
+						};
+						this.displayFile = (path) => {
+							img.src = path;
+						}
+						break;
+					case "clsid:1820FED0-473E-11D0-A96C-00C04FD705A2":
+						// folder view
+						// will be replaced separately
+						break;
+					case "clsid:05589FA1-C356-11CE-BF01-00AA0055595A":
+						// media player
+						const video = document.createElement("video");
+						video.src = params.FileName;
+						shadow.append(video);
+						break;
+				}
+			}
+		}
+		customElements.define("object-hack", ObjectHack);
 	};
 	const head_injected_html = `
 		<meta charset="utf-8">
