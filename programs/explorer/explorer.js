@@ -266,7 +266,7 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 	const percent_var_regexp = /%([A-Z_]+)%/gi;
 	const named_color_regexp = /(ButtonFace|...)not followed by \)/gi; // @TODO: transform to var(--ButtonFace)
 	// @TODO: replace \ in paths after percent vars with /, and de-dupe by stripping slash from var values
-	const html = htt.replaceAll(percent_var_regexp, (match, var_name) => {
+	let html = htt.replaceAll(percent_var_regexp, (match, var_name) => {
 		if (var_name in percent_vars) {
 			return percent_vars[var_name];
 		} else {
@@ -289,10 +289,6 @@ ${script.textContent}}());`;
 		}
 	});
 
-	$iframe = $("<iframe>").attr({
-		srcdoc: html,
-	}).appendTo("#content");
-
 	const head_inject_html = `
 		<meta charset="utf-8">
 		<title>Folder Template</title>
@@ -310,6 +306,12 @@ ${script.textContent}}());`;
 		<link href="explorer.css" rel="stylesheet" type="text/css">
 	`;
 
+	html = html.replace(/\s+<\/head>/i, (match) => `${head_inject_html}\n${match}`);
+
+	$iframe = $("<iframe>").attr({
+		srcdoc: html,
+	}).appendTo("#content");
+
 	$iframe.on("load", () => {
 		var doc = $iframe[0].contentDocument;
 		const object = doc.querySelector("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']");
@@ -319,10 +321,11 @@ ${script.textContent}}());`;
 			folder_view.element.setAttribute(attribute.name, attribute.value);
 		}		
 		
-		var range = doc.createRange();
-		range.selectNode(doc.head); // sets context node
-		var document_fragment = range.createContextualFragment(head_inject_html);
-		document.head.appendChild(document_fragment);
+		// not working:
+		// var range = doc.createRange();
+		// range.selectNode(doc.head); // sets context node
+		// var document_fragment = range.createContextualFragment(head_inject_html);
+		// document.head.appendChild(document_fragment);
 
 		// not working:
 		// $iframe.contents()
@@ -331,6 +334,7 @@ ${script.textContent}}());`;
 
 		eventHandlers.onStatus = ({ items, selectedItems }) => {
 			doc.dispatchEvent(new CustomEvent("SelectionChanged"));
+			// @TODO: render preview of selected item(s?), and trigger OnThumbnailReady
 		};
 	});
 
