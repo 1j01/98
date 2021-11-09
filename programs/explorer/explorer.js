@@ -356,6 +356,55 @@ ${exports}
 	html = `<!doctype html>
 ${doc.documentElement.outerHTML}`;
 
+	// This function will be run in the context of the iframe.
+	// It is here for syntax highlighting/checking/formatting, but will be stringified.
+	const head_inject_script_fn = () => {
+		// Usually the scripts refer to "document.all.FileList", but sometimes use just "FileList",
+		// relying on the fact that IDs pollute the global namespace.
+		Object.defineProperty(window, "FileList", {
+			get() { return document.getElementById("FileList"); }
+		});
+
+		// Neither Chrome or Firefox are working for debugging srcdoc iframes.
+		// Chrome gives wildly incorrect line numbers,
+		// and Firefox just gives "Error loading this URI: Unknown source"
+		// or sometimes it opens view-source:about:srcdoc in a new tab ("Hmm. That address doesn’t look right.")
+		// Of course, as I'm implementing this, finally Firefox is starting working... sometimes.
+		addEventListener("error", (event) => {
+			const { $window } = showMessageBox({
+				message: "An error occurred.",
+			});
+			$window.$content.append(
+				$("<details><summary>Details</summary><pre></pre></details>")
+					.find("pre")
+					.text(event.error)
+					.css({
+						overflow: "auto",
+						maxHeight: 400,
+					})
+			);
+				
+			const srcdoc = frameElement.srcdoc;
+			const lines = srcdoc.split(/\\r\\n|\\r|\\n/);
+			$window.$content.append(
+				$("<details><summary>Location</summary><pre></pre></details>")
+					.find("pre")
+					.text(
+						lines.map((line, index) =>
+							((index + 1 == event.lineno) ? "--->" : "    ") +
+							(index + 1 + "").padStart(4, " ") + ": " + line
+						)
+					)
+					.css({
+						overflow: "auto",
+						maxHeight: 400,
+					})
+			);
+		});
+
+		// Allow message boxes to go outside the window.
+		showMessageBox = parent.showMessageBox || showMessageBox;
+	};
 	const head_inject_html = `
 		<meta charset="utf-8">
 		<title>Folder Template</title>
@@ -381,11 +430,7 @@ ${doc.documentElement.outerHTML}`;
 			}
 		</style>
 		<script>
-			// Usually the scripts refer to "document.all.FileList", but sometimes use just "FileList",
-			// relying on the fact that IDs pollute the global namespace.
-			Object.defineProperty(window, "FileList", {
-				get() { return document.getElementById("FileList"); }
-			});
+			(${head_inject_script_fn})();
 		</script>
 	`;
 
