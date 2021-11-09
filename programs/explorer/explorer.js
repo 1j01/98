@@ -376,12 +376,16 @@ ${doc.documentElement.outerHTML}`;
 			const { $window } = showMessageBox({
 				message: "An error occurred.",
 			});
+			// $window.$content.append(`
+			// 	<details>
+			// 		<summary>Details</summary>
+			// 		<pre class='error-pre'></pre>
+			// 		<pre class='location-pre'></pre>
+			// 	</details>
+			// `)
 			$window.$content.append(`
-				<details>
-					<summary>Details</summary>
-					<pre class='error-pre'></pre>
-					<pre class='location-pre'></pre>
-				</details>
+				<pre class='error-pre'></pre>
+				<pre class='location-pre'></pre>
 			`)
 			$window.$content.find("pre")
 				.css({
@@ -399,12 +403,11 @@ ${doc.documentElement.outerHTML}`;
 				
 			const srcdoc = frameElement.srcdoc;
 			const lines = srcdoc.split(/\r\n|\r|\n/g);
-
 			
 			$window.$content.find(".location-pre").append(
 				lines.map((line, index) =>
 					$("<div>").text(
-						((index + 1 == event.lineno) ? "--->" : "    ") +
+						// ((index + 1 == event.lineno) ? "--->" : "    ") +
 						(index + 1 + "").padStart(4, " ") + ": " + line
 					).css({
 						background: (index + 1 == event.lineno) ? "var(--Hilight)" : "",
