@@ -259,19 +259,14 @@ async function render_folder_template(folder_view, address) {
 		TEMPLATEDIR: template_url.href.split("/").slice(0, -1).join("/"),
 	};
 	const percent_var_regexp = /%([A-Z_]+)%/gi;
-	let html = htt;
-	while (true) {
-		const match = percent_var_regexp.exec(html);
-		if (!match) {
-			break;
+	const html = htt.replaceAll(percent_var_regexp, (match, var_name) => {
+		if (var_name in percent_vars) {
+			return percent_vars[var_name];
+		} else {
+			console.warn("Unknown percent variable:", match);
+			return match;
 		}
-		const var_name = match[1];
-		const var_value = percent_vars[var_name];
-		if (!var_value) {
-			throw new Error("No value for percent variable " + var_name);
-		}
-		html = html.replace(match[0], var_value);
-	}
+	});
 	try {
 		$("#content").html(html);
 		$("#content").find("object[classid=clsid:1820FED0-473E-11D0-A96C-00C04FD705A2]")
