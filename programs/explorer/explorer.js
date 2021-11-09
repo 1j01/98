@@ -294,7 +294,7 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 		WindowFrame: "var(--WindowFrame)", // Window frame.
 		WindowText: "var(--WindowText)", // Text in windows.
 	};
-	const named_color_regexp = new RegExp(`(${Object.keys(named_color_to_css_var).join("|")})(?!\)`, "gi");
+	const named_color_regexp = new RegExp(`(${Object.keys(named_color_to_css_var).join("|")})(?!\\))`, "gi");
 	// @TODO: replace \ in paths after percent vars with /, and de-dupe by stripping slash from var values
 	let html = htt.replaceAll(percent_var_regexp, (match, var_name) => {
 		if (var_name in percent_vars) {
@@ -381,7 +381,7 @@ ${doc.documentElement.outerHTML}`;
 		for (var i = 0; i < object.attributes.length; i++) {
 			var attribute = object.attributes[i];
 			folder_view.element.setAttribute(attribute.name, attribute.value);
-		}		
+		}
 		
 		// not working:
 		// var range = doc.createRange();
