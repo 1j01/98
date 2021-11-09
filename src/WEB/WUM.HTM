@@ -1,0 +1,152 @@
+<HTML>
+<HEAD>
+<TITLE>Welcome to Windows Update!</TITLE>
+
+<STYLE TYPE="text/css">
+<!--
+    .normal         {font: 13px Verdana}
+    BODY            {font: 13px Verdana}
+    .header         {font: 18px Verdana; font-weight: bold}
+    .subheader      {font: 15px Verdana; color: #3333FF; font-weight: bold}
+    LI              {font: 13px Verdana}
+    B               {font: 14px Verdana; font-weight: bold}
+    A               {font-weight: bold; text-decoration: none}
+-->
+</STYLE>
+
+<SCRIPT LANGUAGE="JScript">
+<!--
+    ua=navigator.userAgent;
+    v=navigator.appVersion.substring(0,1);
+    if ((ua.lastIndexOf("MSIE")!=-1) && (v='4')) {
+        document.onmouseover = highlight;
+        document.onmouseout = unhighlight;
+    }
+
+
+    function highlight() {
+        src = event.toElement;
+        if (src.tagName == "A") {
+            src.oldcol = src.style.color;
+            src.style.color = "#FF0000";
+        }
+    }
+
+    function unhighlight() {
+        src=event.fromElement;
+        if (src.tagName == "A") {
+            src.style.color = src.oldcol;
+        }
+    }
+
+//-->
+
+</script>
+
+<SCRIPT LANGUAGE="VBScript">
+<!--
+
+Sub GoWU
+   Self.location = WUpdInfo.GetWinUpdURL
+End Sub
+
+//-->
+</SCRIPT>
+
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TOPMARGIN=0 LEFTMARGIN=0>
+<TABLE WIDTH=603 CELLSPACING=0 CELLPADDING=0 BORDER=0>
+<TR><TD COLSPAN=2 HEIGHT=40><IMG SRC="wulogo.gif" ALT="Windows Update" HEIGHT=40 WIDTH=603 BORDER=0 HSPACE=0 VSPACE=0></TD></TR>
+<TR><TD WIDTH=25 BGCOLOR="#000066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+<TD>
+<DIV STYLE="margin-left: 18px; margin-top: 18px">
+
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD COLSPAN=2>
+<B CLASS="header">Thank you for your interest in Windows Update.</B>
+<BR><BR>
+</TD>
+</TR>
+<TR>
+<TD>
+
+</TD>
+<TD>
+<BR>
+<B CLASS="subheader">Try Windows<SUP>&reg;</SUP> Update - the extension of Windows on the Web. When you visit the Windows Update Web site you'll be able to . . . </B></FONT>
+<FONT FACE="Verdana,Arial,Helvetica">
+<UL>
+<LI>Keep your computer up-to-date with the latest operating system upgrades and features.
+<LI>Simplify your life with automatic updates that are easy to access and easy to use.
+<LI>Stay informed by easily finding answers to your questions about Windows.
+</UL>
+</FONT>
+</TD>
+</TR>
+<TR>
+<TD COLSPAN=2>
+<br clear=all>
+<FONT FACE="Verdana,Arial,Helvetica">
+<B>To take advantage of Windows Update, all you need is Internet Explorer and a connection to the Internet.</B>
+<p>
+<A HREF="javascript:goWU()"><IMG SRC="wuicon1.gif" HEIGHT=20 WIDTH=20 HSPACE=1 BORDER=0>Connect me to the Internet.</A>
+<BR CLEAR=all>
+<SPAN STYLE="margin-left: 27px" CLASS="normal">
+If you've never logged on to the Internet before, click on the sentence 
+above to launch the Internet Connection Wizard, which will help 
+you sign up for Internet access. Once you are connected to the Internet, 
+select the Windows Update icon from your Start Menu and Internet Explorer 
+will take you directly to the Windows Update site. If you already have 
+Internet access, go to the Start Menu and select the Windows Update icon. 
+Internet Explorer will launch the Windows Update site. 
+</SPAN>
+<br><br>
+<A HREF="javascript:window.close()"><IMG ID="closeIcon" SRC="wuicon2.gif" HEIGHT=20 WIDTH=20 HSPACE=1 BORDER=0>I'd like to try Windows Update another time.</A>
+<BR CLEAR=all>
+<SPAN STYLE="margin-left: 27px" CLASS="normal">
+When you click on the X icon above, this browser window will close. You 
+can create a connection to the Internet and visit Windows Update at any time 
+by doing the following: 
+<ul>
+<li>Go to your Start Menu.
+<li>Select Programs. Select Internet Explorer and then click on Internet Connection Wizard.
+<li>Internet Connection Wizard will help you select an Internet Service Provider (ISP) or connect you to your Local Area Network (LAN).</DIV>
+</ul>
+<P>
+Once you are connected to the Internet, select Windows Update 
+from your Start Menu. Internet Explorer will take you to the Windows Update site.
+</SPAN>
+<BR><BR>
+<A HREF="javascript:window.close()"><IMG ID="closeIcon" SRC="wuicon2.gif" HEIGHT=20 WIDTH=20 HSPACE=1 BORDER=0>I want to delete Windows Update from my Start Menu.</A>
+<BR CLEAR=all>
+<SPAN STYLE="margin-left: 27px" CLASS="normal">
+When you click on the X icon above, this browser window will close. If you 
+want to delete the Windows Update icon from your Start Menu, follow these steps: 
+<UL>
+<LI>Go to your Start Menu.
+<LI>Select Windows Update.
+<LI>Click the right mouse button.
+<LI>Click Delete.
+</UL>
+</SPAN>
+
+</TD>
+</TR>
+</TABLE>
+</DIV>
+
+</TD>
+</TR>
+</TABLE>
+
+<OBJECT ID="WUpdInfo" WIDTH=0 HEIGHT=0 TYPE="application/x-oleobject"
+  CLASSID="clsid:A3863C2E-86EB-11D1-A9DB-00C04FB16F9E">
+        <PARAM NAME="_Version" VALUE="65536">
+        <PARAM NAME="_ExtentX" VALUE="0">
+        <PARAM NAME="_ExtentY" VALUE="0">
+        <PARAM NAME="_StockProps" VALUE="0">
+</OBJECT>
+</BODY>
+</HTML>

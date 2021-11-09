@@ -1,0 +1,108 @@
+<HTML>
+<HEAD>
+<TITLE>Welcome to Microsoft Support Online!</TITLE>
+
+<STYLE TYPE="text/css">
+<!--
+    .normal         {font: 13px Verdana}
+    BODY            {font: 13px Verdana}
+    .header         {font: 18px Verdana; font-weight: bold}
+    .subheader      {font: 15px Verdana; color: #3333FF; font-weight: bold}
+    LI              {font: 13px Verdana}
+    B               {font: 14px Verdana; font-weight: bold}
+    A               {font-weight: bold}
+-->
+</STYLE>
+
+<SCRIPT LANGUAGE="JScript">
+<!--
+    ua=navigator.userAgent;
+    v=navigator.appVersion.substring(0,1);
+    if ((ua.lastIndexOf("MSIE")!=-1) && (v='4')) {
+        document.onmouseover = highlight;
+        document.onmouseout = unhighlight;
+    }
+
+
+    function highlight() {
+        src = event.toElement;
+        if (src.tagName == "A") {
+            src.oldcol = src.style.color;
+            src.style.color = "#FF0000";
+        }
+    }
+
+    function unhighlight() {
+        src=event.fromElement;
+        if (src.tagName == "A") {
+            src.style.color = src.oldcol;
+        }
+    }
+
+//-->
+
+</script>
+
+<SCRIPT LANGUAGE="VBScript">
+<!--
+
+Sub GoWU
+    self.location = WUpdInfo.GetMTSURL("prd=support&ar=w98")
+End Sub
+
+//-->
+</SCRIPT>
+
+</HEAD>
+
+<BODY BGCOLOR="#FFFFFF" TOPMARGIN=0 LEFTMARGIN=0>
+<TABLE WIDTH=603 CELLSPACING=0 CELLPADDING=0 BORDER=0>
+
+<TR>
+<TD>
+<DIV STYLE="margin-left: 18px; margin-top: 18px">
+
+<TABLE BORDER=0 CELLSPACING=0 CELLPADDING=0>
+<TR>
+<TD COLSPAN=2>
+<B CLASS="header">Thank you for your interest in Support Online.</B>
+
+</TD>
+</TR>
+<TR>
+<TD COLSPAN=2>
+<br clear=all>
+<FONT FACE="Verdana,Arial,Helvetica">
+<B>To access <I>Support Online</I>, you need to be connected to the Internet. Windows 98 has detected that you currently do not have an Internet connection set up.</B>
+<p>
+<A HREF="javascript:goWU()">Connect me to the Internet.</A>
+<BR CLEAR=all>
+<SPAN STYLE="margin-left: 27px" CLASS="normal">
+If you have never connected to the Internet before, the Internet Connection wizard will help you sign up for Internet access. After you are connected to the Internet, your Internet browser will bring up the Support Online site. If you believe that you have already established an Internet connection, click this link to retry to connect to Support Online.
+</SPAN>
+<br><br>
+<A HREF="javascript:window.close()">I will connect to Support Online later.</A>
+<BR CLEAR=all>
+<SPAN STYLE="margin-left: 27px" CLASS="normal">
+If you do not want to connect to Support Online at this time, click this link to close the browser window. When you are ready to return to Support Online, you can choose to create a new connection to the Internet at any time by doing the following:
+<ul>
+<li>Click <b>Start</b>.
+<li>Point to <b>Programs</b>, point to <b>Internet Explorer</b>, and then click on <b>Connection Wizard</b>.
+<li>The <b>Internet Connection wizard</b> will help you select an Internet Service Provider (ISP) or connect you to your Local Area Network (LAN).</DIV>
+</ul>
+</SPAN>
+
+</TD>
+</TR>
+</TABLE>
+</DIV>
+
+</TD>
+</TR>
+</TABLE>
+
+<OBJECT ID="WUpdInfo" WIDTH=0 HEIGHT=0 TYPE="application/x-oleobject"
+  CLASSID="clsid:A3863C2E-86EB-11D1-A9DB-00C04FB16F9E">
+</OBJECT>
+</BODY>
+</HTML>

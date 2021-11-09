@@ -1,0 +1,22 @@
+<script>
+
+//Build the query
+userURL=external.menuArguments.location.href;
+RelatedServiceURL="http://related.msn.com/related.asp?url=";
+
+//Perform simple check for Intranet URLs 
+//this is where the http or https will be, as found by searching for :// but skip res:
+protocolIndex=userURL.indexOf("://",4);
+serverIndex=userURL.indexOf("/",protocolIndex + 3);
+urlresult=userURL.substring(0,serverIndex);
+
+//Check if Intranet URL - then open search bar
+
+if (urlresult.indexOf(".",0) < 1) userURL="Intranet URL";
+finalURL = RelatedServiceURL + escape(userURL);
+external.menuArguments.open(finalURL, "_search");
+
+</script>
+
+
+

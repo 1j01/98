@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//IETF//DTD HTML//EN">
+<html>
+
+<head>
+    <title>Active Desktop Safe Mode</title>
+    <meta http-equiv="PICS-Label"   content='(PICS-1.1 "http://www.rsac.org/ratingsv01.html" l gen true comment "RSACi North America Server" by "inet@microsoft.com" for "res://ie4tour.dll/welcome.htm" on "1997.06.30T14:21-0500" r (n 0 s 0 v 0 l 0))'></meta>
+    <meta http-equiv="content-type" content="text/html; charset=iso-8859-1"></meta>
+</head>
+
+<style>
+    body    { background : white; color : black; margin: 0 }
+    body    { font-family: Verdana, Arial, sans-serif; font-size: 8pt}
+    table   { font-family: Verdana, Arial, sans-serif; font-size: 8pt; line-height: 12pt;}
+    
+    div.Offscreen     { display:none }
+    span.Offscreen    { display:none }
+    span.BulletNumber { font-size: x-large; font-weight: bold; color: #FF6600 }
+    span.BulletText   { font-size: x-small; font-weight: bold; letter-spacing: -1pt; text-align:center}
+</style>
+
+<body scroll=no>
+  
+<TABLE width=100% height=95% border=0 CELLPADDING=0 CELLSPACING=0>
+<TR>
+	<TD width=200>
+	</TD>
+	<TD valign=top>
+	<span style="position:		relative; 
+				 left:			+20; 
+				 top:			+15;
+				 margin-right:	+40; 
+				 width:			90%;
+				 ">
+	<font style="font-family:	Verdana, Arial, sans-serif; 
+				 font-size:		30; 
+				 font-weight:	bold; 
+				 line-height:	24pt;
+				 color:			#0099FF">
+	Active Desktop Recovery</font>
+	<BR><BR>
+	Internet Explorer has experienced a problem or error.  As a precaution, your
+	Active Desktop has temporarily been turned off.  To start the Active Desktop
+	again, use the following troubleshooting tips:
+	<BR><BR>
+	<table width=100% border=0 cellpadding=0 cellspacing=0>
+	<TR>
+		<TD VALIGN=TOP align=left>
+			<span style="font-size: 100pt; 
+						 position:	relative;
+						 top:		69px;
+						 left:		-4px;
+						 font-family: Times, serif; 
+						 color: #FF6600">&middot;</span>
+		</TD>
+		<TD>
+			<object id="suih" width=0 height=0 classid="clsid:64AB4BB7-111E-11d1-8F79-00C04FC2FBE1">
+			</object>
+			Did your browser stop working or did you restart your computer without shutting down?  
+			If so, click <a href="" target="_self" onClick="suih.ResetSafeMode();return false;">Restore my Active Desktop</a>.<BR><BR>
+		</TD>
+	</TR>
+	<TR>
+		<TD VALIGN=TOP align=left>
+			<span style="font-size: 100pt; 
+						 position:	relative;
+						 top:		69px;
+						 left:		-4px;
+						 font-family: Times, serif; 
+						 color: #FF6600">&middot;</span>
+		</TD>
+		<TD VALIGN=TOP>
+			Did you recently add a new item to your Active Desktop?  If so, try the following:
+			<BR><BR>
+			<ol>
+			<li> Click on the <b>Start</b> button, point to <b>Settings</b>, point to <b>Active Desktop</b>, and then click <b>Customize my Desktop</b>.
+			<li> Clear the check box for the item you added most recently.
+			</ol>
+		</TD>
+	</TR>
+	<TR>
+		<TD VALIGN=TOP align=left>
+			<span style="font-size: 100pt; 
+						 position:	relative;
+						 left:		-4px;
+						 top:		69px;
+						 font-family: Times, serif; 
+						 color: #FF6600">&middot;</span>
+		</TD>
+		<TD>
+			Do you want to turn off your Active Desktop and restore your wallpaper?  
+			If so, click the <b>Start</b> button, point to <b>Settings</b>, point to <b>Active Desktop</b>, then click <b>View as Webpage</b> to remove the check mark.
+		</TD>
+	</TR>
+	</TABLE>
+
+	</span>
+	</TD>
+</TR>
+</TABLE>
+</body>
+</HTML>

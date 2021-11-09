@@ -1,0 +1,26 @@
+
+
+<OBJECT
+	classid="clsid:72267F6A-A6F9-11D0-BC94-00C04FB67863"
+	id=ActiveDesktopMover
+    STYLE="position:absolute; container:positioned; LEFT: 0;TOP: 0; WIDTH: 1; HEIGHT: 1;zIndex: 5"
+>
+<param name="Interval" value=500>
+<param name="SizerID" value="ActiveDesktopMover">
+<param name="Enabled" value="True">
+<param name="TargetName" value="DeskMovr">
+<param name="WindowOnly" value="False">
+</OBJECT>
+
+<OBJECT
+	classid="clsid:72267F6A-A6F9-11D0-BC94-00C04FB67863"
+	id=ActiveDesktopMoverW
+    STYLE="position:absolute; container:positioned; LEFT: 0;TOP: 0; WIDTH: 1; HEIGHT: 1;zIndex 19"
+>
+<param name="Interval" value=500>
+<param name="SizerID" value="ActiveDesktopMoverW">
+<param name="Enabled" value="True">
+<param name="TargetName" value="DeskMovrW">
+<param name="WindowOnly" value="True">
+</OBJECT>
+
