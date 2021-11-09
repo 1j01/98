@@ -421,24 +421,30 @@ ${doc.documentElement.outerHTML}`;
 		};
 	});
 
-	// execute scripts
-// 	for (const script of doc.querySelectorAll("script")) {
-// 		try {
-// 			eval(script.textContent);
-// 		} catch (error) {
+	// Implement ancient API used by HTT (Hyper Text Template) folder template scripts
+	folder_view.element.SelectedItems = () => {
+		const selected_items = folder_view.items.filter((item) => item.element.classList.contains("selected"));
+		return {
+			Count: () => selected_items.length,
+			Item: (index) => selected_items[index].map((item) => {
+				return {
+					Size: item.resolvedStats?.size,
+				};
+			}),
+		};
+	};
+	const detail_key = {
+		0: "name",
+		2: "type",
+		3: "date",
+	};
+	folder_view.element.GetDetailsOf = (item, detail_id) => {
+		if (item == null) {
 
-// 		console.error(
-// `Failed to render ${template_url}:
+		} else {
 
-// `, error, `
-
-// This is likely an error from evaluating scripts.
-
-// Falling back to simple folder view.`
-// 		);
-// 		$("#content").empty();
-// 		$(folder_view.element).appendTo("#content");
-// 	}
+		}
+	};
 }
 
 function refresh() {
