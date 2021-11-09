@@ -272,13 +272,15 @@ async function render_folder_template(folder_view, address) {
 		$("#content").find("object[classid=clsid:1820FED0-473E-11D0-A96C-00C04FD705A2]")
 			.replaceWith(folder_view.element);
 	} catch (error) {
-		console.error(`Failed to render ${template_url}:
+		console.error(
+`Failed to render ${template_url}:
 
 `, error, `
 
 This is likely an error from evaluating scripts.
 
-Falling back to simple folder view.`);
+Falling back to simple folder view.`
+		);
 		$("#content").empty();
 		$(folder_view.element).appendTo("#content");
 	}
