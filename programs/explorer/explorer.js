@@ -264,7 +264,37 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 		//template_url.href.split("/").slice(0, -1).join("/"),
 	};
 	const percent_var_regexp = /%([A-Z_]+)%/gi;
-	const named_color_regexp = /(ButtonFace|...)not followed by \)/gi; // @TODO: transform to var(--ButtonFace)
+	const named_color_to_css_var = {
+		ActiveBorder: "var(--ActiveBorder)", // Active window border.
+		ActiveCaption: "var(--ActiveTitle)", // Active window caption.
+		AppWorkspace: "var(--AppWorkspace)", // Background color of multiple document interface.
+		Background: "var(--Background)", // Desktop background.
+		ButtonFace: "var(--ButtonFace)", // Face color for three-dimensional display elements.
+		ButtonHighlight: "var(--ButtonHilight)", // Dark shadow for three-dimensional display elements(for edges facing away from the light source).
+		ButtonShadow: "var(--ButtonShadow)", // Shadow color for three-dimensional display elements.
+		ButtonText: "var(--ButtonText)", // Text on push buttons.
+		CaptionText: "var(--TitleText)", // Text in caption, size box, and scrollbar arrow box.
+		GrayText: "var(--GrayText)", // Grayed(disabled) text.This color is set to #000 if the current display driver does not support a solid gray color.
+		Highlight: "var(--Hilight)", // Item(s) selected in a control.
+		HighlightText: "var(--HilightText)", // Text of item(s) selected in a control.
+		InactiveBorder: "var(--InactiveBorder)", // Inactive window border.
+		InactiveCaption: "var(--InactiveTitle)", // Inactive window caption.
+		InactiveCaptionText: "var(--InactiveTitleText)", // Color of text in an inactive caption.
+		InfoBackground: "var(--InfoWindow)", // Background color for tooltip controls.
+		InfoText: "var(--InfoText)", // Text color for tooltip controls.
+		Menu: "var(--Menu)", // Menu background.
+		MenuText: "var(--MenuText)", // Text in menus.
+		Scrollbar: "var(--Scrollbar)", // Scroll bar gray area.
+		ThreeDDarkShadow: "var(--ButtonDkShadow)", // Dark shadow for three-dimensional display elements.
+		ThreeDFace: "var(--ButtonFace)", // Face color for three-dimensional display elements.
+		ThreeDHighlight: "var(--ButtonHilight)", // Highlight color for three-dimensional display elements.
+		ThreeDLightShadow: "var(--ButtonLight)", // Light color for three-dimensional display elements(for edges facing the light source).
+		ThreeDShadow: "var(--ButtonShadow)", // Dark shadow for three-dimensional display elements.
+		Window: "var(--Window)", // Window background.
+		WindowFrame: "var(--WindowFrame)", // Window frame.
+		WindowText: "var(--WindowText)", // Text in windows.
+	};
+	const named_color_regexp = new RegExp(`(${Object.keys(named_color_to_css_var).join("|")})(?!\)`, "gi");
 	// @TODO: replace \ in paths after percent vars with /, and de-dupe by stripping slash from var values
 	let html = htt.replaceAll(percent_var_regexp, (match, var_name) => {
 		if (var_name in percent_vars) {
@@ -274,6 +304,7 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 			return match;
 		}
 	});
+	html = html.replaceAll(named_color_regexp, (match, color_name) => named_color_to_css_var[color_name]);
 	
 	const doc = new DOMParser().parseFromString(html, "text/html");
 	$(doc).find("script").each((i, script) => {
