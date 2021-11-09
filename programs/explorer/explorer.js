@@ -303,7 +303,7 @@ ${script.textContent}}());`;
 		<script src="../../lib/os-gui/$Window.js"></script>
 		<script src="../../src/msgbox.js"></script>
 		<script>defaultMessageBoxTitle = "Explorer";</script>
-		<link href="explorer.css" rel="stylesheet" type="text/css">
+		<link href="/programs/explorer/explorer.css" rel="stylesheet" type="text/css">
 	`;
 
 	html = html.replace(/\s+<\/head>/i, (match) => `${head_inject_html}\n${match}`);
