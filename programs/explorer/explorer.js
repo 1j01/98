@@ -300,6 +300,7 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 	);
 	const named_color_regexp = new RegExp(`(${Object.keys(named_color_to_css_var).join("|")})(?!\s*[)?.:=\[])`, "gi");
 	// @TODO: replace \ in paths after percent vars with /, and de-dupe by stripping slash from var values
+	// and protocol e.g. file://%TEMPLATEDIR%\wvleft.bmp
 	let html = htt.replaceAll(percent_var_regexp, (match, var_name) => {
 		if (var_name in percent_vars) {
 			return percent_vars[var_name];
@@ -424,7 +425,97 @@ ${doc.documentElement.outerHTML}`;
 
 		// Allow message boxes to go outside the window.
 		showMessageBox = parent.showMessageBox || showMessageBox;
+
+		// Implement <object-hack>, which we'll convert <object ...> to.
+		class ObjectHack extends HTMLElement {
+			constructor() {
+				super();
+				this.attachShadow({ mode: 'open' });
+				this._params_slot = document.createElement("slot");
+				this.shadowRoot.append(this._params_slot);
+				this._params = {};
+				this._params_slot.addEventListener("slotchange", (event) => {
+					this._params = {};
+					for (const param_el of this.querySelectorAll("param, param-hack")) {
+						this._params[param_el.getAttribute("name")] = param_el.getAttribute("value");
+					}
+					// console.log("slotchange, params are now:", this._params);
+				});
+			}
+			connectedCallback() {
+				// @TODO: handle params once they change/exist
+				// console.log(this._params, this.children, this._params_slot.children);
+				// console.log(`this.getAttribute("classid")`, this.getAttribute("classid"));
+				switch (this.getAttribute("classid")) {
+					case "clsid:1D2B4F40-1F10-11D1-9E88-00C04FDCAB92":
+						// thumbnail
+						const img = document.createElement("img");
+						this.shadowRoot.append(img);
+						this.haveThumbnail = () => {
+							return false;
+						};
+						this.displayFile = (path) => {
+							img.src = path;
+						}
+						break;
+					case "clsid:1820FED0-473E-11D0-A96C-00C04FD705A2":
+						// folder view
+						const folder_view = frameElement._folder_view;
+						this.shadowRoot.append(folder_view.element);
+
+						this.SelectedItems = () => {
+							const selected_items = folder_view.items.filter((item) => item.element.classList.contains("selected"));
+							return {
+								Count: () => selected_items.length,
+								Item: (index) => {
+									const item = selected_items[index];
+									if (!item) {
+										return {}; // ???
+									}
+									return {
+										Name: item.title,
+										Size: item.resolvedStats?.size,
+										Path: item.file_path,
+									};
+								},
+							};
+						};
+						const detail_key = {
+							0: "name",
+							2: "type",
+							3: "date",
+						};
+						this.Folder = {
+							GetDetailsOf: (item, detail_id) => {
+								return `{GetDetailsOf(${item}, ${detail_id})}`; // debugging in the style of a broken template
+								if (item == null) {
+					
+								} else {
+					
+								}
+							}
+						};
+						break;
+					case "clsid:05589FA1-C356-11CE-BF01-00AA0055595A":
+						// media player
+						const video = document.createElement("video"); // @TODO: or audio
+						video.src = params.FileName;
+						video.controls = true;
+						this.shadowRoot.append(video);
+						break;
+					default:
+						console.warn("Unsupported classid value:", this.getAttribute("classid"), this);
+						break;
+				}
+			}
+		}
+		customElements.define("object-hack", ObjectHack);
 	};
+	html = html.replace(/<object/ig, "<object-hack");
+	html = html.replace(/<\/object/ig, "</object-hack");
+	html = html.replace(/<param/ig, "<param-hack");
+	html = html.replace(/<\/param/ig, "</param-hack");
+
 	const head_injected_html = `
 		<meta charset="utf-8">
 		<title>Folder Template</title>
@@ -460,14 +551,16 @@ ${doc.documentElement.outerHTML}`;
 		srcdoc: html,
 	}).appendTo("#content");
 
+	$iframe[0]._folder_view = folder_view;
+
 	$iframe.on("load", () => {
 		var doc = $iframe[0].contentDocument;
-		const object = doc.querySelector("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']");
-		$(object).replaceWith(folder_view.element);
-		for (var i = 0; i < object.attributes.length; i++) {
-			var attribute = object.attributes[i];
-			folder_view.element.setAttribute(attribute.name, attribute.value);
-		}
+		// const object = doc.querySelector("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']");
+		// $(object).replaceWith(folder_view.element);
+		// for (var i = 0; i < object.attributes.length; i++) {
+		// 	var attribute = object.attributes[i];
+		// 	folder_view.element.setAttribute(attribute.name, attribute.value);
+		// }
 
 		// not working:
 		// var range = doc.createRange();
@@ -485,39 +578,6 @@ ${doc.documentElement.outerHTML}`;
 			// @TODO: render preview of selected item(s?), and trigger OnThumbnailReady
 		};
 	});
-
-	// Implement ancient API used by HTT (Hyper Text Template) folder template scripts
-	folder_view.element.SelectedItems = () => {
-		const selected_items = folder_view.items.filter((item) => item.element.classList.contains("selected"));
-		return {
-			Count: () => selected_items.length,
-			Item: (index) => {
-				const item = selected_items[index];
-				if (!item) {
-					return {}; // ???
-				}
-				return {
-					Name: item.title,
-					Size: item.resolvedStats?.size,
-					Path: item.file_path,
-				};
-			},
-		};
-	};
-	const detail_key = {
-		0: "name",
-		2: "type",
-		3: "date",
-	};
-	folder_view.element.Folder = {
-		GetDetailsOf: (item, detail_id) => {
-			if (item == null) {
-
-			} else {
-
-			}
-		}
-	};
 }
 
 function refresh() {
