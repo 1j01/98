@@ -289,15 +289,37 @@ ${script.textContent}}());`;
 		}
 	});
 
-	$("#content").find("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']")
-		.replaceWith(folder_view.element);
-	eventHandlers.onStatus = ({ items, selectedItems }) => {
-		
-	};
-
 	$iframe = $("<iframe>").attr({
 		srcdoc: html,
 	}).appendTo("#content");
+
+	$iframe.on("load", () => {
+		$iframe.contents()
+			.find("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']")
+			.replaceWith(folder_view.element);
+		$iframe.contents()
+			.find("head")
+			.append(`
+		<meta charset="utf-8">
+		<title>Folder Template</title>
+		<link href="../../layout.css" rel="stylesheet" type="text/css">
+		<link href="../../classic.css" rel="stylesheet" type="text/css">
+		<link href="../../lib/os-gui/layout.css" rel="stylesheet" type="text/css">
+		<link href="../../lib/os-gui/windows-98.css" rel="stylesheet" type="text/css">
+		<link rel="icon" href="../../images/icons/explorer-16x16.png" sizes="16x16" type="image/png">
+		<link rel="icon" href="../../images/icons/explorer-32x32.png" sizes="32x32" type="image/png">
+		<meta name="viewport" content="width=device-width, user-scalable=no">
+		<script src="../../lib/jquery.min.js"></script>
+		<script src="../../lib/browserfs.js"></script>
+		<script src="../../lib/os-gui/$Window.js"></script>
+		<script src="../../src/msgbox.js"></script>
+		<script>defaultMessageBoxTitle = "Explorer";</script>
+		<link href="explorer.css" rel="stylesheet" type="text/css">
+`);
+		eventHandlers.onStatus = ({ items, selectedItems }) => {
+		
+		};
+	});
 
 	// var range = document.createRange();
 	// // Make the parent of the first div in the document become the context node
