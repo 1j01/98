@@ -28,7 +28,7 @@ body {
 	flex: 0 0 auto;
 	width: 10px;
 	box-sizing: border-box;
-	height: 100%;
+	align-self: stretch; /* height: 100%; doesn't work in Firefox https://stackoverflow.com/questions/51877276/height-100-not-working-with-flex-box */
 	position: relative;
 	touch-action: none;
 }
@@ -71,8 +71,7 @@ body {
 .toolbar hr[aria-orientation="vertical"] {
 	display: block;
 	width: 0px;
-	height: 100%; /* @TODO: why is this not working? */
-    height: 36px; /* I have to do this instead */
+	height: 36px; /* height: 100%; is not working (would do calc(100% - something) if it did) */
 	margin: 0;
 	border: 0;
 	border-left: 1px solid var(--ButtonShadow);
