@@ -277,15 +277,32 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 	
 	const doc = new DOMParser().parseFromString(html, "text/html");
 	$(doc).find("script").each((i, script) => {
+		if (script.getAttribute("language") === "JavaScript") {
+			script.removeAttribute("language");
+		}
+		if (script.hasAttribute("for")) {
+			script.removeAttribute("for");
+		}
+		// HACK: making everything global so I can wrap things in functions
+		// const to_export = script.textContent.matchAll(/(function|var)\s+([a-zA-Z_$][\w$]+)\s*[(;=]/g);
+		const funcs = script.textContent.matchAll(/function\s+([a-zA-Z_$][\w$]+)\s*\(/g);
+		let exports = "";
+		for (const func_match of funcs) {
+			const func_name = func_match[1];
+			exports += `window.${func_name} = ${func_name};\n`;
+		}
+		script.textContent = script.textContent.replaceAll(/var\s/g, "");
 		if (script.hasAttribute("event")) {
 			const event_name = script.getAttribute("event");
 			script.removeAttribute("event");
 			script.textContent = `addEventListener("${event_name}", (event) => {
 ${script.textContent}
+${exports}
 });`;
 		} else {
 			script.textContent = `(() => { /* make top level return valid */
 ${script.textContent}
+${exports}
 })();`;
 		}
 	});
