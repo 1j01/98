@@ -311,11 +311,14 @@ ${script.textContent}}());`;
 	`;
 
 	$iframe.on("load", () => {
-		$iframe.contents()
-			.find("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']")
-			.replaceWith(folder_view.element);
-		
 		var doc = $iframe[0].contentDocument;
+		const object = doc.querySelector("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']");
+		$(object).replaceWith(folder_view.element);
+		for (var i = 0; i < object.attributes.length; i++) {
+			var attribute = object.attributes[i];
+			folder_view.element.setAttribute(attribute.name, attribute.value);
+		}		
+		
 		var range = doc.createRange();
 		range.selectNode(doc.head); // sets context node
 		var document_fragment = range.createContextualFragment(head_inject_html);
