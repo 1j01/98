@@ -255,10 +255,10 @@ var go_to = function (address) {
 async function render_folder_template(folder_view, address, eventHandlers) {
 	$("#content").empty();
 
-	const template_url = new URL("../../src/WEB/FOLDER.HTT", window.location.href);
+	const template_url = new URL("../../src/WEB/FOLDER.HTT", location.href);
 	const htt = await (await fetch(template_url)).text();
 	const percent_vars = {
-		THISDIRPATH: address,
+		THISDIRPATH: new URL(address, location.href),
 		THISDIRNAME: get_display_name_for_address(address),
 		TEMPLATEDIR: new URL(".", template_url).toString(),
 		//template_url.href.split("/").slice(0, -1).join("/"),
@@ -293,13 +293,7 @@ ${script.textContent}}());`;
 		srcdoc: html,
 	}).appendTo("#content");
 
-	$iframe.on("load", () => {
-		$iframe.contents()
-			.find("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']")
-			.replaceWith(folder_view.element);
-		$iframe.contents()
-			.find("head")
-			.append(`
+	const head_inject_html = `
 		<meta charset="utf-8">
 		<title>Folder Template</title>
 		<link href="../../layout.css" rel="stylesheet" type="text/css">
@@ -310,22 +304,32 @@ ${script.textContent}}());`;
 		<link rel="icon" href="../../images/icons/explorer-32x32.png" sizes="32x32" type="image/png">
 		<meta name="viewport" content="width=device-width, user-scalable=no">
 		<script src="../../lib/jquery.min.js"></script>
-		<script src="../../lib/browserfs.js"></script>
 		<script src="../../lib/os-gui/$Window.js"></script>
 		<script src="../../src/msgbox.js"></script>
 		<script>defaultMessageBoxTitle = "Explorer";</script>
 		<link href="explorer.css" rel="stylesheet" type="text/css">
-`);
+	`;
+
+	$iframe.on("load", () => {
+		$iframe.contents()
+			.find("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']")
+			.replaceWith(folder_view.element);
+		
+		var doc = $iframe[0].contentDocument;
+		var range = doc.createRange();
+		range.selectNode(doc.head); // sets context node
+		var document_fragment = range.createContextualFragment(head_inject_html);
+		document.head.appendChild(document_fragment);
+
+		// not working:
+		// $iframe.contents()
+		// 	.find("head")
+		// 	.append(head_inject_html);
+
 		eventHandlers.onStatus = ({ items, selectedItems }) => {
 		
 		};
 	});
-
-	// var range = document.createRange();
-	// // Make the parent of the first div in the document become the context node
-	// range.selectNode(document.getElementsByTagName("div").item(0));
-	// var documentFragment = range.createContextualFragment(tagString);
-	// document.body.appendChild(documentFragment);
 
 	// execute scripts
 // 	for (const script of doc.querySelectorAll("script")) {
