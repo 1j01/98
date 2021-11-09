@@ -264,7 +264,8 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 		//template_url.href.split("/").slice(0, -1).join("/"),
 	};
 	const percent_var_regexp = /%([A-Z_]+)%/gi;
-	const named_color_regexp = /(ButtonFace|)/
+	const named_color_regexp = /(ButtonFace|...)not followed by \)/gi; // @TODO: transform to var(--ButtonFace)
+	// @TODO: replace \ in paths after percent vars with /, and de-dupe by stripping slash from var values
 	const html = htt.replaceAll(percent_var_regexp, (match, var_name) => {
 		if (var_name in percent_vars) {
 			return percent_vars[var_name];
@@ -274,8 +275,25 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 		}
 	});
 	try {
-		$("#content").html(html);
-		$("#content").find("object[classid=clsid:1820FED0-473E-11D0-A96C-00C04FD705A2]")
+		// $("#content").html(html); // executes scripts,
+		// but I want to transform scripts before executing.
+
+		// const doc = document.implementation.createHTMLDocument("Folder Template");
+		const doc = new DOMParser().parseFromString(html, "text/html");
+		console.log(doc);
+		$(doc).find("script").each((i, script) => {
+			if (script.hasAttribute("event")) {
+				const event_name = script.getAttribute("event");
+				script.removeAttribute("event");
+				script.textContent = `addEventListener("${event_name}", (event) => {
+${script.textContent}});`;
+			} else {
+				script.textContent = `(() => { /* make top level return valid */
+${script.textContent}}());`;
+			}
+		});
+
+		$("#content").find("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']")
 			.replaceWith(folder_view.element);
 		eventHandlers.onStatus = ({ items, selectedItems }) => {
 			
