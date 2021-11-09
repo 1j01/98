@@ -294,7 +294,11 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 		WindowFrame: "var(--WindowFrame)", // Window frame.
 		WindowText: "var(--WindowText)", // Text in windows.
 	};
-	const named_color_regexp = new RegExp(`(${Object.keys(named_color_to_css_var).join("|")})(?!\\))`, "gi");
+	const lowercase_named_color_to_css_var = Object.fromEntries(
+		Object.entries(named_color_to_css_var)
+			.map(([key, value]) => [key.toLowerCase(), value])
+	);
+	const named_color_regexp = new RegExp(`(${Object.keys(named_color_to_css_var).join("|")})(?!\s*[)?.:=\[])`, "gi");
 	// @TODO: replace \ in paths after percent vars with /, and de-dupe by stripping slash from var values
 	let html = htt.replaceAll(percent_var_regexp, (match, var_name) => {
 		if (var_name in percent_vars) {
@@ -304,7 +308,9 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 			return match;
 		}
 	});
-	html = html.replaceAll(named_color_regexp, (match, color_name) => named_color_to_css_var[color_name]);
+	html = html.replaceAll(named_color_regexp, (match, color_name) =>
+		lowercase_named_color_to_css_var[color_name.toLowerCase()]
+	);
 	
 	const doc = new DOMParser().parseFromString(html, "text/html");
 	$(doc).find("script").each((i, script) => {
@@ -322,7 +328,14 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 			const func_name = func_match[1];
 			exports += `window.${func_name} = ${func_name};\n`;
 		}
+		// first handle `var foo;`
+		script.textContent = script.textContent.replaceAll(
+			/var\s([a-zA-Z_$][\w$]+)[;\n\r]/g,
+			"window.$1 = undefined;"
+		);
+		// then handle `var foo = bar;` (if this was first, it would generate statements like `foo;`, giving ReferenceError)
 		script.textContent = script.textContent.replaceAll(/var\s/g, "");
+
 		if (script.hasAttribute("event")) {
 			const event_name = script.getAttribute("event");
 			script.removeAttribute("event");
@@ -395,7 +408,7 @@ ${doc.documentElement.outerHTML}`;
 		// 	.append(head_inject_html);
 
 		eventHandlers.onStatus = ({ items, selectedItems }) => {
-			doc.dispatchEvent(new CustomEvent("SelectionChanged"));
+			doc.dispatchEvent(new CustomEvent("SelectionChanged", { bubbles: true }));
 			// @TODO: render preview of selected item(s?), and trigger OnThumbnailReady
 		};
 	});
