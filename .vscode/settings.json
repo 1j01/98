@@ -289,8 +289,10 @@
 	// "workbench.iconTheme": "windows-nt-icons",
 	"workbench.iconTheme": "vsclassic-icon-theme",
 	"workbench.colorCustomizations": {
-		"icon.foreground": "#000000",
-		"sideBar.foreground": "#000000",
-		"activityBar.inactiveForeground": "#777",
+		"[windows-nt]": {
+			"icon.foreground": "#000000",
+			"sideBar.foreground": "#000000",
+			"activityBar.inactiveForeground": "#777",
+		},
 	}
 }
