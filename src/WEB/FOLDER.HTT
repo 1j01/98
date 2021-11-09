@@ -20,7 +20,7 @@
 		p.Warning	{font-weight: bold; color: red}
 		p.Links		{margin-top: 5px}
 		a.Command	{font-weight: bold}
-		div.Release     {width: 160px; text-align: right; background: buttonface; padding: 0px, 8px, 4px, 8px}
+		div.Release     {width: 160px; text-align: right; background: buttonface; padding: 0px 8px 4px 8px}
 	</style>
 
 	<head>
@@ -95,7 +95,7 @@
 			}
 		</script>
 
-		<script language="JavaScript" for="FileList" event="SelectionChanged">
+		<script language="JavaScript" for="FileList" event="SelectionChanged">(()=>{
 			// this script updates the left info panel when you select icons
 			var fldr = FileList.Folder;
 			var items;
@@ -259,7 +259,7 @@
 			// try to generate a new thumbnail asynchronously, and delay the status message one second
 			if (size && (size < 10000000) && Thumbnail.displayFile(items.Path))
 				timer = window.setTimeout('document.all.Status.style.display = ""', 1000);
-		</script>
+		}())</script>
 
 		<script language="JavaScript" for="Thumbnail" event="OnThumbnailReady">
 			// when a valid thumbnail has been generated, display it
