@@ -260,7 +260,7 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 	const percent_vars = {
 		THISDIRPATH: address,
 		THISDIRNAME: get_display_name_for_address(address),
-		TEMPLATEDIR: new URL("..", template_url).toString(),
+		TEMPLATEDIR: new URL(".", template_url).toString(),
 		//template_url.href.split("/").slice(0, -1).join("/"),
 	};
 	const percent_var_regexp = /%([A-Z_]+)%/gi;
@@ -274,43 +274,55 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 			return match;
 		}
 	});
-	try {
-		// $("#content").html(html); // executes scripts,
-		// but I want to transform scripts before executing.
-
-		// const doc = document.implementation.createHTMLDocument("Folder Template");
-		const doc = new DOMParser().parseFromString(html, "text/html");
-		console.log(doc);
-		$(doc).find("script").each((i, script) => {
-			if (script.hasAttribute("event")) {
-				const event_name = script.getAttribute("event");
-				script.removeAttribute("event");
-				script.textContent = `addEventListener("${event_name}", (event) => {
+	
+	const doc = new DOMParser().parseFromString(html, "text/html");
+	console.log(doc);
+	$(doc).find("script").each((i, script) => {
+		if (script.hasAttribute("event")) {
+			const event_name = script.getAttribute("event");
+			script.removeAttribute("event");
+			script.textContent = `addEventListener("${event_name}", (event) => {
 ${script.textContent}});`;
-			} else {
-				script.textContent = `(() => { /* make top level return valid */
+		} else {
+			script.textContent = `(() => { /* make top level return valid */
 ${script.textContent}}());`;
-			}
-		});
+		}
+	});
 
-		$("#content").find("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']")
-			.replaceWith(folder_view.element);
-		eventHandlers.onStatus = ({ items, selectedItems }) => {
-			
-		};
-	} catch (error) {
-		console.error(
-`Failed to render ${template_url}:
+	$("#content").find("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']")
+		.replaceWith(folder_view.element);
+	eventHandlers.onStatus = ({ items, selectedItems }) => {
+		
+	};
 
-`, error, `
+	$iframe = $("<iframe>").attr({
+		srcdoc: html,
+	}).appendTo("#content");
 
-This is likely an error from evaluating scripts.
+	// var range = document.createRange();
+	// // Make the parent of the first div in the document become the context node
+	// range.selectNode(document.getElementsByTagName("div").item(0));
+	// var documentFragment = range.createContextualFragment(tagString);
+	// document.body.appendChild(documentFragment);
 
-Falling back to simple folder view.`
-		);
-		$("#content").empty();
-		$(folder_view.element).appendTo("#content");
-	}
+	// execute scripts
+// 	for (const script of doc.querySelectorAll("script")) {
+// 		try {
+// 			eval(script.textContent);
+// 		} catch (error) {
+
+// 		console.error(
+// `Failed to render ${template_url}:
+
+// `, error, `
+
+// This is likely an error from evaluating scripts.
+
+// Falling back to simple folder view.`
+// 		);
+// 		$("#content").empty();
+// 		$(folder_view.element).appendTo("#content");
+// 	}
 }
 
 function refresh() {
