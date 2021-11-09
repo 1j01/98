@@ -172,6 +172,7 @@ button {
 	align-items: center;
 	margin-top: 2px;
 	gap: 2px;
+	height: 18px;
 }
 #status-bar > * {
 	height: 16px;
@@ -190,6 +191,11 @@ button {
 	width: 170px; /* estimated */
 	display: flex;
 	gap: 3px;
+}
+#status-bar-simple {
+	display: flex;
+	flex-direction: row;
+	gap: 5px;
 }
 
 #content {

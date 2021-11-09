@@ -552,3 +552,14 @@ var menu_bar = new MenuBar(menus);
 $(function () {
 	$("#menu-bar-toolbar").append(menu_bar.element);
 });
+
+$(menu_bar.element).on("info", (event) => {
+	const status = event.detail?.description ?? "";
+	$("#status-bar-simple").show();
+	$("#status-bar-simple-text").text(status);
+	$("#status-bar-left, #status-bar-middle, #status-bar-right").hide();
+});
+$(menu_bar.element).on("default-info", (event) => {
+	$("#status-bar-left, #status-bar-middle, #status-bar-right").show();
+	$("#status-bar-simple").hide();
+});

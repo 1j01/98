@@ -210,7 +210,7 @@ var go_to = function (address) {
 			// 	set_title($iframe[0].contentDocument.title + " - Explorer"); // " - Microsoft Internet Explorer"
 			// });
 
-			$("#status-bar-right-icon").attr({
+			$("#status-bar-right-icon, #status-bar-simple-icon").attr({
 				src: getIconPath("zone-internet", 16),
 				hidden: false,
 			});
@@ -233,13 +233,13 @@ var go_to = function (address) {
 				address !== "/recycle-bin/" &&
 				address !== "/network-neighborhood/"
 			) {
-				$("#status-bar-right-icon").attr({
+				$("#status-bar-right-icon, #status-bar-simple-icon").attr({
 					src: getIconPath("my-computer", 16),
 					hidden: false,
 				});
 				$("#status-bar-right-text").text("My Computer");
 			} else {
-				$("#status-bar-right-icon").attr({
+				$("#status-bar-right-icon, #status-bar-simple-icon").attr({
 					hidden: true,
 				});
 				$("#status-bar-right-text").text("");
