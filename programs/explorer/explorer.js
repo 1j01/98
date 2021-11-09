@@ -380,6 +380,13 @@ ${doc.documentElement.outerHTML}`;
 				color: var(--WindowText);
 			}
 		</style>
+		<script>
+			// Usually the scripts refer to "document.all.FileList", but sometimes use just "FileList",
+			// relying on the fact that IDs pollute the global namespace.
+			Object.defineProperty(window, "FileList", {
+				get() { return document.getElementById("FileList"); }
+			});
+		</script>
 	`;
 
 	html = html.replace(/\s+<\/head>/i, (match) => `${head_inject_html}\n${match}`);
