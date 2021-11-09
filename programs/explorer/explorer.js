@@ -493,7 +493,7 @@ ${doc.documentElement.outerHTML}`;
 			Item: (index) => {
 				const item = selected_items[index];
 				if (!item) {
-					return null;
+					return {}; // ???
 				}
 				return {
 					Name: item.title,
