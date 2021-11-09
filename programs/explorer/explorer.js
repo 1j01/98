@@ -396,6 +396,8 @@ ${doc.documentElement.outerHTML}`;
 					color: "var(--WindowText)",
 					margin: 10,
 					padding: 5,
+					userSelect: "text",
+					cursor: "auto",
 					// whiteSpace: "pre-wrap",
 				});
 
