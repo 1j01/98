@@ -281,12 +281,18 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 			const event_name = script.getAttribute("event");
 			script.removeAttribute("event");
 			script.textContent = `addEventListener("${event_name}", (event) => {
-${script.textContent}});`;
+${script.textContent}
+});`;
 		} else {
 			script.textContent = `(() => { /* make top level return valid */
-${script.textContent}}());`;
+${script.textContent}
+})();`;
 		}
 	});
+
+	// html = new XMLSerializer().serializeToString(doc);
+	html = `<!doctype html>
+${doc.documentElement.outerHTML}`;
 
 	const head_inject_html = `
 		<meta charset="utf-8">
@@ -295,8 +301,6 @@ ${script.textContent}}());`;
 		<link href="../../classic.css" rel="stylesheet" type="text/css">
 		<link href="../../lib/os-gui/layout.css" rel="stylesheet" type="text/css">
 		<link href="../../lib/os-gui/windows-98.css" rel="stylesheet" type="text/css">
-		<link rel="icon" href="../../images/icons/explorer-16x16.png" sizes="16x16" type="image/png">
-		<link rel="icon" href="../../images/icons/explorer-32x32.png" sizes="32x32" type="image/png">
 		<meta name="viewport" content="width=device-width, user-scalable=no">
 		<script src="../../lib/jquery.min.js"></script>
 		<script src="../../lib/os-gui/$Window.js"></script>
