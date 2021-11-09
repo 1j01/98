@@ -400,15 +400,20 @@ ${doc.documentElement.outerHTML}`;
 			const srcdoc = frameElement.srcdoc;
 			const lines = srcdoc.split(/\r\n|\r|\n/g);
 
-			$window.$content.find(".location-pre")
-				.text(
-					lines.map((line, index) =>
+			
+			$window.$content.find(".location-pre").append(
+				lines.map((line, index) =>
+					$("<div>").text(
 						((index + 1 == event.lineno) ? "--->" : "    ") +
 						(index + 1 + "").padStart(4, " ") + ": " + line
-					)
-						.slice(event.lineno - 5, event.lineno + 4)
-						.join("\n")
-				);
+					).css({
+						background: (index + 1 == event.lineno) ? "var(--Hilight)" : "",
+						color: (index + 1 == event.lineno) ? "var(--HilightText)" : "",
+    					width: "1000%", // because ugh highlight doesn't extend to whole line if it scrolls
+					})
+				)
+					.slice(event.lineno - 5, event.lineno + 4)
+			);
 		});
 
 		// Allow message boxes to go outside the window.
