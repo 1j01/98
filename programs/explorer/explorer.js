@@ -466,6 +466,7 @@ ${doc.documentElement.outerHTML}`;
 		customElements.define("object-hack", ObjectHack);
 	};
 	html = html.replace(/<object/ig, "<object-hack");
+	html = html.replace(/<\/object/ig, "</object-hack");
 
 	const head_injected_html = `
 		<meta charset="utf-8">
