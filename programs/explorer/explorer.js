@@ -426,11 +426,16 @@ ${doc.documentElement.outerHTML}`;
 		const selected_items = folder_view.items.filter((item) => item.element.classList.contains("selected"));
 		return {
 			Count: () => selected_items.length,
-			Item: (index) => selected_items[index].map((item) => {
+			Item: (index) => {
+				const item = selected_items[index];
+				if (!item) {
+					return null;
+				}
 				return {
+					Name: item.title,
 					Size: item.resolvedStats?.size,
 				};
-			}),
+			},
 		};
 	};
 	const detail_key = {
