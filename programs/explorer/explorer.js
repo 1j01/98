@@ -458,6 +458,14 @@ ${doc.documentElement.outerHTML}`;
 							img.src = path;
 						}
 						break;
+					case "clsid:E5DF9D10-3B52-11D1-83E8-00A0C90DC849":
+						// folder icon
+						{
+							const img = document.createElement("img");
+							this.shadowRoot.append(img);
+							img.src = frameElement._folder_icon_src;
+						}
+						break;
 					case "clsid:1820FED0-473E-11D0-A96C-00C04FD705A2":
 						// folder view
 						const folder_view = frameElement._folder_view;
@@ -510,7 +518,7 @@ ${doc.documentElement.outerHTML}`;
 						};
 						this.Folder = {
 							GetDetailsOf: (item, detail_id) => {
-								console.log("GetDetailsOf", item, detail_id);
+								// console.log("GetDetailsOf", item, detail_id);
 								// return `{GetDetailsOf(${JSON.stringify(item)}, ${detail_id})}`; // debugging in the style of a broken template
 								if (item == null) {
 									return detail_key[detail_id];
@@ -603,6 +611,7 @@ ${doc.documentElement.outerHTML}`;
 	}).appendTo("#content");
 
 	$iframe[0]._folder_view = folder_view;
+	$iframe[0]._folder_icon_src = getIconPath(get_icon_for_address(address), 32);
 
 	$iframe.on("load", () => {
 		var doc = $iframe[0].contentDocument;
