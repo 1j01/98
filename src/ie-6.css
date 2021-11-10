@@ -1,0 +1,379 @@
+[dir=rtl] dd {
+	margin: 0 30pt 0 0;
+}
+
+[dir=rtl] menu {
+	margin: 14pt 30pt 14pt 0;
+}
+
+[dir=rtl] ol {
+	margin: 14pt 30pt 14pt 0;
+}
+
+[dir=rtl] ul {
+	margin: 14pt 30pt 14pt 0;
+}
+
+a {
+	color: #00F;
+	text-decoration: underline;
+}
+
+a:visited {
+	color: #80080;
+}
+
+address {
+	display: block;
+	font-style: italic;
+}
+
+b {
+	font-weight: bold;
+}
+
+bdo {
+	direction: rtl;
+	unicode-bidi: bidi-override;
+}
+
+blockquote {
+	display: block;
+	margin: 14pt 30pt;
+}
+
+body {
+	display: block;
+	margin: 15px 10px;
+	zoom: 1;
+}
+
+button {
+	background-color: #D4D0C8;
+	border-style: outset;
+	border-width: 2px;
+	font-family: sans-serif;
+	font-size: 10pt;
+	overflow: hidden;
+	text-align: center;
+	zoom: 1;
+}
+
+caption {
+	display: block;
+	padding: 1px 3px 5px;
+	text-align: center;
+	zoom: 1;
+}
+
+cite {
+	font-style: italic;
+}
+
+code {
+	font-family: monospace;
+	font-size: 10pt;
+}
+
+col {
+	border-color: #D4D0C8;
+	display: block;
+}
+
+colgroup {
+	border-color: #D4D0C8;
+	display: block;
+}
+
+dd {
+	display: block;
+	margin: 0 0 0 30pt;
+}
+
+del {
+	text-decoration: line-through;
+}
+
+dfn {
+	font-style: italic;
+}
+
+div {
+	display: block;
+}
+
+dl {
+	display: block;
+	margin: 14pt 0;
+}
+
+dt {
+	display: block;
+}
+
+em {
+	font-style: italic;
+}
+
+embed {
+	zoom: 1;
+}
+
+fieldset {
+	border-style: groove;
+	border-width: 2px;
+	display: block;
+	zoom: 1;
+}
+
+form {
+	display: block;
+	margin: 14pt 0;
+}
+
+h1 {
+	display: block;
+	font-size: 24pt;
+	font-weight: bold;
+	margin: 14pt 0;
+}
+
+h2 {
+	display: block;
+	font-size: 18pt;
+	font-weight: bold;
+	margin: 14pt 0;
+}
+
+h3 {
+	display: block;
+	font-size: 13.55pt;
+	font-weight: bold;
+	margin: 14pt 0;
+}
+
+h4 {
+	display: block;
+	font-weight: bold;
+	margin: 14pt 0;
+}
+
+h5 {
+	display: block;
+	font-size: 10pt;
+	font-weight: bold;
+	margin: 14pt 0;
+}
+
+h6 {
+	display: block;
+	font-size: 7.55pt;
+	font-weight: bold;
+	margin: 14pt 0;
+}
+
+hr {
+	text-align: center;
+	zoom: 1;
+}
+
+html {
+	overflow-x: auto;
+	overflow-y: scroll;
+	zoom: 1;
+}
+
+i {
+	font-style: italic;
+}
+
+iframe {
+	background-color: #FFF;
+	height: 150px;
+	width: 300px;
+	zoom: 1;
+}
+
+img {
+	zoom: 1;
+}
+
+input {
+	background-color: #FFF;
+	border-style: inset;
+	border-width: 2px;
+	font-family: sans-serif;
+	font-size: 10pt;
+	overflow: hidden;
+	padding: 1px;
+	zoom: 1;
+}
+
+ins {
+	text-decoration: underline;
+}
+
+kbd {
+	font-family: monospace;
+	font-size: 10pt;
+}
+
+legend {
+	zoom: 1;
+}
+
+li {
+	display: block;
+}
+
+menu {
+	display: block;
+	list-style-image: none;
+	list-style-position: outside;
+	list-style-type: disc;
+	margin: 14pt 0 14pt 30pt;
+}
+
+object {
+	zoom: 1;
+}
+
+ol {
+	display: block;
+	list-style-image: none;
+	list-style-position: outside;
+	list-style-type: decimal;
+	margin: 14pt 0 14pt 30pt;
+}
+
+optgroup {
+	font-family: sans-serif;
+	font-size: 10pt;
+	font-style: italic;
+	font-weight: bold;
+}
+
+option {
+	font-family: sans-serif;
+	font-size: 10pt;
+	font-style: italic;
+	font-weight: bold;
+}
+
+p {
+	display: block;
+	margin: 14pt 0;
+}
+
+pre {
+	display: block;
+	font-family: monospace;
+	font-size: 10pt;
+	white-space: pre;
+}
+
+rp {
+	font-size: 6pt;
+}
+
+rt {
+	font-size: 6pt;
+}
+
+samp {
+	font-family: monospace;
+	font-size: 10pt;
+}
+
+select {
+	border-color: #FFF;
+	border-style: inset;
+	border-width: 2px;
+	font-family: sans-serif;
+	font-size: 10pt;
+	zoom: 1;
+}
+
+small {
+	font-size: 10pt;
+}
+
+strong {
+	font-weight: bold;
+}
+
+sub {
+	font-size: 10pt;
+}
+
+sup {
+	font-size: 10pt;
+}
+
+table {
+	border-color: #D4D0C8;
+	display: block;
+	zoom: 1;
+}
+
+tbody {
+	border-color: #D4D0C8;
+	display: block;
+}
+
+td {
+	border-color: #D4D0C8;
+	display: block;
+	padding: 1px;
+	zoom: 1;
+}
+
+textarea {
+	background-color: #FFF;
+	border-style: inset;
+	border-width: 2px;
+	font-family: monospace;
+	font-size: 10pt;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	padding: 1px;
+	white-space: pre;
+	zoom: 1;
+}
+
+tfoot {
+	border-color: #D4D0C8;
+	display: block;
+}
+
+th {
+	border-color: #D4D0C8;
+	display: block;
+	font-weight: bold;
+	padding: 1px;
+	text-align: center;
+	zoom: 1;
+}
+
+thead {
+	border-color: #D4D0C8;
+	display: block;
+}
+
+tr {
+	border-color: #D4D0C8;
+	display: block;
+	zoom: 1;
+}
+
+ul {
+	display: block;
+	list-style-image: none;
+	list-style-position: outside;
+	list-style-type: disc;
+	margin: 14pt 0 14pt 30pt;
+}
+
+var {
+	font-style: italic;
+}

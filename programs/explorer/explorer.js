@@ -365,7 +365,7 @@ ${doc.documentElement.outerHTML}`;
 	// It is here for syntax highlighting/checking/formatting,
 	// and avoiding escaping complexities, but it will be stringified,
 	// so note that variables can not be referenced from the outer scope.
-	const head_injected_script_fn = () => {
+	const head_end_injected_script_fn = () => {
 		// Usually the scripts refer to "document.all.FileList", but sometimes use just "FileList",
 		// relying on the fact that IDs pollute the global namespace.
 		// FileList is a built-in API nowadays, so it conflicts.
@@ -590,10 +590,13 @@ ${doc.documentElement.outerHTML}`;
 	html = html.replace(/font:\s*(\d+pt);/, "font-size: $1; line-height: 1;");
 	html = html.replace(/font:\s*((\d+pt)(\s*\/\s*\d+pt)?) verdana;/, "font: $1 'verdana', sans-serif;");
 
-
-	const head_injected_html = `
+	const head_start_injected_html = `
 		<meta charset="utf-8">
 		<title>Folder Template</title>
+		<link href="/src/ie-6.css" rel="stylesheet" type="text/css">
+	`;
+
+	const head_end_injected_html = `
 		<link href="/layout.css" rel="stylesheet" type="text/css">
 		<link href="/classic.css" rel="stylesheet" type="text/css">
 		<link href="/lib/os-gui/layout.css" rel="stylesheet" type="text/css">
@@ -604,11 +607,12 @@ ${doc.documentElement.outerHTML}`;
 		<script src="/src/msgbox.js"></script>
 		<script>defaultMessageBoxTitle = "Explorer";</script>
 		<script>
-			(${head_injected_script_fn})();
+			(${head_end_injected_script_fn})();
 		</script>
 	`;
 
-	html = html.replace(/\s+<\/head>/i, (match) => `${head_injected_html}\n${match}`);
+	html = html.replace(/<head>/i, (match) => `${match}\n${head_start_injected_html}\n`);
+	html = html.replace(/\s+<\/head>/i, (match) => `${head_end_injected_html}\n${match}`);
 
 	$iframe = $("<iframe>").attr({
 		srcdoc: html,
