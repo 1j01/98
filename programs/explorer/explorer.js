@@ -276,7 +276,6 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 	});
 	
 	const doc = new DOMParser().parseFromString(html, "text/html");
-	console.log(doc);
 	$(doc).find("script").each((i, script) => {
 		if (script.hasAttribute("event")) {
 			const event_name = script.getAttribute("event");
