@@ -203,8 +203,12 @@ button {
 	display: flex;
 	background: var(--Window);
 	color: var(--WindowText);
+	min-width: 0;
+	min-height: 0;
 }
 #content iframe {
 	flex: 1;
+	min-width: 0;
+	min-height: 0;
     border: 0;
 }
