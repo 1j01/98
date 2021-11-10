@@ -255,15 +255,29 @@ var go_to = function (address) {
 async function render_folder_template(folder_view, address, eventHandlers) {
 	$("#content").empty();
 
-	const template_url = new URL("../../src/WEB/FOLDER.HTT", location.href);
+	const template_url = new URL("/src/WEB/FOLDER.HTT", location.href);
 	const htt = await (await fetch(template_url)).text();
 	const percent_vars = {
-		THISDIRPATH: new URL(address, location.href),
+		THISDIRPATH: new URL(address.replace(/\/$/, ""), location.href),
 		THISDIRNAME: get_display_name_for_address(address),
 		TEMPLATEDIR: new URL(".", template_url).toString(),
 		//template_url.href.split("/").slice(0, -1).join("/"),
 	};
-	const percent_var_regexp = /%([A-Z_]+)%/gi;
+	const percent_var_regexp = /(file:\/\/)?(\\\w*\\?)*%([A-Z_]+)%(\\\w*\\?)*/gi;
+	let html = htt.replaceAll(percent_var_regexp, (match, file_protocol, path_before, var_name, path_after) => {
+		if (var_name in percent_vars) {
+			return (
+				// drop the file:// protocol (if applicable)
+				(path_before ?? "").replace(/\\/g, "/") +
+				percent_vars[var_name] +
+				(path_after ?? "").replace(/\\/g, "/")
+			);
+		} else {
+			console.warn("Unknown percent variable:", match);
+			return match;
+		}
+	});
+
 	const named_color_to_css_var = {
 		ActiveBorder: "var(--ActiveBorder)", // Active window border.
 		ActiveCaption: "var(--ActiveTitle)", // Active window caption.
@@ -299,16 +313,6 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 			.map(([key, value]) => [key.toLowerCase(), value])
 	);
 	const named_color_regexp = new RegExp(`(${Object.keys(named_color_to_css_var).join("|")})(?!\s*[)?.:=\[])`, "gi");
-	// @TODO: replace \ in paths after percent vars with /, and de-dupe by stripping slash from var values
-	// and protocol e.g. file://%TEMPLATEDIR%\wvleft.bmp
-	let html = htt.replaceAll(percent_var_regexp, (match, var_name) => {
-		if (var_name in percent_vars) {
-			return percent_vars[var_name];
-		} else {
-			console.warn("Unknown percent variable:", match);
-			return match;
-		}
-	});
 	html = html.replaceAll(named_color_regexp, (match, color_name) =>
 		lowercase_named_color_to_css_var[color_name.toLowerCase()]
 	);
@@ -472,10 +476,10 @@ ${doc.documentElement.outerHTML}`;
 						this.shadowRoot.append(folder_view.element);
 						// jQuery's append does HTML, vs native which does Text
 						$(this.shadowRoot).append(`
-							<link href="../../layout.css" rel="stylesheet" type="text/css">
-							<link href="../../classic.css" rel="stylesheet" type="text/css">
-							<link href="../../lib/os-gui/layout.css" rel="stylesheet" type="text/css">
-							<link href="../../lib/os-gui/windows-98.css" rel="stylesheet" type="text/css">
+							<link href="/layout.css" rel="stylesheet" type="text/css">
+							<link href="/classic.css" rel="stylesheet" type="text/css">
+							<link href="/lib/os-gui/layout.css" rel="stylesheet" type="text/css">
+							<link href="/lib/os-gui/windows-98.css" rel="stylesheet" type="text/css">
 							<style>
 								:host {
 									display: flex;
@@ -590,14 +594,14 @@ ${doc.documentElement.outerHTML}`;
 	const head_injected_html = `
 		<meta charset="utf-8">
 		<title>Folder Template</title>
-		<link href="../../layout.css" rel="stylesheet" type="text/css">
-		<link href="../../classic.css" rel="stylesheet" type="text/css">
-		<link href="../../lib/os-gui/layout.css" rel="stylesheet" type="text/css">
-		<link href="../../lib/os-gui/windows-98.css" rel="stylesheet" type="text/css">
+		<link href="/layout.css" rel="stylesheet" type="text/css">
+		<link href="/classic.css" rel="stylesheet" type="text/css">
+		<link href="/lib/os-gui/layout.css" rel="stylesheet" type="text/css">
+		<link href="/lib/os-gui/windows-98.css" rel="stylesheet" type="text/css">
 		<meta name="viewport" content="width=device-width, user-scalable=no">
-		<script src="../../lib/jquery.min.js"></script>
-		<script src="../../lib/os-gui/$Window.js"></script>
-		<script src="../../src/msgbox.js"></script>
+		<script src="/lib/jquery.min.js"></script>
+		<script src="/lib/os-gui/$Window.js"></script>
+		<script src="/src/msgbox.js"></script>
 		<script>defaultMessageBoxTitle = "Explorer";</script>
 		<script>
 			(${head_injected_script_fn})();
