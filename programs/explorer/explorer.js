@@ -435,10 +435,10 @@ ${doc.documentElement.outerHTML}`;
 			}
 			connectedCallback() {
 				const params = {};
-				for (const param_el of this._params_slot.querySelectorAll("param")) {
+				for (const param_el of this.querySelectorAll("param")) {
 					params[param_el.name] = param_el.value;
 				}
-				console.log(params);
+				console.log(params, this.children, this._params_slot.children);
 				console.log(`this.getAttribute("classid")`, this.getAttribute("classid"));
 				switch (this.getAttribute("classid")) {
 					case "clsid:1D2B4F40-1F10-11D1-9E88-00C04FDCAB92":
@@ -456,7 +456,7 @@ ${doc.documentElement.outerHTML}`;
 						// folder view
 						console.log("making folder view");
 						const folder_view = frameElement._folder_view;
-						this.shadowRoot.append(folder_view);
+						this.shadowRoot.append(folder_view.element);
 
 						this.SelectedItems = () => {
 							const selected_items = folder_view.items.filter((item) => item.element.classList.contains("selected"));
