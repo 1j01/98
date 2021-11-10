@@ -212,8 +212,7 @@ var go_to = function (address) {
 
 			$("#status-bar-right-icon").attr({
 				src: getIconPath("zone-internet", 16),
-				hidden: false,
-			});
+			}).show();
 			$("#status-bar-right-text").text("Internet");
 		} else {
 			const eventHandlers = {}; // @TODO: less hacky event duct tape
@@ -239,13 +238,10 @@ var go_to = function (address) {
 			) {
 				$("#status-bar-right-icon").attr({
 					src: getIconPath("my-computer", 16),
-					hidden: false,
-				});
+				}).show();
 				$("#status-bar-right-text").text("My Computer");
 			} else {
-				$("#status-bar-right-icon").attr({
-					hidden: true,
-				});
+				$("#status-bar-right-icon").hide();
 				$("#status-bar-right-text").text("");
 			}
 		}
