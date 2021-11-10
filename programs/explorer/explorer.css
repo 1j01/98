@@ -206,4 +206,5 @@ button {
 }
 #content iframe {
 	flex: 1;
+    border: 0;
 }
