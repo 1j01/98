@@ -462,6 +462,28 @@ ${doc.documentElement.outerHTML}`;
 						// folder view
 						const folder_view = frameElement._folder_view;
 						this.shadowRoot.append(folder_view.element);
+						// jQuery's append does HTML, vs native which does Text
+						$(this.shadowRoot).append(`
+							<link href="../../layout.css" rel="stylesheet" type="text/css">
+							<link href="../../classic.css" rel="stylesheet" type="text/css">
+							<link href="../../lib/os-gui/layout.css" rel="stylesheet" type="text/css">
+							<link href="../../lib/os-gui/windows-98.css" rel="stylesheet" type="text/css">
+							<style>
+								:host {
+									display: flex;
+								}
+								.folder-view {
+									background: var(--Window); /* needed for mix-blend-mode */
+									color: var(--WindowText);
+								}
+								.desktop-icon .title {
+									/* background: transparent; */
+									/* mix-blend-mode seems to need a background (for the dotted focus effect) */
+									background: var(--Window);
+									color: var(--WindowText);
+								}
+							</style>
+						`);
 
 						this.SelectedItems = () => {
 							const selected_items = folder_view.items.filter((item) => item.element.classList.contains("selected"));
@@ -528,18 +550,6 @@ ${doc.documentElement.outerHTML}`;
 		<script src="../../lib/os-gui/$Window.js"></script>
 		<script src="../../src/msgbox.js"></script>
 		<script>defaultMessageBoxTitle = "Explorer";</script>
-		<style>
-			.desktop-icon .title {
-				/* background: transparent; */
-				/* mix-blend-mode seems to need a background (for the dotted focus effect) */
-				background: var(--Window);
-				color: var(--WindowText);
-			}
-			.folder-view {
-				background: var(--Window); /* needed for mix-blend-mode */
-				color: var(--WindowText);
-			}
-		</style>
 		<script>
 			(${head_injected_script_fn})();
 		</script>
