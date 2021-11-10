@@ -433,17 +433,18 @@ ${doc.documentElement.outerHTML}`;
 				this._params_slot = document.createElement("slot");
 				this.shadowRoot.append(this._params_slot);
 				this._params = {};
-				this.addEventListener("slotchange", (event) => {
+				this._params_slot.addEventListener("slotchange", (event) => {
 					this._params = {};
 					for (const param_el of this.querySelectorAll("param, param-hack")) {
-						this._params[param_el.name] = param_el.value;
+						this._params[param_el.getAttribute("name")] = param_el.getAttribute("value");
 					}
-					console.log("slotchange", this._params);
+					// console.log("slotchange, params are now:", this._params);
 				});
 			}
 			connectedCallback() {
-				console.log(this._params, this.children, this._params_slot.children);
-				console.log(`this.getAttribute("classid")`, this.getAttribute("classid"));
+				// @TODO: handle params once they change/exist
+				// console.log(this._params, this.children, this._params_slot.children);
+				// console.log(`this.getAttribute("classid")`, this.getAttribute("classid"));
 				switch (this.getAttribute("classid")) {
 					case "clsid:1D2B4F40-1F10-11D1-9E88-00C04FDCAB92":
 						// thumbnail
@@ -458,7 +459,6 @@ ${doc.documentElement.outerHTML}`;
 						break;
 					case "clsid:1820FED0-473E-11D0-A96C-00C04FD705A2":
 						// folder view
-						console.log("making folder view");
 						const folder_view = frameElement._folder_view;
 						this.shadowRoot.append(folder_view.element);
 
@@ -502,8 +502,7 @@ ${doc.documentElement.outerHTML}`;
 						this.shadowRoot.append(video);
 						break;
 					default:
-						console.warn("Unsupported classid value:", this.getAttribute("classid"));
-						console.log(this.attributes);
+						console.warn("Unsupported classid value:", this.getAttribute("classid"), this);
 						break;
 				}
 			}
