@@ -435,7 +435,7 @@ ${doc.documentElement.outerHTML}`;
 				this._params = {};
 				this.addEventListener("slotchange", (event) => {
 					this._params = {};
-					for (const param_el of this.querySelectorAll("param")) {
+					for (const param_el of this.querySelectorAll("param, param-hack")) {
 						this._params[param_el.name] = param_el.value;
 					}
 					console.log("slotchange", this._params);
@@ -512,6 +512,8 @@ ${doc.documentElement.outerHTML}`;
 	};
 	html = html.replace(/<object/ig, "<object-hack");
 	html = html.replace(/<\/object/ig, "</object-hack");
+	html = html.replace(/<param/ig, "<param-hack");
+	html = html.replace(/<\/param/ig, "</param-hack");
 
 	const head_injected_html = `
 		<meta charset="utf-8">
