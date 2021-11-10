@@ -538,6 +538,12 @@ ${doc.documentElement.outerHTML}`;
 	html = html.replace(/<param/ig, "<param-hack");
 	html = html.replace(/<\/param/ig, "</param-hack");
 
+	// Fix up ancient CSS
+	html = html.replace(/padding:\s*((\d+(?:\.?\d+)?\w+),\s*)/g, (match, value) => value.split(/,\s*/g).join(" "));
+	html = html.replace(/font:\s*(\d+pt);/, "font-size: $1; line-height: 1;");
+	html = html.replace(/font:\s*((\d+pt)(\s*\/\s*\d+pt)?) verdana;/, "font: $1 'verdana', sans-serif;");
+
+
 	const head_injected_html = `
 		<meta charset="utf-8">
 		<title>Folder Template</title>
