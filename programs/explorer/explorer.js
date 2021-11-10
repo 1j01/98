@@ -488,32 +488,67 @@ ${doc.documentElement.outerHTML}`;
 						this.SelectedItems = () => {
 							const selected_items = folder_view.items.filter((item) => item.element.classList.contains("selected"));
 							return {
-								Count: () => selected_items.length,
+								Count: selected_items.length,
 								Item: (index) => {
 									const item = selected_items[index];
 									if (!item) {
 										return {}; // ???
 									}
 									return {
-										Name: item.title,
+										Name: item.element.querySelector(".title").textContent,
 										Size: item.resolvedStats?.size,
 										Path: item.file_path,
+										_item: item,
 									};
 								},
 							};
 						};
 						const detail_key = {
-							0: "name",
-							2: "type",
-							3: "date",
+							0: "Name",
+							2: "Type",
+							3: "Modified",
 						};
 						this.Folder = {
 							GetDetailsOf: (item, detail_id) => {
-								return `{GetDetailsOf(${item}, ${detail_id})}`; // debugging in the style of a broken template
+								console.log("GetDetailsOf", item, detail_id);
+								// return `{GetDetailsOf(${JSON.stringify(item)}, ${detail_id})}`; // debugging in the style of a broken template
 								if (item == null) {
-					
+									return detail_key[detail_id];
+								} else if (Object.keys(item).length === 0) {
+									return "";
 								} else {
-					
+									switch (detail_key[detail_id]) {
+										case "Name":
+											return item.Name;
+										case "Type":
+											// @TODO: DRY, and move file type code/data to one central place
+											const system_folder_path_to_name = {
+												"/": "(C:)", //"My Computer",
+												"/my-pictures/": "My Pictures",
+												"/my-documents/": "My Documents",
+												"/network-neighborhood/": "Network Neighborhood",
+												"/desktop/": "Desktop",
+												"/programs/": "Program Files",
+												"/recycle-bin/": "Recycle Bin",
+											};
+											if (system_folder_path_to_name[item._item.file_path]) {
+												return "System Folder";
+											}
+											if (item._item.resolvedStats?.isDirectory?.()) {
+												return "Folder";
+											}
+											const match = item._item.file_path.match(/\.(\w+)?$/);
+											if (match) {
+												return match[1].toUpperCase() + " File";
+											} else {
+												return "Unknown File";
+											}
+										case "Modified":
+											return new Date(item._item.resolvedStats?.mtime).toLocaleString();
+										default:
+											console.warn("Unknown detail ID", detail_id);
+											return;
+									}
 								}
 							}
 						};
