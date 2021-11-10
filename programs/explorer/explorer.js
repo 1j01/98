@@ -544,6 +544,8 @@ ${doc.documentElement.outerHTML}`;
 		srcdoc: html,
 	}).appendTo("#content");
 
+	$iframe[0]._folder_view = folder_view;
+
 	$iframe.on("load", () => {
 		var doc = $iframe[0].contentDocument;
 		// const object = doc.querySelector("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']");
