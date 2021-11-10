@@ -166,16 +166,22 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 		}
 	};
 
-	// Note: debounce is NEEDED to avoid infinite recursion
-	// in the case that stats are loading
-	this.arrange_icons = debounce(() => {
+	let waiting_on_stats = false;
+	this.arrange_icons = () => {
+		if (waiting_on_stats) {
+			return;
+		}
 		let any_pending = false;
 		for (const item of this.items) {
 			if (item.pendingStatPromise) {
-				item.pendingStatPromise.then(() => {
-					self.arrange_icons();
-				});
+				if (!waiting_on_stats) {
+					item.pendingStatPromise.then(() => {
+						waiting_on_stats = false;
+						self.arrange_icons();
+					});
+				}
 				any_pending = true;
+				waiting_on_stats = true;
 			}
 			// console.log(
 			// 	"item.element", item.element,
@@ -257,7 +263,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 			});
 			updateStatus();
 		}
-	}, 100);
+	};
 
 	function updateStatus() {
 		onStatus?.({
@@ -769,19 +775,4 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 			});
 		});
 	});
-
-	function debounce(func, wait, immediate) {
-		var timeout;
-		return function () {
-			var context = this, args = arguments;
-			var later = function () {
-				timeout = null;
-				if (!immediate) func.apply(context, args);
-			};
-			var callNow = immediate && !timeout;
-			clearTimeout(timeout);
-			timeout = setTimeout(later, wait);
-			if (callNow) func.apply(context, args);
-		};
-	};
 }

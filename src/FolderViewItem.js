@@ -80,6 +80,9 @@ function FolderViewItem(options) {
 		this._update_icon();
 	};
 	this.setIconSize = (new_size) => {
+		if (this.iconSize === new_size) {
+			return;
+		}
 		this.iconSize = new_size;
 		this._update_icon();
 	};
