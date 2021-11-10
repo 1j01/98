@@ -429,21 +429,22 @@ ${doc.documentElement.outerHTML}`;
 		class ObjectHack extends HTMLElement {
 			constructor() {
 				super();
-
+				this.attachShadow({ mode: 'open' });
+				this._params_slot = document.createElement("slot");
+				this.shadowRoot.append(this._params_slot);
+			}
+			connectedCallback() {
 				const params = {};
-				for (const param_el of this.querySelectorAll("param")) {
+				for (const param_el of this._params_slot.querySelectorAll("param")) {
 					params[param_el.name] = param_el.value;
 				}
-
-				// Create a shadow root
-				var shadow = this.attachShadow({mode: 'open'});
-
+				console.log(params);
 				console.log(`this.getAttribute("classid")`, this.getAttribute("classid"));
 				switch (this.getAttribute("classid")) {
 					case "clsid:1D2B4F40-1F10-11D1-9E88-00C04FDCAB92":
 						// thumbnail
 						const img = document.createElement("img");
-						shadow.append(img);
+						this.shadowRoot.append(img);
 						this.haveThumbnail = () => {
 							return false;
 						};
@@ -455,7 +456,7 @@ ${doc.documentElement.outerHTML}`;
 						// folder view
 						console.log("making folder view");
 						const folder_view = frameElement._folder_view;
-						shadow.append(folder_view);
+						this.shadowRoot.append(folder_view);
 
 						this.SelectedItems = () => {
 							const selected_items = folder_view.items.filter((item) => item.element.classList.contains("selected"));
@@ -494,7 +495,7 @@ ${doc.documentElement.outerHTML}`;
 						const video = document.createElement("video"); // @TODO: or audio
 						video.src = params.FileName;
 						video.controls = true;
-						shadow.append(video);
+						this.shadowRoot.append(video);
 						break;
 					default:
 						console.warn("Unsupported classid value:", this.getAttribute("classid"));
