@@ -621,14 +621,17 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 		// or make it more grid-agnostic (Windows 98 allowed freely moving icons around)
 		const item_width = $starting_icon.outerWidth();
 		const item_height = $starting_icon.outerHeight();
-		const item_pos = $starting_icon.position();
+		// const item_pos = $starting_icon.position();
+		const item_pos = $starting_icon[0].getBoundingClientRect();
 		let x = item_pos.left;// + item_width / 2;
 		let y = item_pos.top;// + item_height / 2;
 		x += move_x * item_width;
 		y += move_y * item_height;
 		const candidates = $folder_view.find(".desktop-icon").toArray().sort(function (a, b) {
-			const a_pos = $(a).position();
-			const b_pos = $(b).position();
+			// const a_pos = $(a).position();
+			// const b_pos = $(b).position();
+			const a_pos = a.getBoundingClientRect();
+			const b_pos = b.getBoundingClientRect();
 			const a_dist = Math.abs(a_pos.left - x) + Math.abs(a_pos.top - y);
 			const b_dist = Math.abs(b_pos.left - x) + Math.abs(b_pos.top - y);
 			return a_dist - b_dist;
