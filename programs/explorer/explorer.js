@@ -312,7 +312,7 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 		Object.entries(named_color_to_css_var)
 			.map(([key, value]) => [key.toLowerCase(), value])
 	);
-	const named_color_regexp = new RegExp(`(${Object.keys(named_color_to_css_var).join("|")})(?!\s*[)?.:=\[])`, "gi");
+	const named_color_regexp = new RegExp(`\b(${Object.keys(named_color_to_css_var).join("|")})\b(?!\s*[)?.:=\[])`, "gi");
 	html = html.replaceAll(named_color_regexp, (match, color_name) =>
 		lowercase_named_color_to_css_var[color_name.toLowerCase()]
 	);
