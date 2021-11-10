@@ -594,6 +594,9 @@ ${doc.documentElement.outerHTML}`;
 		<meta charset="utf-8">
 		<title>Folder Template</title>
 		<link href="/src/ie-6.css" rel="stylesheet" type="text/css">
+		<style>
+		p {margin: 0;}
+		</style>
 	`;
 
 	const head_end_injected_html = `
