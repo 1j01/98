@@ -443,7 +443,8 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 			self.focus();
 			var $icon = $(e.target).closest(".desktop-icon");
 			$marquee.hide();
-			var folder_view_offset = $folder_view.offset();
+			// var folder_view_offset = $folder_view.offset();
+			var folder_view_offset = self.element.getBoundingClientRect();
 			start = { x: e.pageX - folder_view_offset.left + $folder_view[0].scrollLeft, y: e.pageY - folder_view_offset.top + $folder_view[0].scrollTop };
 			current = { x: e.pageX - folder_view_offset.left + $folder_view[0].scrollLeft, y: e.pageY - folder_view_offset.top + $folder_view[0].scrollTop };
 			if ($icon.length > 0) {
@@ -465,7 +466,8 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 			$($folder_view[0].ownerDocument).on("pointerup blur", handle_pointerup_blur);
 		});
 		function handle_pointermove (e) {
-			var folder_view_offset = $folder_view.offset();
+			// var folder_view_offset = $folder_view.offset();
+			var folder_view_offset = self.element.getBoundingClientRect();
 			current = { x: e.pageX - folder_view_offset.left + $folder_view[0].scrollLeft, y: e.pageY - folder_view_offset.top + $folder_view[0].scrollTop };
 			// clamp coordinates to within folder view
 			// This accomplishes three things:
