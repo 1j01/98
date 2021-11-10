@@ -432,13 +432,17 @@ ${doc.documentElement.outerHTML}`;
 				this.attachShadow({ mode: 'open' });
 				this._params_slot = document.createElement("slot");
 				this.shadowRoot.append(this._params_slot);
+				this._params = {};
+				this.addEventListener("slotchange", (event) => {
+					this._params = {};
+					for (const param_el of this.querySelectorAll("param")) {
+						this._params[param_el.name] = param_el.value;
+					}
+					console.log("slotchange", this._params);
+				});
 			}
 			connectedCallback() {
-				const params = {};
-				for (const param_el of this.querySelectorAll("param")) {
-					params[param_el.name] = param_el.value;
-				}
-				console.log(params, this.children, this._params_slot.children);
+				console.log(this._params, this.children, this._params_slot.children);
 				console.log(`this.getAttribute("classid")`, this.getAttribute("classid"));
 				switch (this.getAttribute("classid")) {
 					case "clsid:1D2B4F40-1F10-11D1-9E88-00C04FDCAB92":
