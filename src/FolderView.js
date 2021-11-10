@@ -390,9 +390,12 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 		});
 	});
 
-	// NOTE: in Windows, icons normally only get moved if they go offscreen (by maybe half the grid size)
-	// we're essentially handling it as if Auto Arrange is on
-	$(window).on("resize", self.arrange_icons);
+	// NOTE: in Windows, icons by default only get moved if they go offscreen (by maybe half the grid size)
+	// we're handling it as if Auto Arrange is on (@TODO: support Auto Arrange off)
+	const resizeObserver = new ResizeObserver(entries => {
+		self.arrange_icons();
+	});
+	resizeObserver.observe(self.element);
 
 	// Handle selecting icons
 	(function () {
@@ -458,8 +461,10 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 					drag_update();
 				}
 			}
+			$($folder_view[0].ownerDocument).on("pointermove", handle_pointermove);
+			$($folder_view[0].ownerDocument).on("pointerup blur", handle_pointerup_blur);
 		});
-		$(window).on("pointermove", function (e) {
+		function handle_pointermove (e) {
 			var folder_view_offset = $folder_view.offset();
 			current = { x: e.pageX - folder_view_offset.left + $folder_view[0].scrollLeft, y: e.pageY - folder_view_offset.top + $folder_view[0].scrollTop };
 			// clamp coordinates to within folder view
@@ -490,12 +495,14 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 					$folder_view[0].scrollTop += scroll_speed;
 				}
 			}
-		});
-		$(window).on("pointerup blur", function () {
+		};
+		function handle_pointerup_blur() {
 			$marquee.hide();
 			dragging = false;
 			set_dragging_file_paths([]);
-		});
+			$($folder_view[0].ownerDocument).off("pointermove", handle_pointermove);
+			$($folder_view[0].ownerDocument).off("pointerup blur", handle_pointerup_blur);
+		};
 	})();
 
 	$folder_view.on("keydown", function (e) {
