@@ -438,6 +438,7 @@ ${doc.documentElement.outerHTML}`;
 				// Create a shadow root
 				var shadow = this.attachShadow({mode: 'open'});
 
+				console.log(`this.getAttribute("classid")`, this.getAttribute("classid"));
 				switch (this.getAttribute("classid")) {
 					case "clsid:1D2B4F40-1F10-11D1-9E88-00C04FDCAB92":
 						// thumbnail
@@ -452,13 +453,52 @@ ${doc.documentElement.outerHTML}`;
 						break;
 					case "clsid:1820FED0-473E-11D0-A96C-00C04FD705A2":
 						// folder view
-						// will be replaced separately
+						console.log("making folder view");
+						const folder_view = frameElement._folder_view;
+						shadow.append(folder_view);
+
+						this.SelectedItems = () => {
+							const selected_items = folder_view.items.filter((item) => item.element.classList.contains("selected"));
+							return {
+								Count: () => selected_items.length,
+								Item: (index) => {
+									const item = selected_items[index];
+									if (!item) {
+										return {}; // ???
+									}
+									return {
+										Name: item.title,
+										Size: item.resolvedStats?.size,
+										Path: item.file_path,
+									};
+								},
+							};
+						};
+						const detail_key = {
+							0: "name",
+							2: "type",
+							3: "date",
+						};
+						this.Folder = {
+							GetDetailsOf: (item, detail_id) => {
+								if (item == null) {
+					
+								} else {
+					
+								}
+							}
+						};
 						break;
 					case "clsid:05589FA1-C356-11CE-BF01-00AA0055595A":
 						// media player
-						const video = document.createElement("video");
+						const video = document.createElement("video"); // @TODO: or audio
 						video.src = params.FileName;
+						video.controls = true;
 						shadow.append(video);
+						break;
+					default:
+						console.warn("Unsupported classid value:", this.getAttribute("classid"));
+						console.log(this.attributes);
 						break;
 				}
 			}
@@ -505,12 +545,12 @@ ${doc.documentElement.outerHTML}`;
 
 	$iframe.on("load", () => {
 		var doc = $iframe[0].contentDocument;
-		const object = doc.querySelector("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']");
-		$(object).replaceWith(folder_view.element);
-		for (var i = 0; i < object.attributes.length; i++) {
-			var attribute = object.attributes[i];
-			folder_view.element.setAttribute(attribute.name, attribute.value);
-		}
+		// const object = doc.querySelector("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']");
+		// $(object).replaceWith(folder_view.element);
+		// for (var i = 0; i < object.attributes.length; i++) {
+		// 	var attribute = object.attributes[i];
+		// 	folder_view.element.setAttribute(attribute.name, attribute.value);
+		// }
 
 		// not working:
 		// var range = doc.createRange();
@@ -528,39 +568,6 @@ ${doc.documentElement.outerHTML}`;
 			// @TODO: render preview of selected item(s?), and trigger OnThumbnailReady
 		};
 	});
-
-	// Implement ancient API used by HTT (Hyper Text Template) folder template scripts
-	folder_view.element.SelectedItems = () => {
-		const selected_items = folder_view.items.filter((item) => item.element.classList.contains("selected"));
-		return {
-			Count: () => selected_items.length,
-			Item: (index) => {
-				const item = selected_items[index];
-				if (!item) {
-					return {}; // ???
-				}
-				return {
-					Name: item.title,
-					Size: item.resolvedStats?.size,
-					Path: item.file_path,
-				};
-			},
-		};
-	};
-	const detail_key = {
-		0: "name",
-		2: "type",
-		3: "date",
-	};
-	folder_view.element.Folder = {
-		GetDetailsOf: (item, detail_id) => {
-			if (item == null) {
-
-			} else {
-
-			}
-		}
-	};
 }
 
 function refresh() {
