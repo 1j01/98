@@ -369,6 +369,65 @@ ${doc.documentElement.outerHTML}`;
 			get() { return document.getElementById("FileList"); }
 		});
 
+		// It uses pixelWidth/pixelHeight/pixelLeft/pixelTop and unitless top/left
+		var real_style_descriptor = Reflect.getOwnPropertyDescriptor(HTMLElement.prototype, "style");
+		Object.defineProperty(HTMLElement.prototype, "style", {
+			get: function () {
+				const element = this;
+				const style = real_style_descriptor.get.call(element);
+				return new Proxy(style, {
+					get: function (target, prop, receiver) {
+						if (prop === "pixelWidth") {
+							let n = parseFloat(getComputedStyle(element).width);
+							if (isNaN(n)) { // for auto
+								n = element.offsetWidth;
+							}
+							return Math.round(n);
+						}
+						if (prop === "pixelHeight") {
+							let n = parseFloat(getComputedStyle(element).height);
+							if (isNaN(n)) { // for auto
+								n = element.offsetHeight;
+							}
+							return Math.round(n);
+						}
+						if (prop === "pixelLeft") {
+							return Math.round(element.offsetLeft);
+						}
+						if (prop === "pixelTop") {
+							return Math.round(element.offsetTop);
+						}
+						return Reflect.get(style, prop, style);
+					},
+					set: function (target, prop, value) {
+						if (prop === "pixelWidth") {
+							target.width = value + "px";
+							return;
+						}
+						if (prop === "pixelHeight") {
+							target.height = value + "px";
+							return;
+						}
+						if (prop === "pixelLeft" || (prop === "left" && `${value}`.match(/^\d+$/))) {
+							target.left = value + "px";
+							return;
+						}
+						if (prop === "pixelTop" || (prop === "top" && `${value}`.match(/^\d+$/))) {
+							target.top = value + "px";
+							return;
+						}
+						return Reflect.set(style, prop, value);
+					},
+				});
+			},
+			set: function (value) {
+				const element = this;
+				element.style.cssText = value;
+			},
+			configurable: true,
+			enumerable: true,
+		});
+
 		// Neither Chrome or Firefox are working for debugging srcdoc iframes.
 		// Chrome gives wildly incorrect line numbers,
 		// and Firefox just gives "Error loading this URI: Unknown source"
