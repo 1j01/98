@@ -572,6 +572,7 @@ ${doc.documentElement.outerHTML}`;
 						};
 						const detail_key = {
 							0: "Name",
+							1: "Size",
 							2: "Type",
 							3: "Modified",
 						};
@@ -587,6 +588,21 @@ ${doc.documentElement.outerHTML}`;
 									switch (detail_key[detail_id]) {
 										case "Name":
 											return item.Name;
+										case "Size":
+											const bytes = item._item.resolvedStats?.size;
+											if (typeof bytes !== "number") {
+												return "";
+											}
+											// Note: Windows 98 uses 2^10 for KB, and uses KB as the minimum unit,
+											// but the folder templates, wanting to use bytes for small files,
+											// show the size in bytes if it's less than 1000, implying it uses 10^3 for KB.
+											// This may confuse people, but I'm just imitating Windows 98. No skin off my back!
+											const k = 1024;
+											if (bytes === 0) return '0KB';
+											const sizes = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+											const min_unit = 1; // Start at KB (note that the default template works around this to provide "bytes")
+											const i = Math.max(min_unit, Math.floor(Math.log(bytes) / Math.log(k)));
+											return Math.ceil(bytes / Math.pow(k, i)) + sizes[i]; // Round up
 										case "Type":
 											// @TODO: DRY, and move file type code/data to one central place
 											const system_folder_path_to_name = {
