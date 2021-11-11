@@ -65,7 +65,7 @@ var folder_view, $iframe;
 var active_address = "";
 setInterval(() => {
 	try {
-		if ($iframe && $iframe[0].contentWindow) {
+		if ($iframe && $iframe[0].contentWindow && !folder_view) {
 			active_address = $iframe[0].contentWindow.location.href;
 		}
 	} catch (e) {
@@ -82,6 +82,7 @@ var go_to = function (address) {
 		$iframe.remove();
 		$iframe = null;
 	}
+	// @TODO: play start.wav sound
 
 	address = address || "/";
 	var is_url = !!address.match(/\w+:\/\//);
@@ -189,6 +190,10 @@ var go_to = function (address) {
 				allowfullscreen: "allowfullscreen",
 				sandbox: "allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-popups",
 			}).appendTo("#content");
+
+			$iframe.on("load", () => {
+				proxy_keyboard($iframe);
+			});
 
 			// If only we could access the contentDocument cross-origin
 			// For https://archive.is/szqQ5
@@ -696,6 +701,7 @@ ${doc.documentElement.outerHTML}`;
 	$iframe[0]._folder_icon_src = getIconPath(get_icon_for_address(address), 32);
 
 	$iframe.on("load", () => {
+		proxy_keyboard($iframe);
 		var doc = $iframe[0].contentDocument;
 		// const object = doc.querySelector("object[classid='clsid:1820FED0-473E-11D0-A96C-00C04FD705A2']");
 		// $(object).replaceWith(folder_view.element);
@@ -1003,8 +1009,10 @@ $(function () {
 			event.preventDefault();
 		} else if (event.key === "BrowserForward" || (event.key === "ArrowRight" && event.altKey)) {
 			go_forward();
+			event.preventDefault();
 		} else if (event.key === "ArrowUp" && event.altKey) {
 			go_up();
+			event.preventDefault();
 		}
 	});
 
@@ -1013,3 +1021,37 @@ $(function () {
 		return text.replace(/\s?\(&.\)/, "").replace(/([^&]|^)&([^&\s])/, "$1$2");
 	}
 });
+
+
+// I'm planning to include this sort of thing in OS-GUI.js, so I'm sort of prototyping it here,
+// rather than doing the more straightforward thing of listening in multiple places.
+function proxy_keyboard($iframe) {
+	try {
+		$iframe[0].contentWindow.addEventListener("keydown", (event) => {
+			const proxied_event = new KeyboardEvent("keydown", {
+				target: $iframe[0],
+				view: window,
+				bubbles: true,
+				cancelable: true,
+				key: event.key,
+				keyCode: event.keyCode,
+				which: event.which,
+				code: event.code,
+				shiftKey: event.shiftKey,
+				ctrlKey: event.ctrlKey,
+				metaKey: event.metaKey,
+				altKey: event.altKey,
+				repeat: event.repeat,
+				//...
+			});
+			const result = $iframe[0].dispatchEvent(proxied_event);
+			console.log("proxied", event, "as", proxied_event, "result", result);
+			if (!result) {
+				event.preventDefault();
+			}
+		}, true);
+	} catch (error) {
+		console.warn("Failed to access iframe for keyboard integration", error);
+	}
+}
+
