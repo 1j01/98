@@ -73,6 +73,7 @@ setInterval(() => {
 	}
 }, 200);
 
+// @TODO: should probably split out address parsing/normalization from navigation
 var go_to = function (address) {
 
 	// for preventing focus from being lost when navigating
@@ -162,15 +163,15 @@ var go_to = function (address) {
 					}
 					address_determined();
 				} else {
-					// TODO: open html files in a new window, but don't infinitely recurse
-					// executeFile(address);
-					if (address.match(/\.html$/i)) {
-						address = window.location.origin + "/" + address.replace(/^\/?/, "");
-						is_url = true;
-						address_determined();
-					} else {
-						executeFile(address);
-					}
+					// Don't execute files, just open them in the browser.
+					// HTML/HTM files work, image files work,
+					// maybe some file types should be executed, but
+					// if trying to handle that, note that if Explorer is
+					// associated with the file type, it will cause recursion,
+					// with tons of windows opening, and eventually the page will crash.
+					address = window.location.origin + "/" + address.replace(/^\/?/, "");
+					is_url = true;
+					handle_url_case();
 				}
 			});
 		});
@@ -238,6 +239,8 @@ var go_to = function (address) {
 					);
 					eventHandlers.onStatus?.({ items, selectedItems });
 				},
+				openFolder: go_to,
+				openFileOrFolder: executeFile,
 			});
 
 			if (
@@ -787,7 +790,6 @@ function can_go_up() {
 }
 
 
-// called from FolderView
 function executeFile(file_path) {
 	// I don't think this withFilesystem is necessary
 	withFilesystem(function () {
@@ -799,9 +801,14 @@ function executeFile(file_path) {
 			if (stats.isDirectory()) {
 				go_to(file_path);
 			} else {
-				// (can either check frameElement or parent !== window, but not parent by itself)
+				// (can either check frameElement or parent !== window, but not parent by itself, because `parent === window` when there's no actual parent frame)
 				if (frameElement) {
-					parent.executeFile(file_path);
+					const systemExecuteFile = parent.systemExecuteFile || parent.parent.systemExecuteFile; // dunno if I'll keep the folder view in an iframe
+					if (systemExecuteFile) {
+						systemExecuteFile(file_path);
+					} else {
+						alert("Failed to execute " + file_path + "\n\n" + "systemExecuteFile not found");
+					}
 				} else {
 					alert("Can't open files in standalone mode. Explorer must be run in a desktop.");
 				}

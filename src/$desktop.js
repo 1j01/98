@@ -2,7 +2,12 @@
 var $desktop = $(".desktop");
 $desktop.css("touch-action", "none"); // TODO: should this be in FolderView, or is it to prevent scrolling the page or what?
 
-var folder_view = new FolderView(desktop_folder_path, { asDesktop: true });
+var folder_view = new FolderView(desktop_folder_path, {
+	asDesktop: true,
+	openFileOrFolder: (path) => { // Note: may not be defined yet, so wrapping with a function.
+		systemExecuteFile(path);
+	},
+});
 $(folder_view.element).appendTo($desktop);
 
 // Prevent drag and drop from redirecting the page (the browser default behavior for files)

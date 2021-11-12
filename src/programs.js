@@ -997,8 +997,8 @@ var file_extension_associations = {
 	themepack: openThemeFile,
 };
 
-// Note: global executeFile called by explorer
-function executeFile(file_path) {
+// Note: global systemExecuteFile called by explorer
+function systemExecuteFile(file_path) {
 	// execute file with default handler
 	// like the START command in CMD.EXE
 
@@ -1043,21 +1043,21 @@ var add_icon_not_via_filesystem = function (options) {
 add_icon_not_via_filesystem({
 	title: "My Computer",
 	iconID: "my-computer",
-	open: function () { executeFile("/"); },
+	open: function () { systemExecuteFile("/"); },
 	// file_path: "/",
 	is_system_folder: true,
 });
 add_icon_not_via_filesystem({
 	title: "My Documents",
 	iconID: "my-documents-folder",
-	open: function () { executeFile("/my-documents"); },
+	open: function () { systemExecuteFile("/my-documents"); },
 	// file_path: "/my-documents/",
 	is_system_folder: true,
 });
 add_icon_not_via_filesystem({
 	title: "Network Neighborhood",
 	iconID: "network",
-	open: function () { executeFile("/network-neighborhood"); },
+	open: function () { systemExecuteFile("/network-neighborhood"); },
 	// file_path: "/network-neighborhood/",
 	is_system_folder: true,
 });
@@ -1070,7 +1070,7 @@ add_icon_not_via_filesystem({
 add_icon_not_via_filesystem({
 	title: "My Pictures",
 	iconID: "folder",
-	open: function () { executeFile("/my-pictures"); },
+	open: function () { systemExecuteFile("/my-pictures"); },
 	// file_path: "/my-pictures/",
 	is_system_folder: true,
 });

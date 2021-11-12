@@ -105,7 +105,7 @@ const set_dragging_file_paths = (dragging_file_paths) => {
 	}
 };
 
-function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
+function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, openFileOrFolder } = {}) {
 	const self = this;
 	// TODO: ensure a trailing slash / use path.join where appropriate
 
@@ -692,11 +692,32 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 	};
 
 	// var add_fs_item = function(file_path, x, y){
-	var add_fs_item = function (file_name, x, y) {
-		var initial_file_path = folder_path + file_name;
+	var add_fs_item = function (initial_file_name, x, y) {
+		var initial_file_path = folder_path + initial_file_name;
 		var item = new FolderViewItem({
-			title: file_name,
-			open: function () { executeFile(item.file_path); },
+			title: initial_file_name,
+			open: async function () {
+				if (openFolder) {
+					let stats = item.resolvedStats;
+					if (!stats) {
+						try {
+							stats = await item.pendingStatPromise;
+						} catch (error) {
+							alert(`Failed to get info about '${item.file_path}':\n\n${error}`);
+							return;
+						}
+					}
+					if (stats.isDirectory()) {
+						openFolder(item.file_path);
+						return;
+					}
+				}
+				if (openFileOrFolder) {
+					openFileOrFolder(item.file_path);
+					return;
+				}
+				alert(`No handler for opening files or folders.`);
+			},
 			rename: (new_name) => {
 				var fs = BrowserFS.BFSRequire('fs');
 				return new Promise(function (resolve, reject) {
