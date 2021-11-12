@@ -74,6 +74,12 @@ setInterval(() => {
 }, 200);
 
 var go_to = function (address) {
+
+	// for preventing focus from being lost when navigating
+	// folder_view.element.contains(document.activeElement) is not needed because
+	// the folder view is currently in an iframe (the iframe)
+	const had_focus = $iframe && document.activeElement === $iframe[0];
+
 	if (folder_view) {
 		folder_view.element.remove();
 		folder_view = null;
@@ -170,7 +176,7 @@ var go_to = function (address) {
 		});
 	}
 
-	function address_determined() {
+	async function address_determined() {
 		if (system_folder_path_to_name[address]) {
 			$("#address").val(system_folder_path_to_name[address]);
 		} else {
@@ -233,8 +239,6 @@ var go_to = function (address) {
 					eventHandlers.onStatus?.({ items, selectedItems });
 				},
 			});
-			render_folder_template(folder_view, address, eventHandlers);
-			folder_view.focus();
 
 			if (
 				address !== "/desktop/" &&
@@ -249,6 +253,24 @@ var go_to = function (address) {
 				$("#status-bar-right-icon").hide();
 				$("#status-bar-right-text").text("");
 			}
+
+			await render_folder_template(folder_view, address, eventHandlers);
+			folder_view.focus();
+		}
+		console.log("had_focus", had_focus, "$iframe", $iframe, "folder_view", folder_view);
+		if (had_focus && $iframe) {
+			console.log("refocus iframe");
+			$iframe[0].contentWindow.focus();
+			folder_view?.focus();
+			console.log("new activeElement", $iframe[0].contentDocument.activeElement);
+			setTimeout(() => {
+				folder_view?.focus();
+				console.log("newer activeElement", $iframe[0].contentDocument.activeElement);
+			});
+			setTimeout(() => {
+				folder_view?.focus();
+				console.log("newest activeElement", $iframe[0].contentDocument.activeElement);
+			}, 1000);
 		}
 	}
 };
