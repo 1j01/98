@@ -171,10 +171,15 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 		if (waiting_on_stats) {
 			return;
 		}
+		if (!self.element.isConnected) { // checking parentElement doesn't work if under a shadowRoot
+			// console.trace("not in DOM");
+			return; // prevent errors computing layout if folder view removed before stats resolve
+		}
 		let any_pending = false;
 		for (const item of this.items) {
 			if (item.pendingStatPromise) {
 				if (!waiting_on_stats) {
+					// @TODO: wait on a batch of promises at once so it ultimately loads faster
 					item.pendingStatPromise.then(() => {
 						waiting_on_stats = false;
 						self.arrange_icons();
