@@ -255,23 +255,13 @@ var go_to = function (address) {
 			}
 
 			await render_folder_template(folder_view, address, eventHandlers);
-			folder_view.focus();
 		}
-		console.log("had_focus", had_focus, "$iframe", $iframe, "folder_view", folder_view);
-		if (had_focus && $iframe) {
-			console.log("refocus iframe");
-			$iframe[0].contentWindow.focus();
-			folder_view?.focus();
-			console.log("new activeElement", $iframe[0].contentDocument.activeElement);
-			setTimeout(() => {
-				folder_view?.focus();
-				console.log("newer activeElement", $iframe[0].contentDocument.activeElement);
-			});
-			setTimeout(() => {
-				folder_view?.focus();
-				console.log("newest activeElement", $iframe[0].contentDocument.activeElement);
-			}, 1000);
-		}
+		// console.log("had_focus", had_focus, "$iframe", $iframe, "folder_view", folder_view);
+		// if (had_focus && $iframe) {
+		// 	console.log("refocus iframe");
+		// 	$iframe[0].contentWindow.focus();
+		// 	folder_view?.focus();
+		// }
 	}
 };
 
@@ -279,6 +269,7 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 	$("#content").empty();
 
 	const template_url = new URL("/src/WEB/FOLDER.HTT", location.href);
+	// console.log("fetching template", template_url.href);
 	const htt = await (await fetch(template_url)).text();
 	const percent_vars = {
 		THISDIRPATH: new URL(address.replace(/\/$/, ""), location.href),
@@ -747,7 +738,11 @@ ${doc.documentElement.outerHTML}`;
 			doc.dispatchEvent(new CustomEvent("SelectionChanged", { bubbles: true }));
 			// @TODO: render preview of selected item(s?), and trigger OnThumbnailReady
 		};
+
+		// console.log("folder_view.element.isConnected", folder_view.element.isConnected);
+		folder_view.focus();
 	});
+	$iframe.focus();
 }
 
 function refresh() {
@@ -1067,7 +1062,7 @@ function proxy_keyboard($iframe) {
 				//...
 			});
 			const result = $iframe[0].dispatchEvent(proxied_event);
-			console.log("proxied", event, "as", proxied_event, "result", result);
+			// console.log("proxied", event, "as", proxied_event, "result", result);
 			if (!result) {
 				event.preventDefault();
 			}

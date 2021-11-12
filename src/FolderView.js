@@ -266,6 +266,10 @@ function FolderView(folder_path, { asDesktop = false, onStatus } = {}) {
 			this.items.forEach((item, index) => {
 				item.element.classList.toggle("focused", index === 0);
 			});
+			// console.log("this.element.ownerDocument.activeElement", this.element.ownerDocument.activeElement);
+			// if (this.element.ownerDocument.activeElement === this.element) {
+			this.items[0]?.element.focus();
+			// }
 			updateStatus();
 		}
 	};
