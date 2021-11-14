@@ -92,7 +92,22 @@ var go_to = async function (address) {
 
 	// @TODO: split out src and normalized address, and use normalized address for the input, but use src for the iframe
 	// so the address can show the system path, and Up command can return to a folder (rather than an HTTP server's folder listing, or a 404, depending on the server)
-	const { normalized_address, is_url, zone } = await resolve_address(address);
+
+	let normalized_address, is_url, zone;
+	try {
+		({ normalized_address, is_url, zone } = await resolve_address(address));
+	} catch (error) {
+		if (error._is_drive_not_found_error) {
+			alert("Drive not found.");
+			return;
+		} else if (error._is_stat_error) {
+			alert("Failed to get info about " + address + "\n\n" + error);
+			return;
+		} else {
+			alert("Failed to resolve address " + address + "\n\n" + error);
+			return;
+		}
+	}
 	address = normalized_address;
 
 	if (zone === "internet") {
@@ -242,10 +257,10 @@ var resolve_address = async function (address) {
 			zone = "local";
 			return { normalized_address: address, is_url, zone };
 		} else {
-			// @TODO: this won't give duplicate message will it?
-			// should I handle alert outside of this function? probably
-			alert("Drive not found.");
-			throw new Error("Drive not found.");
+			const error = new Error("Drive not found");
+			error.code = "ENOENT";
+			error._is_drive_not_found_error = true;
+			throw error;
 		}
 	} else if (is_url) {
 		return handle_url_case();
@@ -261,7 +276,8 @@ var resolve_address = async function (address) {
 							resolve(handle_url_case());
 							return;
 						}
-						alert("Failed to get info about " + address + "\n\n" + err);
+						err._is_stat_error = true;
+						reject(err);
 						return;
 					}
 					if (stats.isDirectory()) {
