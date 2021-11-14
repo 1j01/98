@@ -70,7 +70,9 @@ var active_address = "";
 setInterval(() => {
 	try {
 		if ($iframe && $iframe[0].contentWindow && !folder_view) {
-			active_address = $iframe[0].contentWindow.location.href;
+			if ($iframe[0].contentWindow.location.href !== "about:blank") {
+				active_address = $iframe[0].contentWindow.location.href;
+			}
 		}
 	} catch (e) {
 		// ignore
