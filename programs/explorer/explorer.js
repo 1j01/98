@@ -73,8 +73,7 @@ setInterval(() => {
 	}
 }, 200);
 
-// @TODO: should probably split out address parsing/normalization from navigation
-var go_to = function (address) {
+var go_to = async function (address) {
 
 	// for preventing focus from being lost when navigating
 	// folder_view.element.contains(document.activeElement) is not needed because
@@ -91,23 +90,14 @@ var go_to = function (address) {
 	}
 	// @TODO: play start.wav sound
 
-	address = address || "/";
-	var is_url = !!address.match(/\w+:\/\//);
-	var drive_match = address.match(/^\(?([a-z]):\)?[/\\]?\)?$/i);
-	function handle_url_case() {
-		if (!address.match(/^https?:\/\/web.archive.org\//) && !address.startsWith(window.location.origin)) {
-			if (address.match(/^https?:\/\/(www\.)?(windows93.net)/)) {
-				address = "https://web.archive.org/web/2015-05-05/" + address;
-			} else if (
-				!address.match(/^https?:\/\/(www\.)?(copy.sh)/) &&
-				!address.match(/^(file|data|blob):\/\//)
-			) {
-				address = "https://web.archive.org/web/1998/" + address;
-			}
-		}
-		is_url = true;
+	// @TODO: split out src and normalized address, and use normalized address for the input, but use src for the iframe
+	// so the address can show the system path, and Up command can return to a folder (rather than an HTTP server's folder listing, or a 404, depending on the server)
+	const { normalized_address, is_url, zone } = await resolve_address(address);
+	address = normalized_address;
+
+	if (zone === "internet") {
 		if (offline_mode) {
-			showMessageBox({
+			if (await showMessageBox({
 				title: "Web page unavailable while offline",
 				message: "The Web page you requested is not available while offline.\n\n" +
 					"To view this page, click Connect.",
@@ -123,149 +113,178 @@ var go_to = function (address) {
 					},
 				],
 				iconID: "offline",
-			}).then((result) => {
-				if (result === "connect") {
-					offline_mode = false;
-					address_determined();
-				}
-			});
-		} else {
-			address_determined();
+			}) === "connect") {
+				offline_mode = false;
+			} else {
+				return;
+			}
 		}
+	}
+
+	if (system_folder_path_to_name[address]) {
+		$("#address").val(system_folder_path_to_name[address]);
+	} else {
+		$("#address").val(address);
+	}
+	$("#address-icon").attr("src", getIconPath(get_icon_for_address(address), 16));
+	active_address = address;
+
+	set_title(get_display_name_for_address(address));
+	set_icon(get_icon_for_address(address));
+
+	$("#status-bar-left-text").empty();
+
+	if (is_url) {
+		$iframe = $("<iframe>").attr({
+			src: address,
+			allowfullscreen: "allowfullscreen",
+			sandbox: "allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-popups",
+		}).appendTo("#content");
+
+		$iframe.on("load", () => {
+			proxy_keyboard($iframe);
+		});
+
+		// If only we could access the contentDocument cross-origin
+		// For https://archive.is/szqQ5
+		// $iframe.on("load", function(){
+		// 	$($iframe[0].contentDocument.getElementById("CONTENT")).css({
+		// 		position: "absolute",
+		// 		left: 0,
+		// 		top: 0,
+		// 		right: 0,
+		// 		bottom: 0,
+		// 	});
+		// });
+
+		// We also can't inject a user agent stylesheet, for things like scrollbars
+		// Too bad :/
+
+		// We also can't get the title; it's kinda hard to make a web browser like this!
+		// $iframe.on("load", function(){
+		// 	set_title($iframe[0].contentDocument.title + " - Explorer"); // " - Microsoft Internet Explorer"
+		// });
+
+		$("#status-bar-right-icon").attr({
+			src: getIconPath("zone-internet", 16),
+		}).show();
+		$("#status-bar-right-text").text("Internet");
+	} else {
+		const eventHandlers = {}; // @TODO: less hacky event duct tape
+		// (just wanna have multiple listeners, but I gave myself a single-listener API)
+		// (I could just use DOM events on folder_view.element)
+		folder_view = new FolderView(address, {
+			onStatus: ({ items, selectedItems }) => {
+				$("#status-bar-left-text").text(
+					selectedItems.length > 0 ?
+						selectedItems.length + " object(s) selected" :
+						items.length + " object(s)"
+				);
+				eventHandlers.onStatus?.({ items, selectedItems });
+			},
+			openFolder: go_to,
+			openFileOrFolder: executeFile,
+		});
+
+		if (
+			address !== "/desktop/" &&
+			address !== "/recycle-bin/" &&
+			address !== "/network-neighborhood/"
+		) {
+			$("#status-bar-right-icon").attr({
+				src: getIconPath("my-computer", 16),
+			}).show();
+			$("#status-bar-right-text").text("My Computer");
+		} else {
+			$("#status-bar-right-icon").hide();
+			$("#status-bar-right-text").text("");
+		}
+
+		await render_folder_template(folder_view, address, eventHandlers);
+	}
+	// console.log("had_focus", had_focus, "$iframe", $iframe, "folder_view", folder_view);
+	// if (had_focus && $iframe) {
+	// 	console.log("refocus iframe");
+	// 	$iframe[0].contentWindow.focus();
+	// 	folder_view?.focus();
+	// }
+};
+
+
+var resolve_address = async function (address) {
+	address = address || "/";
+	var is_url = !!address.match(/\w+:\/\//);
+	var drive_match = address.match(/^\(?([a-z]):\)?[/\\]?\)?$/i);
+	var zone = "unknown";
+	function handle_url_case() {
+		if (!address.match(/^https?:\/\/web.archive.org\//) && !address.startsWith(window.location.origin)) {
+			if (address.match(/^https?:\/\/(www\.)?(windows93.net)/)) {
+				address = "https://web.archive.org/web/2015-05-05/" + address;
+			} else if (
+				!address.match(/^https?:\/\/(www\.)?(copy.sh)/) &&
+				!address.match(/^(file|data|blob):\/\//)
+			) {
+				address = "https://web.archive.org/web/1998/" + address;
+			}
+		}
+		is_url = true;
+		// zone = address.startsWith(window.location.origin) ? "local" : "internet"; // @TODO
+		zone = "internet";
+		return { normalized_address: address, is_url, zone };
 	}
 	if (system_folder_lowercase_name_to_path[address.toLowerCase()]) {
 		address = system_folder_lowercase_name_to_path[address.toLowerCase()];
-		address_determined();
+		zone = "local";
+		return { normalized_address: address, is_url, zone };
 	} else if (drive_match) {
 		if (drive_match[1].toUpperCase() === "C") {
 			address = "/";
-			address_determined();
+			zone = "local";
+			return { normalized_address: address, is_url, zone };
 		} else {
+			// @TODO: this won't give duplicate message will it?
+			// should I handle alert outside of this function? probably
 			alert("Drive not found.");
+			throw new Error("Drive not found.");
 		}
 	} else if (is_url) {
-		handle_url_case();
+		return handle_url_case();
 	} else {
-		withFilesystem(function () {
-			var fs = BrowserFS.BFSRequire("fs");
-			fs.stat(address, function (err, stats) {
-				if (err) {
-					if (err.code === "ENOENT") {
-						address = "https://" + address;
-						handle_url_case();
+		zone = "local";
+		return new Promise((resolve, reject) => {
+			withFilesystem(function () {
+				var fs = BrowserFS.BFSRequire("fs");
+				fs.stat(address, function (err, stats) {
+					if (err) {
+						if (err.code === "ENOENT") {
+							address = "https://" + address;
+							resolve(handle_url_case());
+							return;
+						}
+						alert("Failed to get info about " + address + "\n\n" + err);
 						return;
 					}
-					return alert("Failed to get info about " + address + "\n\n" + err);
-				}
-				if (stats.isDirectory()) {
-					if (address[address.length - 1] !== "/") {
-						address += "/";
+					if (stats.isDirectory()) {
+						if (address[address.length - 1] !== "/") {
+							address += "/";
+						}
+						resolve({ normalized_address: address, is_url, zone });
+					} else {
+						// Don't execute files, just open them in the browser.
+						// HTML/HTM files work, image files work,
+						// maybe some file types should be executed, but
+						// if trying to handle that, note that if Explorer is
+						// associated with the file type, it will cause recursion,
+						// with tons of windows opening, and eventually the page will crash.
+						address = window.location.origin + "/" + address.replace(/^\/?/, "");
+						is_url = true;
+						resolve(handle_url_case());
 					}
-					address_determined();
-				} else {
-					// Don't execute files, just open them in the browser.
-					// HTML/HTM files work, image files work,
-					// maybe some file types should be executed, but
-					// if trying to handle that, note that if Explorer is
-					// associated with the file type, it will cause recursion,
-					// with tons of windows opening, and eventually the page will crash.
-					address = window.location.origin + "/" + address.replace(/^\/?/, "");
-					is_url = true;
-					handle_url_case();
-				}
+				});
 			});
 		});
 	}
-
-	async function address_determined() {
-		if (system_folder_path_to_name[address]) {
-			$("#address").val(system_folder_path_to_name[address]);
-		} else {
-			$("#address").val(address);
-		}
-		$("#address-icon").attr("src", getIconPath(get_icon_for_address(address), 16));
-		active_address = address;
-
-		set_title(get_display_name_for_address(address));
-		set_icon(get_icon_for_address(address));
-
-		$("#status-bar-left-text").empty();
-
-		if (is_url) {
-			$iframe = $("<iframe>").attr({
-				src: address,
-				allowfullscreen: "allowfullscreen",
-				sandbox: "allow-same-origin allow-scripts allow-forms allow-pointer-lock allow-modals allow-popups",
-			}).appendTo("#content");
-
-			$iframe.on("load", () => {
-				proxy_keyboard($iframe);
-			});
-
-			// If only we could access the contentDocument cross-origin
-			// For https://archive.is/szqQ5
-			// $iframe.on("load", function(){
-			// 	$($iframe[0].contentDocument.getElementById("CONTENT")).css({
-			// 		position: "absolute",
-			// 		left: 0,
-			// 		top: 0,
-			// 		right: 0,
-			// 		bottom: 0,
-			// 	});
-			// });
-
-			// We also can't inject a user agent stylesheet, for things like scrollbars
-			// Too bad :/
-
-			// We also can't get the title; it's kinda hard to make a web browser like this!
-			// $iframe.on("load", function(){
-			// 	set_title($iframe[0].contentDocument.title + " - Explorer"); // " - Microsoft Internet Explorer"
-			// });
-
-			$("#status-bar-right-icon").attr({
-				src: getIconPath("zone-internet", 16),
-			}).show();
-			$("#status-bar-right-text").text("Internet");
-		} else {
-			const eventHandlers = {}; // @TODO: less hacky event duct tape
-			// (just wanna have multiple listeners, but I gave myself a single-listener API)
-			// (I could just use DOM events on folder_view.element)
-			folder_view = new FolderView(address, {
-				onStatus: ({ items, selectedItems }) => {
-					$("#status-bar-left-text").text(
-						selectedItems.length > 0 ?
-							selectedItems.length + " object(s) selected" :
-							items.length + " object(s)"
-					);
-					eventHandlers.onStatus?.({ items, selectedItems });
-				},
-				openFolder: go_to,
-				openFileOrFolder: executeFile,
-			});
-
-			if (
-				address !== "/desktop/" &&
-				address !== "/recycle-bin/" &&
-				address !== "/network-neighborhood/"
-			) {
-				$("#status-bar-right-icon").attr({
-					src: getIconPath("my-computer", 16),
-				}).show();
-				$("#status-bar-right-text").text("My Computer");
-			} else {
-				$("#status-bar-right-icon").hide();
-				$("#status-bar-right-text").text("");
-			}
-
-			await render_folder_template(folder_view, address, eventHandlers);
-		}
-		// console.log("had_focus", had_focus, "$iframe", $iframe, "folder_view", folder_view);
-		// if (had_focus && $iframe) {
-		// 	console.log("refocus iframe");
-		// 	$iframe[0].contentWindow.focus();
-		// 	folder_view?.focus();
-		// }
-	}
+	// return { normalized_address: address, is_url, zone };
 };
 
 async function render_folder_template(folder_view, address, eventHandlers) {
