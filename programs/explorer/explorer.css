@@ -127,7 +127,7 @@ label[for="address"] {
 button {
 	padding: 5px;
 }
-.toolbar-button:not(#view-menu-button) {
+.toolbar-button {
 	width: 54px;
 	height: 40px;
 	box-sizing: border-box;
@@ -138,10 +138,12 @@ button {
 .toolbar-button .label-text {
 	margin-top: 24px;
 }
-#view-menu-button {
+.toolbar-dropdown-button {
 	padding: 0;
 	width: 10px;
 	line-height: 30px;
+	height: 40px;
+	/* @TODO: highlight when hovering main button as well */
 }
 .toolbar-button {
 	display: flex;

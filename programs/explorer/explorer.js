@@ -62,6 +62,10 @@ function get_icon_for_address(address) {
 var offline_mode = false;
 
 var folder_view, $iframe;
+
+var history_back_stack = [];
+var history_forward_stack = [];
+
 var active_address = "";
 setInterval(() => {
 	try {
@@ -73,7 +77,7 @@ setInterval(() => {
 	}
 }, 200);
 
-var go_to = async function (address) {
+var go_to = async function (address, action_name="go") {
 
 	// for preventing focus from being lost when navigating
 	// folder_view.element.contains(document.activeElement) is not needed because
@@ -142,7 +146,20 @@ var go_to = async function (address) {
 		$("#address").val(address);
 	}
 	$("#address-icon").attr("src", getIconPath(get_icon_for_address(address), 16));
-	active_address = address;
+
+	// if (action_name === "back") {
+	// 	history_forward_stack.push(active_address);
+	// } else if (action_name === "forward") {
+	// 	history_back_stack.push(active_address);
+	// } else
+	if (action_name === "go") {
+		history_back_stack.push(active_address);
+		history_forward_stack.length = 0;
+	} else {
+		// for refresh and initial load, leave history stacks alone
+		// for back and forward, handle them externally?
+	}
+	active_address = address; // must come after pushing to history stack
 
 	set_title(get_display_name_for_address(address));
 	set_icon(get_icon_for_address(address));
@@ -786,28 +803,35 @@ ${doc.documentElement.outerHTML}`;
 
 function refresh() {
 	// go to whatever the address was before
-	// ignoring changes to the address since navigation
-	go_to(active_address);
+	// ignoring changes to the address bar input since navigation
+	// and unfortunately also to the address of the iframe, for cross-domain sites
+	go_to(active_address, "refresh");
 }
 
 function go_back() {
-	// TODO: show message about why it doesn't work
-	// if it doesn't work - I mean, might as well have it try it!
-	$iframe[0].contentWindow.history.back();
+	// $iframe[0].contentWindow.history.back();
+	// console.log({ history_back_stack, history_forward_stack });
+	history_forward_stack.push(active_address);
+	go_to(history_back_stack.pop(), "back");
 }
 function go_forward() {
-	$iframe[0].contentWindow.history.forward();
+	// $iframe[0].contentWindow.history.forward();
+	// console.log({ history_back_stack, history_forward_stack });
+	history_back_stack.push(active_address);
+	go_to(history_forward_stack.pop(), "forward");
 }
 function can_go_back() {
 	try {
-		return $iframe[0].contentWindow.history.length > 1;
+		// return $iframe[0].contentWindow.history.length > 1;
+		return history_back_stack.length > 0;
 	} catch (e) {
 		return false;
 	}
 }
 function can_go_forward() {
 	try {
-		return $iframe[0].contentWindow.history.length > 1;
+		// return $iframe[0].contentWindow.history.length > 1;
+		return history_forward_stack.length > 0;
 	} catch (e) {
 		return false;
 	}
@@ -824,7 +848,6 @@ function go_up() {
 function can_go_up() {
 	return get_up_address(active_address) !== active_address;
 }
-
 
 function executeFile(file_path) {
 	// I don't think this withFilesystem is necessary
@@ -860,9 +883,9 @@ $(function () {
 	// wait wouldn't the iframe we're in have loaded by now? or no
 	setTimeout(function () {
 		if (query.address) {
-			go_to(query.address);
+			go_to(query.address, "initially-load");
 		} else {
-			go_to("/");
+			go_to("/", "initially-load");
 		}
 	});
 	$("#address").on("keydown", function (e) {
@@ -885,7 +908,39 @@ $(function () {
 	$("#back").on("click", go_back);
 	$("#forward").on("click", go_forward);
 	$("#up").on("click", go_up);
+	$("#back-dropdown-button").on("click", () => {
+		show_history_dropdown("back", history_back_stack);
+	});
+	$("#forward-dropdown-button").on("click", () => {
+		show_history_dropdown("forward", history_forward_stack);
+	});
 
+	function show_history_dropdown(back_or_forward, history_stack) {
+		const $dropdown_button = $(`#${back_or_forward}-dropdown-button`);
+		const $main_button = $(`#${back_or_forward}`);
+		// @TODO: in a future version of OS-GUI, there should be an API for context menus
+		// which we could use here.
+		const menu_items = history_stack.map((path, index) => {
+			return {
+				// @TODO: name of folder/file/page
+				item: path.replace(/&/g, "&&"), // escaping menu hotkey indicator
+				action: () => {
+					// @TODO: instead of creating a new history entry, manage the stacks.
+					go_to(path);//, "go-to-history-item");
+				},
+			};
+		}).reverse();
+		const dummy_menu_bar = new MenuBar({ "Dummy": menu_items });
+		$(dummy_menu_bar.element).css({
+			position: "absolute",
+			left: $main_button.offset().left - 2,
+			top: $main_button.offset().top + $main_button.outerHeight() - 20,
+			visibility: "hidden",
+			pointerEvents: "none",
+		}).appendTo("body");
+		$(dummy_menu_bar.element).find(".menu-button")[0].dispatchEvent(new Event("pointerdown"));
+		// @TODO: remove the dummy menu bar when the menu is closed
+	}
 	$("#delete").on("click", function () {
 		folder_view.delete_selected();
 	});
@@ -893,13 +948,17 @@ $(function () {
 	var $up_button = $("#up");
 	var $back_button = $("#back");
 	var $forward_button = $("#forward");
+	var $back_history_dropdown_button = $("#back-dropdown-button");
+	var $forward_history_dropdown_button = $("#forward-dropdown-button");
 	setInterval(() => {
 		$up_button.attr("disabled", can_go_up() ? null : "disabled");
 		$back_button.attr("disabled", can_go_back() ? null : "disabled");
 		$forward_button.attr("disabled", can_go_forward() ? null : "disabled");
+		$back_history_dropdown_button.attr("disabled", can_go_back() ? null : "disabled");
+		$forward_history_dropdown_button.attr("disabled", can_go_forward() ? null : "disabled");
 	}, 100);
 
-	$(".toolbar button:not(#view-menu-button)").each((i, button) => {
+	$(".toolbar-button").each((i, button) => {
 		const $button = $(button);
 		const sprite_n = [0, 1, 44, 21, 22, 23, 24, 26, 31, 38][i];
 		$("<div class='icon'/>")
