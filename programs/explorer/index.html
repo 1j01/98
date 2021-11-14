@@ -32,15 +32,18 @@
 		<div class="toolbar" id="standard-buttons-toolbar">
 		<div class="toolbar-drag-handle"></div>
 		<div id="standard-buttons">
-			<!-- @TODO: don't do buttons inside buttons. make a div, you fool. -->
-			<button class="toolbar-button lightweight" disabled id="back">
-				<span class="label-text">Back</span>
+			<div class="toolbar-compound-button-wrapper">
+				<button class="toolbar-button lightweight" disabled id="back">
+					<span class="label-text">Back</span>
+				</button>
 				<button class="toolbar-dropdown-button lightweight" disabled id="back-dropdown-button">&#x25BE;</button>
-			</button>
-			<button class="toolbar-button lightweight" disabled id="forward">
-				<span class="label-text">Forward</span>
+			</div>
+			<div class="toolbar-compound-button-wrapper">
+				<button class="toolbar-button lightweight" disabled id="forward">
+					<span class="label-text">Forward</span>
+				</button>
 				<button class="toolbar-dropdown-button lightweight" disabled id="forward-dropdown-button">&#x25BE;</button>
-			</button>
+			</div>
 			<button class="toolbar-button lightweight" id="up">
 				<span class="label-text">Up</span>
 			</button>
@@ -66,10 +69,12 @@
 				<span class="label-text">Properties</span>
 			</button>
 			<hr aria-orientation="vertical">
-			<button class="toolbar-button lightweight" disabled id="view">
-				<span class="label-text">View</span>
+			<div class="toolbar-compound-button-wrapper">
+				<button class="toolbar-button lightweight" disabled id="view">
+					<span class="label-text">View</span>
+				</button>
 				<button class="toolbar-dropdown-button lightweight" disabled id="view-menu-button">&#x25BE;</button>
-			</button>
+			</div>
 		</div>
 		<!-- <div class="ie-toolbar">
 			<button class="toolbar-button lightweight" disabled id="back">Back</button>
@@ -80,7 +85,7 @@
 			<button class="toolbar-button lightweight" disabled id="search">Search</button>
 			<button class="toolbar-button lightweight" disabled id="favorites">Favorites</button>
 			<button class="toolbar-button lightweight" disabled id="history">History</button>
-			<button class="toolbar-button lightweight" disabled id="mail">Mail<button class="toolbar-dropdown-button lightweight" disabled id="mail-menu-button">&#x25BE;</button></button>
+			<button class="toolbar-button lightweight" disabled id="mail">Mail &#x25BE;</button>
 			<button class="toolbar-button lightweight" disabled id="print">Print</button>
 		</div> -->
 		</div>

@@ -138,6 +138,10 @@ button {
 .toolbar-button .label-text {
 	margin-top: 24px;
 }
+.toolbar-compound-button-wrapper {
+	display: flex;
+	flex-direction: row;
+}
 .toolbar-dropdown-button {
 	padding: 0;
 	width: 10px;
