@@ -683,7 +683,8 @@ ${doc.documentElement.outerHTML}`;
 												return "Unknown File";
 											}
 										case "Modified":
-											return new Date(item._item.resolvedStats?.mtime).toLocaleString();
+											return new Date(item._item.resolvedStats?.mtime).toLocaleString()
+												.replace(/, (\d+):(\d+):(\d+)/, " $1:$2"); // Remove the comma and seconds place (doing this as one replace to hopefully not affect other locales negatively)
 										default:
 											console.warn("Unknown detail ID", detail_id);
 											return;
