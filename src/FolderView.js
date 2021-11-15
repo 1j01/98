@@ -268,8 +268,9 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 
 			item.setIconSize(icon_size);
 
-			// apply sort
-			this.element.appendChild(item.element);
+			// apply sort - well, I'm positioning things absolutely, so I don't need to do this (AS LONG AS I DON'T ASSUME THE DOM ORDER, and use self.items instead)
+			// and this is very slow for large folders.
+			// this.element.appendChild(item.element);
 		}
 
 		if (!any_pending) {
@@ -307,7 +308,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 		$folder_view.focus();
 		// This doesn't do much if it's yet to be populated:
 		if ($folder_view.find(".desktop-icon.focused").length === 0) {
-			$folder_view.find(".desktop-icon").first().focus();
+			this.items[0].element.focus();
 		}
 		// Initial focus is handled in arrange_icons currently.
 	};
@@ -369,9 +370,9 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 						console.log("failed to delete", file_path, error);
 					}
 					if (single_delete_success) {
-						$folder_view.find(".desktop-icon").toArray().forEach((icon_el) => {
-							if (icon_el.dataset.filePath === file_path) {
-								icon_el.remove();
+						self.items.forEach((item) => {
+							if (item.element.dataset.filePath === file_path) {
+								item.element.remove();
 								updateStatus();
 							}
 						});
@@ -592,10 +593,10 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 			}
 		} else if (e.key == "Home") {
 			e.preventDefault();
-			select_item($folder_view.find(".desktop-icon")[0]);
+			select_item(self.items[0]);
 		} else if (e.key == "End") {
 			e.preventDefault();
-			select_item($folder_view.find(".desktop-icon").last()[0]);
+			select_item(self.items[self.items.length - 1]);
 		} else if (e.key == " ") {
 			// Usually there's something focused,
 			// so this is pretty "niche", but space bar selects the focused item.
