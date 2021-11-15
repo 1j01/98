@@ -110,7 +110,7 @@
 .desktop-icon .title input {
 	font: inherit;
 	outline: none;
-	border: none;
+	border: 1px solid var(--ButtonText); /* @TODO: is this the right theme color? */
 	background: var(--Window);
 	color: var(--WindowText);
 	text-align: inherit;
