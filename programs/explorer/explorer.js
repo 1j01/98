@@ -991,6 +991,12 @@ $(function () {
 		// menu items defined in menus.js
 		show_dropdown($("#cycle-view-mode"), $("#views-dropdown-button"), views_dropdown_menu_items);
 	});
+	$("#properties, #copy, #cut, #paste, #undo").on("click", function () {
+		const { $window } = showMessageBox({ message: "Not supported.", iconID: "error" });
+		setTimeout(() => {
+			$window.focus(); // @TODO: why is this needed?
+		});
+	});
 	
 	var $up_button = $("#up");
 	var $back_button = $("#back");
