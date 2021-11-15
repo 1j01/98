@@ -147,8 +147,20 @@ button {
 	width: 10px;
 	line-height: 30px;
 	height: 40px;
-	/* @TODO: highlight when hovering main button as well */
 }
+.toolbar-compound-button-wrapper:hover:not(:active) button.lightweight:enabled {
+	/* border: var(--outset-shallow); */
+	/* @TODO: DRY with os-gui library, maybe by using JS */
+	border-style: solid;
+	border-width: 1px;
+	border-color: var(--ButtonHilight) var(--ButtonShadow) var(--ButtonShadow) var(--ButtonHilight);
+}
+.toolbar-compound-button-wrapper .toolbar-button:enabled:hover:active ~ button.lightweight {
+	border-style: solid;
+	border-width: 1px;
+	border-color: var(--ButtonShadow) var(--ButtonHilight) var(--ButtonHilight) var(--ButtonShadow);
+}
+
 .toolbar-button {
 	display: flex;
 	flex-direction: column;
@@ -164,7 +176,8 @@ button {
 .toolbar-button .icon {
 	background-image: url("../../images/browse-ui-icons-grayscale.png");
 }
-.toolbar-button:not([disabled]):hover .icon {
+.toolbar-button:enabled:hover .icon,
+.toolbar-compound-button-wrapper:hover .toolbar-button:enabled .icon {
 	background-image: url("../../images/browse-ui-icons.png");
 }
 .toolbar-button[disabled] .icon {

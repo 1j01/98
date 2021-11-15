@@ -910,6 +910,7 @@ $(function () {
 	$("#back").on("click", go_back);
 	$("#forward").on("click", go_forward);
 	$("#up").on("click", go_up);
+	// @TODO: toggle on pointerdown or mousedown
 	$("#back-dropdown-button").on("click", () => {
 		show_history_dropdown("back", history_back_stack);
 	});
