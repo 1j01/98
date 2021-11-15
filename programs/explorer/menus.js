@@ -17,6 +17,57 @@ var checkbox_for_sort_mode = function (menu_item_sort_mode) {
 	};
 };
 
+// This menu is shared between the View menu and the Views toolbar button dropdown
+var views_dropdown_menu_items = [
+	// {
+	// 	item: "as &Web Page",
+	// 	checkbox: {
+	// 		check: ()=> false,
+	// 		toggle: ()=> {}, // @TODO
+	// 	},
+	// 	enabled: false, // @TODO
+	// 	description: "Displays items in Web View",
+	// },
+	// MENU_DIVIDER,
+	// {
+	// 	item: "As Desktop (Debug)",
+	// 	checkbox: checkbox_for_view_mode("DESKTOP"),
+	// 	enabled: ()=> !!folder_view,
+	// },
+	// Thumbnails option can be enabled in folder Properties window.
+	// {
+	// 	item: "T&humbnails",
+	// 	checkbox: checkbox_for_view_mode("THUMBNAIL"),
+	// 	enabled: () => !!folder_view,
+	// 	description: "Displays items using thumbnail view.",
+	// },
+	{
+		item: "Lar&ge Icons",
+		checkbox: checkbox_for_view_mode("LARGE_ICONS"),
+		enabled: () => !!folder_view,
+		description: "Displays items by using large icons.",
+	},
+	{
+		item: "S&mall Icons",
+		checkbox: checkbox_for_view_mode("SMALL_ICONS"),
+		enabled: () => !!folder_view,
+		description: "Displays items by using small icons.",
+	},
+	{
+		item: "&List",
+		checkbox: checkbox_for_view_mode("LIST"),
+		enabled: () => !!folder_view,
+		description: "Displays items in a list.",
+	},
+	{
+		item: "&Details",
+		checkbox: checkbox_for_view_mode("DETAILS"),
+		// enabled: ()=> !!folder_view,
+		enabled: false, // @TODO
+		description: "Displays information about each item in the window.",
+	},
+];
+
 var menus = {
 	"&File": [
 		// @TODO: os-gui should support descriptions for top level menus,
@@ -270,54 +321,8 @@ var menus = {
 			],
 			description: "Shows or hides an Explorer bar.",
 		},
-		// MENU_DIVIDER,
-		// {
-		// 	item: "as &Web Page",
-		// 	checkbox: {
-		// 		check: ()=> false,
-		// 		toggle: ()=> {}, // @TODO
-		// 	},
-		// 	enabled: false, // @TODO
-		// 	description: "Displays items in Web View",
-		// },
 		MENU_DIVIDER,
-		// {
-		// 	item: "As Desktop (Debug)",
-		// 	checkbox: checkbox_for_view_mode("DESKTOP"),
-		// 	enabled: ()=> !!folder_view,
-		// },
-		// Thumbnails option can be enabled in folder Properties window.
-		// {
-		// 	item: "T&humbnails",
-		// 	checkbox: checkbox_for_view_mode("THUMBNAIL"),
-		// 	enabled: () => !!folder_view,
-		// 	description: "Displays items using thumbnail view.",
-		// },
-		{
-			item: "Lar&ge Icons",
-			checkbox: checkbox_for_view_mode("LARGE_ICONS"),
-			enabled: ()=> !!folder_view,
-			description: "Displays items by using large icons.",
-		},
-		{
-			item: "S&mall Icons",
-			checkbox: checkbox_for_view_mode("SMALL_ICONS"),
-			enabled: () => !!folder_view,
-			description: "Displays items by using small icons.",
-		},
-		{
-			item: "&List",
-			checkbox: checkbox_for_view_mode("LIST"),
-			enabled: ()=> !!folder_view,
-			description: "Displays items in a list.",
-		},
-		{
-			item: "&Details",
-			checkbox: checkbox_for_view_mode("DETAILS"),
-			// enabled: ()=> !!folder_view,
-			enabled: false, // @TODO
-			description: "Displays information about each item in the window.",
-		},
+		...views_dropdown_menu_items,
 		// MENU_DIVIDER,
 		// {
 		// 	item: "&Customize this Folder...",

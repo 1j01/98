@@ -917,12 +917,9 @@ $(function () {
 	$("#forward-dropdown-button").on("click", () => {
 		show_history_dropdown("forward", history_forward_stack);
 	});
-
 	function show_history_dropdown(back_or_forward, history_stack) {
 		const $dropdown_button = $(`#${back_or_forward}-dropdown-button`);
 		const $main_button = $(`#${back_or_forward}`);
-		// @TODO: in a future version of OS-GUI, there should be an API for context menus
-		// which we could use here.
 		const menu_items = history_stack.map((path, index) => {
 			return {
 				// @TODO: name of folder/file/page
@@ -933,6 +930,11 @@ $(function () {
 				},
 			};
 		}).reverse();
+		show_dropdown($main_button, $dropdown_button, menu_items);
+	}
+	function show_dropdown($main_button, $dropdown_button, menu_items) {
+		// @TODO: in a future version of OS-GUI, there should be an API for context menus
+		// which we could use here.
 		const dummy_menu_bar = new MenuBar({ "Dummy": menu_items });
 		$(dummy_menu_bar.element).css({
 			position: "absolute",
@@ -949,6 +951,10 @@ $(function () {
 	});
 	$("#cycle-view-mode").on("click", function () {
 		folder_view.cycle_view_mode();
+	});
+	$("#views-dropdown-button").on("click", () => {
+		// menu items defined in menus.js
+		show_dropdown($("#cycle-view-mode"), $("#views-dropdown-button"), views_dropdown_menu_items);
 	});
 	
 	var $up_button = $("#up");
