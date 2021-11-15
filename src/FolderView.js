@@ -480,11 +480,19 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 				).filter((file_path) => file_path));
 			} else {
 				set_dragging_file_paths([]);
-				dragging = true;
+				// start dragging marquee unless over scrollbar
+				let scrollbar_width = $folder_view[0].offsetWidth - $folder_view[0].clientWidth;
+				let scrollbar_height = $folder_view[0].offsetHeight - $folder_view[0].clientHeight;
+				scrollbar_width += 2; // for marquee border (@TODO: make marquee unable to cause scrollbar, by putting it in an overflow: hidden container)
+				scrollbar_height += 2; // for marquee border
+				const rect = $folder_view[0].getBoundingClientRect();
+				const over_scrollbar = e.clientX > rect.right - scrollbar_width || e.clientY > rect.bottom - scrollbar_height;
+				// console.log(`over_scrollbar: ${over_scrollbar}, e.clientX: ${e.clientX}, rect.right - scrollbar_width: ${rect.right - scrollbar_width}`);
+				dragging = !over_scrollbar;
 				// don't deselect right away unless the 
 				// TODO: deselect on pointerUP, if the desktop was focused
 				// or when starting selecting (re: TODO: allow a margin of movement before starting selecting)
-				if (view_was_focused) {
+				if (dragging && view_was_focused) {
 					drag_update();
 				}
 			}
