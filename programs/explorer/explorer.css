@@ -161,6 +161,27 @@ button {
 	border-color: var(--ButtonShadow) var(--ButtonHilight) var(--ButtonHilight) var(--ButtonShadow);
 }
 
+.hiding-label-text .label-text {
+	display: none;
+}
+.hiding-label-text .toolbar-button {
+	width: 27px;
+	height: 26px;
+	/* @TODO: icon alignment */
+}
+.hiding-label-text .toolbar-dropdown-button {
+	height: 26px;
+	width: 13px;
+    line-height: 24px; /* for SVG alignment */
+}
+.hiding-label-text .toolbar-dropdown-button svg {
+	width: 12px;
+	height: 12px;
+}
+.toolbar hr[aria-orientation="vertical"] {
+	height: 22px;
+}
+
 .toolbar-button {
 	display: flex;
 	flex-direction: column;
