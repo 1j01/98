@@ -263,10 +263,11 @@ var menus = {
 		{
 			item: "Status &Bar",
 			checkbox: {
-				check: ()=> false,
-				toggle: ()=> {}, // @TODO
+				check: ()=> $("#status-bar").is(":visible"),
+				toggle: () => {
+					$("#status-bar").toggle();
+				},
 			},
-			enabled: false, // @TODO
 			description: "Shows or hides the status bar.",
 		},
 		{
