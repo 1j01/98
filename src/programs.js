@@ -582,8 +582,12 @@ function Explorer(address) {
 		src: "programs/explorer/index.html" + (address ? ("?address=" + encodeURIComponent(address)) : ""),
 		icons: iconsAtTwoSizes("folder-open"),
 		title: win_title,
-		innerWidth: 500,
-		innerHeight: 500 + 21,
+		// this is based on one measurement, but it uses different sizes depending on the screen resolution,
+		// and may be different for different Explorer window types (Microsoft Internet Explorer, "Exploring", normal Windows Explorer*),
+		// and may store the window positions, even for different types or folders, so I might have a non-standard default size measurement.
+		// *See different types (resized for posing this screenshot): https://imgur.com/nxAcT9C
+		innerWidth: Math.min(856, innerWidth * 0.9),
+		innerHeight: Math.min(547, innerHeight * 0.7),
 	});
 	return new Task($win);
 }
