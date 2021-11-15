@@ -79,7 +79,7 @@ setInterval(() => {
 	}
 }, 200);
 
-var go_to = async function (address, action_name="go") {
+var go_to = async function (address, action_name = "go") {
 
 	// for preventing focus from being lost when navigating
 	// folder_view.element.contains(document.activeElement) is not needed because
@@ -351,7 +351,13 @@ async function render_folder_template(folder_view, address, eventHandlers) {
 		`;
 		template_url = "https://isaiahodhner.io/lock-ness-monster/sorry"; // valid URL, but nonsense (I'm a little bit tired so doing things stupidly)
 	} else {
-		template_url = new URL("/src/WEB/FOLDER.HTT", location.href);
+		// @TODO: load FOLDER.HTT from the folder we're showing, if it exists
+		const template_file_name =
+			address === "/recycle-bin/" ? "recycle.htt" :
+				address === "/network-neighborhood/" ? "nethood.htt" :
+					// address === "/my-computer/" ? "MYCOMP.HTT" : // I don't have a proper My Computer folder yet
+					"FOLDER.HTT";
+		template_url = new URL(`/src/WEB/${template_file_name}`, location.href);
 		// console.log("fetching template", template_url.href);
 		htt = await (await fetch(template_url)).text();
 	}
@@ -473,7 +479,7 @@ ${doc.documentElement.outerHTML}`;
 		});
 
 		// It uses pixelWidth/pixelHeight/pixelLeft/pixelTop and unitless top/left
-		// Originally I polyfilled this on style, but it broke setProperty() in Firefox (and maybe Chrome but it doesn't seem to come up as a problem somehow?)
+		// Originally I polyfilled this on `style`, but it broke `setProperty()` in Firefox (and maybe Chrome but it doesn't seem to come up as a problem somehow?)
 		// so I've changed it to a separate `styleHack` property, making the generality of this solution rather pointless.
 		// It was an interesting exercise.
 		var real_style_descriptor = Reflect.getOwnPropertyDescriptor(HTMLElement.prototype, "style");
@@ -527,11 +533,51 @@ ${doc.documentElement.outerHTML}`;
 			enumerable: true,
 		});
 
+		// Fix up ancient CSS in <style> and <link> tags.
+		// Based on https://github.com/philipwalton/talks/tree/b0a2b9a3de509dd39368516e7e304a4159b41b08/2016-12-02/demos/src
+		const getPageStyles = () => {
+			// Query the document for any element that could have styles.
+			var styleElements =
+				[...document.querySelectorAll('style, link[rel="stylesheet"]')];
+
+			// Fetch all styles and ensure the results are in document order.
+			// Resolve with a single string of CSS text.
+			return Promise.all(styleElements.map((el) => {
+				if (el.href) {
+					return fetch(el.href).then((response) => response.text());
+				} else {
+					return el.innerText;
+				}
+			})).then((stylesArray) => stylesArray.join('\n'));
+		};
+		const replacePageStyles = (css) => {
+			// Get a reference to all existing style elements.
+			const existingStyles =
+				[...document.querySelectorAll('style, link[rel="stylesheet"]')];
+
+			// Create a new <style> tag with all the polyfilled styles.
+			const polyfillStyles = document.createElement('style');
+			polyfillStyles.innerHTML = css;
+			document.head.appendChild(polyfillStyles);
+
+			// Remove the old styles once the new styles have been added.
+			existingStyles.forEach((el) => el.parentElement.removeChild(el));
+		};
+		getPageStyles().then((css) => {
+			css = css.replace(/padding:\s*((\d+(?:\.?\d+)?\w+),\s*)/g, (match, value) => value.split(/,\s*/g).join(" "));
+			css = css.replace(/font:\s*(\d+pt);/, "font-size: $1; line-height: 1;");
+			css = css.replace(/font:\s*((\d+pt)(\s*\/\s*\d+pt)?) verdana;/, "font: $1 'verdana', sans-serif;");
+			css = css.replace(/style\.(pixel(Width|Height|Left|Top)|left|top)\b/g, "styleHack.$1");
+
+			replacePageStyles(css);
+		});
+
 		// Neither Chrome or Firefox are working for debugging srcdoc iframes.
 		// Chrome gives wildly incorrect line numbers,
 		// and Firefox just gives "Error loading this URI: Unknown source"
 		// or sometimes it opens view-source:about:srcdoc in a new tab ("Hmm. That address doesn’t look right.")
-		// Of course, as I'm implementing this, finally Firefox is starting working... sometimes.
+		// Firefox also surprisingly actually works sometimes, but it's not reliable.
+		// Luckily, onerror seems to work in both browsers.
 		addEventListener("error", (event) => {
 			const { $window } = showMessageBox({
 				message: "An error occurred.",
@@ -671,11 +717,14 @@ ${doc.documentElement.outerHTML}`;
 								},
 							};
 						};
+						// These keys may actually be different depending on the system folder.
+						// My Computer (MYCOMP.HTT) seems to use 1 for Type
 						const detail_key = {
+							"-1": "Tip", // description of the item, for control panel items, computers, and printers
 							0: "Name",
-							1: "Size",
-							2: "Type",
-							3: "Modified",
+							1: "Size", // file size as a string
+							2: "Type", // file type
+							3: "Modified", // modification date
 						};
 						this.Folder = {
 							GetDetailsOf: (item, detail_id) => {
@@ -687,6 +736,8 @@ ${doc.documentElement.outerHTML}`;
 									return "";
 								} else {
 									switch (detail_key[detail_id]) {
+										case "Tip":
+											return item._item.description || "";
 										case "Name":
 											return item.Name;
 										case "Size":
@@ -757,12 +808,6 @@ ${doc.documentElement.outerHTML}`;
 	html = html.replace(/<\/object/ig, "</object-hack");
 	html = html.replace(/<param/ig, "<param-hack");
 	html = html.replace(/<\/param/ig, "</param-hack");
-
-	// Fix up ancient CSS
-	html = html.replace(/padding:\s*((\d+(?:\.?\d+)?\w+),\s*)/g, (match, value) => value.split(/,\s*/g).join(" "));
-	html = html.replace(/font:\s*(\d+pt);/, "font-size: $1; line-height: 1;");
-	html = html.replace(/font:\s*((\d+pt)(\s*\/\s*\d+pt)?) verdana;/, "font: $1 'verdana', sans-serif;");
-	html = html.replace(/style\.(pixel(Width|Height|Left|Top)|left|top)\b/g, "styleHack.$1");
 
 	const head_start_injected_html = `
 		<meta charset="utf-8">
@@ -997,7 +1042,7 @@ $(function () {
 			$window.focus(); // @TODO: why is this needed?
 		});
 	});
-	
+
 	var $up_button = $("#up");
 	var $back_button = $("#back");
 	var $forward_button = $("#forward");
