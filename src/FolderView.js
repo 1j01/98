@@ -105,7 +105,7 @@ const set_dragging_file_paths = (dragging_file_paths) => {
 	}
 };
 
-function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, openFileOrFolder } = {}) {
+function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, openFileOrFolder, onConfigure } = {}) {
 	const self = this;
 	// TODO: ensure a trailing slash / use path.join where appropriate
 
@@ -129,7 +129,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 	// - [x] sort_mode
 	// - [ ] auto_arrange
 	// - [ ] icon_positions
-	// - [ ] view_as_web_page
+	// - [x] view_as_web_page
 
 	this.config = {};
 	var storage_key = `folder-config:${asDesktop ? "desktop" : folder_path}`;
@@ -151,6 +151,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 	if (!FolderView.SORT_MODES[this.config.sort_mode]) {
 		this.config.sort_mode = FolderView.SORT_MODES.NAME;
 	}
+	this.config.view_as_web_page ??= folder_path !== "/desktop/";
 
 	this.element.dataset.viewMode = this.config.view_mode;
 	this.configure = (config_props) => {
@@ -164,6 +165,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 		} catch (e) {
 			console.error("Can't write to localStorage:", e);
 		}
+		onConfigure?.(config_props);
 	};
 
 	this.cycle_view_mode = () => {

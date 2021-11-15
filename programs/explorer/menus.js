@@ -19,16 +19,18 @@ var checkbox_for_sort_mode = function (menu_item_sort_mode) {
 
 // This menu is shared between the View menu and the Views toolbar button dropdown
 var views_dropdown_menu_items = [
-	// {
-	// 	item: "as &Web Page",
-	// 	checkbox: {
-	// 		check: ()=> false,
-	// 		toggle: ()=> {}, // @TODO
-	// 	},
-	// 	enabled: false, // @TODO
-	// 	description: "Displays items in Web View",
-	// },
-	// MENU_DIVIDER,
+	// @TODO: make this option unavailable for the Desktop folder
+	{
+		item: "as &Web Page",
+		checkbox: {
+			check: ()=> folder_view.config.view_as_web_page,
+			toggle: () => {
+				folder_view.configure({ view_as_web_page: !folder_view.config.view_as_web_page });
+			},
+		},
+		description: "Displays items in Web View",
+	},
+	MENU_DIVIDER,
 	// {
 	// 	item: "As Desktop (Debug)",
 	// 	checkbox: checkbox_for_view_mode("DESKTOP"),

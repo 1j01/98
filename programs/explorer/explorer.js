@@ -216,6 +216,11 @@ var go_to = async function (address, action_name="go") {
 				);
 				eventHandlers.onStatus?.({ items, selectedItems });
 			},
+			onConfigure: async (changes) => {
+				if ("view_as_web_page" in changes) {
+					await render_folder_template(folder_view, address, eventHandlers);
+				}
+			},
 			openFolder: go_to,
 			openFileOrFolder: executeFile,
 		});
@@ -323,11 +328,31 @@ var resolve_address = async function (address) {
 };
 
 async function render_folder_template(folder_view, address, eventHandlers) {
+	// Before removing the iframe containing folder_view, adopt the element to preserve event listeners (i.e. marquee functionality etc.)
+	document.adoptNode(folder_view.element);
 	$("#content").empty();
 
-	const template_url = new URL("/src/WEB/FOLDER.HTT", location.href);
-	// console.log("fetching template", template_url.href);
-	const htt = await (await fetch(template_url)).text();
+	// if (folder_view.config.view_as_web_page === false) {
+	// 	$("#content").append(folder_view.element);
+	// 	folder_view.focus();
+	// 	return;
+	// }
+
+	let htt, template_url;
+	if (folder_view.config.view_as_web_page === false) {
+		// I'm faking the "View as Web Page" option for now
+		// everything's in iframes anyways, so what's the harm in one more iframe, right?
+		// I'm treating this option as just "to use folder templates or not".
+		htt = `
+			<object border=0 tabindex=1 classid="clsid:1820FED0-473E-11D0-A96C-00C04FD705A2" style="height: 100%; width: 100%;"></object>
+		`;
+		template_url = "https://isaiahodhner.io/lock-ness-monster/sorry"; // valid URL, but nonsense (I'm a little bit tired so doing things stupidly)
+	} else {
+		template_url = new URL("/src/WEB/FOLDER.HTT", location.href);
+		// console.log("fetching template", template_url.href);
+		htt = await (await fetch(template_url)).text();
+	}
+
 	const percent_vars = {
 		THISDIRPATH: new URL(address.replace(/\/$/, ""), location.href),
 		THISDIRNAME: get_display_name_for_address(address),
