@@ -480,19 +480,12 @@ ${doc.documentElement.outerHTML}`;
 				const style = real_style_descriptor.get.call(element);
 				return new Proxy(style, {
 					get: function (target, prop, receiver) {
+						// Not sure how these should behave for different values of box-sizing (if that was even around back then)
 						if (prop === "pixelWidth") {
-							let n = parseFloat(getComputedStyle(element).width);
-							if (isNaN(n)) { // for auto
-								n = element.offsetWidth;
-							}
-							return Math.round(n);
+							return Math.round(element.offsetWidth);
 						}
 						if (prop === "pixelHeight") {
-							let n = parseFloat(getComputedStyle(element).height);
-							if (isNaN(n)) { // for auto
-								n = element.offsetHeight;
-							}
-							return Math.round(n);
+							return Math.round(element.offsetHeight);
 						}
 						if (prop === "pixelLeft") {
 							return Math.round(element.offsetLeft);
@@ -772,6 +765,10 @@ ${doc.documentElement.outerHTML}`;
 		<link href="/src/ie-6.css" rel="stylesheet" type="text/css">
 		<style>
 		p {margin: 0;}
+
+		#Panel {
+			scrollbar-gutter: stable;
+		}
 		</style>
 	`;
 
