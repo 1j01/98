@@ -22,11 +22,12 @@ const icon_size_by_view_mode = {
 };
 
 FolderView.VIEW_MODES = {
-	LARGE_ICONS: "LARGE_ICONS",
-	SMALL_ICONS: "SMALL_ICONS",
-	DETAILS: "DETAILS",
-	LIST: "LIST",
-	DESKTOP: "DESKTOP",
+	THUMBNAILS: "THUMBNAILS", // hidden until you right click in a folder, go to Properties, and enable thumbnails
+	LARGE_ICONS: "LARGE_ICONS", // left to right, then top to bottom
+	SMALL_ICONS: "SMALL_ICONS", // left to right, then top to bottom
+	DETAILS: "DETAILS", // table view
+	LIST: "LIST", // top to bottom, then left to right
+	DESKTOP: "DESKTOP", // like Large Icons, but arranged top to bottom before left to right; does not apply to the Desktop folder, only the Desktop itself
 };
 
 FolderView.SORT_MODES = {
