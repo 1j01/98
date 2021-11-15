@@ -3,7 +3,15 @@
 
 Try it [as part of 98](https://98.js.org/) <!--or [standalone](https://98.js.org/programs/explorer/)-->
 
-This application should function as both Internet Explorer and Windows Explorer.
+This application functions as both Internet Explorer and Windows Explorer.
+
+### Screenshot
+
+![Screenshot of 98.js Explorer window](https://imgur.com/eq8hraU.png)
+
+### Reference Image
+
+![Different Explorer window types](https://i.imgur.com/nxAcT9C.png)
 
 ### TODO
 
