@@ -605,6 +605,7 @@ ${doc.documentElement.outerHTML}`;
 					case "clsid:1D2B4F40-1F10-11D1-9E88-00C04FDCAB92":
 						// thumbnail
 						const img = document.createElement("img");
+						img.draggable = false;
 						this.shadowRoot.append(img);
 						this.haveThumbnail = () => {
 							return false;
@@ -617,6 +618,7 @@ ${doc.documentElement.outerHTML}`;
 						// folder icon
 						{
 							const img = document.createElement("img");
+							img.draggable = false;
 							this.shadowRoot.append(img);
 							img.src = frameElement._folder_icon_src;
 						}
@@ -768,6 +770,10 @@ ${doc.documentElement.outerHTML}`;
 
 		#Panel {
 			scrollbar-gutter: stable;
+		}
+
+		body {
+			user-select: none;
 		}
 		</style>
 	`;

@@ -7,7 +7,6 @@ This application should function as both Internet Explorer and Windows Explorer.
 
 ### TODO
 
-- Prevent text selection in folder templates
 - Proxy with a service worker to load files from the virtual filesystem
 - Proxy to the live web to enable injecting a user agent stylesheet, thematic context menus, history navigation, etc.
   - Show a big warning message for password fields
