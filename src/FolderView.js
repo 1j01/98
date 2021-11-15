@@ -192,23 +192,18 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 			// console.trace("not in DOM");
 			return; // prevent errors computing layout if folder view removed before stats resolve
 		}
-		let any_pending = false;
-		for (const item of this.items) {
-			if (item.pendingStatPromise) {
-				if (!waiting_on_stats) {
-					// @TODO: wait on a batch of promises at once so it ultimately loads faster
-					item.pendingStatPromise.then(() => {
-						waiting_on_stats = false;
-						self.arrange_icons();
-					});
-				}
-				any_pending = true;
-				waiting_on_stats = true;
+		const pending_promises = this.items.map((item) => item.pendingStatPromise).filter(Boolean);
+		const any_pending = pending_promises.length > 0;
+		if (any_pending) {
+			if (!waiting_on_stats) {
+				// should I choose a batch size? or is waiting on all stats fine?
+				// batches mean that it would update multiple times, which could be jarring.
+				Promise.allSettled(pending_promises).then(() => {
+					waiting_on_stats = false;
+					self.arrange_icons();
+				});
 			}
-			// console.log(
-			// 	"item.element", item.element,
-			// 	"item.pendStatPromise", item.pendingStatPromise,
-			// 	"item.resolvedStats?.isDirectory()", item.resolvedStats ? item.resolvedStats.isDirectory() : "no resolvedStats");
+			waiting_on_stats = true;
 		}
 		const horizontal_first =
 			this.config.view_mode === FolderView.VIEW_MODES.LARGE_ICONS ||
