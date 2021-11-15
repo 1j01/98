@@ -251,10 +251,12 @@ var menus = {
 				{
 					item: "&Text Labels",
 					checkbox: {
-						check: ()=> true,
-						toggle: ()=> {}, // @TODO
+						check: ()=> $(".toolbar-button .label-text").is(":visible"),
+						toggle: () => {
+							// @TODO: actually give extra space when hiding them haha
+							$(".toolbar-button .label-text").toggle();
+						},
 					},
-					enabled: false, // @TODO
 					description: "Adds a text label under each toolbar button.",
 				},
 			],
