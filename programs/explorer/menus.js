@@ -428,17 +428,25 @@ var menus = {
 		{
 			item: "&Home Page",
 			shortcut: "Alt+Home",
-			enabled: false, // @TODO
+			action: () => {
+				go_to("https://isaiahodhner.io/");
+			},
 			description: "Goes to your home page.",
 		},
 		{
 			item: "Channel &Guide",
-			enabled: false, // @TODO
+			action: () => {
+				go_to("http://interdimensionalcable.io/");
+			},
 			description: "Opens the Channel Guide Web page.",
 		},
 		{
 			item: "&Search the Web",
-			enabled: false, // @TODO
+			action: () => {
+				// Can you find a search engine that supports iframes?
+				// This is a fun alternative, although it'd be nicer if it was thematic (i.e. retro)
+				go_to("https://mrdoob.com/projects/chromeexperiments/google-gravity/index.html");
+			},
 		},
 		MENU_DIVIDER,
 		{
@@ -451,7 +459,12 @@ var menus = {
 		},
 		{
 			item: "&Internet Call",
-			enabled: false, // @TODO
+			action: () => {
+				// @TODO: host a configured version in order to theme it,
+				// maybe allow sharing individual windows on the 98.js desktop?
+				// How much of NetMeeting should I implement? :P
+				go_to("https://brie.fi/ng/98?audio=1&video=1&fs=0&invite=0&share=0&chat=1");
+			},
 			description: "Opens your Internet call and meeting program.",
 		},
 	],
