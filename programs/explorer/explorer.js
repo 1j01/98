@@ -470,8 +470,11 @@ ${doc.documentElement.outerHTML}`;
 		});
 
 		// It uses pixelWidth/pixelHeight/pixelLeft/pixelTop and unitless top/left
+		// Originally I polyfilled this on style, but it broke setProperty() in Firefox (and maybe Chrome but it doesn't seem to come up as a problem somehow?)
+		// so I've changed it to a separate `styleHack` property, making the generality of this solution rather pointless.
+		// It was an interesting exercise.
 		var real_style_descriptor = Reflect.getOwnPropertyDescriptor(HTMLElement.prototype, "style");
-		Object.defineProperty(HTMLElement.prototype, "style", {
+		Object.defineProperty(HTMLElement.prototype, "styleHack", {
 			get: function () {
 				const element = this;
 				const style = real_style_descriptor.get.call(element);
@@ -761,6 +764,7 @@ ${doc.documentElement.outerHTML}`;
 	html = html.replace(/padding:\s*((\d+(?:\.?\d+)?\w+),\s*)/g, (match, value) => value.split(/,\s*/g).join(" "));
 	html = html.replace(/font:\s*(\d+pt);/, "font-size: $1; line-height: 1;");
 	html = html.replace(/font:\s*((\d+pt)(\s*\/\s*\d+pt)?) verdana;/, "font: $1 'verdana', sans-serif;");
+	html = html.replace(/style\.(pixel(Width|Height|Left|Top)|left|top)\b/g, "styleHack.$1");
 
 	const head_start_injected_html = `
 		<meta charset="utf-8">
