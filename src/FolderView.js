@@ -166,6 +166,20 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 		}
 	};
 
+	this.cycle_view_mode = () => {
+		// const view_modes = Object.values(FolderView.VIEW_MODES);
+		const view_modes = [
+			// FolderView.VIEW_MODES.THUMBNAILS, conditionally?
+			FolderView.VIEW_MODES.LARGE_ICONS,
+			FolderView.VIEW_MODES.SMALL_ICONS,
+			FolderView.VIEW_MODES.LIST,
+			// FolderView.VIEW_MODES.DETAILS, // same as list for now
+		];
+		const current_view_mode_index = view_modes.indexOf(this.config.view_mode);
+		const next_view_mode_index = (current_view_mode_index + 1) % view_modes.length;
+		this.configure({ view_mode: view_modes[next_view_mode_index] });
+	};
+
 	let waiting_on_stats = false;
 	this.arrange_icons = () => {
 		if (waiting_on_stats) {

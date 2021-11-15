@@ -947,7 +947,10 @@ $(function () {
 	$("#delete").on("click", function () {
 		folder_view.delete_selected();
 	});
-
+	$("#cycle-view-mode").on("click", function () {
+		folder_view.cycle_view_mode();
+	});
+	
 	var $up_button = $("#up");
 	var $back_button = $("#back");
 	var $forward_button = $("#forward");
