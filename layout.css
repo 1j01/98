@@ -151,7 +151,6 @@ html, body {
 .desktop-icon {
 	display: inline-block;
 	vertical-align: bottom; /* with inline-block, always */
-	margin: 5px;
 	text-align: center;
 }
 .desktop-icon .icon-wrapper {

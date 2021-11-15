@@ -90,6 +90,9 @@
 .folder-view:not([data-view-mode="DESKTOP"]):not([data-view-mode="LARGE_ICONS"]) .desktop-icon .title {
 	text-align: start;
 	white-space: nowrap;
+	height: 17px;
+	line-height: 17px;
+	padding-right: 2px;
 	padding-left: 3px;
 }
 

@@ -258,15 +258,13 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 			});
 			if (horizontal_first) {
 				x += grid_size_x;
-				// @TODO: remove magic numbers; trying to handle scrollbar width/height
-				// and make it not show a horizontal scrollbar periodically when resizing the window horizontally
-				if (x + grid_size_x > $folder_view[0].clientWidth - 5) {
+				if (x + grid_size_x > $folder_view[0].clientWidth) {
 					y += grid_size_y;
 					x = 0;
 				}
 			} else {
 				y += grid_size_y;
-				if (y + grid_size_y > $folder_view[0].clientHeight - 5) {
+				if (y + grid_size_y > $folder_view[0].clientHeight) {
 					x += grid_size_x;
 					y = 0;
 				}
