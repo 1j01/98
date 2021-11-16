@@ -800,10 +800,15 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 				if (openFolder) {
 					let stats = item.resolvedStats;
 					if (!stats) {
-						try {
-							stats = await item.pendingStatPromise;
-						} catch (error) {
-							alert(`Failed to get info about '${item.file_path}':\n\n${error}`);
+						if (item.pendingStatPromise) {
+							try {
+								stats = await item.pendingStatPromise;
+							} catch (error) {
+								alert(`Failed to get info about '${item.file_path}':\n\n${error}`);
+								return;
+							}
+						} else {
+							alert(`Cannot open '${item.file_path}'. File type information not available.`);
 							return;
 						}
 					}
@@ -848,6 +853,11 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 			// @TODO: know which sizes are available
 			const icon_id = icon_id_from_stats_and_path(stats, item.file_path);
 			item.setIcons(icons_from_icon_id(icon_id));
+		}, (error) => {
+			// Without this, the folder view infinitely recursed arranging items because
+			// it was waiting for the promise to be settled (resolved or rejected),
+			// but checking for item.pendingStatPromise to see if it's still pending.
+			item.pendingStatPromise = null;
 		});
 		self.add_item(item);
 		$(item.element).css({
