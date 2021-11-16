@@ -282,7 +282,7 @@ var resolve_address = async function (address) {
 				address = "https://web.archive.org/web/2015-05-05/" + address;
 			// complete exemptions:
 			} else if (
-				!address.match(/^https?:\/\/(www\.)?(copy.sh|interdimensionalcable.io|isaiahodhner.io|brie.fi\/ng)/) &&
+				!address.match(/^https?:\/\/(www\.)?(copy.sh|topotech.github.io\/interdimensionalcable|isaiahodhner.io|brie.fi\/ng)/) &&
 				!address.match(/^(file|data|blob):\/\//)
 			) {
 				address = "https://web.archive.org/web/1998/" + address;

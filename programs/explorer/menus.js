@@ -439,7 +439,8 @@ var menus = {
 		{
 			item: "Channel &Guide",
 			action: () => {
-				go_to("http://interdimensionalcable.io/");
+				// http://interdimensionalcable.io/ doesn't work because of HTTP vs HTTPS (Mixed Content)
+				go_to("https://topotech.github.io/interdimensionalcable/");
 			},
 			description: "Opens the Channel Guide Web page.",
 		},
