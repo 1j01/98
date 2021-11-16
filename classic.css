@@ -65,7 +65,7 @@
 	display: flex;
 	flex-direction: row;
 	width: 150px;
-	height: 16px;
+	height: 17px;
     align-items: center;
 }
 
@@ -82,6 +82,9 @@
 	background: var(--Background);
 	color: white;
 	position: relative;
+	box-sizing: border-box;
+	display: flex;
+    justify-content: center;
 }
 .folder-view[data-view-mode="DESKTOP"] .desktop-icon .title,
 .folder-view[data-view-mode="LARGE_ICONS"] .desktop-icon .title {
@@ -89,6 +92,7 @@
 }
 .folder-view:not([data-view-mode="DESKTOP"]):not([data-view-mode="LARGE_ICONS"]) .desktop-icon .title {
 	text-align: start;
+    justify-content: start;
 	white-space: nowrap;
 	height: 17px;
 	line-height: 17px;
@@ -96,7 +100,7 @@
 	padding-left: 3px;
 }
 
-.folder-view:focus-within .desktop-icon.selected .title {
+.folder-view:focus-within .desktop-icon.selected:not(.renaming) .title {
 	background: var(--Hilight);
 	color: var(--HilightText);
 }
@@ -110,13 +114,21 @@
 	border: 1px dotted #ffffff;
 	mix-blend-mode: exclusion;
 }
+.folder-view .desktop-icon.renaming .title {
+	border: 1px solid var(--ButtonText); /* @TODO: is this the right theme color? */
+}
 .desktop-icon .title input {
 	font: inherit;
 	outline: none;
-	border: 1px solid var(--ButtonText); /* @TODO: is this the right theme color? */
+	border: none; /* using border of the .title */
+	height: 17px; /* @TODO: auto-size */
+	line-height: 13px; /* 17px-4px so the selection highlight doesn't abut the border (height is also important) */
+	box-sizing: border-box;
 	background: var(--Window);
 	color: var(--WindowText);
 	text-align: inherit;
+	padding: 0;
+	align-self: center;
 }
 .desktop-icon .icon-wrapper .selection-effect {
 	display: none;
