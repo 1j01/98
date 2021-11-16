@@ -6,6 +6,17 @@
   "android-chrome-192x192.png": null,
   "android-chrome-256x256.png": null,
   "apple-touch-icon.png": null,
+  "audio": {
+    "CHIMES.WAV": null,
+    "CHORD.WAV": null,
+    "DING.WAV": null,
+    "LOGOFF.WAV": null,
+    "NOTIFY.WAV": null,
+    "RECYCLE.WAV": null,
+    "START.WAV": null,
+    "TADA.WAV": null,
+    "The Microsoft Sound.wav": null
+  },
   "browserconfig.xml": null,
   "classic.css": null,
   "desktop": {
