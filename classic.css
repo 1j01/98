@@ -251,6 +251,8 @@
 	padding: 2px;
 	margin: 8px 12px;
 	margin-top: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 * {
