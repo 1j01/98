@@ -88,16 +88,6 @@ var go_to = async function (address, action_name = "go") {
 	// the folder view is currently in an iframe (the iframe)
 	const had_focus = $iframe && document.activeElement === $iframe[0];
 
-	if (folder_view) {
-		folder_view.element.remove();
-		folder_view = null;
-	}
-	if ($iframe) {
-		$iframe.remove();
-		$iframe = null;
-	}
-	$("#content").empty(); // in case of apps loaded in the iframe which append menu bars outside of the iframe (@TODO: make apps not do this, and instead look only for a specifically designated $Window instance associated with the iframe)
-
 	// @TODO: split out src and normalized address, and use normalized address for the input, but use src for the iframe
 	// so the address can show the system path, and Up command can return to a folder (rather than an HTTP server's folder listing, or a 404, depending on the server)
 
@@ -185,6 +175,17 @@ var go_to = async function (address, action_name = "go") {
 	set_icon(get_icon_for_address(address));
 
 	$("#status-bar-left-text").empty();
+
+	// Only remove content after any async operations have completed, and in particular, after navigation is confirmed, in the case that there's a dialog box.
+	if (folder_view) {
+		folder_view.element.remove();
+		folder_view = null;
+	}
+	if ($iframe) {
+		$iframe.remove();
+		$iframe = null;
+	}
+	$("#content").empty(); // in case of apps loaded in the iframe which append menu bars outside of the iframe (@TODO: make apps not do this, and instead look only for a specifically designated $Window instance associated with the iframe)
 
 	if (is_url) {
 		$iframe = $("<iframe>").attr({
