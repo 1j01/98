@@ -350,7 +350,6 @@ var resolve_address = async function (address) {
 async function render_folder_template(folder_view, address, eventHandlers) {
 	// Before removing the iframe containing folder_view, adopt the element to preserve event listeners (i.e. marquee functionality etc.)
 	document.adoptNode(folder_view.element);
-	$("#content").empty();
 
 	// if (folder_view.config.view_as_web_page === false) {
 	// 	$("#content").append(folder_view.element);
@@ -860,6 +859,10 @@ ${doc.documentElement.outerHTML}`;
 
 	html = html.replace(/<head>/i, (match) => `${match}\n${head_start_injected_html}\n`);
 	html = html.replace(/\s+<\/head>/i, (match) => `${head_end_injected_html}\n${match}`);
+
+	// Empty and append after any async loading (i.e. of the template), to avoid race conditions where multiple contents are appended,
+	// if you select multiple folders and hit Enter. It was kinda cool, like a split pane feature, but very not legit.
+	$("#content").empty();
 
 	$iframe = $("<iframe>").attr({
 		srcdoc: html,
