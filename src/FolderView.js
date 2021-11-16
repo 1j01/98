@@ -306,6 +306,9 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 	}
 
 	self.focus = function () {
+		if ($folder_view.is(":focus-within")) {
+			return; // don't mess with renaming inputs, for instance, if you click on the input
+		}
 		$folder_view.focus();
 		// This doesn't do much if it's yet to be populated:
 		if ($folder_view.find(".desktop-icon.focused").length === 0) {
