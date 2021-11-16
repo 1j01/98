@@ -458,7 +458,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 		$folder_view.on("pointerdown", ".desktop-icon", function (e) {
 			const item_el = e.currentTarget;
 			item_el._was_selected_at_pointerdown = item_el.classList.contains("selected");
-			select_item(item_el, true);
+			select_item(item_el, e, true);
 		});
 		$folder_view.on("pointerdown", function (e) {
 			// TODO: allow a margin of mouse movement before starting selecting
@@ -559,7 +559,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 			e.preventDefault();
 			const move_x = e.key == "ArrowLeft" ? -1 : e.key == "ArrowRight" ? 1 : 0;
 			const move_y = e.key == "ArrowUp" ? -1 : e.key == "ArrowDown" ? 1 : 0;
-			navigate_grid(move_x, move_y);
+			navigate_grid(move_x, move_y, e);
 			// @TODO: wrap around columns in list view
 		} else if (
 			e.key == "PageUp" ||
@@ -572,7 +572,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 				const item_width = $folder_view.find(".desktop-icon").outerWidth();
 				const page_increment = full_page_size - item_width;
 				for (let increment = page_increment; increment > 0; increment -= item_width) {
-					if (navigate_grid(x_dir * increment / item_width, 0)) { // grid units
+					if (navigate_grid(x_dir * increment / item_width, 0, e)) { // grid units
 						break;
 					}
 				}
@@ -582,17 +582,17 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 				const item_height = $folder_view.find(".desktop-icon").outerHeight();
 				const page_increment = full_page_size - item_height;
 				for (let increment = page_increment; increment > 0; increment -= item_height) {
-					if (navigate_grid(0, y_dir * increment / item_height)) { // grid units
+					if (navigate_grid(0, y_dir * increment / item_height, e)) { // grid units
 						break;
 					}
 				}
 			}
 		} else if (e.key == "Home") {
 			e.preventDefault();
-			select_item(self.items[0]);
+			select_item(self.items[0], e);
 		} else if (e.key == "End") {
 			e.preventDefault();
-			select_item(self.items[self.items.length - 1]);
+			select_item(self.items[self.items.length - 1], e);
 		} else if (e.key == " ") {
 			// Usually there's something focused,
 			// so this is pretty "niche", but space bar selects the focused item.
@@ -601,7 +601,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 			if ((e.ctrlKey || e.metaKey) && $folder_view.find(".desktop-icon.selected").length > 0) {
 				$folder_view.find(".desktop-icon.focused").toggleClass("selected");
 			} else {
-				select_item($folder_view.find(".desktop-icon.focused")[0]);
+				select_item($folder_view.find(".desktop-icon.focused")[0], e);
 			}
 			updateStatus();
 		} else if (e.key === "F2") {
@@ -613,11 +613,19 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 	// @TODO: extend selection with Shift + arrow keys,
 	// as well as PageUp / PageDown / Home / End
 
-	function select_item(item_or_item_el, delay_scroll) {
+	function select_item(item_or_item_el, event, delay_scroll) {
 		const item_el_to_select = item_or_item_el instanceof Element ? item_or_item_el : item_or_item_el.element;
 
 		$folder_view.find(".desktop-icon").each(function (i, item_el) {
-			item_el.classList.toggle("selected", item_el === item_el_to_select);
+			if (event.type === "pointerdown" && (event.ctrlKey || event.metaKey)) {
+				if (item_el === item_el_to_select) {
+					$(item_el).toggleClass("selected");
+				}
+			} else {
+				if (!event.ctrlKey && !event.metaKey) {
+					item_el.classList.toggle("selected", item_el === item_el_to_select);
+				}
+			}
 			item_el.classList.toggle("focused", item_el === item_el_to_select);
 		});
 		if (delay_scroll) {
@@ -633,7 +641,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 		updateStatus();
 	}
 
-	function navigate_grid(move_x, move_y) {
+	function navigate_grid(move_x, move_y, event) {
 		// @TODO: how this is supposed to work for icons not aligned to the grid?
 		// I can imagine a few ways of doing it, like scanning for the nearest icon with a sweeping line or perhaps a "cone" (triangle) (changing width line)
 		// but it'd be nice to know for sure
@@ -669,7 +677,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 		});
 		const $icon = $(candidates[0]);
 		if ($icon.length > 0) {
-			select_item($icon[0]);
+			select_item($icon[0], event);
 			return true;
 		}
 		return false;
