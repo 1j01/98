@@ -610,20 +610,42 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 		}
 	});
 
-	// @TODO: extend selection with Shift + arrow keys,
-	// as well as PageUp / PageDown / Home / End
+	var selection_anchor_item_el;
 
 	function select_item(item_or_item_el, event, delay_scroll) {
 		const item_el_to_select = item_or_item_el instanceof Element ? item_or_item_el : item_or_item_el.element;
-
+		const extend_selection = event.shiftKey && selection_anchor_item_el && self.items.some(item => item.element === selection_anchor_item_el);
+		// console.log("select_item", item_or_item_el, event, "extend_selection", extend_selection);
 		$folder_view.find(".desktop-icon").each(function (i, item_el) {
-			if (event.type === "pointerdown" && (event.ctrlKey || event.metaKey)) {
-				if (item_el === item_el_to_select) {
-					$(item_el).toggleClass("selected");
-				}
+			if (extend_selection) {
+				// select items in a rectangle between the anchor and the new item
+				const anchor_rect = selection_anchor_item_el.getBoundingClientRect();
+				const item_el_to_select_rect = item_el_to_select.getBoundingClientRect();
+				const item_el_rect = item_el.getBoundingClientRect();
+				const rectangle = {
+					top: Math.min(anchor_rect.top, item_el_to_select_rect.top),
+					left: Math.min(anchor_rect.left, item_el_to_select_rect.left),
+					bottom: Math.max(anchor_rect.bottom, item_el_to_select_rect.bottom),
+					right: Math.max(anchor_rect.right, item_el_to_select_rect.right)
+				};
+				$(item_el).toggleClass("selected", (
+					item_el_rect.top >= rectangle.top &&
+					item_el_rect.left >= rectangle.left &&
+					item_el_rect.bottom <= rectangle.bottom &&
+					item_el_rect.right <= rectangle.right
+				));
 			} else {
-				if (!event.ctrlKey && !event.metaKey) {
-					item_el.classList.toggle("selected", item_el === item_el_to_select);
+				if (event.type === "pointerdown" && (event.ctrlKey || event.metaKey)) {
+					// toggle with Ctrl+click
+					if (item_el === item_el_to_select) {
+						$(item_el).toggleClass("selected");
+					}
+				} else {
+					// select with click or arrow keys,
+					// but if holding Ctrl it should only move focus, not select.
+					if (!event.ctrlKey && !event.metaKey) {
+						item_el.classList.toggle("selected", item_el === item_el_to_select);
+					}
 				}
 			}
 			item_el.classList.toggle("focused", item_el === item_el_to_select);
@@ -639,6 +661,10 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 			item_el_to_select.scrollIntoView({ block: "nearest" });
 		}
 		updateStatus();
+
+		if (!event.shiftKey) {
+			selection_anchor_item_el = item_el_to_select;
+		}
 	}
 
 	function navigate_grid(move_x, move_y, event) {
