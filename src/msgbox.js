@@ -51,6 +51,7 @@ window.showMessageBox = window.showMessageBox || (({
 			if (button.default) {
 				$button.addClass("default");
 				$button.focus();
+				setTimeout(() => $button.focus(), 0); // @TODO: why is this needed? does it have to do with the iframe window handling?
 			}
 			$button.css({
 				minWidth: 75,

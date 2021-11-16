@@ -117,18 +117,14 @@ function FolderViewItem(options) {
 		$input.on("blur", () => {
 			const new_title = $input.val();
 			if (new_title.trim() === "") {
-				const { $window, promise } = showMessageBox({
+				showMessageBox({
 					title: "Rename",
 					message: "You must type a filename.",
 					iconID: "error",
-				});
-				promise.then(() => {
+				}).then(() => {
 					$input.focus(); // @TODO: why is this needed? it's supposed to refocus the last focused element
 					// well I guess it doesn't work for the desktop, just windows
 				});
-				setTimeout(() => {
-					$window.focus(); // @TODO: why is this needed? here and in other places
-				}, 0);
 				return;
 			}
 			$input.remove(); // technically not necessary

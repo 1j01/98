@@ -1066,10 +1066,7 @@ $(function () {
 		.properties-button, .copy-button, .cut-button, .paste-button, .undo-button,
 		.search-button, .favorites-button, .history-button, .print-button
 	`).on("click", function () {
-		const { $window } = showMessageBox({ message: "Not supported.", iconID: "error" });
-		setTimeout(() => {
-			$window.focus(); // @TODO: why is this needed?
-		});
+		showMessageBox({ message: "Not supported.", iconID: "error" });
 	});
 
 	var $up_button = $(".up-button");

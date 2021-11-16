@@ -335,7 +335,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 		}
 		// @NOTE: if system setting for displaying file extensions was implemented, this should be changed...
 		const name_of_first = $folder_view.find(".desktop-icon.selected .title").text().replace(/\.([^.]+)$/, "");
-		const { $window, promise } = showMessageBox({
+		showMessageBox({
 			title: selected_file_paths.length === 1 ? "Confirm File Delete" : "Confirm Multiple File Delete",
 			message: selected_file_paths.length === 1 ?
 				`Are you sure you want to delete '${name_of_first}'?` :
@@ -352,8 +352,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 				},
 			],
 			iconID: "nuke",
-		});
-		promise.then((result) => {
+		}).then((result) => {
 			if (result !== "yes") {
 				return;
 			}
@@ -385,10 +384,6 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 				// self.refresh();
 			});
 		});
-		// needed for File > Delete menu item
-		setTimeout(() => {
-			$window.focus();
-		}, 0);
 	};
 
 	self.start_rename = () => {
