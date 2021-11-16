@@ -96,6 +96,7 @@ var go_to = async function (address, action_name = "go") {
 		$iframe.remove();
 		$iframe = null;
 	}
+	$("#content").empty(); // in case of apps loaded in the iframe which append menu bars outside of the iframe (@TODO: make apps not do this, and instead look only for a specifically designated $Window instance associated with the iframe)
 
 	// @TODO: split out src and normalized address, and use normalized address for the input, but use src for the iframe
 	// so the address can show the system path, and Up command can return to a folder (rather than an HTTP server's folder listing, or a 404, depending on the server)
