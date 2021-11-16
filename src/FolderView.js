@@ -601,7 +601,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 			if ((e.ctrlKey || e.metaKey) && $folder_view.find(".desktop-icon.selected").length > 0) {
 				$folder_view.find(".desktop-icon.focused").toggleClass("selected");
 			} else {
-				select_item($folder_view.find(".desktop-icon.focused")[0], e);
+				$folder_view.find(".desktop-icon.focused").addClass("selected"); // don't use select_item() as it shouldn't unselect anything
 			}
 			updateStatus();
 		} else if (e.key === "F2") {
