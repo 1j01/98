@@ -43,6 +43,7 @@ FolderView.SORT_MODES = {
 // TODO: get more icons; can extract from shell32.dll, moricons.dll, and other files from a VM
 // also get more file extensions; can find a mime types listing data dump
 // https://github.com/1j01/retrores
+// Note: extensions must be lowercase here. This is used to implement case-insensitive matching.
 var file_extension_icons = {
 	txt: "notepad-file",
 	md: "notepad-file",
@@ -695,7 +696,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 		}
 		var file_extension = file_extension_from_path(file_path);
 		// TODO: look inside exe for icons
-		var icon_name = file_extension_icons[file_extension];
+		var icon_name = file_extension_icons[file_extension.toLowerCase()];
 		return icon_name || "document";
 	};
 	var icons_from_icon_id = function (icon_id) {

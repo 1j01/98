@@ -971,6 +971,7 @@ function openThemeFile(file_path) {
 }
 openThemeFile.acceptsFilePaths = true;
 
+// Note: extensions must be lowercase here. This is used to implement case-insensitive matching.
 var file_extension_associations = {
 	"": Notepad,
 	txt: Notepad,
@@ -1016,7 +1017,7 @@ function systemExecuteFile(file_path) {
 				Explorer(file_path);
 			} else {
 				var file_extension = file_extension_from_path(file_path);
-				var program = file_extension_associations[file_extension];
+				var program = file_extension_associations[file_extension.toLowerCase()];
 				if (program) {
 					if (!program.acceptsFilePaths) {
 						alert(program.name + " does not support opening files via the virtual filesystem yet");
