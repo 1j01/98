@@ -197,6 +197,53 @@
 	mix-blend-mode: difference;
 } */
 
+.window-switcher {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 15px;
+	z-index: 1000;
+	user-select: none;
+}
+.window-switcher * {
+	pointer-events: none;
+}
+.window-switcher-list {
+	display: flex;
+    margin: 0;
+    padding: 0;
+	flex-direction: row;
+	flex-wrap: wrap;
+}
+.window-switcher-item {
+	display: flex;
+	width: 40px;
+	height: 40px;
+	border: 2px solid transparent;
+	padding: 0;
+	outline: none;
+	margin: 5px;
+}
+.window-switcher-item.active {
+	border: 2px solid var(--Hilight);
+}
+.window-switcher-item img {
+	margin: auto;
+}
+.window-switcher-window-name {
+    align-self: stretch;
+	font-family: "MS Sans Serif", "Segoe UI", sans-serif;
+	font-weight: bold;
+	font-size: 10pt;
+	line-height: 16px; /* border is getting screwed up if this is not an even number */
+	padding: 2px;
+	margin-top: 10px;
+}
+
 * {
 	image-rendering: crisp-edges;
 	image-rendering: pixelated;

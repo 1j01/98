@@ -125,9 +125,60 @@ function make_iframe_window(options) {
 	// I know it's used from within the iframe contents as frameElement.$window
 	iframe.$window = $win;
 
+	var alt_held = false;
 	$iframe.on("load", function () {
 		$win.show();
 		$win.focus();
+		// @TODO: remove the need for duplicate event handlers
+		// by proxying events from the iframe to the window
+		iframe.contentWindow.addEventListener("keydown", handle_keydown, true);
+		iframe.contentWindow.addEventListener("keyup", handle_keyup, true);
+	});
+
+	$win.on("keydown", handle_keydown, true);
+	$win.on("keyup", handle_keyup, true);
+	// $(top).on("keyup", handle_keyup, true);
+
+	var iid;
+	var notice_shown = false;
+	function handle_keydown(e) {
+		if (e.altKey && (e.key === "4" || e.key === "F4")) { // we can't actually intercept Alt+F4, but might as well try, right?
+			e.preventDefault();
+			$win.close();
+		}
+		// console.log(e.key, e.code);
+		if (e.altKey && (e.code === "Backquote" || e.code === "Tab")) {
+			show_window_switcher(e.shiftKey);
+		}
+		if (e.key === "Alt") {
+			alt_held = true;
+			// console.log("Alt held");
+			iid = setInterval(look_for_focus_loss, 200);
+		}
+	}
+	function handle_keyup(e) {
+		// console.log("keyup", e.key, e.code);
+		if (e.key === "Alt") {
+			alt_held = false;
+			clearInterval(iid);
+			// console.log("Alt released");
+			window_switcher_close_and_select();
+		}
+	}
+	function look_for_focus_loss() {
+		if (!top.document.hasFocus() && alt_held) {
+			clearInterval(iid);
+			// @TODO: Clippy
+			if (!notice_shown) {
+				alert("It looks like you're trying to use Alt+Tab to switch between windows.\n\nUse Alt+` (grave accent) instead within the 98.js desktop.\n\nAlso, use Alt+4 instead of Alt+F4 to close windows.");
+				notice_shown = true;
+			} else {
+				// console.log("Alt+Tab detected, notice already shown");
+			}
+		}
+	}
+	$win.on("closed", function () {
+		clearInterval(iid);
 	});
 
 	$win.$content.css({
@@ -159,4 +210,64 @@ $(window).on("pointerup dragend blur", function (e) {
 	$("body").removeClass("drag");
 	$("iframe").css("pointer-events", "");
 });
+
+// @TODO: why does this code live here? It should be generalized to all windows.
+// I might need an `os-gui-window-opened` event.
+var $window_switcher = $("<div class='window-switcher outset-deep'>");
+var $window_switcher_list = $("<ul class='window-switcher-list'>").appendTo($window_switcher);
+var $window_switcher_window_name = $("<div class='window-switcher-window-name inset-deep'>").appendTo($window_switcher);
+function show_window_switcher(cycle_backwards) {
+	if ($window_switcher.is(":visible")) {
+		cycle_window_switcher(cycle_backwards);
+		return;
+	}
+	$window_switcher_list.empty();
+	const window_els = $(".os-window").toArray(); // @TODO: support webamp, but only one entry; maybe should be based on tasks, not windows
+	if (window_els.length < 2) { // @TODO: or if there's only one window, but it's not focused
+		return;
+	}
+	window_els.sort((a, b) =>
+		// using z-index, as it's similar to last-used order
+		b.style.zIndex - a.style.zIndex
+	);
+	for (const window_el of window_els) {
+		var $window = window_el.$window;
+		var $item = $("<li>").addClass("window-switcher-item");
+		$item.append($("<img>").attr({
+			src: $window.icons[32] || "/images/icons/task-32x32.png",
+			width: 32,
+			height: 32,
+			alt: $window.getTitle()
+		}));
+		$item.data("$window", $window);
+		$item.on("click", function () {
+			$window.focus();
+		});
+		$window_switcher_list.append($item);
+		if ($window.hasClass("focused")) {
+			$item.addClass("active");
+		}
+	}
+	cycle_window_switcher(cycle_backwards);
+	$window_switcher.appendTo("body");
+	// console.log("Showing window switcher", $window_switcher[0]);
+}
+function cycle_window_switcher(cycle_backwards) {
+	const items = $window_switcher.find(".window-switcher-item").toArray();
+	const $active = $window_switcher.find(".active");
+	const old_index = items.indexOf($active[0]);
+	const new_index = ((old_index + (cycle_backwards ? -1 : 1)) + items.length) % items.length;
+	$active.removeClass("active");
+	const new_item = items[new_index];
+	$(new_item).addClass("active");
+	$window_switcher_window_name.text($(new_item).data("$window").getTitle());
+}
+function window_switcher_close_and_select() {
+	const $active = $window_switcher.find(".active");
+	if ($active.length === 0) {
+		return;
+	}
+	$active.data("$window").focus();
+	$window_switcher.remove(); // must remove only after getting data()
+}
 
