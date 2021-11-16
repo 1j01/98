@@ -59,6 +59,8 @@ function get_icon_for_address(address) {
 	}
 }
 
+var navigate_audio = new Audio("/audio/START.WAV");
+
 var offline_mode = false;
 
 var folder_view, $iframe;
@@ -94,7 +96,6 @@ var go_to = async function (address, action_name = "go") {
 		$iframe.remove();
 		$iframe = null;
 	}
-	// @TODO: play start.wav sound
 
 	// @TODO: split out src and normalized address, and use normalized address for the input, but use src for the iframe
 	// so the address can show the system path, and Up command can return to a folder (rather than an HTTP server's folder listing, or a 404, depending on the server)
@@ -115,6 +116,17 @@ var go_to = async function (address, action_name = "go") {
 		}
 	}
 	address = normalized_address;
+
+	if (
+		action_name !== "initially-load" && // load can take time, and thus the sound doesn't work well as an "action sound"
+		(action_name !== "refresh" || zone !== "local") // don't play the sound for refreshing local folders
+	) {
+		try {
+			navigate_audio.play();
+		} catch (e) {
+			console.log("navigate_audio.play() failed: " + e);
+		}
+	}
 
 	if (zone === "internet") {
 		if (offline_mode) {

@@ -5,6 +5,8 @@
 // Note `defaultMessageBoxTitle` handling in make_iframe_window
 // Any other default parameters need to be handled there (as it works now)
 
+var chord_audio = new Audio("/audio/CHORD.WAV");
+
 window.showMessageBox = window.showMessageBox || (({
 	title = window.defaultMessageBoxTitle ?? "Alert",
 	message,
@@ -69,6 +71,11 @@ window.showMessageBox = window.showMessageBox || (({
 	});
 	promise.$window = $window;
 	promise.promise = promise; // for easy destructuring
+	try {
+		chord_audio.play();
+	} catch (error) {
+		console.log(`Failed to play ${chord_audio.src}: `, error);
+	}
 	return promise;
 });
 
