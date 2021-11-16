@@ -140,6 +140,11 @@ var go_to = async function (address, action_name = "go") {
 				return;
 			}
 		}
+		$("#internet-buttons").show();
+		$("#standard-buttons").hide();
+	} else {
+		$("#internet-buttons").hide();
+		$("#standard-buttons").show();
 	}
 
 	if (system_folder_path_to_name[address]) {
@@ -890,6 +895,14 @@ function refresh() {
 	go_to(active_address, "refresh");
 }
 
+function stop_loading() {
+	try {
+		$iframe[0].contentWindow.stop();
+	} catch (e) {
+		$iframe.attr("src", "about:blank");
+	}
+}
+
 function go_back() {
 	// $iframe[0].contentWindow.history.back();
 	// console.log({ history_back_stack, history_forward_stack });
@@ -929,6 +942,10 @@ function go_up() {
 }
 function can_go_up() {
 	return get_up_address(active_address) !== active_address;
+}
+
+function go_home() {
+	go_to("https://isaiahodhner.io/"); // My personal homepage; I might use a search engine, but they don't support iframes
 }
 
 function executeFile(file_path) {
@@ -987,19 +1004,24 @@ $(function () {
 	$("#address").on("dragstart", function (e) {
 		e.preventDefault();
 	});
-	$("#back").on("click", go_back);
-	$("#forward").on("click", go_forward);
-	$("#up").on("click", go_up);
+	$(".refresh-button").on("click", refresh);
+	$(".stop-button").on("click", stop_loading);
+	$(".back-button").on("click", go_back);
+	$(".forward-button").on("click", go_forward);
+	$(".up-button").on("click", go_up);
+	$(".home-button").on("click", go_home);
 	// @TODO: toggle on pointerdown or mousedown
-	$("#back-dropdown-button").on("click", () => {
-		show_history_dropdown("back", history_back_stack);
+	$(".back-dropdown-button").on("click", (event) => {
+		const $dropdown_button = $(event.currentTarget);
+		const $main_button = $dropdown_button.closest(".toolbar-compound-button-wrapper").find(".toolbar-button");
+		show_history_dropdown("back", $main_button, history_back_stack);
 	});
-	$("#forward-dropdown-button").on("click", () => {
-		show_history_dropdown("forward", history_forward_stack);
+	$(".forward-dropdown-button").on("click", (event) => {
+		const $dropdown_button = $(event.currentTarget);
+		const $main_button = $dropdown_button.closest(".toolbar-compound-button-wrapper").find(".toolbar-button");
+		show_history_dropdown("forward", $main_button, history_forward_stack);
 	});
-	function show_history_dropdown(back_or_forward, history_stack) {
-		const $dropdown_button = $(`#${back_or_forward}-dropdown-button`);
-		const $main_button = $(`#${back_or_forward}`);
+	function show_history_dropdown(back_or_forward, $main_button, history_stack) {
 		const menu_items = history_stack.map((path, index) => {
 			return {
 				// @TODO: name of folder/file/page
@@ -1010,9 +1032,9 @@ $(function () {
 				},
 			};
 		}).reverse();
-		show_dropdown($main_button, $dropdown_button, menu_items);
+		show_dropdown($main_button, menu_items);
 	}
-	function show_dropdown($main_button, $dropdown_button, menu_items) {
+	function show_dropdown($main_button, menu_items) {
 		// @TODO: in a future version of OS-GUI, there should be an API for context menus
 		// which we could use here.
 		const dummy_menu_bar = new MenuBar({ "Dummy": menu_items });
@@ -1024,30 +1046,37 @@ $(function () {
 			pointerEvents: "none",
 		}).appendTo("body");
 		$(dummy_menu_bar.element).find(".menu-button")[0].dispatchEvent(new Event("pointerdown"));
-		// @TODO: remove the dummy menu bar when the menu is closed
+		// remove the dummy menu bar when the menu is closed
+		// Note: release event is not documented!
+		$(dummy_menu_bar.element).find(".menu-button").on("release", function () {
+			$(dummy_menu_bar.element).remove();
+		});
 	}
-	$("#delete").on("click", function () {
+	$(".delete-button").on("click", function () {
 		folder_view.delete_selected();
 	});
-	$("#cycle-view-mode").on("click", function () {
+	$(".cycle-view-mode-button").on("click", function () {
 		folder_view.cycle_view_mode();
 	});
-	$("#views-dropdown-button").on("click", () => {
+	$(".views-dropdown-button").on("click", () => {
 		// menu items defined in menus.js
-		show_dropdown($("#cycle-view-mode"), $("#views-dropdown-button"), views_dropdown_menu_items);
+		show_dropdown($(".cycle-view-mode-button"), views_dropdown_menu_items);
 	});
-	$("#properties, #copy, #cut, #paste, #undo").on("click", function () {
+	$(`
+		.properties-button, .copy-button, .cut-button, .paste-button, .undo-button,
+		.search-button, .favorites-button, .history-button, .print-button
+	`).on("click", function () {
 		const { $window } = showMessageBox({ message: "Not supported.", iconID: "error" });
 		setTimeout(() => {
 			$window.focus(); // @TODO: why is this needed?
 		});
 	});
 
-	var $up_button = $("#up");
-	var $back_button = $("#back");
-	var $forward_button = $("#forward");
-	var $back_history_dropdown_button = $("#back-dropdown-button");
-	var $forward_history_dropdown_button = $("#forward-dropdown-button");
+	var $up_button = $(".up-button");
+	var $back_button = $(".back-button");
+	var $forward_button = $(".forward-button");
+	var $back_history_dropdown_button = $(".back-dropdown-button");
+	var $forward_history_dropdown_button = $(".forward-dropdown-button");
 	setInterval(() => {
 		$up_button.attr("disabled", can_go_up() ? null : "disabled");
 		$back_button.attr("disabled", can_go_back() ? null : "disabled");
@@ -1058,7 +1087,7 @@ $(function () {
 
 	$(".toolbar-button").each((i, button) => {
 		const $button = $(button);
-		const sprite_n = [0, 1, 44, 21, 22, 23, 24, 26, 31, 38][i];
+		const sprite_n = [0, 1, 44, 21, 22, 23, 24, 26, 31, 38, 0, 1, 2, 3, 4, 5, 6, 12, 7][i];
 		$("<div class='icon'/>")
 			.appendTo($button)
 			.css({

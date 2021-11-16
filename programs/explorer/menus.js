@@ -2,18 +2,20 @@
 // TODO: bullet point style radio button menu items (instead of check marks)
 var checkbox_for_view_mode = function (menu_item_view_mode) {
 	return {
-		check: ()=> folder_view.config.view_mode === menu_item_view_mode,
+		check: ()=> folder_view ? folder_view.config.view_mode === menu_item_view_mode : false,
 		toggle: ()=> {
-			folder_view.configure({ view_mode: menu_item_view_mode });
+			folder_view?.configure({ view_mode: menu_item_view_mode });
 		},
+		enabled: ()=> !!folder_view, // @TODO: hide the option entirely, don't just disable it
 	};
 };
 var checkbox_for_sort_mode = function (menu_item_sort_mode) {
 	return {
-		check: ()=> folder_view.config.sort_mode === menu_item_sort_mode,
+		check: ()=> folder_view ? folder_view.config.sort_mode === menu_item_sort_mode : false,
 		toggle: ()=> {
-			folder_view.configure({ sort_mode: menu_item_sort_mode });
+			folder_view?.configure({ sort_mode: menu_item_sort_mode });
 		},
+		enabled: ()=> !!folder_view, // @TODO: hide the option entirely, don't just disable it
 	};
 };
 
@@ -23,10 +25,11 @@ var views_dropdown_menu_items = [
 	{
 		item: "as &Web Page",
 		checkbox: {
-			check: ()=> folder_view.config.view_as_web_page,
+			check: ()=> folder_view ? folder_view.config.view_as_web_page : true,
 			toggle: () => {
-				folder_view.configure({ view_as_web_page: !folder_view.config.view_as_web_page });
+				folder_view?.configure({ view_as_web_page: !folder_view.config.view_as_web_page });
 			},
+			enabled: ()=> !!folder_view, // @TODO: hide the option entirely, don't just disable it
 		},
 		description: "Displays items in Web View",
 	},
@@ -429,7 +432,7 @@ var menus = {
 			item: "&Home Page",
 			shortcut: "Alt+Home",
 			action: () => {
-				go_to("https://isaiahodhner.io/");
+				go_home();
 			},
 			description: "Goes to your home page.",
 		},

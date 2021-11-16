@@ -33,74 +33,90 @@
 		<div class="toolbar-drag-handle"></div>
 		<div id="standard-buttons">
 			<div class="toolbar-compound-button-wrapper">
-				<button class="toolbar-button lightweight" disabled id="back">
+				<button class="toolbar-button lightweight back-button" disabled>
 					<span class="label-text">Back</span>
 				</button>
-				<button class="toolbar-dropdown-button lightweight" disabled id="back-dropdown-button">
+				<button class="toolbar-dropdown-button lightweight back-dropdown-button" disabled>
 					<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="fill:currentColor;display:inline-block;vertical-align:middle"><path style="transform:rotate(90deg);transform-origin:center" d="m6 4 4 4-4 4z"></path></svg>
 				</button>
 			</div>
 			<div class="toolbar-compound-button-wrapper">
-				<button class="toolbar-button lightweight" disabled id="forward">
+				<button class="toolbar-button lightweight forward-button" disabled>
 					<span class="label-text">Forward</span>
 				</button>
-				<button class="toolbar-dropdown-button lightweight" disabled id="forward-dropdown-button">
+				<button class="toolbar-dropdown-button lightweight forward-dropdown-button" disabled>
 					<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="fill:currentColor;display:inline-block;vertical-align:middle"><path style="transform:rotate(90deg);transform-origin:center" d="m6 4 4 4-4 4z"></path></svg>
 				</button>
 			</div>
-			<button class="toolbar-button lightweight" id="up">
+			<button class="toolbar-button lightweight up-button">
 				<span class="label-text">Up</span>
 			</button>
 			<hr aria-orientation="vertical">
-			<button class="toolbar-button lightweight" id="cut">
+			<button class="toolbar-button lightweight cut-button">
 				<span class="label-text">Cut</span>
 			</button>
-			<button class="toolbar-button lightweight" id="copy">
+			<button class="toolbar-button lightweight copy-button">
 				<span class="label-text">Copy</span>
 			</button>
-			<button class="toolbar-button lightweight" id="paste">
+			<button class="toolbar-button lightweight paste-button">
 				<span class="label-text">Paste</span>
 			</button>
 			<hr aria-orientation="vertical">
-			<button class="toolbar-button lightweight" id="undo">
+			<button class="toolbar-button lightweight undo-button">
 				<span class="label-text">Undo</span>
 			</button>
 			<hr aria-orientation="vertical">
-			<button class="toolbar-button lightweight" id="delete">
+			<button class="toolbar-button lightweight delete-button">
 				<span class="label-text">Delete</span>
 			</button>
-			<button class="toolbar-button lightweight" id="properties">
+			<button class="toolbar-button lightweight properties-button">
 				<span class="label-text">Properties</span>
 			</button>
 			<hr aria-orientation="vertical">
 			<div class="toolbar-compound-button-wrapper">
-				<button class="toolbar-button lightweight" id="cycle-view-mode">
+				<button class="toolbar-button lightweight cycle-view-mode-button">
 					<span class="label-text">Views</span>
 				</button>
-				<button class="toolbar-dropdown-button lightweight" id="views-dropdown-button">
+				<button class="toolbar-dropdown-button lightweight views-dropdown-button-button">
 					<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="fill:currentColor;display:inline-block;vertical-align:middle"><path style="transform:rotate(90deg);transform-origin:center" d="m6 4 4 4-4 4z"></path></svg>
 				</button>
 			</div>
 		</div>
-		<!-- <div class="ie-toolbar">
-			<button class="toolbar-button lightweight" disabled id="back"><span class="label-text">Back</span></button>
-			<button class="toolbar-button lightweight" disabled id="forward"><span class="label-text">Forward</span></button>
-			<button class="toolbar-button lightweight" disabled id="stop"><span class="label-text">Stop</span></button>
-			<button class="toolbar-button lightweight" disabled id="refresh"><span class="label-text">Refresh</span></button>
-			<button class="toolbar-button lightweight" disabled id="home"><span class="label-text">Home</span></button>
-			<button class="toolbar-button lightweight" disabled id="search"><span class="label-text">Search</span></button>
-			<button class="toolbar-button lightweight" disabled id="favorites"><span class="label-text">Favorites</span></button>
-			<button class="toolbar-button lightweight" disabled id="history"><span class="label-text">History</span></button>
+		<div id="internet-buttons" style="display: none;">
 			<div class="toolbar-compound-button-wrapper">
-				<button class="toolbar-button lightweight" disabled id="mail">
-					<span class="label-text">Mail</span>
+				<button class="toolbar-button lightweight back-button" disabled>
+					<span class="label-text">Back</span>
 				</button>
-				<button class="toolbar-dropdown-button lightweight" disabled id="views-dropdown-button">
+				<button class="toolbar-dropdown-button lightweight back-dropdown-button" disabled>
 					<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="fill:currentColor;display:inline-block;vertical-align:middle"><path style="transform:rotate(90deg);transform-origin:center" d="m6 4 4 4-4 4z"></path></svg>
 				</button>
 			</div>
-			<button class="toolbar-button lightweight" disabled id="print"><span class="label-text">Print</span></button>
-		</div> -->
+			<div class="toolbar-compound-button-wrapper">
+				<button class="toolbar-button lightweight forward-button" disabled>
+					<span class="label-text">Forward</span>
+				</button>
+				<button class="toolbar-dropdown-button lightweight forward-dropdown-button" disabled>
+					<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="fill:currentColor;display:inline-block;vertical-align:middle"><path style="transform:rotate(90deg);transform-origin:center" d="m6 4 4 4-4 4z"></path></svg>
+				</button>
+			</div>
+			<button class="toolbar-button lightweight stop-button"><span class="label-text">Stop</span></button>
+			<button class="toolbar-button lightweight refresh-button"><span class="label-text">Refresh</span></button>
+			<button class="toolbar-button lightweight home-button"><span class="label-text">Home</span></button>
+			<hr aria-orientation="vertical">
+			<button class="toolbar-button lightweight toggle search-button"><span class="label-text">Search</span></button>
+			<button class="toolbar-button lightweight toggle favorites-button"><span class="label-text">Favorites</span></button>
+			<button class="toolbar-button lightweight toggle history-button"><span class="label-text">History</span></button>
+			<!-- <div class="toolbar-compound-button-wrapper">
+				<button class="toolbar-button lightweight mail-button" disabled>
+					<span class="label-text">Mail</span>
+				</button>
+				<button class="toolbar-dropdown-button lightweight mail-dropdown-button" disabled>
+					<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" style="fill:currentColor;display:inline-block;vertical-align:middle"><path style="transform:rotate(90deg);transform-origin:center" d="m6 4 4 4-4 4z"></path></svg>
+				</button>
+			</div> -->
+			<hr aria-orientation="vertical">
+			<button class="toolbar-button lightweight print-button"><span class="label-text">Print</span></button>
+		</div>
 		</div>
 		<div class="toolbar" id="address-bar-toolbar">
 		<div class="toolbar-drag-handle"></div>

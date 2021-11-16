@@ -82,6 +82,7 @@ body {
 
 #address-bar,
 #standard-buttons,
+#internet-buttons,
 .menus {
 	flex: 0 0 auto;
 	display: flex;
