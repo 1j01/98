@@ -2,39 +2,44 @@
 	var $window_switcher = $("<div class='window-switcher outset-deep'>");
 	var $window_switcher_list = $("<ul class='window-switcher-list'>").appendTo($window_switcher);
 	var $window_switcher_window_name = $("<div class='window-switcher-window-name inset-deep'>").appendTo($window_switcher);
+	function activate_window($window) {
+		// console.log("Activating window:", $window);
+		$window.unminimize();
+		$window.bringToFront();
+		$window.focus(); // unminimize will focus but only if it was minimized (that's the current behavior anyway)
+	}
+
 	function show_window_switcher(cycle_backwards) {
 		if ($window_switcher.is(":visible")) {
 			cycle_window_switcher(cycle_backwards);
 			return;
 		}
 		$window_switcher_list.empty();
-		const window_els = $(".os-window").toArray(); // @TODO: support webamp, but only one entry; maybe should be based on tasks, not windows
-		if (window_els.length === 1) {
-			window_els[0].$window.unminimize();
-			window_els[0].$window.focus(); // unminimize will focus but only if it was minimized
+		const tasks = Task.all_tasks;
+		if (tasks.length === 1) {
+			activate_window(tasks[0].$window);
 			return;
 		}
-		if (window_els.length < 2) {
+		if (tasks.length < 2) {
 			return;
 		}
-		window_els.sort((a, b) =>
+		tasks.sort((a, b) =>
 			// using z-index, as it's similar to last-used order
-			b.style.zIndex - a.style.zIndex
+			b.$window[0].style.zIndex - a.$window[0].style.zIndex
 		);
-		for (const window_el of window_els) {
-			var $window = window_el.$window;
+		for (const task of tasks) {
+			var $window = task.$window;
 			var $item = $("<li>").addClass("window-switcher-item");
-			$item.append($("<img>").attr({
-				src: $window.icons[32] || "/images/icons/task-32x32.png",
+			$item.append($window.getIconAtSize(32) ?? $("<img>").attr({
+				src: "/images/icons/task-32x32.png",
 				width: 32,
 				height: 32,
 				alt: $window.getTitle()
 			}));
 			$item.data("$window", $window);
-			$item.on("click", function () {
-				$window.unminimize();
-				$window.focus();
-			});
+			// $item.on("click", function () { // Windows 98 didn't allow clicking items in the window switcher.
+			// 	activate_window($window);
+			// });
 			$window_switcher_list.append($item);
 			if ($window.hasClass("focused")) {
 				$item.addClass("active");
@@ -62,7 +67,7 @@
 		if ($active.length === 0) {
 			return;
 		}
-		$active.data("$window").focus();
+		activate_window($active.data("$window"));
 		$window_switcher.remove(); // must remove only after getting data()
 	}
 	function window_switcher_cancel() {
@@ -147,8 +152,7 @@
 			clearInterval(iid);
 			alt_held = false;
 
-			const window_els = $(".os-window").toArray(); // @TODO: support webamp, but only one entry; maybe should be based on tasks, not windows
-			if (window_els.length < 2) {
+			if (Task.all_tasks.length < 2) {
 				return;
 			}
 			// @TODO: Clippy

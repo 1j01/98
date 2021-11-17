@@ -788,6 +788,13 @@ function openWinamp(file_path) {
 					zIndex: $Window.Z_INDEX++
 				});
 			};
+			winamp_interface.element = winamp_interface[0] = $webamp[0]; // for checking z-index in window switcher
+			winamp_interface.hasClass = (className) => { // also for window switcher (@TODO: clean this stuff up)
+				if (className === "focused") {
+					return $webamp.hasClass("focused");
+				}
+				return false;
+			};
 			winamp_interface.focus = () => {
 				if (window.focusedWindow === winamp_interface) {
 					return;

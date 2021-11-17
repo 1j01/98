@@ -1,5 +1,9 @@
+Task.all_tasks = [];
 function Task(win) {
-	// win.task = this;
+	Task.all_tasks.push(this);
+
+	this.$window = win;
+	
 	const $task = this.$task = $("<button class='task toggle'/>").appendTo($(".tasks"));
 	const $title = $("<span class='title'/>");
 
@@ -55,6 +59,10 @@ function Task(win) {
 	});
 	win.onClosed(() => {
 		$task.remove();
+		const index = Task.all_tasks.indexOf(this);
+		if (index !== -1) {
+			Task.all_tasks.splice(index, 1);
+		}
 	});
 
 	if (win.is && win.is(":visible")) {
