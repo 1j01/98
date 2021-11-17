@@ -265,6 +265,9 @@ function cycle_window_switcher(cycle_backwards) {
 	$window_switcher_window_name.text($(new_item).data("$window").getTitle());
 }
 function window_switcher_close_and_select() {
+	if (!$window_switcher.is(":visible")) {
+		return;
+	}
 	const $active = $window_switcher.find(".active");
 	if ($active.length === 0) {
 		return;
