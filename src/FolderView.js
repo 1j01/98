@@ -649,11 +649,13 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 					// console.log("reset search_string");
 				}, 1000);
 
-				for (const item of self.items) {
-					const title = item.element.querySelector(".title").textContent; // @TODO: proper access
-					if (title.toLocaleLowerCase().startsWith(search_string.toLocaleLowerCase())) {
-						select_item(item, {}); // passing fake event so it doesn't use shiftKey to determine multi-select
-						break;
+				if (search_string.length > 0) {
+					for (const item of self.items) {
+						const title = item.element.querySelector(".title").textContent; // @TODO: proper access
+						if (title.toLocaleLowerCase().startsWith(search_string.toLocaleLowerCase())) {
+							select_item(item, {}); // passing fake event so it doesn't use shiftKey to determine multi-select
+							break;
+						}
 					}
 				}
 			}
