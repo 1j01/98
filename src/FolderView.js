@@ -312,7 +312,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 		$folder_view.focus();
 		// This doesn't do much if it's yet to be populated:
 		if ($folder_view.find(".desktop-icon.focused").length === 0) {
-			this.items[0].element.focus();
+			this.items[0]?.element.focus();
 		}
 		// Initial focus is handled in arrange_icons currently.
 	};
