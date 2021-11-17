@@ -12,7 +12,9 @@ function Task(win) {
 		const old_$icon = $icon;
 		$icon = win.getIconAtSize(16);
 		if (!$icon) {
-			$icon = $("<img src='images/icons/task.png'/>");
+			// $icon = $("<img src='images/icons/task-16x16.png'/>");
+			old_$icon?.remove();
+			return;
 		}
 		if (old_$icon) {
 			old_$icon.replaceWith($icon);
