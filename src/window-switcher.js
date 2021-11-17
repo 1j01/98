@@ -9,7 +9,12 @@
 		}
 		$window_switcher_list.empty();
 		const window_els = $(".os-window").toArray(); // @TODO: support webamp, but only one entry; maybe should be based on tasks, not windows
-		if (window_els.length < 2) { // @TODO: or if there's only one window, but it's not focused
+		if (window_els.length === 1) {
+			window_els[0].$window.unminimize();
+			window_els[0].$window.focus(); // unminimize will focus but only if it was minimized
+			return;
+		}
+		if (window_els.length < 2) {
 			return;
 		}
 		window_els.sort((a, b) =>
