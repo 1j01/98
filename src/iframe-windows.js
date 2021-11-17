@@ -13,6 +13,13 @@ function enhance_iframe(iframe) {
 			$("body").removeClass("loading-program");
 		}
 
+		try {
+			console.assert(iframe.contentWindow.document === iframe.contentDocument); // just something that won't get optimized away if we were to ever use a minifier (or by the JIT compiler??)
+		} catch (e) {
+			console.warn(`[enhance_iframe] iframe integration is not available for '${iframe.src}'`);
+			return;
+		}
+
 		if (window.themeCSSProperties) {
 			applyTheme(themeCSSProperties, iframe.contentDocument.documentElement);
 		}
