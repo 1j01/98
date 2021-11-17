@@ -666,7 +666,15 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 
 	function select_item(item_or_item_el, event, delay_scroll) {
 		const item_el_to_select = item_or_item_el instanceof Element ? item_or_item_el : item_or_item_el.element;
-		const extend_selection = event.shiftKey && selection_anchor_item_el && self.items.some(item => item.element === selection_anchor_item_el);
+		const extend_selection = event.shiftKey;
+		if (selection_anchor_item_el && !self.items.some(item => item.element === selection_anchor_item_el)) {
+			selection_anchor_item_el = null; // item was removed somehow
+		}
+		if (extend_selection && !selection_anchor_item_el) {
+			// select_item() hasn't been called yet (e.g. hitting Shift+Down without first hitting an arrow key without Shift, in a newly loaded folder view)
+			// use the focused item as the anchor
+			selection_anchor_item_el = self.items.find((item) => item.element.classList.contains("focused"))?.element ?? item_el_to_select;
+		}
 		// console.log("select_item", item_or_item_el, event, "extend_selection", extend_selection);
 		$folder_view.find(".desktop-icon").each(function (i, item_el) {
 			if (extend_selection) {
