@@ -65,9 +65,15 @@
 		$active.data("$window").focus();
 		$window_switcher.remove(); // must remove only after getting data()
 	}
+	function window_switcher_cancel() {
+		$window_switcher.remove();
+	}
 
 	window.addEventListener("keydown", handle_keydown, true);
 	window.addEventListener("keyup", handle_keyup, true);
+	window.addEventListener("blur", window_switcher_cancel); // this may be from an iframe getting focus (e.g. an app was loading), but in that case we might not be able to get the keyup anyways
+	// @TODO: detect if it's an iframe we've integrated with and thus could get the keyup event
+	// @TODO: also detect blur inside iframes, to cancel window switching
 
 	var iid;
 	var alt_held = false; // for detecting likely Alt+Tab
@@ -82,6 +88,8 @@
 		// console.log(e.key, e.code);
 		if (e.altKey && (e.code === "Backquote" || e.code === "Tab")) {
 			show_window_switcher(e.shiftKey);
+		} else {
+			window_switcher_cancel();
 		}
 		if (e.key === "Alt") {
 			alt_held = true;
@@ -129,6 +137,12 @@
 			} else {
 				// console.log("Active element is", top.document.activeElement, " despite hasFocus() being false so you've probably Alt+Tabbed");
 			}
+
+			// False positives:
+			// - Alt+D focuses the address bar in Chrome
+			// - Hold Alt and click outside the browser window
+			// - Alt+Space shows the system window menu on some platforms, and on Ubuntu XFCE in Firefox this causes a false positive but not in Chrome apparently (weird!)
+			// - Alt+(number) focuses a tab in Chrome, but it actually lets us cancel it; @TODO: detect this as not an Alt+Tab (could use a timeout after any key pressed while holding Alt)
 
 			clearInterval(iid);
 			alt_held = false;
