@@ -133,7 +133,10 @@
 			clearInterval(iid);
 			alt_held = false;
 
-			// @TODO: only show if there are multiple windows open
+			const window_els = $(".os-window").toArray(); // @TODO: support webamp, but only one entry; maybe should be based on tasks, not windows
+			if (window_els.length < 2) {
+				return;
+			}
 			// @TODO: Clippy
 			if (!notice_shown) {
 				alert("It looks like you're trying to use Alt+Tab to switch between windows.\n\nUse Alt+` (grave accent) instead within the 98.js desktop.\n\nAlso, use Alt+4 instead of Alt+F4 to close windows.");
