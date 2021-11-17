@@ -796,25 +796,20 @@ function openWinamp(file_path) {
 				return false;
 			};
 			winamp_interface.focus = () => {
-				if (window.focusedWindow === winamp_interface) {
-					return;
+				if (!$webamp.hasClass("focused")) {
+					$webamp.addClass("focused");
+					winamp_interface.bringToFront();
+					$eventTarget.triggerHandler("focus");
+					// @TODO: focus last focused window/control?
+					$webamp.find("#main-window [tabindex='-1']").focus();
 				}
-				window.focusedWindow && focusedWindow.blur();
-				winamp_interface.bringToFront();
-				// TODO: trigger click?
-				// on last focused winamp window
-				$eventTarget.triggerHandler("focus");
-
-				window.focusedWindow = winamp_interface;
 			};
 			winamp_interface.blur = () => {
-				if (window.focusedWindow !== winamp_interface) {
-					return;
+				if ($webamp.hasClass("focused")) {
+					$webamp.removeClass("focused");
+					$eventTarget.triggerHandler("blur");
+					// TODO: really blur
 				}
-				// TODO
-				$eventTarget.triggerHandler("blur");
-
-				window.focusedWindow = null;
 			};
 			winamp_interface.minimize = () => {
 				// TODO: are these actually useful or does webamp hide it?
@@ -881,20 +876,20 @@ function openWinamp(file_path) {
 				winamp_interface.close();
 				cancelAnimationFrame(raf_id);
 				visualizerOverlay.fadeOutAndCleanUp();
-				$G.off("pointerdown", global_pointerdown);
 			});
 			webamp.onMinimize(function () {
 				winamp_interface.minimize();
 			});
 
-			$webamp.on("pointerdown", () => {
+			$webamp.on("focusin", () => {
 				winamp_interface.focus();
 			});
-			// TODO: DRY
-			$G.on("pointerdown", global_pointerdown = (e) => {
+			$webamp.on("focusout", () => {
+				// could use relatedTarget, no?
 				if (
-					e.target.closest("#webamp") !== $webamp[0] &&
-					!e.target.closest(".taskbar")
+					!document.activeElement ||
+					!document.activeElement.closest ||
+					!document.activeElement.closest("#webamp")
 				) {
 					winamp_interface.blur();
 				}
