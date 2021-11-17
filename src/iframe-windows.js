@@ -242,6 +242,7 @@ function show_window_switcher(cycle_backwards) {
 		}));
 		$item.data("$window", $window);
 		$item.on("click", function () {
+			$window.unminimize();
 			$window.focus();
 		});
 		$window_switcher_list.append($item);
