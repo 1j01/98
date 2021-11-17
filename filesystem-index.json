@@ -3724,6 +3724,7 @@
     "iframe-windows.js": null,
     "msgbox.js": null,
     "programs.js": null,
-    "visualizer-overlay.js": null
+    "visualizer-overlay.js": null,
+    "window-switcher.js": null
   }
 }
