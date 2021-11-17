@@ -44,6 +44,9 @@ function enhance_iframe(iframe) {
 			}
 		});
 
+		// Let the containing page handle keyboard events, with an opportunity to cancel them
+		proxy_keyboard_events(iframe);
+
 		// on Wayback Machine, and iframe's url not saved yet
 		if (iframe.contentDocument.querySelector("#error #livewebInfo.available")) {
 			var message = document.createElement("div");
@@ -111,6 +114,36 @@ function enhance_iframe(iframe) {
 	});
 }
 
+// Let the containing page handle keyboard events, with an opportunity to cancel them
+function proxy_keyboard_events(iframe) {
+	// Note: iframe must be same-origin, or this will fail.
+	for (const event_type of ["keyup", "keydown", "keypress"]) {
+		iframe.contentWindow.addEventListener(event_type, (event) => {
+			const proxied_event = new KeyboardEvent(event_type, {
+				target: iframe,
+				view: iframe.ownerDocument.defaultView,
+				bubbles: true,
+				cancelable: true,
+				key: event.key,
+				keyCode: event.keyCode,
+				which: event.which,
+				code: event.code,
+				shiftKey: event.shiftKey,
+				ctrlKey: event.ctrlKey,
+				metaKey: event.metaKey,
+				altKey: event.altKey,
+				repeat: event.repeat,
+				//...@TODO: should it copy ALL properties?
+			});
+			const result = iframe.dispatchEvent(proxied_event);
+			// console.log("proxied", event, "as", proxied_event, "result", result);
+			if (!result) {
+				event.preventDefault();
+			}
+		}, true);
+	}
+}
+
 function make_iframe_window(options) {
 
 	options.resizable ??= true;
@@ -125,61 +158,9 @@ function make_iframe_window(options) {
 	// I know it's used from within the iframe contents as frameElement.$window
 	iframe.$window = $win;
 
-	var alt_held = false;
 	$iframe.on("load", function () {
 		$win.show();
 		$win.focus();
-		// @TODO: remove the need for duplicate event handlers
-		// by proxying events from the iframe to the window
-		iframe.contentWindow.addEventListener("keydown", handle_keydown, true);
-		iframe.contentWindow.addEventListener("keyup", handle_keyup, true);
-	});
-
-	$win.on("keydown", handle_keydown, true);
-	$win.on("keyup", handle_keyup, true);
-	// $(top).on("keyup", handle_keyup, true);
-
-	var iid;
-	var notice_shown = false;
-	function handle_keydown(e) {
-		if (e.altKey && (e.key === "4" || e.key === "F4")) { // we can't actually intercept Alt+F4, but might as well try, right?
-			e.preventDefault();
-			$win.close();
-		}
-		// console.log(e.key, e.code);
-		if (e.altKey && (e.code === "Backquote" || e.code === "Tab")) {
-			show_window_switcher(e.shiftKey);
-		}
-		if (e.key === "Alt") {
-			alt_held = true;
-			// console.log("Alt held");
-			iid = setInterval(look_for_focus_loss, 200);
-		}
-	}
-	function handle_keyup(e) {
-		// console.log("keyup", e.key, e.code);
-		// if (e.key === "Alt") { // on my Ubuntu XFCE, it's giving "Meta" if Shift is held
-		if (!e.altKey) {
-			alt_held = false;
-			clearInterval(iid);
-			// console.log("Alt released");
-			window_switcher_close_and_select();
-		}
-	}
-	function look_for_focus_loss() {
-		if (!top.document.hasFocus() && alt_held) {
-			clearInterval(iid);
-			// @TODO: Clippy
-			if (!notice_shown) {
-				alert("It looks like you're trying to use Alt+Tab to switch between windows.\n\nUse Alt+` (grave accent) instead within the 98.js desktop.\n\nAlso, use Alt+4 instead of Alt+F4 to close windows.");
-				notice_shown = true;
-			} else {
-				// console.log("Alt+Tab detected, notice already shown");
-			}
-		}
-	}
-	$win.on("closed", function () {
-		clearInterval(iid);
 	});
 
 	$win.$content.css({
