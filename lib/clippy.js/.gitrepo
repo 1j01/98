@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/git-commands/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/smore-inc/clippy.js.git
+	branch = master
+	commit = 8bfd1f92c725c6bc3a435d538a77c3302b327c08
+	parent = 0eb254a83023df018b7d405e319da8b5f22d741a
+	method = merge
+	cmdver = 0.4.3
