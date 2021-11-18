@@ -59,7 +59,6 @@
 		if (!used_window_switcher) {
 			agent?.stopCurrent(); // needed to continue on from the message with `hold` set (speak(message, true))
 			// Um, if you know about Alt+Tab, you can guess about how Alt+` works. But Clippy is supposed to be annoying, right?
-			// This extra dialog is partially just working around the fact that Clippy doesn't animate on double click after a held message for some reason.
 			agent?.speak("There you go! Press grave accent until you get to the window you want.");
 			used_window_switcher = true;
 		}
@@ -176,6 +175,11 @@
 					agent.show();
 					const message = "It looks like you're trying to switch windows.\n\nUse Alt+` (grave accent) instead of Alt+Tab within the 98.js desktop.\n\nAlso, use Alt+4 instead of Alt+F4 to close windows.";
 					agent.speak(message, true);
+					// held message causes double click to not animate Clippy, for some reason (even after message is cleared)
+					$(agent._el).one("dblclick", function () {
+						agent.stopCurrent();
+						agent.animate();
+					});
 				});
 				notice_shown = true;
 			}
