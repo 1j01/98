@@ -2,6 +2,9 @@
 	var $window_switcher = $("<div class='window-switcher outset-deep'>");
 	var $window_switcher_list = $("<ul class='window-switcher-list'>").appendTo($window_switcher);
 	var $window_switcher_window_name = $("<div class='window-switcher-window-name inset-deep'>").appendTo($window_switcher);
+	var agent;
+	var used_window_switcher = false;
+
 	function activate_window($window) {
 		// console.log("Activating window:", $window);
 		$window.unminimize();
@@ -18,6 +21,11 @@
 		const tasks = Task.all_tasks;
 		if (tasks.length === 1) {
 			activate_window(tasks[0].$window);
+			if (!used_window_switcher) {
+				agent?.stopCurrent(); // needed to continue on from the message with `hold` set (speak(message, true))
+				agent?.speak("If there's only one window, Alt+` will switch to it right away.");
+				// used_window_switcher = true; // allow the switching message to be spoken later
+			}
 			return;
 		}
 		if (tasks.length < 2) {
@@ -48,6 +56,13 @@
 		cycle_window_switcher(cycle_backwards);
 		$window_switcher.appendTo("body");
 		// console.log("Showing window switcher", $window_switcher[0]);
+		if (!used_window_switcher) {
+			agent?.stopCurrent(); // needed to continue on from the message with `hold` set (speak(message, true))
+			// Um, if you know about Alt+Tab, you can guess about how Alt+` works. But Clippy is supposed to be annoying, right?
+			// This extra dialog is partially just working around the fact that Clippy doesn't animate on double click after a held message for some reason.
+			agent?.speak("There you go! Press grave accent until you get to the window you want.");
+			used_window_switcher = true;
+		}
 	}
 	function cycle_window_switcher(cycle_backwards) {
 		const items = $window_switcher.find(".window-switcher-item").toArray();
@@ -156,7 +171,8 @@
 				return;
 			}
 			if (!notice_shown) {
-				clippy.load("Clippy", function (agent) {
+				clippy.load("Clippy", function (loaded_agent) {
+					agent = loaded_agent;
 					agent.show();
 					const message = "It looks like you're trying to use Alt+Tab to switch between windows.\n\nUse Alt+` (grave accent) instead within the 98.js desktop.\n\nAlso, use Alt+4 instead of Alt+F4 to close windows.";
 					agent.speak(message, true);
