@@ -174,7 +174,7 @@
 				clippy.load("Clippy", function (loaded_agent) {
 					agent = loaded_agent;
 					agent.show();
-					const message = "It looks like you're trying to use Alt+Tab to switch between windows.\n\nUse Alt+` (grave accent) instead within the 98.js desktop.\n\nAlso, use Alt+4 instead of Alt+F4 to close windows.";
+					const message = "It looks like you're trying to switch windows.\n\nUse Alt+` (grave accent) instead of Alt+Tab within the 98.js desktop.\n\nAlso, use Alt+4 instead of Alt+F4 to close windows.";
 					agent.speak(message, true);
 				});
 				notice_shown = true;
