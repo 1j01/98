@@ -454,6 +454,84 @@
     "browserfs.js.map": null,
     "browserfs.min.js": null,
     "browserfs.min.js.map": null,
+    "clippy.js": {
+      "MIT-LICENSE.txt": null,
+      "README.md": null,
+      "agents": {
+        "Bonzi": {
+          "agent.js": null,
+          "map.png": null,
+          "sounds-mp3.js": null,
+          "sounds-ogg.js": null
+        },
+        "Clippy": {
+          "agent.js": null,
+          "map.png": null,
+          "sounds-mp3.js": null,
+          "sounds-ogg.js": null
+        },
+        "F1": {
+          "agent.js": null,
+          "map.png": null,
+          "sounds-mp3.js": null,
+          "sounds-ogg.js": null
+        },
+        "Genie": {
+          "agent.js": null,
+          "map.png": null,
+          "sounds-mp3.js": null,
+          "sounds-ogg.js": null
+        },
+        "Genius": {
+          "agent.js": null,
+          "map.png": null,
+          "sounds-mp3.js": null,
+          "sounds-ogg.js": null
+        },
+        "Links": {
+          "agent.js": null,
+          "map.png": null,
+          "sounds-mp3.js": null,
+          "sounds-ogg.js": null
+        },
+        "Merlin": {
+          "agent.js": null,
+          "map.png": null,
+          "sounds-mp3.js": null,
+          "sounds-ogg.js": null
+        },
+        "Peedy": {
+          "agent.js": null,
+          "map.png": null,
+          "sounds-mp3.js": null,
+          "sounds-ogg.js": null
+        },
+        "Rocky": {
+          "agent.js": null,
+          "map.png": null,
+          "sounds-mp3.js": null,
+          "sounds-ogg.js": null
+        },
+        "Rover": {
+          "agent.js": null,
+          "map.png": null,
+          "sounds-mp3.js": null,
+          "sounds-ogg.js": null
+        }
+      },
+      "src": {
+        "agent.js": null,
+        "animator.js": null,
+        "balloon.js": null,
+        "clippy.css": null,
+        "images": {
+          "border.png": null,
+          "tip.png": null
+        },
+        "load.js": null,
+        "queue.js": null
+      }
+    },
     "jquery.min.js": null,
     "konami.js": null,
     "os-gui": {
