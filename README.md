@@ -16,6 +16,7 @@ Includes:
 * ![](images/icons/winamp2-16x16.png) Winamp 2.9 ([separate README](programs/winamp/README.md); [original repository](https://github.com/captbaritone/webamp)) by [Jordan Eldredge](https://jordaneldredge.com/)
 * ![](images/icons/folder-open-16x16.png) Windows Explorer / ![](images/icons/internet-explorer-16x16.png) Internet Explorer ([separate README](programs/explorer/README.md))
 * ![](images/icons/chm-16x16.png) Help Viewer
+* 📎 Clippy ([original repository](https://github.com/smore-inc/clippy.js))
 
 Features:
 * Drop files onto the desktop, and they'll be stored in a virtual filesystem

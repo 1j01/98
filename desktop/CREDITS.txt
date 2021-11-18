@@ -44,6 +44,9 @@ Calculator by:
 	Windows Calculator engine developers
 		https://github.com/microsoft/calculator
 
+Clippy by Smore:
+	https://github.com/smore-inc/clippy.js
+
 --------------------------------------
 Assets
 ======--------------------------------

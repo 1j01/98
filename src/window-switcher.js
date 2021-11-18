@@ -155,9 +155,12 @@
 			if (Task.all_tasks.length < 2) {
 				return;
 			}
-			// @TODO: Clippy
 			if (!notice_shown) {
-				alert("It looks like you're trying to use Alt+Tab to switch between windows.\n\nUse Alt+` (grave accent) instead within the 98.js desktop.\n\nAlso, use Alt+4 instead of Alt+F4 to close windows.");
+				clippy.load("Clippy", function (agent) {
+					agent.show();
+					const message = "It looks like you're trying to use Alt+Tab to switch between windows.\n\nUse Alt+` (grave accent) instead within the 98.js desktop.\n\nAlso, use Alt+4 instead of Alt+F4 to close windows.";
+					agent.speak(message, true);
+				});
 				notice_shown = true;
 			}
 		}
