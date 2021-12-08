@@ -123,13 +123,13 @@ button:not(.lightweight).default {
 	-o-border-image: var(--button-default-border-image);
 	   border-image: var(--button-default-border-image);
 }
-button:not(.lightweight):hover:active {
+button:not(.lightweight):enabled:hover:active {
 	-o-border-image: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22256px%22%20height%3D%22256px%22%20viewBox%3D%220%200%20256%20256%22%3E%0A%09%09%09%0A%09%09%3Cpath%20d%3D%22M0%200h256v256h-256v-256z%22%20fill%3D%22%20rgb(0%2C%200%2C%200)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M32%2032h192v192h-192v-192z%22%20fill%3D%22%20rgb(128%2C%20128%2C%20128)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M64%2064h128v128h-128v-128z%22%20fill%3D%22%20rgb(192%2C%20192%2C%20192)%22%2F%3E%0A%09%0A%09%09%3C%2Fsvg%3E") 64 / 2px;
 	   border-image: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22256px%22%20height%3D%22256px%22%20viewBox%3D%220%200%20256%20256%22%3E%0A%09%09%09%0A%09%09%3Cpath%20d%3D%22M0%200h256v256h-256v-256z%22%20fill%3D%22%20rgb(0%2C%200%2C%200)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M32%2032h192v192h-192v-192z%22%20fill%3D%22%20rgb(128%2C%20128%2C%20128)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M64%2064h128v128h-128v-128z%22%20fill%3D%22%20rgb(192%2C%20192%2C%20192)%22%2F%3E%0A%09%0A%09%09%3C%2Fsvg%3E") 64 / 2px;
 	-o-border-image: var(--button-active-border-image);
 	   border-image: var(--button-active-border-image);
 }
-button:not(.lightweight).default:hover:active {
+button:not(.lightweight).default:enabled:hover:active {
 	-o-border-image: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22256px%22%20height%3D%22256px%22%20viewBox%3D%220%200%20256%20256%22%3E%0A%09%09%09%0A%09%09%3Cpath%20d%3D%22M0%200h256v256h-256v-256z%22%20fill%3D%22%20rgb(0%2C%200%2C%200)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M32%2032h192v192h-192v-192z%22%20fill%3D%22%20rgb(128%2C%20128%2C%20128)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M64%2064h128v128h-128v-128z%22%20fill%3D%22%20rgb(192%2C%20192%2C%20192)%22%2F%3E%0A%09%09%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%22256%22%20height%3D%22256%22%20stroke-width%3D%2264%22%20stroke%3D%22%20rgb(0%2C%200%2C%200)%22%20fill%3D%22none%22%2F%3E%0A%09%0A%09%09%3C%2Fsvg%3E") 64 / 2px;
 	   border-image: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22256px%22%20height%3D%22256px%22%20viewBox%3D%220%200%20256%20256%22%3E%0A%09%09%09%0A%09%09%3Cpath%20d%3D%22M0%200h256v256h-256v-256z%22%20fill%3D%22%20rgb(0%2C%200%2C%200)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M32%2032h192v192h-192v-192z%22%20fill%3D%22%20rgb(128%2C%20128%2C%20128)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M64%2064h128v128h-128v-128z%22%20fill%3D%22%20rgb(192%2C%20192%2C%20192)%22%2F%3E%0A%09%09%3Crect%20x%3D%220%22%20y%3D%220%22%20width%3D%22256%22%20height%3D%22256%22%20stroke-width%3D%2264%22%20stroke%3D%22%20rgb(0%2C%200%2C%200)%22%20fill%3D%22none%22%2F%3E%0A%09%0A%09%09%3C%2Fsvg%3E") 64 / 2px;
 	-o-border-image: var(--button-default-active-border-image);
@@ -145,6 +145,7 @@ button:not(.lightweight).default:hover:active {
 }
 */
 /* also, this is more complicated; see Paint; the tool buttons translate when being pushed and when depressed, and these add together */
+/* omg, a thought... what if I used feDisplacementMap SVG filter... */
 
 button:not(.lightweight):focus::before {
 	content: "";
@@ -167,7 +168,7 @@ button.lightweight {
 	border-color: transparent;
 }
 /* TODO: recommend preventing focus on click for lightweight buttons */
-button.lightweight:not([disabled]):hover {
+button.lightweight:enabled:hover {
 	border-style: solid;
 	border-width: 1px;
 	border-color: rgb(255, 255, 255) rgb(128, 128, 128) rgb(128, 128, 128) rgb(255, 255, 255);
@@ -177,7 +178,7 @@ button.lightweight:not([disabled]):hover {
 	color: rgb(0, 0, 0);
 	color: var(--ButtonText);
 }
-button.lightweight:not([disabled]):hover:active {
+button.lightweight:enabled:hover:active, button.lightweight.pressing, button.lightweight.pressed {
 	border-style: solid;
 	border-width: 1px;
 	border-color: rgb(128, 128, 128) rgb(255, 255, 255) rgb(255, 255, 255) rgb(128, 128, 128);
@@ -187,14 +188,13 @@ button.lightweight:not([disabled]):hover:active {
 	color: rgb(0, 0, 0);
 	color: var(--ButtonText);
 }
-button[disabled] {
+button:disabled {
 	color: rgb(128, 128, 128);
 	color: var(--GrayText);
 	text-shadow: 1px 1px 0px rgb(255, 255, 255);
 	text-shadow: 1px 1px 0px var(--ButtonHilight);
 }
-/* TODO: [checked]? .pressed? .depressed? .down? .held? what should it be called? */
-button:not(.lightweight).toggle:hover:active {
+button:not(.lightweight).toggle:enabled:hover:active, button:not(.lightweight).pressing {
 	border-style: solid;
 	border-width: 1px;
 	border-color: rgb(128, 128, 128) rgb(255, 255, 255) rgb(255, 255, 255) rgb(128, 128, 128);
@@ -210,12 +210,14 @@ button:not(.lightweight).toggle:hover:active {
 	   border-image: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22256px%22%20height%3D%22256px%22%20viewBox%3D%220%200%20256%20256%22%3E%0A%09%09%09%0A%09%09%3Cpath%20d%3D%22M0%200h224v32h-192v192h-32v-224z%22%20fill%3D%22%20rgb(0%2C%200%2C%200)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M224%200h32v256h-256v-32h224v-224z%22%20fill%3D%22%20rgb(255%2C%20255%2C%20255)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M32%2032h160v32h-128v128h-32v-160z%22%20fill%3D%22%20rgb(128%2C%20128%2C%20128)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M192%2032h32v192h-192v-32h160v-160z%22%20fill%3D%22%20rgb(223%2C%20223%2C%20223)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M64%2064h128v128h-128v-128z%22%20fill%3D%22%20rgb(192%2C%20192%2C%20192)%22%2F%3E%0A%09%0A%09%09%3C%2Fsvg%3E") 64 / 2px;
 	-o-border-image: var(--inset-deep-border-image);
 	   border-image: var(--inset-deep-border-image);
+}
+button:not(.lightweight).toggle:enabled:hover:active, button:not(.lightweight).pressing {
 	border-color: rgb(128, 128, 128);
 	border-color: var(--ButtonShadow);
 	border-style: solid;
 	border-width: 2px 2px;
 }
-button:not(.lightweight).toggle.selected {
+button:not(.lightweight).toggle.selected, button:not(.lightweight).pressed {
 	border-style: solid;
 	border-width: 1px;
 	border-color: rgb(128, 128, 128) rgb(255, 255, 255) rgb(255, 255, 255) rgb(128, 128, 128);
@@ -231,10 +233,14 @@ button:not(.lightweight).toggle.selected {
 	   border-image: url("data:image/svg+xml,%3Csvg%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22256px%22%20height%3D%22256px%22%20viewBox%3D%220%200%20256%20256%22%3E%0A%09%09%09%0A%09%09%3Cpath%20d%3D%22M0%200h224v32h-192v192h-32v-224z%22%20fill%3D%22%20rgb(0%2C%200%2C%200)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M224%200h32v256h-256v-32h224v-224z%22%20fill%3D%22%20rgb(255%2C%20255%2C%20255)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M32%2032h160v32h-128v128h-32v-160z%22%20fill%3D%22%20rgb(128%2C%20128%2C%20128)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M192%2032h32v192h-192v-32h160v-160z%22%20fill%3D%22%20rgb(223%2C%20223%2C%20223)%22%2F%3E%0A%09%09%3Cpath%20d%3D%22M64%2064h128v128h-128v-128z%22%20fill%3D%22%20rgb(192%2C%20192%2C%20192)%22%2F%3E%0A%09%0A%09%09%3C%2Fsvg%3E") 64 / 2px;
 	-o-border-image: var(--inset-deep-border-image);
 	   border-image: var(--inset-deep-border-image);
+}
+button:not(.lightweight).toggle.selected, button:not(.lightweight).pressed {
 	border-color: rgb(128, 128, 128);
 	border-color: var(--ButtonShadow);
 	border-style: solid;
 	border-width: 2px 2px;
+}
+button:not(.lightweight).toggle.selected, button:not(.lightweight).pressed {
 	background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACCAYAAABytg0kAAAAG0lEQVQYV2P8/////4MHDzIwHjhw4L+9vT0DAHAFCj6esq3FAAAAAElFTkSuQmCC") repeat;
 	background: var(--checker) repeat;
 	-ms-interpolation-mode: nearest-neighbor;
@@ -258,8 +264,11 @@ body > .window-titlebar {
 	font-family: 'Segoe UI', sans-serif;
 	font-size: 12px;
 }
-
-.os-window .window-titlebar,
+.os-window.rtl .window-titlebar {
+	background: linear-gradient(to left, rgb(0, 0, 128) 0%, rgb(16, 132, 208) 100%);
+	background: linear-gradient(to left, var(--ActiveTitle) 0%, var(--GradientActiveTitle) 100%);
+}
+.os-window:not(.tool-window) .window-titlebar,
 body > .window-titlebar {
 	font-weight: bold;
 }
@@ -272,6 +281,10 @@ body > .window-titlebar {
 
 	color: var(--InactiveTitleText);
 }
+.os-window.rtl:not(.focused) .window-titlebar {
+	background: linear-gradient(to left, rgb(128, 128, 128) 0%, rgb(181, 181, 181) 100%);
+	background: linear-gradient(to left, var(--InactiveTitle) 0%, var(--GradientInactiveTitle) 100%);
+}
 .os-window {
 	/* Needed for when maximized, otherwise would be provided by %outset-deep */
 	background: rgb(192, 192, 192);
@@ -281,7 +294,6 @@ body > .window-titlebar {
 	/*color: var(--WindowText);*/
 	/*border: 1px solid var(--WindowFrame);*/
 	/* TODO: use window-specific theme colors; also different types of windows */
-	/* padding: 2px; */
 }
 .os-window:not(.maximized) {
 	border-style: solid;
@@ -303,19 +315,103 @@ body > .window-titlebar {
 	border-color: var(--ButtonLight) var(--ButtonShadow) var(--ButtonShadow) var(--ButtonLight);
 	border-style: solid;
 	border-width: 2px 2px;
+	padding: 2px;
 }
-.os-window > * {
-	/* margin: 1px; */
-}
+
 .window-button {
+	display: block;
+	width: 16px;
+	height: 14px;
+	padding: 0;
 	margin: 2px 0;
+}
+.window-button-icon {
+	display: block;
+	/* background-image: url("images/titlebar-buttons.png"); */
+	--sprite-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAAKCAYAAADo3z3CAAAAoUlEQVRIS9VVWw7AIAib9z/0FpZgCOFRgpluf9MClhYdV++7gfDhYLxYDw+UyiHd5F8S5lr6zNa6Xpv/KwhHOahQpLB1+CwfycgYrwmE0WK8MTsIR1aOGsR+NYkkYzN5/pGwVA9xA/diq8LeHCKuQxQ+aoYt2yJWtpSNZth0edRpGVC5eGQcSg4hXLml3fdpBeHs8evWyPKX9ruXVqnYCeAHA8IyC9K2kmkAAAAASUVORK5CYII=");
+	--sprite-y: 0;
+	-ms-interpolation-mode: nearest-neighbor;
+	    image-rendering: -moz-crisp-edges;
+	    image-rendering: pixelated;
+	width: 12px;
+	height: 10px;
+	position: relative;
+	pointer-events: none;
+}
+.os-window .window-button:enabled:hover:active .window-button-icon,
+.os-window .window-button.pressing .window-button-icon {
+	top: 1px;
+	left: 1px;
+}
+.window-button:disabled .window-button-icon {
+	/* filter: saturate(0%) opacity(50%); fallback */
+	/* filter: url("#os-gui-black-to-inset-filter"); */
+}
+.window-button .window-button-icon::before,
+.window-button .window-button-icon::after {
+	content: "";
+	display: block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0;
+	-webkit-mask-image: var(--sprite-image);
+	        mask-image: var(--sprite-image);
+	-webkit-mask-position: var(--sprite-x) var(--sprite-y);
+	        mask-position: var(--sprite-x) var(--sprite-y);
+	background-color: rgb(0, 0, 0);
+	background-color: var(--ButtonText);
+}
+.window-button:disabled .window-button-icon::before {
+	background-color: rgb(255, 255, 255);
+	background-color: var(--ButtonHilight);
+	left: 1px;
+	top: 1px;
+}
+.window-button:enabled .window-button-icon::after {
+	display: none;
+}
+.window-button:disabled .window-button-icon::after {
+	background-color: rgb(128, 128, 128);
+	background-color: var(--GrayText);
+}
+.window-action-close .window-button-icon  {
+	--sprite-x: calc(-3 * 13px - 1px);
+}
+.window-action-maximize .window-button-icon  {
+	--sprite-x: calc(-1 * 13px - 1px);
+}
+.window-action-restore .window-button-icon  {
+	--sprite-x: calc(-2 * 13px - 1px);
+}
+.window-action-minimize .window-button-icon  {
+	--sprite-x: calc(-0 * 13px - 1px);
 }
 .window-close-button {
 	margin-left: 2px;
 	margin-right: 2px;
 }
+.os-window.tool-window .window-close-button {
+	width: 11px;
+	height: 11px;
+}
+.os-window.tool-window .window-close-button .window-button-icon {
+	width: 7px;
+	height: 7px;
+	--sprite-x: 7px;
+}
 .os-window .window-title-area {
-	height: 16px; /* 100% doesn't work */
+	height: 16px;
+}
+.os-window.tool-window .window-title-area {
+	height: 14px;
+}
+.os-window .window-titlebar {
+	height: 18px;
+}
+.os-window.tool-window .window-titlebar {
+	height: 15px;
 }
 .os-window .window-title {
 	position: absolute;
@@ -331,51 +427,6 @@ body > .window-titlebar {
 	white-space: nowrap;
 	padding-left: 2px;
 }
-.window-close-button {
-	/* display: block !important; */
-	/* float: right; */
-	/* width: 13px;
-	height: 11px; */
-}
-.window-close-button,
-.window-maximize-button,
-.window-minimize-button {
-	background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADwAAAAKCAYAAADo3z3CAAAAoUlEQVRIS9VVWw7AIAib9z/0FpZgCOFRgpluf9MClhYdV++7gfDhYLxYDw+UyiHd5F8S5lr6zNa6Xpv/KwhHOahQpLB1+CwfycgYrwmE0WK8MTsIR1aOGsR+NYkkYzN5/pGwVA9xA/diq8LeHCKuQxQ+aoYt2yJWtpSNZth0edRpGVC5eGQcSg4hXLml3fdpBeHs8evWyPKX9ruXVqnYCeAHA8IyC9K2kmkAAAAASUVORK5CYII=");
-	-ms-interpolation-mode: nearest-neighbor;
-	    image-rendering: -moz-crisp-edges;
-	    image-rendering: pixelated;
-	display: block;
-	width: 16px;
-	height: 14px;
-	padding: 0;
-}
-
-.window-close-button {
-	background-position: calc(-3 * 13px - 1px) 0px;
-}
-.window-maximize-button {
-	background-position: calc(-1 * 13px - 1px) 0px;
-}
-.maximized .window-maximize-button {
-	background-position: calc(-2 * 13px - 1px) 0px;
-}
-.window-minimize-button {
-	background-position: calc(-0 * 13px - 1px) 0px;
-}
-
-.window-close-button:hover:active {
-	background-position: calc(-3 * 13px - 0px) 1px;
-}
-.window-maximize-button:hover:active {
-	background-position: calc(-1 * 13px - 0px) 1px;
-}
-.maximized .window-maximize-button:hover:active {
-	background-position: calc(-2 * 13px - 0px) 1px;
-}
-.window-minimize-button:hover:active {
-	background-position: calc(-0 * 13px - 0px) 1px;
-}
-
 
 .menus {
 	background: rgb(192, 192, 192);
@@ -391,33 +442,65 @@ body > .window-titlebar {
 	font-family: 'Segoe UI', sans-serif;
 	font-size: 12px;
 }
-.menu-container {
-	margin-bottom: 1px;
-}
 .menu-button {
 	box-sizing: border-box;
-	height: 18px;
+	/* Using a balanced border to offset the contents on press */
+	border: 0px solid transparent;
+	border-top-width: 0px;
+	border-left-width: 0px;
+	border-bottom-width: 1px;
+	border-right-width: 1px;
+	/* Unfortunately, everything else has to be balanced by 1px (very carefully) in many places. */
+	
+	height: 18px; /* (EFFECTIVELY NORMAL but...) +1px -1px: +1px due to transparent border, but needs to be metrically same as visual height for the menu popup positioning, so I used bottom: -1px on the pseudo element to get it so this can be -1px to 18px again */
 	line-height: 1;
-	margin-top: 1px;
-	margin-bottom: 1px;
-	padding: 2px 5px;
+	margin-top: 1px; /* NORMAL MARGIN */
+	/* margin-bottom: 1px; consumed margin */
+	margin-right: -1px; /* keep menu items directly abutting */
+
+	/* need the overflow visible for the psuedo element's top and left borders to be visible */
+	overflow: visible;
+	-webkit-clip-path: inset(0 1px 0 0);
+	        clip-path: inset(0 1px 0 0); /* clipping text off inside the border, without clipping the border (somewhat mysteriously) */
+
+	padding: 2px 5px; /* NORMAL PADDING; I took great lengths to make this easily changable from outside code (padding is an obvious strategy for making the press offset effect, but I think this is a common thing you might want to customize) */
 	position: relative;
 	outline: 0;
 	/* @extend button.lightweight; */
 	background: rgb(192, 192, 192);
 	background: var(--Menu);
 }
-.menu-button:hover {
+.menu-button.highlight.active {
+	border-top-width: 1px;
+	border-left-width: 1px;
+	border-bottom-width: 0px;
+	border-right-width: 0px;
+}
+/* Note: In Windows 98, normal menu bars have an inset highlight if you use Esc and then the arrow keys,
+whereas Explorer's menu bars are outset and match the hover effect, which I feel makes more sense,
+so I think I'll immitate that. */
+/* Also, to prevent duplicate highlight (via keyboard + mouse), and lingering highlight with touch, I'm using a class, rather than :hover/:focus/:active */
+.menu-button.highlight::after {
+	content: "";
+	display: block;
+	position: absolute;
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: -1px;
 	box-shadow: 1px 1px 0 rgb(255, 255, 255) inset, -1px -1px 0 rgb(128, 128, 128) inset;
 	box-shadow: 1px 1px 0 var(--ButtonHilight) inset, -1px -1px 0 var(--ButtonShadow) inset;
 }
-.menu-button:active,
-.menu-button.active {
+.menu-button.highlight.active::after {
 	box-shadow: 1px 1px 0 rgb(128, 128, 128) inset, -1px -1px 0 rgb(255, 255, 255) inset;
 	box-shadow: 1px 1px 0 var(--ButtonShadow) inset, -1px -1px 0 var(--ButtonHilight) inset;
-	top: 1px;
-	left: 1px;
+	/* counteract the balanced border, in order to render this border, in the proper place */
+	left: -1px;
+	top: -1px;
+	right: 1px;
+	bottom: 0;
 }
+
 .menu-popup {
 	display: block;
 	padding: 2px;
@@ -438,9 +521,13 @@ body > .window-titlebar {
 	color: rgb(0, 0, 0);
 	color: var(--MenuText);
 }
+.menu-popup td {
+    padding: 0 1px;
+}
 .menu-item {
 	padding: 1px 3px;
 	margin: 2px;
+	height: 17px;
 }
 .menu-item[disabled] {
 	color: rgb(128, 128, 128);
@@ -448,28 +535,75 @@ body > .window-titlebar {
 	text-shadow: 0.8px 0.8px 0px rgb(255, 255, 255);
 	text-shadow: 0.8px 0.8px 0px var(--ButtonHilight);
 }
-.menu-item:focus,
+.menu-item.highlight:not([disabled]),
+.menu-item.active:not([disabled]) {
+	color: rgb(255, 255, 255);
+	color: var(--HilightText);
+}
+.menu-item.highlight,
 .menu-item.active {
 	background: rgb(0, 0, 128);
 	background: var(--Hilight);
-	color: rgb(255, 255, 255);
-	color: var(--HilightText);
 	text-shadow: none;
 	outline: 0;
 }
 .menu-item .menu-item-shortcut {
 	padding-left: 10px;
 }
+/* Note: viewBox is needed for scaling the SVG, used in JS Paint's Eye Gaze Mode */
+.menu-item-checkbox-area::after {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg' style='fill:currentColor;display:inline-block;vertical-align:middle' %3E%3Cpath d='M5 7v3l2 2 5-5V4L7 9Z'/%3E%3C/svg%3E");
+	        mask-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg' style='fill:currentColor;display:inline-block;vertical-align:middle' %3E%3Cpath d='M5 7v3l2 2 5-5V4L7 9Z'/%3E%3C/svg%3E");
+}
+.menu-item-checkbox-area.radio::after {
+	-webkit-mask-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg' style='fill:currentColor;display:inline-block;vertical-align:middle' %3E%3Ccircle cx='8' cy='8' r='3'/%3E%3C/svg%3E");
+	        mask-image: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg' style='fill:currentColor;display:inline-block;vertical-align:middle' %3E%3Ccircle cx='8' cy='8' r='3'/%3E%3C/svg%3E");
+}
+.has-submenu .menu-item-submenu-area::after {
+	-webkit-mask-image: url("data:image/svg+xml, %3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg' style='fill:currentColor;display:inline-block;vertical-align:middle' %3E%3Cpath d='m6 4 4 4-4 4z'/%3E%3C/svg%3E");
+	        mask-image: url("data:image/svg+xml, %3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg' style='fill:currentColor;display:inline-block;vertical-align:middle' %3E%3Cpath d='m6 4 4 4-4 4z'/%3E%3C/svg%3E");
+}
+.has-submenu .menu-item-submenu-area.point-right::after {
+	transform: scaleX(-1);
+}
+.menu-item-checkbox-area::after,
+.menu-item-submenu-area::after {
+	content: "";
+	display: block;
+	width: 16px;
+	height: 16px;
+	/* no background means it's invisible by default here (masking transparent gives transparent, i.e. nothing) */
+}
+.menu-item[aria-checked=true] .menu-item-checkbox-area::after,
+.menu-item.has-submenu .menu-item-submenu-area::after {
+	/* makes it visible */
+	background: currentColor;
+}
+
 .menu-hr {
 	border: 0;
 	border-top: 1px solid rgb(128, 128, 128);
 	border-top: 1px solid var(--ButtonShadow);
 	border-bottom: 1px solid rgb(255, 255, 255);
 	border-bottom: 1px solid var(--ButtonHilight);
-	margin: 0px 2px;
+	margin: 0;
+	margin-top: 3px;
+	margin-bottom: 4px;
 }
 .menu-hotkey {
 	text-decoration: underline;
+}
+.menu-hotkey::-moz-selection {
+	/* prevent weird looking white underlines if menubar is contained in a selection, possible in the demo (minute edge case) */
+    text-decoration-color: rgb(0, 0, 0) !important;
+    text-decoration-color: var(--MenuText) !important;
+}
+.menu-hotkey::selection {
+	/* prevent weird looking white underlines if menubar is contained in a selection, possible in the demo (minute edge case) */
+    -webkit-text-decoration-color: rgb(0, 0, 0) !important;
+            text-decoration-color: rgb(0, 0, 0) !important;
+    -webkit-text-decoration-color: var(--MenuText) !important;
+            text-decoration-color: var(--MenuText) !important;
 }
 
 

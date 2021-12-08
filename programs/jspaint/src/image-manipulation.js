@@ -54,10 +54,8 @@ function draw_ellipse(ctx, x, y, w, h, stroke, fill){
 		}
 		draw_polygon(ctx, points, stroke, fill);
 	}else{
-		if(w < 0){ x += w; w = -w; }
-		if(h < 0){ y += h; h = -h; }
 		ctx.beginPath();
-		ctx.ellipse(center_x, center_y, w/2, h/2, 0, TAU, false);
+		ctx.ellipse(center_x, center_y, Math.abs(w/2), Math.abs(h/2), 0, TAU, false);
 		ctx.stroke();
 		ctx.fill();
 	}
@@ -152,7 +150,12 @@ const get_circumference_points_for_brush = memoize_synchronous_function((brush_s
 
 	const image_data = brush_canvas.ctx.getImageData(0, 0, brush_canvas.width, brush_canvas.height);
 
-	const at = (x, y)=> image_data.data[(y * image_data.width + x) * 4 + 3] > 0;
+	const at = (x, y) => (
+		// coordinate checking is important so it doesn't wrap (if the brush abuts the edge of the canvas)
+		x >= 0 && y >= 0 &&
+		x < image_data.width && y < image_data.height &&
+		image_data.data[(y * image_data.width + x) * 4 + 3] > 127
+	);
 
 	const offset_x = -Math.ceil(brush_canvas.width / 2);
 	const offset_y = -Math.ceil(brush_canvas.height / 2);
@@ -216,7 +219,7 @@ function draw_line_without_pattern_support(ctx, x1, y1, x2, y2, stroke_size = 1)
 
 function bresenham_line(x1, y1, x2, y2, callback){
 	// Bresenham's line algorithm
-	x1=~~x1, x2=~~x2, y1=~~y1, y2=~~y2;
+	x1=~~x1; x2=~~x2; y1=~~y1; y2=~~y2;
 	
 	const dx = Math.abs(x2 - x1);
 	const dy = Math.abs(y2 - y1);
@@ -235,9 +238,9 @@ function bresenham_line(x1, y1, x2, y2, callback){
 	}
 }
 
-function brosandham_line(x1, y1, x2, y2, callback){
-	// Bresenham's line argorithm with a callback between going horizontal and vertical
-	x1=~~x1, x2=~~x2, y1=~~y1, y2=~~y2;
+function bresenham_dense_line(x1, y1, x2, y2, callback){
+	// Bresenham's line algorithm with a callback between going horizontal and vertical
+	x1=~~x1; x2=~~x2; y1=~~y1; y2=~~y2;
 	
 	const dx = Math.abs(x2 - x1);
 	const dy = Math.abs(y2 - y1);
@@ -268,9 +271,11 @@ function draw_fill_without_pattern_support(ctx, start_x, start_y, fill_r, fill_g
 	// maybe do something fancier like special-casing large chunks of single-color image
 	// (octree? or just have a higher level stack of chunks to fill and check at if a chunk is homogeneous)
 
+	const c_width = main_canvas.width;
+	const c_height = main_canvas.height;
+	start_x = Math.max(0, Math.min(Math.floor(start_x), c_width));
+	start_y = Math.max(0, Math.min(Math.floor(start_y), c_height));
 	const stack = [[start_x, start_y]];
-	const c_width = canvas.width;
-	const c_height = canvas.height;
 	const id = ctx.getImageData(0, 0, c_width, c_height);
 	let pixel_pos = (start_y*c_width + start_x) * 4;
 	const start_r = id.data[pixel_pos+0];
@@ -278,12 +283,16 @@ function draw_fill_without_pattern_support(ctx, start_x, start_y, fill_r, fill_g
 	const start_b = id.data[pixel_pos+2];
 	const start_a = id.data[pixel_pos+3];
 	
-	if(
-		fill_r === start_r &&
-		fill_g === start_g &&
-		fill_b === start_b &&
-		fill_a === start_a
-	){
+	// @TODO: Allow flood-filling colors similar within fill threshold.
+	// Right now it will cause an infinite loop if we don't stop early in this case.
+	// As of writing, the fill threshold is very low, so this problem is unlikely to be noticed,
+	// but it would be nice as a user-configurable option.
+	if (
+		Math.abs(fill_r - start_r) <= fill_threshold &&
+		Math.abs(fill_g - start_g) <= fill_threshold &&
+		Math.abs(fill_b - start_b) <= fill_threshold &&
+		Math.abs(fill_a - start_a) <= fill_threshold
+	) {
 		return;
 	}
 	
@@ -373,10 +382,15 @@ function draw_fill(ctx, start_x, start_y, swatch) {
 	}
 }
 
-function draw_fill_separately(source_ctx, dest_ctx, start_x, start_y, fill_r, fill_g, fill_b, fill_a){
+function draw_fill_separately(source_ctx, dest_ctx, start_x, start_y, fill_r, fill_g, fill_b, fill_a) {
+	if (fill_a === 0) {
+		throw new Error("Filling with alpha of zero is not supported. Zero alpha is used for detecting whether a pixel has been visited.");
+	}
+	const c_width = main_canvas.width;
+	const c_height = main_canvas.height;
+	start_x = Math.max(0, Math.min(Math.floor(start_x), c_width));
+	start_y = Math.max(0, Math.min(Math.floor(start_y), c_height));
 	const stack = [[start_x, start_y]];
-	const c_width = source_ctx.canvas.width;
-	const c_height = source_ctx.canvas.height;
 	const source_id = source_ctx.getImageData(0, 0, c_width, c_height);
 	const dest_id = dest_ctx.getImageData(0, 0, c_width, c_height);
 	let pixel_pos = (start_y*c_width + start_x) * 4;
@@ -505,7 +519,9 @@ function find_color_globally(source_image_data, dest_image_data, find_r, find_g,
 	}
 }
 
-function draw_noncontiguous_fill_without_pattern_support(ctx, x, y, fill_r, fill_g, fill_b, fill_a){
+function draw_noncontiguous_fill_without_pattern_support(ctx, x, y, fill_r, fill_g, fill_b, fill_a) {
+	x = Math.max(0, Math.min(Math.floor(x), ctx.canvas.width));
+	y = Math.max(0, Math.min(Math.floor(y), ctx.canvas.height));
 	const image_data = ctx.getImageData(0, 0, ctx.canvas.width, ctx.canvas.height);
 	const start_index = (y*image_data.width + x) * 4;
 	const start_r = image_data.data[start_index+0];
@@ -531,7 +547,9 @@ function draw_noncontiguous_fill(ctx, x, y, swatch){
 	}
 }
 
-function draw_noncontiguous_fill_separately(source_ctx, dest_ctx, x, y){
+function draw_noncontiguous_fill_separately(source_ctx, dest_ctx, x, y) {
+	x = Math.max(0, Math.min(Math.floor(x), source_ctx.canvas.width));
+	y = Math.max(0, Math.min(Math.floor(y), source_ctx.canvas.height));
 	const source_image_data = source_ctx.getImageData(0, 0, source_ctx.canvas.width, source_ctx.canvas.height);
 	const dest_image_data = dest_ctx.getImageData(0, 0, dest_ctx.canvas.width, dest_ctx.canvas.height);
 	const start_index = (y*source_image_data.width + x) * 4;
@@ -547,7 +565,7 @@ function draw_noncontiguous_fill_separately(source_ctx, dest_ctx, x, y){
 
 function apply_image_transformation(meta, fn){
 	// Apply an image transformation function to either the selection or the entire canvas
-	const original_canvas = selection ? selection.source_canvas: canvas;
+	const original_canvas = selection ? selection.source_canvas: main_canvas;
 	
 	const new_canvas = make_canvas(original_canvas.width, original_canvas.height);
 
@@ -558,7 +576,7 @@ function apply_image_transformation(meta, fn){
 	
 	if(selection){
 		undoable({
-			name: `${meta.name} (Selection)`,
+			name: `${meta.name} (${localize("Selection")})`,
 			icon: meta.icon,
 			soft: true,
 		}, () => {
@@ -572,8 +590,9 @@ function apply_image_transformation(meta, fn){
 			icon: meta.icon,
 		}, () => {
 			saved = false;
+			update_title();
 			
-			ctx.copy(new_canvas);
+			main_ctx.copy(new_canvas);
 			
 			$canvas.trigger("update"); // update handles
 		});
@@ -662,7 +681,7 @@ function rotate(angle){
 				new_ctx.disable_image_smoothing();
 				
 				if(!transparency){
-					new_ctx.fillStyle = colors.background;
+					new_ctx.fillStyle = selected_colors.background;
 					new_ctx.fillRect(0, 0, new_canvas.width, new_canvas.height);
 				}
 				
@@ -677,30 +696,30 @@ function rotate(angle){
 	});
 }
 
-function stretch_and_skew(xscale, yscale, hsa, vsa){
+function stretch_and_skew(x_scale, y_scale, h_skew, v_skew){
 	apply_image_transformation({
 		name:
-			(hsa !== 0 || vsa !== 0) ? (
-				(xscale !== 1 || yscale !== 1) ? localize("Stretch and Skew") : localize("Skew")
+			(h_skew !== 0 || v_skew !== 0) ? (
+				(x_scale !== 1 || y_scale !== 1) ? localize("Stretch and Skew") : localize("Skew")
 			) : localize("Stretch"),
 		icon: get_help_folder_icon(
-			(hsa !== 0) ? "p_skew_h.png" :
-			(vsa !== 0) ? "p_skew_v.png" :
-			(yscale !== 1) ? (
-				(xscale !== 1) ? "p_stretch_both.png" : "p_stretch_v.png"
+			(h_skew !== 0) ? "p_skew_h.png" :
+			(v_skew !== 0) ? "p_skew_v.png" :
+			(y_scale !== 1) ? (
+				(x_scale !== 1) ? "p_stretch_both.png" : "p_stretch_v.png"
 			) : "p_stretch_h.png"
 		),
 	}, (original_canvas, original_ctx, new_canvas, new_ctx) => {
-		const w = original_canvas.width * xscale;
-		const h = original_canvas.height * yscale;
+		const w = original_canvas.width * x_scale;
+		const h = original_canvas.height * y_scale;
 		
 		let bb_min_x = +Infinity;
 		let bb_max_x = -Infinity;
 		let bb_min_y = +Infinity;
 		let bb_max_y = -Infinity;
 		const corner = (x01, y01) => {
-			const x = Math.tan(hsa)*h*x01 + w*y01;
-			const y = Math.tan(vsa)*w*y01 + h*x01;
+			const x = Math.tan(h_skew)*h*x01 + w*y01;
+			const y = Math.tan(v_skew)*w*y01 + h*x01;
 			bb_min_x = Math.min(bb_min_x, x);
 			bb_max_x = Math.max(bb_max_x, x);
 			bb_min_y = Math.min(bb_min_y, y);
@@ -722,15 +741,15 @@ function stretch_and_skew(xscale, yscale, hsa, vsa){
 		new_ctx.disable_image_smoothing();
 		
 		if(!transparency){
-			new_ctx.fillStyle = colors.background;
+			new_ctx.fillStyle = selected_colors.background;
 			new_ctx.fillRect(0, 0, new_canvas.width, new_canvas.height);
 		}
 		
 		new_ctx.save();
 		new_ctx.transform(
 			1, // x scale
-			Math.tan(vsa), // vertical skew (skewY)
-			Math.tan(hsa), // horizontal skew (skewX)
+			Math.tan(v_skew), // vertical skew (skewY)
+			Math.tan(h_skew), // horizontal skew (skewX)
 			1, // y scale
 			-bb_x, // x translation
 			-bb_y // y translation
@@ -746,6 +765,55 @@ function invert_rgb(source_ctx, dest_ctx=source_ctx) {
 		image_data.data[i+0] = 255 - image_data.data[i+0];
 		image_data.data[i+1] = 255 - image_data.data[i+1];
 		image_data.data[i+2] = 255 - image_data.data[i+2];
+	}
+	dest_ctx.putImageData(image_data, 0, 0);
+}
+
+function invert_monochrome(source_ctx, dest_ctx=source_ctx, monochrome_info=detect_monochrome(source_ctx)) {
+	const image_data = source_ctx.getImageData(0, 0, source_ctx.canvas.width, source_ctx.canvas.height);
+	// Note: values in pixel_array may be different on big endian vs little endian machines.
+	// Only rely on equality of values within the array.
+	// pixel_array is a performance optimization, to access whole pixels at a time instead of individual color channels.
+	const pixel_array = new Uint32Array(image_data.data.buffer);
+	if (monochrome_info.presentNonTransparentUint32s.length === 0) {
+		// Fully transparent.
+		// No change, and no need to copy the image to dest canvas to represent that lack of a change.
+		return;
+	}
+	if (monochrome_info.presentNonTransparentUint32s.length === 1) {
+		// Only one non-transparent color present in the image.
+		// Can't use just the information of what colors are in the canvas to invert, need to look at the palette.
+		// We could've done this in a unified way, but whatever!
+		// Personally, I think this is a CHARMINGLY poor solution.
+		// Maybe a little less so now that I added handling for transparency (i.e. Free-Form Select).
+		const color_1 = palette[0];
+		const color_2 = palette[14] || palette[1];
+		const color_1_rgba = get_rgba_from_color(color_1);
+		const present_rgba = monochrome_info.presentNonTransparentRGBAs[0];
+		if (
+			present_rgba[0] === color_1_rgba[0] &&
+			present_rgba[1] === color_1_rgba[1] &&
+			present_rgba[2] === color_1_rgba[2] &&
+			present_rgba[3] === color_1_rgba[3]
+		) {
+			dest_ctx.fillStyle = color_2;
+		} else {
+			dest_ctx.fillStyle = color_1;
+		}
+		if (monochrome_info.monochromeWithTransparency) {
+			dest_ctx.putImageData(image_data, 0, 0);
+			dest_ctx.globalCompositeOperation = "source-in";
+		}
+		dest_ctx.fillRect(0, 0, source_ctx.canvas.width, source_ctx.canvas.height);
+		return;
+	}
+	const [uint32_a, uint32_b] = monochrome_info.presentNonTransparentUint32s;
+	for(let i=0, len=pixel_array.length; i<len; i+=1){
+		if (pixel_array[i] === uint32_a) {
+			pixel_array[i] = uint32_b;
+		} else if (pixel_array[i] === uint32_b) {
+			pixel_array[i] = uint32_a;
+		}
 	}
 	dest_ctx.putImageData(image_data, 0, 0);
 }
@@ -933,40 +1001,40 @@ function draw_grid(ctx, scale) {
 
 	const tessy = (function initTesselator() {
 		// function called for each vertex of tesselator output
-		function vertexCallback(data, polyVertArray) {
+		function vertex_callback(data, poly_vert_array) {
 			// window.console && console.log(data[0], data[1]);
-			polyVertArray[polyVertArray.length] = data[0];
-			polyVertArray[polyVertArray.length] = data[1];
+			poly_vert_array[poly_vert_array.length] = data[0];
+			poly_vert_array[poly_vert_array.length] = data[1];
 		}
-		function begincallback(type) {
+		function begin_callback(type) {
 			if (type !== libtess.primitiveType.GL_TRIANGLES) {
 				window.console && console.log(`Expected TRIANGLES but got type: ${type}`);
 			}
 		}
-		function errorcallback(errno) {
+		function error_callback(errno) {
 			window.console && console.log('error callback');
 			window.console && console.log(`error number: ${errno}`);
 		}
 		// callback for when segments intersect and must be split
-		function combinecallback(coords/*, data, weight*/) {
+		function combine_callback(coords/*, data, weight*/) {
 			// window.console && console.log('combine callback');
 			return [coords[0], coords[1], coords[2]];
 		}
-		function edgeCallback(/*flag*/) {
+		function edge_callback(/*flag*/) {
 			// don't really care about the flag, but need no-strip/no-fan behavior
 			// window.console && console.log('edge flag: ' + flag);
 		}
 
 		const tessy = new libtess.GluTesselator();
 		// tessy.gluTessProperty(libtess.gluEnum.GLU_TESS_WINDING_RULE, libtess.windingRule.GLU_TESS_WINDING_POSITIVE);
-		tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_VERTEX_DATA, vertexCallback);
-		tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_BEGIN, begincallback);
-		tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_ERROR, errorcallback);
-		tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_COMBINE, combinecallback);
-		tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_EDGE_FLAG, edgeCallback);
+		tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_VERTEX_DATA, vertex_callback);
+		tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_BEGIN, begin_callback);
+		tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_ERROR, error_callback);
+		tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_COMBINE, combine_callback);
+		tessy.gluTessCallback(libtess.gluEnum.GLU_TESS_EDGE_FLAG, edge_callback);
 
 		return tessy;
-	})();
+	}());
 
 	function triangulate(contours) {
 		// libtess will take 3d verts and flatten to a plane for tesselation
@@ -997,7 +1065,12 @@ function draw_grid(ctx, scale) {
 	let positionLoc;
 
 	function initWebGL(canvas) {
-		gl = canvas.getContext('webgl', { antialias: false });
+		try {
+			gl = canvas.getContext('webgl', { antialias: false });
+		} catch (error) {
+			show_error_message("Failed to get WebGL context. You may need to refresh the web page, or restart your computer.", error);
+			return;
+		}
 
 		if (!gl) {
 			show_error_message("Failed to get WebGL context. You may need to refresh the web page, or restart your computer.");
@@ -1125,6 +1198,10 @@ function draw_grid(ctx, scale) {
 	};
 
 	function draw_polygon_or_line_strip(ctx, points, stroke, fill, close_path){
+		if (!gl) {
+			show_error_message("Failed to get WebGL context. You may need to refresh the web page, or restart your computer.");
+			return; // @TODO: don't pollute brush cache with empty brushes (also maybe fallback to 2D canvas rendering)
+		}
 
 		// this must be before stuff is done with op_canvas
 		// otherwise update_brush_for_drawing_lines calls render_brush calls draw_ellipse calls draw_polygon calls draw_polygon_or_line_strip

@@ -1,4 +1,4 @@
-function parseINIString(data){
+function parseINIString(data) {
 	var regex = {
 		section: /^\s*\[\s*([^\]]*)\s*\]\s*$/,
 		param: /^\s*([^=]+?)\s*=\s*(.*?)\s*$/,
@@ -7,21 +7,21 @@ function parseINIString(data){
 	var value = {};
 	var lines = data.split(/[\r\n]+/);
 	var section = null;
-	lines.forEach(function(line){
-		if(regex.comment.test(line)){
+	lines.forEach(function (line) {
+		if (regex.comment.test(line)) {
 			return;
-		}else if(regex.param.test(line)){
+		} else if (regex.param.test(line)) {
 			var match = line.match(regex.param);
-			if(section){
+			if (section) {
 				value[section][match[1]] = match[2];
-			}else{
+			} else {
 				value[match[1]] = match[2];
 			}
-		}else if(regex.section.test(line)){
+		} else if (regex.section.test(line)) {
 			var match = line.match(regex.section);
 			value[match[1]] = {};
 			section = match[1];
-		}else if(line.length == 0 && section){
+		} else if (line.length == 0 && section) {
 			section = null;
 		};
 	});
@@ -30,7 +30,7 @@ function parseINIString(data){
 
 // takes a CSSStyleDeclaration or simple object of CSS properties
 function renderThemeGraphics(cssProperties) {
-	var getProp = (propName)=> cssProperties.getPropertyValue ? cssProperties.getPropertyValue(propName) : cssProperties[propName];
+	var getProp = (propName) => cssProperties.getPropertyValue ? cssProperties.getPropertyValue(propName) : cssProperties[propName];
 
 	var canvas = document.createElement("canvas");
 	canvas.width = canvas.height = 2;
@@ -48,7 +48,7 @@ function renderThemeGraphics(cssProperties) {
 		scrollbar_size = 13;
 	}
 	var scrollbar_button_inner_size = scrollbar_size - 4;
-	
+
 	// I don't know the exact formula, so approximate and special-case it for now
 	// (It may very well *be* special cased, tho)
 	var arrow_size = Math.floor(0.3 * scrollbar_size);
@@ -74,7 +74,7 @@ function renderThemeGraphics(cssProperties) {
 		for (let decrement = 0; decrement < 2; decrement += 1) {
 			ctx.save();
 			ctx.translate(i * scrollbar_button_inner_size, 0);
-			ctx.translate(scrollbar_button_inner_size/2, scrollbar_button_inner_size/2);
+			ctx.translate(scrollbar_button_inner_size / 2, scrollbar_button_inner_size / 2);
 			// ctx.rotate(i * Math.PI / 2);
 			if (horizontal) {
 				ctx.rotate(-Math.PI / 2);
@@ -82,8 +82,8 @@ function renderThemeGraphics(cssProperties) {
 			if (decrement) {
 				ctx.scale(1, -1);
 			}
-			ctx.translate(-scrollbar_button_inner_size/2, -scrollbar_button_inner_size/2);
-			ctx.drawImage(arrow_canvas, ~~(scrollbar_button_inner_size/2-arrow_width/2), ~~(scrollbar_button_inner_size/2-arrow_size/2));
+			ctx.translate(-scrollbar_button_inner_size / 2, -scrollbar_button_inner_size / 2);
+			ctx.drawImage(arrow_canvas, ~~(scrollbar_button_inner_size / 2 - arrow_width / 2), ~~(scrollbar_button_inner_size / 2 - arrow_size / 2));
 			ctx.restore();
 			i += 1;
 		}
@@ -119,7 +119,7 @@ function renderThemeGraphics(cssProperties) {
 		// 	</g>
 		// </svg>`;
 		var svg = `<svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="${view_size}px" height="${view_size}px" viewBox="0 0 ${view_size} ${view_size}">
-			${svg_contents.replace(/(d|x|y|width|height|stroke-width)="[^"]*"/g, (attr)=> attr.replace(/\d+/g, (n)=> n * scale))}
+			${svg_contents.replace(/(d|x|y|width|height|stroke-width)="[^"]*"/g, (attr) => attr.replace(/\d+/g, (n) => n * scale))}
 		</svg>`;
 		var url = `data:image/svg+xml,${encodeURIComponent(svg)}`;
 		return `url("${url}") ${slice_size} / ${border_size}px`;
@@ -175,6 +175,61 @@ function renderThemeGraphics(cssProperties) {
 	};
 }
 
+function getThemeCSSProperties(element) {
+	const keys = [
+		"--checker",
+		"--button-active-border-image",
+		"--button-normal-border-image",
+		"--inset-deep-border-image",
+		"--button-default-border-image",
+		"--button-default-active-border-image",
+		"--scrollbar-arrows-ButtonText",
+		"--scrollbar-arrows-GrayText",
+		"--scrollbar-arrows-ButtonHilight",
+		"--scrollbar-size",
+		"--scrollbar-button-inner-size",
+		"--ActiveBorder",
+		"--ActiveTitle",
+		"--AppWorkspace",
+		"--Background",
+		"--ButtonAlternateFace",
+		"--ButtonDkShadow",
+		"--ButtonFace",
+		"--ButtonHilight",
+		"--ButtonLight",
+		"--ButtonShadow",
+		"--ButtonText",
+		"--GradientActiveTitle",
+		"--GradientInactiveTitle",
+		"--GrayText",
+		"--Hilight",
+		"--HilightText",
+		"--HotTrackingColor",
+		"--InactiveBorder",
+		"--InactiveTitle",
+		"--InactiveTitleText",
+		"--InfoText",
+		"--InfoWindow",
+		"--Menu",
+		"--MenuText",
+		"--Scrollbar",
+		"--TitleText",
+		"--Window",
+		"--WindowFrame",
+		"--WindowText",
+	];
+	const style = window.getComputedStyle(element);
+	const result = {};
+	for (const key of keys) {
+		result[key] = style.getPropertyValue(key);
+	}
+	return result;
+}
+
+function inheritTheme(target, source) {
+	applyCSSProperties(getThemeCSSProperties(source), { element: target, recurseIntoIframes: true });
+}
+
 // Parse NonClientMetrics
 // https://docs.microsoft.com/en-us/windows/win32/controls/themesfileformat-overview?redirectedfrom=MSDN#metrics-section
 // https://docs.microsoft.com/en-us/windows/win32/winprog/windows-data-types
@@ -214,6 +269,7 @@ function parseThemeFileString(themeIni) {
 	if (!colors) {
 		alert("Invalid theme file, no [Control Panel\\Colors] section");
 		console.log(theme);
+		return;
 	}
 	for (var k in colors) {
 		// for .themepack file support, just ignore bad keys that were parsed
@@ -234,9 +290,32 @@ function parseThemeFileString(themeIni) {
 	return cssProperties;
 }
 
-function applyCSSProperties(cssProperties, element=document.documentElement) {
+function applyCSSProperties(cssProperties, options = {}) {
+	// @TODO: clean up deprecated argument handling
+	let element, recurseIntoIframes;
+	if ("tagName" in options) {
+		console.warn("deprecated: use options argument to applyCSSProperties, e.g. applyCSSProperties(cssProperties, { element: document.documentElement, recurseIntoIframes: true })");
+		element = options;
+		recurseIntoIframes = false;
+	} else {
+		({ element = document.documentElement, recurseIntoIframes = false } = options);
+	}
+
+	var getProp = (propName) => cssProperties.getPropertyValue ? cssProperties.getPropertyValue(propName) : cssProperties[propName];
 	for (var k in cssProperties) {
-		element.style.setProperty(k, cssProperties[k]);
+		element.style.setProperty(k, getProp(k));
+	}
+	// iframe theme propagation
+	if (recurseIntoIframes) {
+		var iframes = element.querySelectorAll("iframe");
+		for (var i = 0; i < iframes.length; i++) {
+			try {
+				applyCSSProperties(cssProperties, { element: iframes[i].contentDocument.documentElement, recurseIntoIframes: true });
+			} catch (error) {
+				// ignore
+				// @TODO: share warning with $Window's iframe handling
+			}
+		}
 	}
 }
 
@@ -251,4 +330,43 @@ function makeThemeCSSFile(cssProperties) {
 	css += `}
 `;
 	return css;
+}
+
+// @TODO: should this be part of theme graphics generation?
+// I want to figure out a better way to do dynamic theme features,
+// where it works with the CSS cascade as much as possible
+function makeBlackToInsetFilter() {
+	if (document.getElementById("os-gui-black-to-inset-filter")) {
+		return;
+	}
+	const svg_xml = `
+		<svg style="position: absolute; pointer-events: none; bottom: 100%;">
+			<defs>
+				<filter id="os-gui-black-to-inset-filter" x="0" y="0" width="1px" height="1px">
+					<feColorMatrix
+						in="SourceGraphic"
+						type="matrix"
+						values="
+							1 0 0 0 0
+							0 1 0 0 0
+							0 0 1 0 0
+							-1000 -1000 -1000 1 0
+						"
+						result="black-parts-isolated"
+					/>
+					<feFlood result="shadow-color" flood-color="var(--ButtonShadow)"/>
+					<feFlood result="hilight-color" flood-color="var(--ButtonHilight)"/>
+					<feOffset in="black-parts-isolated" dx="1" dy="1" result="offset"/>
+					<feComposite in="hilight-color" in2="offset" operator="in" result="hilight-colored-offset"/>
+					<feComposite in="shadow-color" in2="black-parts-isolated" operator="in" result="shadow-colored"/>
+					<feMerge>
+						<feMergeNode in="hilight-colored-offset"/>
+						<feMergeNode in="shadow-colored"/>
+					</feMerge>
+				</filter>
+			</defs>
+		</svg>
+	`;
+	const $svg = $(svg_xml);
+	$svg.appendTo("body");
 }

@@ -15,19 +15,15 @@ function show_help() {
 	});
 }
 
-// awkward shim to interface with my own stupid code
-window.TITLEBAR_ICON_SIZE = 16;
-window.$Icon = ()=> {
-	return $("<img src='images/chm-16x16.png'>");
-};
-
 // shared code with 98.js.org
-// (copy-pasted for now)
+// (copy-pasted / manually synced for now)
 
 function open_help_viewer(options){
 	const $help_window = $Window({
 		title: options.title || "Help Topics",
-		icon: "chm",
+		icons: {
+			16: "images/chm-16x16.png",
+		},
 		resizable: true,
 	})
 	$help_window.addClass("help-window");
@@ -40,7 +36,7 @@ function open_help_viewer(options){
 	const $toolbar = $(E("div")).addClass("toolbar");
 	const add_toolbar_button = (name, sprite_n, action_fn, enabled_fn)=> {
 		const $button = $("<button class='lightweight'>")
-		.text(name)
+		.append($("<span>").text(name))
 		.appendTo($toolbar)
 		.on("click", ()=> {
 			action_fn();
@@ -71,7 +67,7 @@ function open_help_viewer(options){
 		$show_button.show();
 		$help_window.width($help_window.width() - toggling_width);
 		$help_window.css("left", $help_window.offset().left + toggling_width);
-		$help_window.bringTitleBarOnScreen();
+		$help_window.bringTitleBarInBounds();
 	});
 	const $show_button = add_toolbar_button("Show", 5, ()=> {
 		$contents.show();
@@ -259,17 +255,19 @@ function open_help_viewer(options){
 	}, (/* error */)=> {
 		// access to error message is not allowed either, basically
 		if (location.protocol === "file:") {
-			const $w = $FormToolWindow().title(localize("Paint")).addClass("dialogue-window");
-			$w.$main.html(`
-				<p>${localize("Failed to launch help.")}</p>
-				<p>This feature is not available when running from the <code>file:</code> protocol.</p>
-				<p>To use this feature, start a web server. If you have Python, you can use <code>python -m SimpleHTTPServer</code></p>
-			`);
-			$w.$main.css({maxWidth: "500px"});
-			$w.$Button(localize("OK"), () => {
-				$w.close();
+			showMessageBox({
+				// <p>${localize("Failed to launch help.")}</p>
+				// but it's already launched at this point
+
+				// what's a good tutorial for starting a web server?
+				// https://gist.github.com/willurd/5720255 - impressive list, but not a tutorial
+				// https://attacomsian.com/blog/local-web-server - OK, good enough
+				messageHTML: `
+					<p>Help is not available when running from the <code>file:</code> protocol.</p>
+					<p>To use this feature, <a href="https://attacomsian.com/blog/local-web-server">start a web server</a>.</p>
+				`,
+				iconID: "error",
 			});
-			$w.center();
 		} else {
 			show_error_message(`${localize("Failed to launch help.")} ${localize("Access to %1 was denied.", options.contentsFile)}`);
 		}
@@ -428,8 +426,8 @@ function $Iframe(options){
 // 	var $iframe = $win.$iframe = $Iframe({src: options.src});
 // 	$win.$content.append($iframe);
 // 	var iframe = $win.iframe = $iframe[0];
-// 	// @TODO: should I instead of having iframe.$window, have a get$Window type of dealio?
-// 	// where all is $window needed?
+// 	// @TODO: should I instead of having iframe.$window, have something like get$Window?
+// 	// Where all is $window needed?
 // 	// I know it's used from within the iframe contents as frameElement.$window
 // 	iframe.$window = $win;
 

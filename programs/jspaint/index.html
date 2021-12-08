@@ -11,6 +11,19 @@
 		<!-- <link href="lib/os-gui/windows-98.css" rel="stylesheet" type="text/css"> -->
 		<!-- <link href="lib/os-gui/windows-default.css" rel="stylesheet" type="text/css" title="Windows Default"> -->
 		<!-- <link href="lib/os-gui/peggys-pastels.css" rel="alternate stylesheet" type="text/css" title="Peggy's Pastels"> -->
+		<!-- <link href="lib/tracky-mouse/tracky-mouse.css" rel="stylesheet" type="text/css"> -->
+		<!--
+		@TODO: bring these styles into OS-GUI.
+		This is a custom build of 98.css https://github.com/jdan/98.css
+		for checkboxes, radio buttons, sliders, and fieldsets,
+		excluding e.g. scrollbars, buttons, and windows (already in OS-GUI),
+		and integrating with the theme CSS vars used by OS-GUI,
+		and with some RTLCSS tweaks.
+		Text inputs and dropdowns are styled in classic.css, but should also be included in OS-GUI at some point.
+		This is not an @import in classic.css because it needs RTLCSS and I'm not applying RTLCSS to themes yet.
+		So I added .not-for-modern logic to theme.js to exclude these styles depending on the theme.
+		-->
+		<link href="lib/98.css/98.custom-build.css" class="flippable-layout-stylesheet not-for-modern" rel="stylesheet" type="text/css">
 
 		<link rel="apple-touch-icon" href="images/icons/apple-icon-180x180.png">
 		<!-- Chrome will pick the largest image for some reason, instead of the most appropriate one. -->
@@ -40,7 +53,24 @@
 		<meta name="twitter:card" content="summary_large_image">
 		<meta name="twitter:site" content="@isaiahodhner">
 		<meta name="twitter:creator" content="@isaiahodhner">
-
+		<script>
+			// use only ES5 syntax for this script
+			// set up basic global error handling, which we can override later
+			window.onerror = function (msg, url, lineNo, columnNo, error) {
+				var string = msg.toLowerCase();
+				var substring = "script error";
+				if (string.indexOf(substring) > -1) {
+					alert('Script Error: See Browser Console for Detail');
+				} else {
+					// try {
+					// 	// try-catch in case of circular references or old browsers without JSON.stringify
+					// 	error = JSON.stringify(error);
+					// } catch (e) {}
+					alert('Internal application error: ' + msg + '\n\n' + 'URL: ' + url + '\n' + 'Line: ' + lineNo + '\n' + 'Column: ' + columnNo);
+				}
+				return false;
+			};
+		</script>
 		<script src="src/theme.js"></script>
 	</head>
 	<body>
@@ -48,8 +78,8 @@
 			<h1 id="about-paint-header">
 				<img src="images/icons/32x32.png" width="32" height="32" id="paint-32x32" alt=""/>
 				<span id="jspaint-project-name">JS Paint</span>
-				<small id="jspaint-version" title="expect bugs!">Alpha</small>
-				<button id="view-project-news">View Project News</button>
+				<!-- <small id="jspaint-version" title="expect bugs!">Alpha</small> -->
+				<button id="view-project-news">What's New?</button>
 			</h1>
 			
 			<div id="maybe-outdated-view-project-news" hidden>
@@ -77,14 +107,219 @@
 				
 			</div>
 			<p>JS Paint is a web-based remake of MS Paint by <a href="https://isaiahodhner.io/">Isaiah Odhner</a>.</p>
-			<p>Read about the project and <b>extra features</b> on <a href="https://github.com/1j01/jspaint#readme">the README</a>.</p>
+			<p>Read about the project and extra features on <a href="https://github.com/1j01/jspaint#readme">the readme</a>.</p>
 			<p>Request features and report bugs <a href="https://github.com/1j01/jspaint/issues">on GitHub</a>
 			or <a href="mailto:isaiahodhner@gmail.com?subject=JS%20Paint">by email</a>.</p>
-			<p>If you want to support the project &amp; cover domain fees:
-				<a href="https://www.paypal.me/IsaiahOdhner" target="_blank">paypal.me/IsaiahOdhner</a>
-			</p>
+			<p>Support the project at <a href="https://www.paypal.me/IsaiahOdhner" target="_blank">paypal.me/IsaiahOdhner</a>.</p>
 		</div>
 		<div id="news" hidden>
+			<!-- <article class="news-entry" id="news-2021-saving">
+				<h1>The Savior Update</h1>
+				<time datetime=""></time>
+				<img width="" height="" style="max-width: 100%; height: auto; image-rendering: auto;" alt="" src=""/>
+				<p>
+					<b>Save</b> (<kbd>Ctrl+S</kbd>) can now save over the open file, in Chrome, Edge, and Opera browsers.
+					This works using new <a target="_blank" href="https://developer.mozilla.org/en-US/docs/Web/API/File_System_Access_API">File System Access API</a>.
+					Always use <b>Save As</b> (<kbd>Ctrl+Shift+S</kbd>) if you want to save a new file.
+				</p>
+				<p>
+					<b>Save As</b> now asks for a file name and format.
+					PNG, GIF, and BMP are supported, including indexed color BMPs.
+				</p>
+				<p>
+					Tip: Use PNG if you don't have a specific reason to use another format,
+					as it has the best quality when saving.
+				</p>
+				<p>
+					If you open a BMP file with a palette, the palette is loaded into the Colors box.
+					If you load a monochrome BMP file, it loads a gradient of dither patterns into the Colors box.
+				</p>
+				<p>
+					<b>Black and White</b> mode in <b>Image > Attributes</b> is generalized to a monochrome mode
+					(although it's still called "Black and White" in the Attributes window.)
+					If an image has only two colors, when switching to "Black and White" mode,
+					it automatically adapts to these colors and gives you a gradient of dither patterns in the Colors box.
+				</p>
+				<p>
+					If you use <b>Image > Invert</b>, in monochrome mode, it flips the two colors in the image,
+					instead of changing colors to their RGB opposites.
+					(If the image is pure black and white, these two operations are equivalent.)
+				</p>
+				<p>
+					<b>Colors > Save Colors</b> also now asks for a file name and format.
+					An absurd number of file formats are supported.
+					You can even export CSS variables for use in a web design project.
+					RIFF Palette (*.pal) is compatible with MS Paint, and GIMP Palette (*.gpl) is compatible with many open source graphics programs such as Inkscape and Krita.
+				</p>
+				<p>
+					You can find lots of palettes to use on <a target="_blank" href="https://lospec.com/palette-list">Lospec</a>.
+					Download a palette as GIMP GPL (or several other formats) and use <b>Colors > Get Colors</b> and select the file,
+					or simply drag and drop the file onto JS Paint to load the palette.
+				</p>
+			</article> -->
+			<article class="news-entry" id="news-2021-saving">
+				<h1>The GUIcci Update</h1>
+				<time datetime="2021-12-08">2021-12-08</time>
+				<img width="640" height="360" style="max-width: 100%; height: auto; image-rendering: auto;" alt="" src="https://i.postimg.cc/tgBncKfJ/guicii-update.png"/>
+				<h2>New Features</h2>
+				<p>
+					<b>View > Zoom > Show Thumbnail</b> to show a preview of the image at a small size, great for pixel art.
+					Make fine, precise edits, while keeping it all in perspective.
+				</p>
+				<p>
+					<b>Pinch zooming:</b> If you have a touch screen, use two fingers to zoom in and out, and pan the view.
+				</p>
+				<p>
+					<b>Alt+Mousewheel</b> to zoom in and out quickly on desktop.
+					Unlike the Magnifier tool, this allows you to zoom while making (or moving) a selection, for added precision.
+				</p>
+				<p>
+					Added <b>View > Fullscreen</b> to toggle fullscreen mode. This is nice for using JS Paint on your phone.
+				</p>
+				<p>
+					The <b>Text tool</b> now automatically expands the textbox as you type.
+					When resizing, there's now a minimum size based on the text in the textbox.
+					It previews exactly what size it will end up with when resizing.
+				</p>
+				<p>
+					<b>Docking:</b> If you drag the Colors box or Tools box out into a window,
+					you can now dock it back when dragging the titlebar.
+					Previously to dock it you had to double click the titlebar, or drag it by the edge of the window.
+				</p>
+				<img alt="Area that you have to click to drag a toolbar out into a window (in green)" src="https://i.postimg.cc/7LB18Gcg/toolbar-drag-out-area.png" width="480" height="380" style="max-width: 100%; height: auto; image-rendering: auto;"/>
+				<p>
+					<b>Menus</b> are now fully keyboard (and screen reader) accessible.
+					In particular, you can hold <kbd>Alt</kbd> and press the access key of a menu button to open the menu,
+					and then (without <kbd>Alt</kbd>) press the access key of a menu item to select it.
+					The access key of an item is the underlined letter, or the first letter of the item's text if there's no underline.
+				</p>
+				<p>
+					<b>Error details</b> are now hidden by default in error dialogs.
+					The details may be more overwhelming than useful in a lot of cases,
+					but if you need them, you can expand the details.
+				</p>
+				<img alt="Example error message box saying 'File not found', with details collapsed." src="https://i.postimg.cc/ZR1qpVGw/file-not-found.png" width="408" height="145" style="max-width: 100%; height: auto; image-rendering: auto;">
+				<p>
+					<b>File > Exit</b> now exits to the official web desktop,
+					<a target="_blank" href="https://98.js.org"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABKklEQVR42qWTMW7DMAxFKYC+RC/hQR065xSdOyRDr9CxV8gQDzlK5g7RkLmn6CwCCimSchIoWkrAgESTj5+kHeCfFnpORCyPPiLqxgYP9gC/ZyKYEIG+CPAbn0JCr6okizmgvmdIF8BZxUhNgVdv8k3FvCdIu/u228VBnkiUGTZBzgyb1CcASBqdlhAMUEx6aAokWc8KqGCGzB+0lmMTyI0cBUmSV28zMRXzT4bECiI/l+NUZ/J0Cz0TACx6Tiwej9jfQkvIufZ8eVM1tM+1uiTHyP5P7H9IccvtxGCVSg0W6ZDUdz6cYbe8DgAHKKf3P9j8bnhQ0rSJY0DcOm2gwCFSugKqozT51V704xoDQItFWMeTFp+ZbQEGtm4o3/hsoLa1IaC3ocf/4QotsZxI//135gAAAABJRU5ErkJggg==" width="16" height="16" alt=""> 98.js.org</a>,
+					a re-creation of Windows 98, full of games and applications.
+				</p>
+				<img class="inset-deep" src="https://i.postimg.cc/SKHrYpx3/98-js-org-screenshot.png" alt="The 98.js desktop featuring desktop icons, a taskbar, and various application windows." style="max-width: 100%; height: auto; image-rendering: auto;">
+				<p>
+					This project spun out of JS Paint, and I have implemented now
+					Sound Recorder, Notepad, Calculator, and even Windows Explorer,
+					to a high level of detail.
+				</p>
+				<p>
+					It also includes projects from other people, other recreations of old programs,
+					like <a target="_blank" href="https://webamp.org/">Webamp</a>,
+					a meticulous recreation of Winamp,
+					and <a href="https://github.com/rjanjic/js-solitaire">JS Solitaire</a>,
+					a Solitaire clone (I tweaked it for accuracy, adding the card back images, etc.)
+				</p>
+				<h2>Pixel Perfect</h2>
+				<p>
+					All interface elements are now thematically styled,
+					powered by <a target="_blank" href="https://os-gui.js.org">OS-GUI.js</a> and
+					<a target="_blank" href="https://jdan.github.io/98.css/">98.css</a>.
+				</p>
+				<p>
+					The whole interface is now pixel perfect accurate to Windows 98.
+
+					(Okay, there's a few things that are a pixel off or so, but seriously,
+					I lined up a screenshot and got it essentially perfect.)
+				</p>
+				<p>
+					Improved layout of <b>View > Zoom > Custom Zoom</b> window, matching the design in MS Paint.
+				</p>
+				<p>
+					Added padding to all dialogs so they don't feel cramped anymore.
+				</p>
+				<p>
+					Message boxes now include warning or error icons, and play a sound when they appear.
+				</p>
+				<p>
+					Improved <b>View > View Bitmap</b>: it now uses the theme's wallpaper background color,
+					if the image is smaller than the window.
+					It now closes with a click or key press, and doesn't let you edit the image (which was weird).
+				</p>
+				<p>
+					The Help window can now be minimized to the bottom of the screen, even though there's no taskbar.
+					It works like how Windows 98 does if the process managing the taskbar crashes.
+				</p>
+				<h2>Fixes</h2>
+				<p>
+					<b>Menu buttons</b> are easier to open on a touch screen. Sometimes you had to tap twice before the menu opened.
+				</p>
+				<p>
+					Fixed <b>large square brush</b> continuity (it left gaps before, due to a half-implemented optimization).
+				</p>
+				<p>
+					The <b>selection and textboxes</b> no longer "blow up" if you resize them to a minimal size.
+					They are now limited when you drag an edge past the opposite edge.
+				</p>
+				<p>
+					Fixed a bug where vertically thin selections were difficult or impossible to drag (despite showing a drag cursor).
+					(The draggable region was offset outside of the selection box.)
+					Fixed a similar bug where tool previews would get offset if the canvas's height was very small.
+				</p>
+				<p>
+					Resize handles no longer get smaller when the object to resize is very small.
+					The draggable region for handles no longer gets smaller either, except in dimensions where it must.
+					It's now considerably smarter than Windows 10 about where it lets you drag handles from.
+				</p>
+				<p>
+					In <b>Image > Flip/Rotate</b>, you can now click the custom degrees input field before selecting the "Rotate by angle" option.
+				</p>
+				<p>
+					The magnifier preview and other tool previews are now hidden while dragging the Colors box or Tools box.
+					It looked confusing when the magnifier preview was shown at the same time as
+					the preview outline for dragging/docking a tool window.
+				</p>
+				<p>
+					For languages that read <b>right-to-left</b>, the History view (<b>Edit > History</b>) now uses a right-to-left layout,
+					and the color box and tool box no longer flip their layout when dragging them into a window or docking them back to a side of the application.
+				</p>
+				<p>
+					The history view and error messages use <b>more localized text</b>.
+				</p>
+				<p>
+					Fixed <b>cut off icons</b> in buttons in the help window toolbar in the Modern theme.
+				</p>
+				<p>
+					All windows now have a default-focused control, and the last focused control in the window is remembered for when you refocus the window.
+				</p>
+				<p>
+					<b>File > New</b> and <b>File > Open</b> now create a new autosave session,
+					instead of using the current session.
+				</p>
+				<h2>Winter Theme</h2>
+				<p>
+					Updated the Winter theme with advent calendar-style tool buttons,
+					that reveal (improved) holiday pixel art for each tool when you select them.
+				</p>
+				<p>
+					This means that the Winter theme is more usable,
+					since it doesn't obscure the functions of all the tools with pixel art.
+				</p>
+				<p>
+					Also, if it doesn't feel quite enough like an advent calendar for you,
+					you can hold <kbd>Shift</kbd> to select multiple tools at once.
+				</p>
+				<p>
+					Perhaps you could make a drawing using only one tool for the 16 days leading up to Christmas,
+					with exceptions for the Pick Color and Magnifier tools, of course.
+				</p>
+				<p>
+					Snowflakes in the menus indicate what letter you can press to select that item.
+				</p>
+				<p>
+					To disable the Winter theme, click the Grinch at the bottom of the screen,
+					who will then smile a nasty smile and steal Christmas from you.
+					You can get it back with <b>Extras > Theme > Winter</b>.
+				</p>
+				<img class="inset-deep" alt="Winter theme screenshot with candy canes and a text box saying Enjoy!" src="https://i.postimg.cc/SxFtjy8z/winter-theme-enjoy.png" width="440" height="380" style="max-width: 100%; height: auto; image-rendering: auto;"/>
+			</article>
 			<article class="news-entry" id="news-2020-accessibility-update">
 				<h1>The Accessibility Update</h1>
 				<time datetime="2020-12-20">2020-12-20</time>
@@ -102,7 +337,7 @@
 				</p>
 				<p>
 					To change the language, go to <b>Extras > Language</b>.
-					Your prefered language may already be detected, if specified in system or browser settings.
+					Your preferred language may already be detected, if specified in system or browser settings.
 				</p>
 				<img width="1280" height="720" style="max-width: 100%; height: auto; image-rendering: auto;" alt="26 languages, right off the bat!" src="https://i.postimg.cc/G2bH92fp/language-menu.png"/>
 				<p>For Arabic and Hebrew, right-to-left layout is supported!</p>
@@ -128,7 +363,7 @@
 					Try <a target="_blank" href="https://sourceforge.net/projects/gazepointer/">GazePointer</a>.
 				</p>
 				<p>
-					Eye gaze tracking requires significant calibration, and if the callibration is off,
+					Eye gaze tracking requires significant calibration, and if the calibration is off,
 					it's hard to use because you can't look where you want to look to interact with things.
 					This is why I recommend head tracking (if that's an option for you),
 					because then you can freely look around, and control the cursor <em>independently</em>,
@@ -140,7 +375,7 @@
 					It can also be frustrating, and takes some practice to master.
 				</p>
 				<p>
-					A good place to start is coloring lineart using just the Fill tool (<img src="help/p_paint.gif" width="15" height="11" alt="">):
+					A good place to start is coloring line art using just the Fill tool (<img src="help/p_paint.gif" width="15" height="11" alt="">):
 				</p>
 				<ul>
 					<li>
@@ -191,19 +426,18 @@
 				<p>Keyboard shortcuts are supported in this dialog, and for mobile devices with small screens, I made it treat adding custom colors as a separate screen.</p>
 				<h2>Conclusion</h2>
 				<p>
-					JS Paint is way more accessible now. And futuristic. And cool.
+					JS Paint should be way more accessible now. And futuristic.
 				<p>
 				<p>
 					Of course there's always more that could be done.
-					Eye Gaze Mode could use brush stroke smoothing, and Speech Recognition could use general artificial intelligence.
+					Eye Gaze Mode could use brush stroke smoothing, and Speech Recognition could use Artificial General Intelligence.
 				</p>
 				<p>
 					I'd love to see people using JS Paint, especially the Eye Gaze Mode and Speech Recognition,
-					so please, if you don't mind, record yourself on video and
-					<a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSdGgS6TS4wBV89v8NoYHenh1eI8jYBfgwYBdPx-OaCEG5EW7g/viewform?usp=sf_link">send me the video through this form.</a>
-					Maybe I could even make a compilation video.
-					But mainly this lets me know what's actually important to people, and what's confusing,
-					and it gives me motivation to work more on new features.
+					so if you record a video of using JS Paint, please
+					<a target="_blank" href="https://docs.google.com/forms/d/e/1FAIpQLSdGgS6TS4wBV89v8NoYHenh1eI8jYBfgwYBdPx-OaCEG5EW7g/viewform?usp=sf_link">send it to me through this form.</a>
+					This lets me know what's actually important to people, and what's confusing,
+					and it gives me motivation to work on new features.
 				</p>
 			</article>
 			<article class="news-entry" id="news-2019-winter-update">
@@ -363,388 +597,51 @@
 		<script>
 			window.jQuery || document.write('<script src="lib/jquery-3.4.1.min.js"><\/script>');
 		</script>
-		
-		<script>
-			// @TODO: DRY hotkey helpers
-			// & defines accelerators (hotkeys) in menus and buttons and things, which get underlined in the UI.
-			// & can be escaped by doubling it, e.g. "&Taskbar && Start Menu"
-			function index_of_hotkey(text) {
-				// Returns the index of the ampersand that defines a hotkey, or -1 if not present.
 
-				// return english_text.search(/(?<!&)&(?!&|\s)/); // not enough browser support for negative lookbehind assertions
-
-				// The space here handles beginning-of-string matching and counteracts the offset for the [^&] so it acts like a negative lookbehind
-				return ` ${text}`.search(/[^&]&[^&\s]/);
-			}
-			function has_hotkey(text) {
-				return index_of_hotkey(text) !== -1;
-			}
-			function remove_hotkey(text) {
-				return text.replace(/\s?\(&.\)/, "").replace(/([^&]|^)&([^&\s])/, "$1$2");
-			}
-			function display_hotkey(text) {
-				// misnomer: using .menu-hotkey out of lazyness, instead of a more general term like .hotkey or .accelerator
-				return text.replace(/([^&]|^)&([^&\s])/, "$1<span class='menu-hotkey'>$2</span>").replace(/&&/g, "&");
-			}
-			// function get_hotkey(text) {
-			// 	return text[index_of_hotkey(text) + 1].toUpperCase();
-			// }
-
-			let localizations = {};
-			window.localize = (english_text, ...interpolations)=> {
-				function find_localization(english_text) {
-					const amp_index = index_of_hotkey(english_text);
-					if (amp_index > -1) {
-						const without_hotkey = remove_hotkey(english_text);
-						if (localizations[without_hotkey]) {
-							const hotkey_def = english_text.slice(amp_index, amp_index + 2);
-							if (localizations[without_hotkey].toUpperCase().indexOf(hotkey_def.toUpperCase()) > -1) {
-								return localizations[without_hotkey];
-							} else {
-								if (has_hotkey(localizations[without_hotkey])) {
-									// window.console && console.warn(`Localization has differing accelerator (hotkey) hint: '${localizations[without_hotkey]}' vs '${english_text}'`);
-									// TODO: detect differing accelerator more generally
-									return `${remove_hotkey(localizations[without_hotkey])} (${hotkey_def})`;
-								}
-								return `${localizations[without_hotkey]} (${hotkey_def})`;
-							}
-						}
-					}
-					if (localizations[english_text]) {
-						return localizations[english_text];
-					}
-					return english_text;
-				}
-				function interpolate(text, interpolations) {
-					for (let i = 0; i < interpolations.length; i++) {
-						text = text.replace(`%${i+1}`, interpolations[i]);
-					}
-					return text;
-				}
-				return interpolate(find_localization(english_text), interpolations);
-			}
-
-			const language_storage_key = "jspaint language";
-			const accepted_languages = Array.from(navigator.languages || [navigator.language || navigator.userLanguage]);
-			try {
-				if (localStorage[language_storage_key]) {
-					accepted_languages.unshift(localStorage[language_storage_key]);
-				}
-			} catch (error) {}
-
-			const base_language = "en";
-			const available_languages = ["ar", "cs", "da", "de", "el", "en", "es", "fi", "fr", "he", "hu", "it", "ja", "ko", "nl", "no", "pl", "pt", "pt-br", "ru", "sk", "sl", "sv", "tr", "zh", "zh-simplified"];
-			const language_names = {
-				// "639-1": [["ISO language name"], ["Native name (endonym)"]],
-				ab: [["Abkhazian"], ["Аҧсуа Бызшәа", "Аҧсшәа"]],
-				aa: [["Afar"], ["Afaraf"]],
-				af: [["Afrikaans"], ["Afrikaans"]],
-				ak: [["Akan"], ["Akan"]],
-				sq: [["Albanian"], ["Shqip"]],
-				am: [["Amharic"], ["አማርኛ"]],
-				ar: [["Arabic"], ["العربية"]],
-				an: [["Aragonese"], ["Aragonés"]],
-				hy: [["Armenian"], ["Հայերեն"]],
-				as: [["Assamese"], ["অসমীয়া"]],
-				av: [["Avaric"], ["Авар МацӀ", "МагӀарул МацӀ"]],
-				ae: [["Avestan"], ["Avesta"]],
-				ay: [["Aymara"], ["Aymar Aru"]],
-				az: [["Azerbaijani"], ["Azərbaycan Dili"]],
-				bm: [["Bambara"], ["Bamanankan"]],
-				ba: [["Bashkir"], ["Башҡорт Теле"]],
-				eu: [["Basque"], ["Euskara", "Euskera"]],
-				be: [["Belarusian"], ["Беларуская Мова"]],
-				bn: [["Bengali"], ["বাংলা"]],
-				bh: [["Bihari Languages"], ["भोजपुरी"]],
-				bi: [["Bislama"], ["Bislama"]],
-				bs: [["Bosnian"], ["Bosanski Jezik"]],
-				br: [["Breton"], ["Brezhoneg"]],
-				bg: [["Bulgarian"], ["Български Език"]],
-				my: [["Burmese"], ["ဗမာစာ"]],
-				ca: [["Catalan", "Valencian"], ["Català", "Valencià"]],
-				ch: [["Chamorro"], ["Chamoru"]],
-				ce: [["Chechen"], ["Нохчийн Мотт"]],
-				ny: [["Chichewa", "Chewa", "Nyanja"], ["ChiCheŵa", "Chinyanja"]],
-				// zh: [["Chinese"], ["中文", "Zhōngwén", "汉语", "漢語"]],
-				// The ISO 639-1 code "zh" doesn't refer to Traditional Chinese specifically,
-				// but we want to show the distinction between Chinese varieties in the Language menu,
-				// so this is overly specific for now.
-				// @TODO: do this cleaner by establishing a mapping between ISO codes (such as "zh") and default language IDs (such as "zh-traditional")
-				zh: [["Traditional Chinese"], ["繁體中文", "傳統中文", "正體中文", "繁体中文"]],
-				"zh-traditional": [["Traditional Chinese"], ["繁體中文", "傳統中文", "正體中文", "繁体中文"]], // made-up ID, not real ISO 639-1
-				"zh-simplified": [["Simple Chinese"], ["简体中文"]], // made-up ID, not real ISO 639-1
-				cv: [["Chuvash"], ["Чӑваш Чӗлхи"]],
-				kw: [["Cornish"], ["Kernewek"]],
-				co: [["Corsican"], ["Corsu", "Lingua Corsa"]],
-				cr: [["Cree"], ["ᓀᐦᐃᔭᐍᐏᐣ"]],
-				hr: [["Croatian"], ["Hrvatski Jezik"]],
-				cs: [["Czech"], ["Čeština", "Český Jazyk"]],
-				da: [["Danish"], ["Dansk"]],
-				dv: [["Divehi", "Dhivehi", "Maldivian"], ["ދިވެހި"]],
-				nl: [["Dutch", "Flemish"], ["Nederlands", "Vlaams"]],
-				dz: [["Dzongkha"], ["རྫོང་ཁ"]],
-				en: [["English"], ["English"]],
-				eo: [["Esperanto"], ["Esperanto"]],
-				et: [["Estonian"], ["Eesti", "Eesti Keel"]],
-				ee: [["Ewe"], ["Eʋegbe"]],
-				fo: [["Faroese"], ["Føroyskt"]],
-				fj: [["Fijian"], ["Vosa Vakaviti"]],
-				fi: [["Finnish"], ["Suomi", "Suomen Kieli"]],
-				fr: [["French"], ["Français", "Langue Française"]],
-				ff: [["Fulah"], ["Fulfulde", "Pulaar", "Pular"]],
-				gl: [["Galician"], ["Galego"]],
-				ka: [["Georgian"], ["ქართული"]],
-				de: [["German"], ["Deutsch"]],
-				el: [["Greek"], ["Ελληνικά"]],
-				gn: [["Guarani"], ["Avañe'ẽ"]],
-				gu: [["Gujarati"], ["ગુજરાતી"]],
-				ht: [["Haitian", "Haitian Creole"], ["Kreyòl Ayisyen"]],
-				ha: [["Hausa"], ["هَوُسَ"]],
-				he: [["Hebrew"], ["עברית"]],
-				hz: [["Herero"], ["Otjiherero"]],
-				hi: [["Hindi"], ["हिन्दी", "हिंदी"]],
-				ho: [["Hiri Motu"], ["Hiri Motu"]],
-				hu: [["Hungarian"], ["Magyar"]],
-				ia: [["Interlingua"], ["Interlingua"]],
-				id: [["Indonesian"], ["Bahasa Indonesia"]],
-				ie: [["Interlingue", "Occidental"], ["Interlingue", "Occidental"]],
-				ga: [["Irish"], ["Gaeilge"]],
-				ig: [["Igbo"], ["Asụsụ Igbo"]],
-				ik: [["Inupiaq"], ["Iñupiaq", "Iñupiatun"]],
-				io: [["Ido"], ["Ido"]],
-				is: [["Icelandic"], ["Íslenska"]],
-				it: [["Italian"], ["Italiano"]],
-				iu: [["Inuktitut"], ["ᐃᓄᒃᑎᑐᑦ"]],
-				ja: [["Japanese"], ["日本語", "にほんご"]],
-				jv: [["Javanese"], ["ꦧꦱꦗꦮ", "Basa Jawa"]],
-				kl: [["Kalaallisut", "Greenlandic"], ["Kalaallisut", "Kalaallit Oqaasii"]],
-				kn: [["Kannada"], ["ಕನ್ನಡ"]],
-				kr: [["Kanuri"], ["Kanuri"]],
-				ks: [["Kashmiri"], ["कश्मीरी", "كشميري‎"]],
-				kk: [["Kazakh"], ["Қазақ Тілі"]],
-				km: [["Central Khmer"], ["ខ្មែរ", "ខេមរភាសា", "ភាសាខ្មែរ"]],
-				ki: [["Kikuyu", "Gikuyu"], ["Gĩkũyũ"]],
-				rw: [["Kinyarwanda"], ["Ikinyarwanda"]],
-				ky: [["Kirghiz", "Kyrgyz"], ["Кыргызча", "Кыргыз Тили"]],
-				kv: [["Komi"], ["Коми Кыв"]],
-				kg: [["Kongo"], ["Kikongo"]],
-				ko: [["Korean"], ["한국어"]],
-				ku: [["Kurdish"], ["Kurdî", "کوردی‎"]],
-				kj: [["Kuanyama", "Kwanyama"], ["Kuanyama"]],
-				la: [["Latin"], ["Latine", "Lingua Latina"]],
-				lb: [["Luxembourgish", "Letzeburgesch"], ["Lëtzebuergesch"]],
-				lg: [["Ganda"], ["Luganda"]],
-				li: [["Limburgan", "Limburger", "Limburgish"], ["Limburgs"]],
-				ln: [["Lingala"], ["Lingála"]],
-				lo: [["Lao"], ["ພາສາລາວ"]],
-				lt: [["Lithuanian"], ["Lietuvių Kalba"]],
-				lu: [["Luba-Katanga"], ["Kiluba"]],
-				lv: [["Latvian"], ["Latviešu Valoda"]],
-				gv: [["Manx"], ["Gaelg", "Gailck"]],
-				mk: [["Macedonian"], ["Македонски Јазик"]],
-				mg: [["Malagasy"], ["Fiteny Malagasy"]],
-				ms: [["Malay"], ["Bahasa Melayu", "بهاس ملايو‎"]],
-				ml: [["Malayalam"], ["മലയാളം"]],
-				mt: [["Maltese"], ["Malti"]],
-				mi: [["Maori"], ["Te Reo Māori"]],
-				mr: [["Marathi"], ["मराठी"]],
-				mh: [["Marshallese"], ["Kajin M̧ajeļ"]],
-				mn: [["Mongolian"], ["Монгол Хэл"]],
-				na: [["Nauru"], ["Dorerin Naoero"]],
-				nv: [["Navajo", "Navaho"], ["Diné Bizaad"]],
-				nd: [["North Ndebele"], ["IsiNdebele"]],
-				ne: [["Nepali"], ["नेपाली"]],
-				ng: [["Ndonga"], ["Owambo"]],
-				nb: [["Norwegian Bokmål"], ["Norsk Bokmål"]],
-				nn: [["Norwegian Nynorsk"], ["Norsk Nynorsk"]],
-				no: [["Norwegian"], ["Norsk"]],
-				ii: [["Sichuan Yi", "Nuosu"], ["ꆈꌠ꒿", "Nuosuhxop"]],
-				nr: [["South Ndebele"], ["IsiNdebele"]],
-				oc: [["Occitan"], ["Occitan", "Lenga d'Òc"]],
-				oj: [["Ojibwa"], ["ᐊᓂᔑᓈᐯᒧᐎᓐ"]],
-				cu: [["Church Slavic", "Old Slavonic", "Church Slavonic", "Old Bulgarian", "Old Church Slavonic"], ["Ѩзыкъ Словѣньскъ"]],
-				om: [["Oromo"], ["Afaan Oromoo"]],
-				or: [["Oriya"], ["ଓଡ଼ିଆ"]],
-				os: [["Ossetian", "Ossetic"], ["Ирон Æвзаг"]],
-				pa: [["Punjabi", "Panjabi"], ["ਪੰਜਾਬੀ", "پنجابی‎"]],
-				pi: [["Pali"], ["पालि", "पाळि"]],
-				fa: [["Persian"], ["فارسی"]],
-				pl: [["Polish"], ["Język Polski", "Polszczyzna"]],
-				ps: [["Pashto", "Pushto"], ["پښتو"]],
-				pt: [["Portuguese"], ["Português"]],
-				"pt-br": [["Brazilian Portuguese"], ["Português Brasileiro"]],
-				"pt-pt": [["Portuguese (Portugal)"], ["Português De Portugal"]],
-				qu: [["Quechua"], ["Runa Simi", "Kichwa"]],
-				rm: [["Romansh"], ["Rumantsch Grischun"]],
-				rn: [["Rundi"], ["Ikirundi"]],
-				ro: [["Romanian", "Moldavian", "Moldovan"], ["Română"]],
-				ru: [["Russian"], ["Русский"]],
-				sa: [["Sanskrit"], ["संस्कृतम्"]],
-				sc: [["Sardinian"], ["Sardu"]],
-				sd: [["Sindhi"], ["सिन्धी", "سنڌي، سندھی‎"]],
-				se: [["Northern Sami"], ["Davvisámegiella"]],
-				sm: [["Samoan"], ["Gagana Fa'a Samoa"]],
-				sg: [["Sango"], ["Yângâ Tî Sängö"]],
-				sr: [["Serbian"], ["Српски Језик"]],
-				gd: [["Gaelic", "Scottish Gaelic"], ["Gàidhlig"]],
-				sn: [["Shona"], ["ChiShona"]],
-				si: [["Sinhala", "Sinhalese"], ["සිංහල"]],
-				sk: [["Slovak"], ["Slovenčina", "Slovenský Jazyk"]],
-				sl: [["Slovenian"], ["Slovenski Jezik", "Slovenščina"]],
-				so: [["Somali"], ["Soomaaliga", "Af Soomaali"]],
-				st: [["Southern Sotho"], ["Sesotho"]],
-				es: [["Spanish", "Castilian"], ["Español"]],
-				su: [["Sundanese"], ["Basa Sunda"]],
-				sw: [["Swahili"], ["Kiswahili"]],
-				ss: [["Swati"], ["SiSwati"]],
-				sv: [["Swedish"], ["Svenska"]],
-				ta: [["Tamil"], ["தமிழ்"]],
-				te: [["Telugu"], ["తెలుగు"]],
-				tg: [["Tajik"], ["Тоҷикӣ", "Toçikī", "تاجیکی‎"]],
-				th: [["Thai"], ["ไทย"]],
-				ti: [["Tigrinya"], ["ትግርኛ"]],
-				bo: [["Tibetan"], ["བོད་ཡིག"]],
-				tk: [["Turkmen"], ["Türkmen", "Түркмен"]],
-				tl: [["Tagalog"], ["Wikang Tagalog"]],
-				tn: [["Tswana"], ["Setswana"]],
-				to: [["Tonga"], ["Faka Tonga"]],
-				tr: [["Turkish"], ["Türkçe"]],
-				ts: [["Tsonga"], ["Xitsonga"]],
-				tt: [["Tatar"], ["Татар Теле", "Tatar Tele"]],
-				tw: [["Twi"], ["Twi"]],
-				ty: [["Tahitian"], ["Reo Tahiti"]],
-				ug: [["Uighur", "Uyghur"], ["ئۇيغۇرچە‎", "Uyghurche"]],
-				uk: [["Ukrainian"], ["Українська"]],
-				ur: [["Urdu"], ["اردو"]],
-				uz: [["Uzbek"], ["Oʻzbek", "Ўзбек", "أۇزبېك‎"]],
-				ve: [["Venda"], ["Tshivenḓa"]],
-				vi: [["Vietnamese"], ["Tiếng Việt"]],
-				vo: [["Volapük"], ["Volapük"]],
-				wa: [["Walloon"], ["Walon"]],
-				cy: [["Welsh"], ["Cymraeg"]],
-				wo: [["Wolof"], ["Wollof"]],
-				fy: [["Western Frisian"], ["Frysk"]],
-				xh: [["Xhosa"], ["IsiXhosa"]],
-				yi: [["Yiddish"], ["ייִדיש"]],
-				yo: [["Yoruba"], ["Yorùbá"]],
-				za: [["Zhuang", "Chuang"], ["Saɯ Cueŋƅ", "Saw Cuengh"]],
-				zu: [["Zulu"], ["IsiZulu"]],
-			};
-
-			function get_iso_language_name(language) {
-				return language_names[language][0][0];
-			}
-			function get_endonym(language) {
-				return language_names[language][1][0];
-			}
-
-			let current_language = base_language;
-			for (const accepted_language of accepted_languages) {
-				if (available_languages.indexOf(accepted_language) !== -1) {
-					current_language = accepted_language;
-					break;
-				}
-			}
-
-			function get_language() {
-				return current_language;
-			}
-			function get_direction(language=current_language) {
-				return current_language.match(/^(ar|dv|fa|ha|he|ks|ku|ms|pa|ps|sd|ug|yi)\b/i) ? "rtl" : "ltr";
-			}
-			function load_language(language) {
-				const prev_language = current_language;
-
-				const stylesheets = [...document.querySelectorAll(".flippable-layout-stylesheet")];
-				for (const stylesheet of stylesheets) {
-					let href = stylesheet.getAttribute("href");
-					if (get_direction(language) === "rtl") {
-						if (href.indexOf(".rtl.css") === -1) {
-							href = href.replace(/\.css/i, ".rtl.css");
-						}
-					} else {
-						if (href.indexOf(".rtl.css") > -1) {
-							href = href.replace(/\.rtl\.css/i, ".css");
-						}
-					}
-					stylesheet.setAttribute("href", href);
-					// hack to wait for stylesheet to load
-					const img = document.createElement("img");
-					img.onerror = ()=> {
-						$(()=> {
-							$G.triggerHandler("theme-load"); // signal layout change
-						});
-					};
-					img.src = href;
-				}
-
-				if (language === base_language) {
-					localizations = {};
-					current_language = base_language;
-					return;
-				}
-				// fetch(`localization/${language}/localizations.json`)
-				// .then((response)=> response.json())
-				// .then((new_localizations)=> {
-				// 	localizations = new_localizations;
-				// 	current_language = language;
-				// }).catch((error)=> {
-				// 	show_error_message(`Failed to load localizations for ${language_names[language]}.`, error);
-				// 	current_language = prev_language;
-				// });
-				const src = `localization/${language}/localizations.js`;
-				document.write(`<script src="${src}"><\/script>`);
-			}
-			// JSONP callback
-			function loaded_localizations(language, mapping) {
-				localizations = mapping;
-				current_language = language;
-			}
-			function set_language(language) {
-				const $w = $FormToolWindow().title("Reload Required").addClass("dialogue-window squish");
-				$w.$main.text("The application needs to reload to change the language.");
-				$w.$main.css("max-width", "600px");
-				$w.$Button(localize("OK"), () => {
-					$w.close();
-					are_you_sure(() => {
-						try {
-							localStorage[language_storage_key] = language;
-							location.reload();
-						} catch(error) {
-							show_error_message("Failed to store language preference. Make sure cookies / local storage is enabled in your browser settings.", error);
-						}
-					});
-				});
-				$w.$Button(localize("Cancel"), () => {
-					$w.close();
-				});
-				$w.center();
-				// load_language(language);
-			}
-			load_language(current_language);
-		</script>
-
-		<script src="lib/pep.js"></script>
-		<script src="lib/canvas.toBlob.js"></script>
 		<script src="lib/gif.js/gif.js"></script>
+		<script src="lib/pako-2.0.3.min.js"></script> <!-- for UPNG.js and UTIF.js -->
+		<script src="lib/UPNG.js"></script>
+		<script src="lib/UTIF.js"></script>
+		<script src="lib/bmp.js"></script>
+		<script src="lib/pdf.js/build/pdf.js"></script>
 		<script src="lib/anypalette-0.6.0.js"></script>
 		<script src="lib/FileSaver.js"></script>
 		<script src="lib/font-detective.js"></script>
 		<script src="lib/libtess.min.js"></script>
+		<!-- <script src="lib/tracky-mouse/tracky-mouse.js"></script> -->
 		<script src="lib/os-gui/parse-theme.js"></script>
 		<script src="lib/os-gui/$Window.js"></script>
-		<script src="lib/os-gui/$MenuBar.js"></script>
+		<script src="lib/os-gui/MenuBar.js"></script>
 		<script src="lib/imagetracer_v1.2.5.js"></script>
 
+		<script src="src/app-localization.js"></script> <!-- must not be async/deferred, as it uses document.write(); and must come before other app code which uses localization functions -->
+		<script src="src/msgbox.js"></script>
 		<script src="src/functions.js"></script>
 		<script src="src/helpers.js"></script>
 		<script src="src/storage.js"></script>
 		<script src="src/$Component.js"></script>
 		<script src="src/$ToolWindow.js"></script>
+		<script>
+			// After show_error_message, showMessageBox, make_window_supporting_scale, and localize are defined,
+			// set up better global error handling.
+			// Note that this can't simply be merged with the other onerror handler with a try/catch,
+			// because showMessageBox is async, and could throw an error before dependencies are met (or if there was an error in the error handling),
+			// and try doesn't catch errors in async code. It would need to be awaited.
+			// And making show_error_message return a promise might cause subtle problems due to the pattern of `return show_error_message()`.
+			const old_onerror = window.onerror;
+			window.onerror = (message, source, lineno, colno, error)=> {
+				try {
+					// Some errors don't give an error object, like "ResizeObserver loop limit exceeded"
+					show_error_message(localize("Internal application error."), error || message);
+				} catch (e) {
+					old_onerror(message, source, lineno, colno, error);
+				}
+			};
+		</script>
 		<script src="src/$ToolBox.js"></script>
 		<script src="src/$ColorBox.js"></script>
 		<script src="src/$FontBox.js"></script>
-		<script src="src/$Handles.js"></script>
+		<script src="src/Handles.js"></script>
 		<script src="src/OnCanvasObject.js"></script>
 		<script src="src/OnCanvasSelection.js"></script>
 		<script src="src/OnCanvasTextBox.js"></script>
@@ -809,6 +706,28 @@
 					<feOffset in="black-parts-isolated" dx="1" dy="1" result="offset"/>
 					<feComposite in="hilight-color" in2="offset" operator="in" result="hilight-colored-offset"/>
 					<feComposite in="shadow-color" in2="black-parts-isolated" operator="in" result="shadow-colored"/>
+					<feMerge>
+						<feMergeNode in="hilight-colored-offset"/>
+						<feMergeNode in="shadow-colored"/>
+					</feMerge>
+				</filter>
+				<filter id="disabled-inset-filter-2" x="0" y="0" width="1px" height="1px">
+					<feColorMatrix
+						in="SourceGraphic"
+						type="matrix"
+						values="
+							1 0 0 0 0
+							0 1 0 0 0
+							0 0 1 0 0
+							-1 -1 -0 1 0
+						"
+						result="black-and-blue-parts-isolated"
+					/>
+					<feFlood result="shadow-color" flood-color="var(--ButtonShadow)"/>
+					<feFlood result="hilight-color" flood-color="var(--ButtonHilight)"/>
+					<feOffset in="black-and-blue-parts-isolated" dx="1" dy="1" result="offset"/>
+					<feComposite in="hilight-color" in2="offset" operator="in" result="hilight-colored-offset"/>
+					<feComposite in="shadow-color" in2="black-and-blue-parts-isolated" operator="in" result="shadow-colored"/>
 					<feMerge>
 						<feMergeNode in="hilight-colored-offset"/>
 						<feMergeNode in="shadow-colored"/>

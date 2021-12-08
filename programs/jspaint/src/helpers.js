@@ -1,5 +1,5 @@
 
-const TAU =     //////|//////
+const TAU =   //////|//////
           /////     |     /////
        ///         tau         ///
      ///     ...--> | <--...     ///
@@ -39,8 +39,7 @@ N milliseconds. If `immediate` is passed, trigger the function on the
 leading edge, instead of the trailing. */
 function debounce(func, wait_ms, immediate) {
 	let timeout;
-
-	return function() {
+	const debounced_func = function() {
 		const context = this;
 		const args = arguments;
 
@@ -61,12 +60,19 @@ function debounce(func, wait_ms, immediate) {
 			func.apply(context, args);
 		}
 	};
+	debounced_func.cancel = () => {
+		clearTimeout(timeout);
+	};
+	return debounced_func;
 }
 
 function memoize_synchronous_function(func, max_entries=50000) {
 	const cache = {};
 	const keys = [];
 	const memoized_func = (...args)=> {
+		if (args.some((arg)=> arg instanceof CanvasPattern)) {
+			return func.apply(null, args);
+		}
 		const key = JSON.stringify(args);
 		if (cache[key]){
 			return cache[key];
@@ -192,14 +198,15 @@ function get_icon_for_tool(tool) {
 	return get_help_folder_icon(tool.help_icon);
 }
 
-function load_image(path) {
+// not to be confused with load_image_from_uri
+function load_image_simple(src) {
 	return new Promise((resolve, reject)=> {
 		const img = new Image();
 
 		img.onload = ()=> { resolve(img); };
-		img.onerror = ()=> { reject(); };
+		img.onerror = ()=> { reject(new Error(`failed to load image from ${src}`)); };
 
-		img.src = path;
+		img.src = src;
 	});
 }
 
@@ -209,7 +216,7 @@ function get_icon_for_tools(tools) {
 	}
 	const icon_canvas = make_canvas(16, 16);
 
-	Promise.all(tools.map((tool)=> load_image(`help/${tool.help_icon}`)))
+	Promise.all(tools.map((tool)=> load_image_simple(`help/${tool.help_icon}`)))
 	.then((icons)=> {
 		icons.forEach((icon, i)=> {
 			const w = icon_canvas.width / icons.length;
@@ -234,7 +241,7 @@ function get_icon_for_tools(tools) {
  * @return  Array           The HSL representation
  */
 function rgb_to_hsl(r, g, b) {
-	r /= 255, g /= 255, b /= 255;
+	r /= 255; g /= 255; b /= 255;
 
 	var max = Math.max(r, g, b), min = Math.min(r, g, b);
 	var h, s, l = (max + min) / 2;

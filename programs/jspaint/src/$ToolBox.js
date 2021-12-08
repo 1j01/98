@@ -17,21 +17,14 @@ function $ToolBox(tools, is_extras){
 		
 		$b.attr("title", tool.name);
 		
-		const $icon = $(E("span"));
+		const $icon = $(E("span")).addClass("tool-icon");
 		$icon.appendTo($b);
 		const update_css = ()=> {
-			const theme_folder = `images/${get_theme().replace(/\.css/i, "")}`;
-			const theme_has_svg = get_theme().match(/classic.css|dark.css/);
 			const use_svg = !theme_dev_blob_url && (
-				(theme_has_svg &&
+				(
 					(window.devicePixelRatio >= 3 || (window.devicePixelRatio % 1) !== 0)
 				) ||
 				$("body").hasClass("eye-gaze-mode")
-			);
-			const background_image = theme_dev_blob_url ? (
-				`url(${theme_dev_blob_url})`
-			) : (
-				use_svg ? `url(images/${get_theme().match(/dark.css|occult.css/) ? "dark" : "classic"}/tools.svg)` : `url(${theme_folder}/tools.png)`
 			);
 			$icon.css({
 				display: "block",
@@ -40,9 +33,10 @@ function $ToolBox(tools, is_extras){
 				top: 4,
 				width: 16,
 				height: 16,
-				backgroundImage: background_image,
-				backgroundPosition: `${(use_svg ? -(i*2+1) : -i)*16}px ${use_svg * -16}px`,
+				backgroundImage: theme_dev_blob_url ? `url(${theme_dev_blob_url})` : "",
+				"--icon-index": i,
 			});
+			$icon.toggleClass("use-svg", use_svg);
 		};
 		update_css();
 		$G.on("theme-load resize", update_css);
@@ -105,12 +99,17 @@ function $ToolBox(tools, is_extras){
 	return $c;
 }
 
-if (localStorage.dev_theme_tool_icons === "true") {
+let dev_theme_tool_icons = false;
+try {
+	dev_theme_tool_icons = localStorage.dev_theme_tool_icons === "true";
+// eslint-disable-next-line no-empty
+} catch (e) { }
+if (dev_theme_tool_icons) {
 	let last_update_id = 0;
 	$G.on("session-update", ()=> {
 		last_update_id += 1;
 		const this_update_id = last_update_id;
-		canvas.toBlob((blob)=> {
+		main_canvas.toBlob((blob)=> {
 			// avoid a race condition particularly when loading the document initially when the default canvas size is large, giving a larger PNG
 			if (this_update_id !== last_update_id) {
 				return;

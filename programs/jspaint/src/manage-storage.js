@@ -3,7 +3,7 @@ let $storage_manager;
 let $quota_exceeded_window;
 let ignoring_quota_exceeded = false;
 
-function storage_quota_exceeded(){
+async function storage_quota_exceeded(){
 	if($quota_exceeded_window){
 		$quota_exceeded_window.close();
 		$quota_exceeded_window = null;
@@ -11,34 +11,34 @@ function storage_quota_exceeded(){
 	if(ignoring_quota_exceeded){
 		return;
 	}
-	const $w = $FormToolWindow().title("Storage Error").addClass("dialogue-window");
-	$w.$main.html(
-		"<p>JS Paint stores images as you work on them so that if you " +
-		"close your browser or tab or reload the page " +
-		"your images are usually safe.</p>" +
-		"<p>However, it has run out of space to do so.</p>" +
-		"<p>You can still save the current image with <b>File > Save</b>. " +
-		"You should save frequently, or free up enough space to keep the image safe.</p>"
-	);
-	$w.$Button("View and manage storage", () => {
-		$w.close();
+	const { promise, $window } = showMessageBox({
+		title: "Storage Error",
+		messageHTML: `
+			<p>JS Paint stores images as you work on them so that if you close your browser or tab or reload the page your images are usually safe.</p>
+			<p>However, it has run out of space to do so.</p>
+			<p>You can still save the current image with <b>File > Save</b>. You should save frequently, or free up enough space to keep the image safe.</p>
+		`,
+		buttons: [
+			{ label: "Manage Storage", value: "manage", default: true },
+			{ label: "Ignore", value: "ignore" },
+		],
+		iconID: "warning",
+	});
+	$quota_exceeded_window = $window;
+	const result = await promise;
+	if (result === "ignore") {
+		ignoring_quota_exceeded = true;
+	} else if (result === "manage") {
 		ignoring_quota_exceeded = false;
 		manage_storage();
-	});
-	$w.$Button("Ignore", () => {
-		$w.close();
-		ignoring_quota_exceeded = true;
-	});
-	$w.$content.width(500);
-	$w.center();
-	$quota_exceeded_window = $w;
+	}
 }
 
 function manage_storage(){
 	if($storage_manager){
 		$storage_manager.close();
 	}
-	$storage_manager = $FormToolWindow().title("Manage Storage").addClass("storage-manager dialogue-window squish");
+	$storage_manager = $DialogWindow().title("Manage Storage").addClass("storage-manager squish");
 	// @TODO: way to remove all (with confirmation)
 	const $table = $(E("table")).appendTo($storage_manager.$main);
 	const $message = $(E("p")).appendTo($storage_manager.$main).html(
@@ -51,7 +51,7 @@ function manage_storage(){
 	const addRow = (k, imgSrc) => {
 		const $tr = $(E("tr")).appendTo($table);
 		
-		const $img = $(E("img")).attr({src: imgSrc});
+		const $img = $(E("img")).attr({ src: imgSrc }).addClass("thumbnail-img");
 		const $remove = $(E("button")).text("Remove").addClass("remove-button");
 		const href = `#${k.replace("image#", "local:")}`;
 		const $open_link = $(E("a")).attr({href, target: "_blank"}).text(localize("Open"));
@@ -72,9 +72,16 @@ function manage_storage(){
 	
 	let localStorageAvailable = false;
 	try {
-		localStorage._available = true;
-		localStorageAvailable = localStorage._available;
-		delete localStorage._available;
+		if (localStorage.length > 0) {
+			// This is needed in case it's COMPLETELY full.
+			// Test with https://stackoverflow.com/questions/45760110/how-to-fill-javascript-localstorage-to-its-max-capacity-quickly
+			// Of course, this dialog only manages images, not other data (for now anyway).
+			localStorageAvailable = true;
+		} else {
+			localStorage._available = true;
+			localStorageAvailable = localStorage._available;
+			delete localStorage._available;
+		}
 	// eslint-disable-next-line no-empty
 	} catch (e) {}
 
@@ -103,4 +110,6 @@ function manage_storage(){
 
 	$storage_manager.$content.width(450);
 	$storage_manager.center();
+
+	$storage_manager.find(".remove-button").focus();
 }

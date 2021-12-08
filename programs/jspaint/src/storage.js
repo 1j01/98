@@ -2,7 +2,7 @@
 // or maybe replace this module with localforage actually
 // (but need to address asynchronous concerns if doing that)
 
-((() => {
+(() => {
 	let localStore = {
 		get(key, callback) {
 			let i, item, len, obj, keys, keys_obj;
@@ -51,7 +51,8 @@
 			} else if (Array.isArray(key)) {
 				throw new TypeError("Cannot set an array of keys (to what?)");
 			} else {
-				to_set = key, callback = value;
+				to_set = key;
+				callback = value;
 			}
 			for (key in to_set) {
 				value = to_set[key];
@@ -69,4 +70,4 @@
 
 	window.storage = localStore;
 
-})).call(this);
+})();

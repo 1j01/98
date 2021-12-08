@@ -14,9 +14,9 @@ let monochrome = false;
 let magnification = default_magnification;
 let return_to_magnification = 4;
 
-const canvas = make_canvas();
-canvas.classList.add("main-canvas");
-const ctx = canvas.ctx;
+const main_canvas = make_canvas();
+main_canvas.classList.add("main-canvas");
+const main_ctx = main_canvas.ctx;
 
 const default_palette = [
 	"rgb(0,0,0)", // Black
@@ -85,7 +85,7 @@ let polychrome_palette = palette;
 let monochrome_palette = make_monochrome_palette();
 
 // https://github.com/kouzhudong/win2k/blob/ce6323f76d5cd7d136b74427dad8f94ee4c389d2/trunk/private/shell/win16/comdlg/color.c#L38-L43
-// These are a fallback in case colors are not recieved from some driver.
+// These are a fallback in case colors are not received from some driver.
 // const default_basic_colors = [
 // 	"#8080FF", "#80FFFF", "#80FF80", "#80FF00", "#FFFF80", "#FF8000", "#C080FF", "#FF80FF",
 // 	"#0000FF", "#00FFFF", "#00FF80", "#40FF00", "#FFFF00", "#C08000", "#C08080", "#FF00FF",
@@ -107,6 +107,367 @@ let custom_colors = [
 	"#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF",
 	"#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF", "#FFFFFF",
 ];
+
+// This feature is not ready yet.
+// It needs to let the user decide when to switch the palette or not, when saving/opening an image.
+// (maybe there could be a palette undo button? feels weird. MS Paint would probably use a dialog.)
+// And it needs to handle canvas farbling, where pixel values are slightly different from each other,
+// and equivalize them, when saving to a file. And maybe at other times.
+// There are a lot of places in this app where I have to handle canvas farbling. It's obnoxious.
+let enable_palette_loading_from_indexed_images = false;
+
+// The File System Access API doesn't provide a way to get the file type selected by the user,
+// or to automatically append a file extension to the file name.
+// I'm not sure it's worth it to be able to save over an existing file.
+// I also like the downloads bar UI to be honest.
+// So this might need to be optional, but right now I'm disabling it as it's not ready.
+// There are cases where 0-byte files are created, which is either a serious problem,
+// it's just from canceling saving when the file name has a problem, and it needs to be cleaned up.
+// Also, while I've implemented most of the UI, it'd be nice to release this with recent files support.
+let enable_fs_access_api = false;
+
+// The methods in systemHooks can be overridden by a containing page like 98.js.org which hosts jspaint in a same-origin iframe.
+// This allows integrations like setting the wallpaper as the background of the host page, or saving files to a server.
+// This API may be removed at any time (and perhaps replaced by something based around postMessage)
+window.systemHooks = window.systemHooks || {};
+window.systemHookDefaults = {
+	// named to be distinct from various platform APIs (showSaveFilePicker, saveAs, electron's showSaveDialog; and saveFile is too ambiguous)
+	// could call it saveFileAs maybe but then it'd be weird that you don't pass in the file directly
+	showSaveFileDialog: async ({formats, defaultFileName, defaultPath, defaultFileFormatID, getBlob, savedCallbackUnreliable, dialogTitle})=> {
+		// Note: showSaveFilePicker currently doesn't support suggesting a filename,
+		// or retrieving which file type was selected in the dialog (you have to get it (guess it) from the file name)
+		// In particular, some formats are ambiguous with the file name, e.g. different bit depths of BMP files.
+		// So, it's a tradeoff with the benefit of overwriting on Save.
+		// https://developer.mozilla.org/en-US/docs/Web/API/Window/showSaveFilePicker
+		// Also, if you're using accessibility options Speech Recognition or Eye Gaze Mode,
+		// `showSaveFilePicker` fails based on a notion of it not being a "user gesture".
+		// `saveAs` will likely also fail on the same basis,
+		// but at least in chrome, there's a "Downloads Blocked" icon with a popup where you can say Always Allow.
+		// I can't detect when it's allowed or blocked, but `saveAs` has a better chance of working,
+		// so in Speech Recognition and Eye Gaze Mode, I set a global flag temporarily to disable File System Access API (window.untrusted_gesture).
+		if (window.showSaveFilePicker && !window.untrusted_gesture && enable_fs_access_api) {
+			// We can't get the selected file type, not even from newHandle.getFile()
+			// so limit formats shown to a set that can all be used by their unique file extensions
+			// formats = formats_unique_per_file_extension(formats);
+			// OR, show two dialogs, one for the format and then one for the save location.
+			const {newFileFormatID} = await save_as_prompt({dialogTitle, defaultFileName, defaultFileFormatID, formats, promptForName: false});
+			const new_format = formats.find((format)=> format.formatID === newFileFormatID);
+			const blob = await getBlob(new_format && new_format.formatID);
+			formats = [new_format];
+			let newHandle;
+			let newFileName;
+			try {
+				newHandle = await showSaveFilePicker({
+					types: formats.map((format) => {
+						return {
+							description: format.name,
+							accept: {
+								[format.mimeType]: format.extensions.map((extension) => "." + extension)
+							}
+						}
+					})
+				});
+				newFileName = newHandle.name;
+				const newFileExtension = get_file_extension(newFileName);
+				const doItAgain = async (message) => {
+					const button_value = await showMessageBox({
+						message: `${message}\n\nTry adding .${new_format.extensions[0]} to the name. Sorry about this.`,
+						iconID: "error",
+						buttons: [
+							{
+								label: localize("Save As"), // or "Retry"
+								value: "show-save-as-dialog-again",
+								default: true,
+							},
+							{
+								label: localize("Save"), // or "Ignore"
+								value: "save-without-extension",
+							},
+							{
+								label: localize("Cancel"), // or "Abort"
+								value: "cancel",
+							},
+						],
+					})
+					if (button_value === "show-save-as-dialog-again") {
+						return window.systemHookDefaults.showSaveFileDialog({
+							formats,
+							defaultFileName,
+							defaultPath,
+							defaultFileFormatID,
+							getBlob,
+							savedCallbackUnreliable,
+							dialogTitle,
+						});
+					} else if (button_value === "save-without-extension") {
+						// @TODO: DRY
+						const writableStream = await newHandle.createWritable();
+						await writableStream.write(blob);
+						await writableStream.close();
+						savedCallbackUnreliable && savedCallbackUnreliable({
+							newFileName: newFileName,
+							newFileFormatID: new_format && new_format.formatID,
+							newFileHandle: newHandle,
+							newBlob: blob,
+						});
+					} else {
+						// user canceled save
+					}
+				};
+				if (!newFileExtension) {
+					// return await doItAgain(`Missing file extension.`);
+					return await doItAgain(`'${newFileName}' doesn't have an extension.`);
+				}
+				if (!new_format.extensions.includes(newFileExtension)) {
+					// Closest translation: "Paint cannot save to the same filename with a different file type."
+					// return await doItAgain(`Wrong file extension for selected file type.`);
+					return await doItAgain(`File extension '.${newFileExtension}' does not match the selected file type ${new_format.name}.`);
+				}
+				// const new_format =
+				// 	get_format_from_extension(formats, newHandle.name) ||
+				// 	formats.find((format)=> format.formatID === defaultFileFormatID);
+				// const blob = await getBlob(new_format && new_format.formatID);
+				const writableStream = await newHandle.createWritable();
+				await writableStream.write(blob);
+				await writableStream.close();
+			} catch (error) {
+				if (error.name === "AbortError") {
+					// user canceled save
+					return;
+				}
+				// console.warn("Error during showSaveFileDialog (for showSaveFilePicker; now falling back to saveAs)", error);
+				// newFileName = (newFileName || file_name || localize("untitled"))
+				// 	.replace(/\.(bmp|dib|a?png|gif|jpe?g|jpe|jfif|tiff?|webp|raw)$/i, "") +
+				// 	"." + new_format.extensions[0];
+				// saveAs(blob, newFileName);
+				if (error.message.match(/gesture|activation/)) {
+					// show_error_message("Your browser blocked the file from being saved, because you didn't use the mouse or keyboard directly to save. Try looking for a Downloads Blocked icon and say Always Allow, or save again with the keyboard or mouse.", error);
+					show_error_message("Sorry, due to browser security measures, you must use the keyboard or mouse directly to save.");
+					return;
+				}
+				show_error_message(localize("Failed to save document."), error);
+				return;
+			}
+			savedCallbackUnreliable && savedCallbackUnreliable({
+				newFileName: newFileName,
+				newFileFormatID: new_format && new_format.formatID,
+				newFileHandle: newHandle,
+				newBlob: blob,
+			});
+		} else {
+			const {newFileName, newFileFormatID} = await save_as_prompt({dialogTitle, defaultFileName, defaultFileFormatID, formats});
+			const blob = await getBlob(newFileFormatID);
+			saveAs(blob, newFileName);
+			savedCallbackUnreliable && savedCallbackUnreliable({
+				newFileName,
+				newFileFormatID,
+				newFileHandle: null,
+				newBlob: blob,
+			});
+		}
+	},
+	showOpenFileDialog: async ({ formats }) => {
+		if (window.untrusted_gesture) {
+			// We can't show a file picker RELIABLY.
+			show_error_message("Sorry, a file picker cannot be shown when using Speech Recognition or Eye Gaze Mode. You must click File > Open directly with the mouse, or press Ctrl+O on the keyboard.");
+			throw new Error("can't show file picker reliably");
+		}
+		if (window.showOpenFilePicker && enable_fs_access_api) {
+			const [fileHandle] = await window.showOpenFilePicker({
+				types: formats.map((format)=> {
+					return {
+						description: format.name,
+						accept: {
+							[format.mimeType]: format.extensions.map((extension)=> "." + extension)
+						}
+					}
+				})
+			});
+			const file = await fileHandle.getFile();
+			return {file, fileHandle};
+		} else {
+			// @TODO: specify mime types?
+			return new Promise((resolve)=> {
+				const $input = $("<input type='file'>")
+				.on("change", ()=> {
+					resolve({file: $input[0].files[0]});
+					$input.remove();
+				})
+				.appendTo($app)
+				.hide()
+				.trigger("click");
+			});
+		}
+	},
+	writeBlobToHandle: async (save_file_handle, blob) => {
+		if (save_file_handle && save_file_handle.createWritable && enable_fs_access_api) {
+			await confirm_overwrite();
+			try {
+				const writableStream = await save_file_handle.createWritable();
+				await writableStream.write(blob);
+				await writableStream.close();
+			} catch (error) {
+				if (error.name === "AbortError") {
+					// user canceled save (this might not be a real error code that can occur here)
+					return;
+				}
+				if (error.name === "NotAllowedError") {
+					// use didn't give permission to save
+					// is this too much of a warning?
+					show_error_message(localize("Save was interrupted, so your file has not been saved."), error);
+					return;
+				}
+				if (error.name === "SecurityError") {
+					// not in a user gesture ("User activation is required to request permissions.")
+					saveAs(blob, file_name);
+					return;
+				}
+			}
+		} else {
+			saveAs(blob, file_name);
+			// hopefully if the page reloads/closes the save dialog/download will persist and succeed?
+		}
+	},
+	readBlobFromHandle: async (file_handle) => {
+		if (file_handle && file_handle.getFile) {
+			const file = await file_handle.getFile();
+			return file;
+		} else {
+			throw new Error(`Unknown file handle (${file_handle})`);
+			// show_error_message(`${localize("Failed to open document.")}\n${localize("An unsupported operation was attempted.")}`, error);
+		}
+	},
+	setWallpaperTiled: (canvas)=> {
+		const wallpaperCanvas = make_canvas(screen.width, screen.height);
+		const pattern = wallpaperCanvas.ctx.createPattern(canvas, "repeat");
+		wallpaperCanvas.ctx.fillStyle = pattern;
+		wallpaperCanvas.ctx.fillRect(0, 0, wallpaperCanvas.width, wallpaperCanvas.height);
+
+		systemHooks.setWallpaperCentered(wallpaperCanvas);
+	},
+	setWallpaperCentered: (canvas)=> {
+		systemHooks.showSaveFileDialog({
+			dialogTitle: localize("Save As"),
+			defaultName: `${file_name.replace(/\.(bmp|dib|a?png|gif|jpe?g|jpe|jfif|tiff?|webp|raw)$/i, "")} wallpaper.png`,
+			defaultFileFormatID: "image/png",
+			formats: image_formats,
+			getBlob: (new_file_type)=> {
+				return new Promise((resolve)=> {
+					write_image_file(canvas, new_file_type, (blob)=> {
+						resolve(blob);
+					});
+				});
+			},
+		});
+	},
+};
+
+for (const [key, defaultValue] of Object.entries(window.systemHookDefaults)) {
+	window.systemHooks[key] = window.systemHooks[key] || defaultValue;
+}
+
+function get_file_extension(file_path_or_name) {
+	// does NOT accept a file extension itself as input - if input does not have a dot, returns empty string
+	return file_path_or_name.match(/\.([^./]+)$/)?.[1] || "";
+}
+function get_format_from_extension(formats, file_path_or_name_or_ext) {
+	// accepts a file extension as input, or a file name, or path
+	const ext_match = file_path_or_name_or_ext.match(/\.([^.]+)$/);
+	const ext = ext_match ? ext_match[1].toLowerCase() : file_path_or_name_or_ext; // excluding dot
+	for (const format of formats) {
+		if (format.extensions.includes(ext)) {
+			return format;
+		}
+	}
+}
+
+const image_formats = [];
+// const ext_to_image_formats = {}; // there can be multiple with the same extension, e.g. different bit depth BMP files
+// const mime_type_to_image_formats = {};
+const add_image_format = (mime_type, name_and_exts)=> {
+	// Note: some localizations have commas instead of semicolons to separate file extensions
+	// Assumption: file extensions are never localized
+	const format = {
+		formatID: mime_type,
+		mimeType: mime_type,
+		name: localize(name_and_exts).replace(/\s+\([^(]+$/, ""),
+		nameWithExtensions: localize(name_and_exts),
+		extensions: [],
+	};
+	const ext_regexp = /\*\.([^);,]+)/g;
+	if (get_direction() === "rtl") {
+		const rlm = "\u200F";
+		const lrm = "\u200E";
+		format.nameWithExtensions = format.nameWithExtensions.replace(ext_regexp, `${rlm}*.${lrm}$1${rlm}`);
+	}
+	let match;
+	// eslint-disable-next-line no-cond-assign
+	while (match = ext_regexp.exec(name_and_exts)) {
+		const ext = match[1];
+		// ext_to_image_formats[ext] = ext_to_image_formats[ext] || [];
+		// ext_to_image_formats[ext].push(format);
+		// mime_type_to_image_formats[mime_type] = mime_type_to_image_formats[mime_type] || [];
+		// mime_type_to_image_formats[mime_type].push(format);
+		format.extensions.push(ext);
+	}
+
+	image_formats.push(format);
+};
+// First file extension in a parenthetical defines default for the format.
+// Strings are localized in add_image_format, don't need localize() here.
+add_image_format("image/png", "PNG (*.png)");
+add_image_format("image/webp", "WebP (*.webp)");
+add_image_format("image/gif", "GIF (*.gif)");
+add_image_format("image/tiff", "TIFF (*.tif;*.tiff)");
+add_image_format("image/jpeg", "JPEG (*.jpg;*.jpeg;*.jpe;*.jfif)");
+add_image_format("image/x-bmp-1bpp", "Monochrome Bitmap (*.bmp;*.dib)");
+add_image_format("image/x-bmp-4bpp", "16 Color Bitmap (*.bmp;*.dib)");
+add_image_format("image/x-bmp-8bpp", "256 Color Bitmap (*.bmp;*.dib)");
+add_image_format("image/bmp", "24-bit Bitmap (*.bmp;*.dib)");
+// add_image_format("image/x-bmp-32bpp", "32-bit Transparent Bitmap (*.bmp;*.dib)");
+
+// Only support 24bpp BMP files for File System Access API and Electron save dialog,
+// as these APIs don't allow you to access the selected file type.
+// You can only guess it from the file extension the user types.
+const formats_unique_per_file_extension = (formats)=> {
+	// first handle BMP format specifically to make sure the 24-bpp is the selected BMP format
+	formats = formats.filter((format)=>
+		format.extensions.includes("bmp") ? format.mimeType === "image/bmp" : true
+	)
+	// then generally uniquify on extensions
+	// (this could be overzealous in case of partial overlap in extensions of different formats,
+	// but in general it needs special care anyways, to decide which format should win)
+	// This can't be simply chained with the above because it needs to use the intermediate, partially filtered formats array.
+	return formats.filter((format, format_index)=>
+		!format.extensions.some((extension)=>
+			formats.some((other_format, other_format_index)=>
+				other_format_index < format_index &&
+				other_format.extensions.includes(extension)
+			)
+		)
+	);
+};
+
+const palette_formats = [];
+for (const [format_id, format] of Object.entries(AnyPalette.formats)) {
+	if (format.write) {
+		palette_formats.push({
+			formatID: format_id,
+			name: format.name,
+			nameWithExtensions: `${format.name} (${
+				format.fileExtensions.map((extension)=> `*.${extension}`).join(";")
+			})`,
+			extensions: format.fileExtensions,
+		});
+	}
+}
+palette_formats.sort((a, b)=>
+	// Order important formats first, starting with RIFF PAL format:
+	(b.formatID === "RIFF_PALETTE") - (a.formatID === "RIFF_PALETTE") ||
+	(b.formatID === "GIMP_PALETTE") - (a.formatID === "GIMP_PALETTE") ||
+	0
+);
+
 
 // declared like this for Cypress tests
 window.default_brush_shape = "circle";
@@ -132,7 +493,7 @@ let fill_color_k = "background"; // enum of "foreground", "background", "ternary
 let selected_tool = default_tool;
 let selected_tools = [selected_tool];
 let return_to_tools = [selected_tool];
-window.colors = { // declared like this for Cypress tests
+window.selected_colors = { // declared like this for Cypress tests
 	foreground: "",
 	background: "",
 	ternary: "",
@@ -141,7 +502,10 @@ window.colors = { // declared like this for Cypress tests
 let selection; //the one and only OnCanvasSelection
 let textbox; //the one and only OnCanvasTextBox
 let helper_layer; //the OnCanvasHelperLayer for the grid and tool previews
+let $thumbnail_window;
+let thumbnail_canvas;
 let show_grid = false;
+let show_thumbnail = false;
 let text_tool_font = {
 	family: '"Arial"', // should be an exact value detected by Font Detective
 	size: 12,
@@ -163,9 +527,8 @@ let undos = [];
 let redos = [];
 
 let file_name;
-let document_file_path;
+let system_file_handle; // For saving over opened file on Save. Can be different type for File System Access API vs Electron.
 let saved = true;
-let file_name_chosen = false;
 
 /** works in canvas coordinates */
 let pointer;
@@ -219,6 +582,41 @@ const update_from_url_params = ()=> {
 	} else {
 		window.disable_speech_recognition && disable_speech_recognition();
 	}
+
+	$("body").toggleClass("compare-reference", !!location.hash.match(/compare-reference/i));
+	$("body").toggleClass("compare-reference-tool-windows", !!location.hash.match(/compare-reference-tool-windows/i));
+	setTimeout(() => {
+		if (location.hash.match(/compare-reference/i)) { // including compare-reference-tool-windows
+			select_tool(get_tool_by_id(TOOL_SELECT));
+			const test_canvas_width = 576;
+			const test_canvas_height = 432;
+			if (main_canvas.width !== test_canvas_width || main_canvas.height !== test_canvas_height) {
+				// Unfortunately, right now this can cause a reverse "Save changes?" dialog,
+				// where Discard will restore your drawing, Cancel will discard it, and Save will save a blank canvas,
+				// because the load from storage happens after this resize.
+				// But this is just a helper for development, so it's not a big deal.
+				// are_you_sure here doesn't help, either.
+				// are_you_sure(() => {
+				resize_canvas_without_saving_dimensions(test_canvas_width, test_canvas_height);
+				// });
+			}
+			if (!location.hash.match(/compare-reference-tool-windows/i)) {
+				$toolbox.dock($left);
+				$colorbox.dock($bottom);
+				window.debugKeepMenusOpen = false;
+			}
+		}
+		if (location.hash.match(/compare-reference-tool-windows/i)) {
+			$toolbox.undock_to(84, 35);
+			$colorbox.undock_to(239, 195);
+			window.debugKeepMenusOpen = true;
+			// $(".help-menu-button").click(); // have to trigger pointerdown/up, it doesn't respond to click
+			// $(".help-menu-button").trigger("pointerdown").trigger("pointerup"); // and it doesn't use jQuery
+			$(".help-menu-button")[0].dispatchEvent(new Event("pointerdown"));
+			$(".help-menu-button")[0].dispatchEvent(new Event("pointerup"));
+			$('[aria-label="About Paint"]')[0].dispatchEvent(new Event("pointerenter"));
+		}
+	}, 500);
 };
 update_from_url_params();
 $G.on("hashchange popstate change-url-params", update_from_url_params);
@@ -238,27 +636,28 @@ const $app = $(E("div")).addClass("jspaint").appendTo("body");
 const $V = $(E("div")).addClass("vertical").appendTo($app);
 const $H = $(E("div")).addClass("horizontal").appendTo($V);
 
-const $canvas_area = $(E("div")).addClass("canvas-area").appendTo($H);
+const $canvas_area = $(E("div")).addClass("canvas-area inset-deep").appendTo($H);
 
-const $canvas = $(canvas).appendTo($canvas_area);
-$canvas.attr("touch-action", "none");
-let canvas_bounding_client_rect = canvas.getBoundingClientRect(); // cached for performance, updated later
-const getRect = ()=> ({left: 0, top: 0, width: canvas.width, height: canvas.height, right: canvas.width, bottom: canvas.height})
-const $canvas_handles = $Handles($canvas_area, getRect, {
+const $canvas = $(main_canvas).appendTo($canvas_area);
+$canvas.css("touch-action", "none");
+let canvas_bounding_client_rect = main_canvas.getBoundingClientRect(); // cached for performance, updated later
+const canvas_handles = new Handles({
+	$handles_container: $canvas_area,
+	$object_container: $canvas_area,
+	get_rect: ()=> ({x: 0, y: 0, width: main_canvas.width, height: main_canvas.height}),
+	set_rect: ({width, height})=> resize_canvas_and_save_dimensions(width, height),
 	outset: 4,
-	get_offset_left: ()=> parseFloat($canvas_area.css("padding-left")) + 1,
-	get_offset_top: ()=> parseFloat($canvas_area.css("padding-top")) + 1,
+	get_handles_offset_left: ()=> parseFloat($canvas_area.css("padding-left")) + 1,
+	get_handles_offset_top: ()=> parseFloat($canvas_area.css("padding-top")) + 1,
+	get_ghost_offset_left: ()=> parseFloat($canvas_area.css("padding-left")) + 1,
+	get_ghost_offset_top: ()=> parseFloat($canvas_area.css("padding-top")) + 1,
 	size_only: true,
 });
-// hack: fix canvas handles causing document to scroll when selecting/deselecting
-// by overriding these methods
-$canvas_handles.hide = ()=> { $canvas_handles.css({opacity: 0, pointerEvents: "none"}); };
-$canvas_handles.show = ()=> { $canvas_handles.css({opacity: "", pointerEvents: ""}); };
 
-const $top = $(E("div")).addClass("component-area").prependTo($V);
-const $bottom = $(E("div")).addClass("component-area").appendTo($V);
-const $left = $(E("div")).addClass("component-area").prependTo($H);
-const $right = $(E("div")).addClass("component-area").appendTo($H);
+const $top = $(E("div")).addClass("component-area top").prependTo($V);
+const $bottom = $(E("div")).addClass("component-area bottom").appendTo($V);
+const $left = $(E("div")).addClass("component-area left").prependTo($H);
+const $right = $(E("div")).addClass("component-area right").appendTo($H);
 // there's also probably a CSS solution alternative to this
 if (get_direction() === "rtl") {
 	$left.appendTo($H);
@@ -266,16 +665,18 @@ if (get_direction() === "rtl") {
 }
 
 const $status_area = $(E("div")).addClass("status-area").appendTo($V);
-const $status_text = $(E("div")).addClass("status-text").appendTo($status_area);
-const $status_position = $(E("div")).addClass("status-coordinates").appendTo($status_area);
-const $status_size = $(E("div")).addClass("status-coordinates").appendTo($status_area);
+const $status_text = $(E("div")).addClass("status-text status-field inset-shallow").appendTo($status_area);
+const $status_position = $(E("div")).addClass("status-coordinates status-field inset-shallow").appendTo($status_area);
+const $status_size = $(E("div")).addClass("status-coordinates status-field inset-shallow").appendTo($status_area);
 
+const news_seen_key = "jspaint latest news seen";
+const latest_news_datetime = $this_version_news.find("time").attr("datetime");
 const $news_indicator = $(`
 	<a class='news-indicator' href='#project-news'>
 		<img src='images/winter/present.png' width='24' height='22' alt=''/>
-		<span class='marquee' dir='ltr' style='--text-width: 52ch; --animation-duration: 5s;'>
+		<span class='marquee' dir='ltr' style='--text-width: 60ch; --animation-duration: 3s;'>
 			<span>
-				<strong>New!</strong>&nbsp;Localization, Eye Gaze Mode, and Speech Recognition!
+				<b>The GUIcci Update</b> — Thumbnail View, Pinch Zoom, Pixel Perfection!
 			</span>
 		</span>
 	</a>
@@ -283,10 +684,23 @@ const $news_indicator = $(`
 $news_indicator.on("click auxclick", (event)=> {
 	event.preventDefault();
 	show_news();
+	$news_indicator.remove();
+	try {
+		localStorage[news_seen_key] = latest_news_datetime;
+	// eslint-disable-next-line no-empty
+	} catch (error) {}
 });
-// @TODO: use localstorage to show until clicked, if available
-// and show for a longer period of time after the update, if available
-if (Date.now() < Date.parse("Jan 5 2021 23:42:42 GMT-0500")) {
+let news_seen;
+let local_storage_unavailable;
+try {
+	news_seen = localStorage[news_seen_key];
+} catch (error) {
+	local_storage_unavailable = true;
+}
+const news_period_if_can_dismiss = 15;
+const news_period_if_cannot_dismiss = 5;
+const news_period = local_storage_unavailable ? news_period_if_cannot_dismiss : news_period_if_can_dismiss;
+if (Date.now() < Date.parse(latest_news_datetime) + news_period * 24*60*60*1000 && news_seen !== latest_news_datetime) {
 	$status_area.append($news_indicator);
 }
 
@@ -299,24 +713,24 @@ $status_text.default();
 let menu_bar_outside_frame = false;
 if(frameElement){
 	try{
-		if(parent.$MenuBar){
-			$MenuBar = parent.$MenuBar;
+		if(parent.MenuBar){
+			MenuBar = parent.MenuBar;
 			menu_bar_outside_frame = true;
 		}
 	// eslint-disable-next-line no-empty
 	}catch(e){}
 }
-const $menu_bar = $MenuBar(menus);
+const menu_bar = MenuBar(menus);
 if(menu_bar_outside_frame){
-	$menu_bar.insertBefore(frameElement);
+	$(menu_bar.element).insertBefore(frameElement);
 }else{
-	$menu_bar.prependTo($V);
+	$(menu_bar.element).prependTo($V);
 }
 
-$menu_bar.on("info", (_event, info) => {
-	$status_text.text(info);
+$(menu_bar.element).on("info", (event) => {
+	$status_text.text(event.detail?.description ?? "");
 });
-$menu_bar.on("default-info", ()=> {
+$(menu_bar.element).on("default-info", ()=> {
 	$status_text.default();
 });
 // </menu bar>
@@ -349,10 +763,6 @@ $G.on("eye-gaze-mode-toggled", ()=> {
 });
 
 
-$canvas_area.on("user-resized", (_event, _x, _y, unclamped_width, unclamped_height) => {
-	resize_canvas_and_save_dimensions(unclamped_width, unclamped_height);
-});
-
 $G.on("resize", () => { // for browser zoom, and in-app zoom of the canvas
 	update_canvas_rect();
 	update_disable_aa();
@@ -371,26 +781,81 @@ $canvas_area.on("resize", () => {
 // Listening for scroll here is mainly in case a case is forgotten, like scrollIntoView,
 // in which case it will flash sometimes but at least not end up with part of
 // the application scrolled off the screen with no scrollbar to get it back.
-$G.on("scroll focusin", (event) => {
+$G.on("scroll focusin", () => {
 	window.scrollTo(0, 0);
 });
 
-$("body").on("dragover dragenter", e => {
-	const dt = e.originalEvent.dataTransfer;
-	const has_files = Array.from(dt.types).includes("Files");
-	if(has_files){
-		e.preventDefault();
+$("body").on("dragover dragenter", (event) => {
+	const dt = event.originalEvent.dataTransfer;
+	const has_files = dt && Array.from(dt.types).includes("Files");
+	if (has_files) {
+		event.preventDefault();
 	}
-}).on("drop", e => {
-	if(e.isDefaultPrevented()){
+}).on("drop", async (event) => {
+	if (event.isDefaultPrevented()) {
 		return;
 	}
-	const dt = e.originalEvent.dataTransfer;
-	const has_files = Array.from(dt.types).includes("Files");
-	if(has_files){
-		e.preventDefault();
-		if(dt && dt.files && dt.files.length){
-			open_from_FileList(dt.files, "dropped");
+	const dt = event.originalEvent.dataTransfer;
+	const has_files = dt && Array.from(dt.types).includes("Files");
+	if (has_files) {
+		event.preventDefault();
+		// @TODO: sort files/items in priority of image, theme, palette
+		// and then try loading them in series, with async await to avoid race conditions?
+		// or maybe support opening multiple documents in tabs
+		// Note: don't use FS Access API in Electron app because:
+		// 1. it's faulty (permissions problems, 0 byte files maybe due to the perms problems)
+		// 2. we want to save the file.path, which the dt.files code path takes care of
+		if (window.FileSystemHandle && !window.is_electron_app) {
+			for (const item of dt.items) {
+				// kind will be 'file' for file/directory entries.
+				if (item.kind === 'file') {
+					let handle;
+					try {
+						handle = await item.getAsFileSystemHandle();
+					} catch (error) {
+						// I'm not sure when this happens.
+						// should this use "An invalid file handle was associated with %1." message?
+						show_error_message(localize("File not found."), error);
+						return;
+					}
+					if (handle.kind === 'file') {
+						let file;
+						try {
+							file = await handle.getFile();
+						} catch (error) {
+							// NotFoundError can happen when the file was moved or deleted,
+							// then dragged and dropped via the browser's downloads bar, or some other outdated file listing.
+							show_error_message(localize("File not found."), error);
+							return;
+						}
+						open_from_file(file, handle);
+						if (window._open_images_serially) {
+							// For testing a suite of files:
+							await new Promise(resolve => setTimeout(resolve, 500));
+						} else {
+							// Normal behavior: only open one file.
+							return;
+						}
+					}
+					// else if (handle.kind === 'directory') {}
+				}
+			}
+		} else if (dt.files && dt.files.length) {
+			if (window._open_images_serially) {
+				// For testing a suite of files, such as http://www.schaik.com/pngsuite/
+				let i = 0;
+				const iid = setInterval(() => {
+					console.log("opening", dt.files[i].name);
+					open_from_file(dt.files[i]);
+					i++;
+					if (i >= dt.files.length) {
+						clearInterval(iid);
+					}
+				}, 1500);
+			} else {
+				// Normal behavior: only open one file.
+				open_from_file(dt.files[0]);
+			}
 		}
 	}
 });
@@ -399,7 +864,7 @@ $G.on("keydown", e => {
 	if(e.isDefaultPrevented()){
 		return;
 	}
-	if (e.keyCode === 27) { // Esc
+	if (e.key === "Escape") { // Note: Escape handled below too! (after input/textarea return condition)
 		if (textbox && textbox.$editor.is(e.target)) {
 			deselect();
 		}
@@ -407,7 +872,7 @@ $G.on("keydown", e => {
 	if (
 		// Ctrl+Shift+Y
 		(e.ctrlKey || e.metaKey) && e.shiftKey && !e.altKey &&
-		String.fromCharCode(e.keyCode).toUpperCase() === "Y"
+		e.key.toUpperCase() === "Y"
 	) {
 		show_document_history();
 		e.preventDefault();
@@ -435,45 +900,45 @@ $G.on("keydown", e => {
 			selection.y += delta_y;
 			selection.position();
 		};
-		switch(e.keyCode){
-			case 37: // Left
+		switch(e.key){
+			case "ArrowLeft":
 				nudge_selection(-1, 0);
 				e.preventDefault();
 				break;
-			case 39: // Right
+			case "ArrowRight":
 				nudge_selection(+1, 0);
 				e.preventDefault();
 				break;
-			case 40: // Down
+			case "ArrowDown":
 				nudge_selection(0, +1);
 				e.preventDefault();
 				break;
-			case 38: // Up
+			case "ArrowUp":
 				nudge_selection(0, -1);
 				e.preventDefault();
 				break;
 		}
 	}
 
-	if(e.keyCode === 27){ //Escape
-		if(selection){
+	if (e.key === "Escape") { // Note: Escape handled above too!
+		if (selection) {
 			deselect();
-		}else{
+		} else {
 			cancel();
 		}
 		window.stopSimulatingGestures && window.stopSimulatingGestures();
 		window.trace_and_sketch_stop && window.trace_and_sketch_stop();
-	}else if(e.keyCode === 13){ //Enter
+	} else if (e.key === "Enter") {
 		if(selection){
 			deselect();
 		}
-	}else if(e.keyCode === 115){ //F4
+	} else if (e.key === "F4") {
 		redo();
-	}else if(e.keyCode === 46){ //Delete
+	} else if (e.key === "Delete" || e.key === "Backspace") {
 		delete_selection();
-	}else if(e.keyCode === 107 || e.keyCode === 109){ // Numpad Plus and Minus
-		const plus = e.keyCode === 107;
-		const minus = e.keyCode === 109;
+	} else if (e.code === "NumpadAdd" || e.code === "NumpadSubtract") {
+		const plus = e.code === "NumpadAdd";
+		const minus = e.code === "NumpadSubtract";
 		const delta = plus - minus; // const delta = +plus++ -minus--; // Δ = ±±±±
 
 		if(selection){
@@ -509,9 +974,8 @@ $G.on("keydown", e => {
 		e.preventDefault();
 		return;
 	}else if(e.ctrlKey || e.metaKey){
-		const key = String.fromCharCode(e.keyCode).toUpperCase();
 		if(textbox){
-			switch(key){
+			switch(e.key.toUpperCase()){
 				case "A":
 				case "Z":
 				case "Y":
@@ -522,19 +986,21 @@ $G.on("keydown", e => {
 					return;
 			}
 		}
-		switch(e.keyCode){
-			case 188: // , <
-			case 219: // [ {
+		switch (e.key.toUpperCase()) {
+			case ",": // '<' without Shift
+			case "<":
+			case "[":
+			case "{":
 				rotate(-TAU/4);
 				$canvas_area.trigger("resize");
 			break;
-			case 190: // . >
-			case 221: // ] }
+			case ".": // '>' without Shift
+			case ">":
+			case "]":
+			case "}":
 				rotate(+TAU/4);
 				$canvas_area.trigger("resize");
 			break;
-		}
-		switch(key){
 			case "Z":
 				e.shiftKey ? redo() : undo();
 			break;
@@ -546,7 +1012,9 @@ $G.on("keydown", e => {
 				e.shiftKey ? render_history_as_gif() : toggle_grid();
 			break;
 			case "F":
-				view_bitmap();
+				if (!e.repeat && !e.originalEvent?.repeat) {
+					view_bitmap();
+				}
 			break;
 			case "O":
 				file_open();
@@ -572,6 +1040,50 @@ $G.on("keydown", e => {
 		e.preventDefault();
 	}
 });
+let alt_zooming = false;
+addEventListener("keyup", (e) => {
+	if (e.key === "Alt" && alt_zooming) {
+		e.preventDefault(); // prevent menu bar from activating in Firefox from zooming
+	}
+	if (!e.altKey) {
+		alt_zooming = false;
+	}
+});
+// $G.on("wheel", (e) => {
+addEventListener("wheel", (e) => {
+	if (e.altKey) {
+		e.preventDefault();
+		let new_magnification = magnification;
+		if (e.deltaY < 0) {
+			new_magnification *= 1.5;
+		} else {
+			new_magnification /= 1.5;
+		}
+		new_magnification = Math.max(0.5, Math.min(new_magnification, 80));
+		set_magnification(new_magnification, to_canvas_coords(e));
+		alt_zooming = true;
+		return;
+	}
+	if (e.ctrlKey || e.metaKey) {
+		return;
+	}
+	// for reference screenshot mode (development helper):
+	if (location.hash.match(/compare-reference/i)) { // including compare-reference-tool-windows
+		// const delta_opacity = Math.sign(e.originalEvent.deltaY) * -0.1; // since attr() is not supported other than for content, this increment must match CSS
+		const delta_opacity = Math.sign(e.deltaY) * -0.2; // since attr() is not supported other than for content, this increment must match CSS
+		let old_opacity = parseFloat($("body").attr("data-reference-opacity"));
+		if (!isFinite(old_opacity)) {
+			old_opacity = 0.5;
+		}
+		const new_opacity = Math.max(0, Math.min(1, old_opacity + delta_opacity));
+		$("body").attr("data-reference-opacity", new_opacity);
+		// prevent scrolling, keeping the screenshot lined up
+		// e.preventDefault(); // doesn't work
+		// $canvas_area.scrollTop(0); // doesn't work with smooth scrolling
+		// $canvas_area.scrollLeft(0);
+	}
+}, { passive: false });
+
 $G.on("cut copy paste", e => {
 	if(e.isDefaultPrevented()){
 		return;
@@ -621,11 +1133,12 @@ $G.on("cut copy paste", e => {
 		for (const item of cd.items) {
 			if(item.type.match(/^text\/(?:x-data-uri|uri-list|plain)|URL$/)){
 				item.getAsString(text => {
-					const uris = get_URIs(text);
+					const uris = get_uris(text);
 					if (uris.length > 0) {
-						load_image_from_URI(uris[0], (error, img) => {
-							if(error){ return show_resource_load_error_message(error); }
-							paste(img);
+						load_image_from_uri(uris[0]).then((info) => {
+							paste(info.image || make_canvas(info.image_data));
+						}, (error) => {
+							show_resource_load_error_message(error);
 						});
 					} else {
 						show_error_message("The information on the Clipboard can't be inserted into Paint.");
@@ -641,7 +1154,7 @@ $G.on("cut copy paste", e => {
 });
 
 reset_file();
-reset_colors();
+reset_selected_colors();
 reset_canvas_and_history(); // (with newly reset colors)
 set_magnification(default_magnification);
 
@@ -660,22 +1173,25 @@ storage.get({
 		name: "Resize Canvas For New Document",
 		icon: get_help_folder_icon("p_stretch_both.png"),
 	}, ()=> {
-		canvas.width = Math.max(1, my_canvas_width);
-		canvas.height = Math.max(1, my_canvas_height);
-		ctx.disable_image_smoothing();
+		main_canvas.width = Math.max(1, my_canvas_width);
+		main_canvas.height = Math.max(1, my_canvas_height);
+		main_ctx.disable_image_smoothing();
 		if(!transparency){
-			ctx.fillStyle = colors.background;
-			ctx.fillRect(0, 0, canvas.width, canvas.height);
+			main_ctx.fillStyle = selected_colors.background;
+			main_ctx.fillRect(0, 0, main_canvas.width, main_canvas.height);
 		}
 		$canvas_area.trigger("resize");
 	});
 });
 
-if(window.document_file_path_to_open){
-	open_from_file_path(document_file_path_to_open, err => {
-		if(err){
-			return show_error_message(`Failed to open file ${document_file_path_to_open}`, err);
+if (window.initial_system_file_handle) {
+	systemHooks.readBlobFromHandle(window.initial_system_file_handle).then(file => {
+		if (file) {
+			open_from_file(file, window.initial_system_file_handle);
 		}
+	}, (error) => {
+		// this handler is not always called, sometimes error message is shown from readBlobFromHandle
+		show_error_message(`Failed to open file ${window.initial_system_file_handle}`, error);
 	});
 }
 
@@ -781,23 +1297,31 @@ $G.on("theme-load", update_palette_from_theme);
 update_palette_from_theme();
 
 function to_canvas_coords({clientX, clientY}) {
+	if (clientX === undefined || clientY === undefined) {
+		throw new TypeError("clientX and clientY must be defined (not {x, y} or x, y or [x, y])");
+	}
 	const rect = canvas_bounding_client_rect;
-	const cx = clientX - rect.left;
-	const cy = clientY - rect.top;
 	return {
-		x: ~~(cx / rect.width * canvas.width),
-		y: ~~(cy / rect.height * canvas.height),
+		x: ~~((clientX - rect.left) / rect.width * main_canvas.width),
+		y: ~~((clientY - rect.top) / rect.height * main_canvas.height),
+	};
+}
+function from_canvas_coords({x, y}) {
+	const rect = canvas_bounding_client_rect;
+	return {
+		clientX: ~~(x / main_canvas.width * rect.width + rect.left),
+		clientY: ~~(y / main_canvas.height * rect.height + rect.top),
 	};
 }
 
 function update_fill_and_stroke_colors_and_lineWidth(selected_tool) {
-	ctx.lineWidth = stroke_size;
+	main_ctx.lineWidth = stroke_size;
 
 	const reverse_because_fill_only = selected_tool.$options && selected_tool.$options.fill && !selected_tool.$options.stroke;
-	ctx.fillStyle = fill_color =
-	ctx.strokeStyle = stroke_color =
-		colors[
-			(ctrl && colors.ternary && pointer_active) ? "ternary" :
+	main_ctx.fillStyle = fill_color =
+	main_ctx.strokeStyle = stroke_color =
+		selected_colors[
+			(ctrl && selected_colors.ternary && pointer_active) ? "ternary" :
 			((reverse ^ reverse_because_fill_only) ? "background" : "foreground")
 		];
 		
@@ -815,8 +1339,8 @@ function update_fill_and_stroke_colors_and_lineWidth(selected_tool) {
 				stroke_color_k = "foreground";
 			}
 		}
-		ctx.fillStyle = fill_color = colors[fill_color_k];
-		ctx.strokeStyle = stroke_color = colors[stroke_color_k];
+		main_ctx.fillStyle = fill_color = selected_colors[fill_color_k];
+		main_ctx.strokeStyle = stroke_color = selected_colors[stroke_color_k];
 	}
 }
 
@@ -824,10 +1348,10 @@ function tool_go(selected_tool, event_name){
 	update_fill_and_stroke_colors_and_lineWidth(selected_tool);
 
 	if(selected_tool[event_name]){
-		selected_tool[event_name](ctx, pointer.x, pointer.y);
+		selected_tool[event_name](main_ctx, pointer.x, pointer.y);
 	}
 	if(selected_tool.paint){
-		selected_tool.paint(ctx, pointer.x, pointer.y);
+		selected_tool.paint(main_ctx, pointer.x, pointer.y);
 	}
 }
 function canvas_pointer_move(e){
@@ -835,7 +1359,7 @@ function canvas_pointer_move(e){
 	shift = e.shiftKey;
 	pointer = to_canvas_coords(e);
 	
-	// Quick Undo
+	// Quick Undo (for mouse/pen)
 	// (Note: pointermove also occurs when the set of buttons pressed changes,
 	// except when another event would fire like pointerdown)
 	if(pointers.length && e.button != -1){
@@ -926,7 +1450,194 @@ if ($("body").hasClass("eye-gaze-mode")) {
 	init_eye_gaze_mode();
 }
 
-function init_eye_gaze_mode() {
+const eye_gaze_mode_config = {
+	targets: `
+		button:not([disabled]),
+		input,
+		textarea,
+		label,
+		a,
+		.flip-and-rotate .sub-options .radio-wrapper,
+		.current-colors,
+		.color-button,
+		.edit-colors-window .swatch,
+		.edit-colors-window .rainbow-canvas,
+		.edit-colors-window .luminosity-canvas,
+		.tool:not(.selected),
+		.chooser-option,
+		.menu-button:not(.active),
+		.menu-item,
+		.main-canvas,
+		.selection canvas,
+		.handle,
+		.grab-region,
+		.window:not(.maximized) .window-titlebar,
+		.history-entry
+	`,
+	noCenter: (target) => (
+		target.matches(`
+			.main-canvas,
+			.selection canvas,
+			.window-titlebar,
+			.rainbow-canvas,
+			.luminosity-canvas,
+			input[type="range"]
+		`)
+	),
+	retarget: [
+		// Nudge hovers near the edges of the canvas onto the canvas
+		{ from: ".canvas-area", to: ".main-canvas", withinMargin: 50 },
+		// Top level menus are just immediately switched between for now.
+		// Prevent awkward hover clicks on top level menu buttons while menus are open.
+		{
+			from: (target) => (
+				(target.closest(".menu-button") || target.matches(".menu-container")) &&
+				document.querySelector(".menu-button.active") != null
+			),
+			to: null,
+		},
+		// Can we make it easier to click on help topics with short names?
+		// { from: ".help-window li", to: (target) => target.querySelector(".item")},
+	],
+	isEquivalentTarget: (apparent_hover_target, hover_target) => (
+		apparent_hover_target.closest("label") === hover_target ||
+		apparent_hover_target.closest(".radio-wrapper") === hover_target
+	),
+	dwellClickEvenIfPaused: (target) => (
+		target.matches(".toggle-dwell-clicking")
+	),
+	shouldDrag: (target)=> (
+		target.matches(".window-titlebar, .window-titlebar *:not(button)") ||
+		target.matches(".selection, .selection *, .handle, .grab-region") ||
+		(
+			target === main_canvas &&
+			selected_tool.id !== TOOL_PICK_COLOR &&
+			selected_tool.id !== TOOL_FILL &&
+			selected_tool.id !== TOOL_MAGNIFIER &&
+			selected_tool.id !== TOOL_POLYGON &&
+			selected_tool.id !== TOOL_CURVE
+		)
+	),
+	click: ({ target, x, y }) => {
+		if (target.matches("button:not(.toggle)")) {
+			target.style.borderImage = "var(--inset-deep-border-image)";
+			setTimeout(() => {
+				target.style.borderImage = "";
+				// delay the button.click() as well, so the pressed state is
+				// visible even if the button closes a dialog
+				window.untrusted_gesture = true;
+				target.click();
+				window.untrusted_gesture = false;
+			}, 100);
+		} else if (target.matches("input[type='range']")) {
+			const rect = target.getBoundingClientRect();
+			const vertical =
+				target.getAttribute("orient") === "vertical" ||
+				(getCurrentRotation(target) !== 0) ||
+				rect.height > rect.width;
+			const min = Number(target.min);
+			const max = Number(target.max);
+			const v = (
+				vertical ?
+					(y - rect.top) / rect.height :
+					(x - rect.left) / rect.width
+			) * (max - min) + min;
+			target.value = v;
+			window.untrusted_gesture = true;
+			target.dispatchEvent(new Event("input", { bubbles: true }));
+			target.dispatchEvent(new Event("change", { bubbles: true }));
+			window.untrusted_gesture = false;
+		} else {
+			window.untrusted_gesture = true;
+			target.click();
+			if (target.matches("input, textarea")) {
+				target.focus();
+			}
+			window.untrusted_gesture = false;
+		}
+		// Source: https://stackoverflow.com/a/54492696/2624876
+		function getCurrentRotation(el) {
+			const st = window.getComputedStyle(el, null);
+			const tm = st.getPropertyValue("-webkit-transform") ||
+				st.getPropertyValue("-moz-transform") ||
+				st.getPropertyValue("-ms-transform") ||
+				st.getPropertyValue("-o-transform") ||
+				st.getPropertyValue("transform") ||
+				"none";
+			if (tm !== "none") {
+				const [a, b] = tm.split('(')[1].split(')')[0].split(',');
+				return Math.round(Math.atan2(a, b) * (180 / Math.PI));
+			}
+			return 0;
+		}
+	},
+};
+
+var enable_tracky_mouse = false;
+var tracky_mouse_deps_promise;
+
+async function init_eye_gaze_mode() {
+	if (enable_tracky_mouse) {
+		if (!tracky_mouse_deps_promise) {
+			TrackyMouse.dependenciesRoot = "lib/tracky-mouse";
+			tracky_mouse_deps_promise = TrackyMouse.loadDependencies();
+		}
+		await tracky_mouse_deps_promise;
+
+		const $tracky_mouse_window = $Window({
+			title: "Tracky Mouse",
+			icon: "tracky-mouse",
+		});
+		$tracky_mouse_window.addClass("tracky-mouse-window");
+		const tracky_mouse_container = $tracky_mouse_window.$content[0];
+
+		TrackyMouse.init(tracky_mouse_container);
+		TrackyMouse.useCamera();
+
+		$tracky_mouse_window.center();
+
+		let last_el_over;
+		TrackyMouse.onPointerMove = (x, y) => {
+			const target = document.elementFromPoint(x, y) || document.body;
+			if (target !== last_el_over) {
+				if (last_el_over) {
+					window.untrusted_gesture = true;
+					const event = new /*PointerEvent*/$.Event("pointerleave", Object.assign(get_event_options({ x, y }), {
+						button: 0,
+						buttons: 1,
+						bubbles: false,
+						cancelable: false,
+					}));
+					// last_el_over.dispatchEvent(event);
+					$(last_el_over).trigger(event);
+					window.untrusted_gesture = false;
+				}
+				window.untrusted_gesture = true;
+				const event = new /*PointerEvent*/$.Event("pointerenter", Object.assign(get_event_options({ x, y }), {
+					button: 0,
+					buttons: 1,
+					bubbles: false,
+					cancelable: false,
+				}));
+				// target.dispatchEvent(event);
+				$(target).trigger(event);
+				window.untrusted_gesture = false;
+				last_el_over = target;
+			}
+			window.untrusted_gesture = true;
+			const event = new PointerEvent/*$.Event*/("pointermove", Object.assign(get_event_options({ x, y }), {
+				button: 0,
+				buttons: 1,
+			}));
+			target.dispatchEvent(event);
+			// $(target).trigger(event);
+			window.untrusted_gesture = false;
+		};
+
+		// tracky_mouse_container.querySelector(".tracky-mouse-canvas").classList.add("inset-deep");
+
+	}
+		
 	const circle_radius_max = 50; // dwell indicator size in pixels
 	const hover_timespan = 500; // how long between the dwell indicator appearing and triggering a click
 	const averaging_window_timespan = 500;
@@ -938,7 +1649,6 @@ function init_eye_gaze_mode() {
 	let recent_points = [];
 	let inactive_until_time = Date.now();
 	let paused = false;
-	let $pause_button;
 	let hover_candidate;
 	let gaze_dragging = null;
 
@@ -947,11 +1657,16 @@ function init_eye_gaze_mode() {
 	};
 	deactivate_for_at_least(inactive_at_startup_timespan);
 
-	const $halo = $("<div class='hover-halo'>").appendTo("body").hide();
-	const $dwell_indicator = $("<div class='dwell-indicator'>").css({
-		width: circle_radius_max,
-		height: circle_radius_max,
-	}).appendTo("body").hide();
+	const halo = document.createElement("div");
+	halo.className = "hover-halo";
+	halo.style.display = "none";
+	document.body.appendChild(halo);
+	const dwell_indicator = document.createElement("div");
+	dwell_indicator.className = "dwell-indicator";
+	dwell_indicator.style.width = `${circle_radius_max}px`;
+	dwell_indicator.style.height = `${circle_radius_max}px`;
+	dwell_indicator.style.display = "none";
+	document.body.appendChild(dwell_indicator);
 
 	const on_pointer_move = (e)=> {
 		recent_points.push({x: e.clientX, y: e.clientY, time: Date.now()});
@@ -977,12 +1692,13 @@ function init_eye_gaze_mode() {
 		mouse_inside_page = true;
 	};
 
-	$G.on("pointermove", on_pointer_move);
-	$G.on("pointerup pointercancel", on_pointer_up_or_cancel);
-	$G.on("focus", on_focus);
-	$G.on("blur", on_blur);
-	$(document).on("mouseleave", on_mouse_leave_page);
-	$(document).on("mouseenter", on_mouse_enter_page);
+	window.addEventListener("pointermove", on_pointer_move);
+	window.addEventListener("pointerup", on_pointer_up_or_cancel);
+	window.addEventListener("pointercancel", on_pointer_up_or_cancel);
+	window.addEventListener("focus", on_focus);
+	window.addEventListener("blur", on_blur);
+	document.addEventListener("mouseleave", on_mouse_leave_page);
+	document.addEventListener("mouseenter", on_mouse_enter_page);
 
 	const get_hover_candidate = (clientX, clientY)=> {
 
@@ -999,78 +1715,57 @@ function init_eye_gaze_mode() {
 			time: Date.now(),
 		};
 		
-		// top level menus are just immediately switched between for now
-		// prevent awkward hover clicks on top level menu buttons while menus are open
-		if(
-			(target.closest(".menu-button") || target.matches(".menu-container")) &&
-			$(".menu-button.active").length
-		) {
-			return null;
-		}
-
-		const target_selector = `
-			button:not([disabled]),
-			input,
-			textarea,
-			label,
-			a,
-			.current-colors,
-			.color-button,
-			.edit-colors-window .swatch,
-			.edit-colors-window .rainbow-canvas,
-			.edit-colors-window .luminosity-canvas,
-			.tool:not(.selected),
-			.chooser-option,
-			.menu-button:not(.active),
-			.menu-item,
-			.main-canvas,
-			.selection canvas,
-			.handle,
-			.window:not(.maximized) .window-titlebar,
-			.history-entry,
-			.canvas-area
-		`;
-		// .canvas-area is handled specially below
-		// (it's not itself a desired target)
-
-		target = target.closest(target_selector);
-
-		if (!target) {
-			return null;
-		}
-
-		// if (target.matches(".help-window li")) {
-		// 	target = target.querySelector(".item");
-		// }
-
-		if (target === $canvas_area[0]) {
-			// Nudge hovers near the edges of the canvas onto the canvas
-			const margin = 50;
+		let retargeted = false;
+		for (const {from, to, withinMargin=Infinity} of eye_gaze_mode_config.retarget) {
 			if (
-				hover_candidate.x > canvas_bounding_client_rect.left - margin &&
-				hover_candidate.y > canvas_bounding_client_rect.top - margin &&
-				hover_candidate.x < canvas_bounding_client_rect.right + margin &&
-				hover_candidate.y < canvas_bounding_client_rect.bottom + margin
+				from instanceof Element ? from === target :
+				typeof from === "function" ? from(target) :
+				target.matches(from)
 			) {
-				target = canvas;
-				hover_candidate.x = Math.min(
-					canvas_bounding_client_rect.right - 1,
-					Math.max(
-						canvas_bounding_client_rect.left,
-						hover_candidate.x,
-					),
-				);
-				hover_candidate.y = Math.min(
-					canvas_bounding_client_rect.bottom - 1,
-					Math.max(
-						canvas_bounding_client_rect.top,
-						hover_candidate.y,
-					),
-				);
-			} else {
+				const to_element =
+					(to instanceof Element || to === null) ? to :
+					typeof to === "function" ? to(target) :
+					(target.closest(to) || target.querySelector(to));
+				if (to_element === null) {
+					return null;
+				} else if (to_element) {
+					const to_rect = to_element.getBoundingClientRect();
+					if (
+						hover_candidate.x > to_rect.left - withinMargin &&
+						hover_candidate.y > to_rect.top - withinMargin &&
+						hover_candidate.x < to_rect.right + withinMargin &&
+						hover_candidate.y < to_rect.bottom + withinMargin
+					) {
+						target = to_element;
+						hover_candidate.x = Math.min(
+							to_rect.right - 1,
+							Math.max(
+								to_rect.left,
+								hover_candidate.x,
+							),
+						);
+						hover_candidate.y = Math.min(
+							to_rect.bottom - 1,
+							Math.max(
+								to_rect.top,
+								hover_candidate.y,
+							),
+						);
+						retargeted = true;
+					}
+				}
+			}
+		}
+
+		if (!retargeted) {
+			target = target.closest(eye_gaze_mode_config.targets);
+
+			if (!target) {
 				return null;
 			}
-		}else if(!target.matches(".main-canvas, .selection canvas, .window-titlebar, .rainbow-canvas, .luminosity-canvas")){
+		}
+
+		if (!eye_gaze_mode_config.noCenter(target)) {
 			// Nudge hover previews to the center of buttons and things
 			const rect = target.getBoundingClientRect();
 			hover_candidate.x = rect.left + rect.width / 2;
@@ -1080,19 +1775,16 @@ function init_eye_gaze_mode() {
 		return hover_candidate;
 	};
 
-	const get_event_options = ({x, y, target=document.body})=> {
-		const rect = target.getBoundingClientRect();
+	const get_event_options = ({x, y})=> {
 		return {
-			pageX: x,
-			pageY: y,
+			view: window, // needed for offsetX/Y calculation
 			clientX: x,
 			clientY: y,
-			// handling CSS transform scaling but not rotation
-			offsetX: (x - rect.left) * target.offsetWidth / rect.width,
-			offsetY: (y - rect.top) * target.offsetHeight / rect.height,
 			pointerId: 1234567890,
 			pointerType: "mouse",
 			isPrimary: true,
+			bubbles: true,
+			cancelable: true,
 		};
 	};
 
@@ -1110,19 +1802,49 @@ function init_eye_gaze_mode() {
 			const recent_movement_amount = Math.hypot(latest_point.x - average_point.x, latest_point.y - average_point.y);
 
 			// Invalidate in case an element pops up in front of the element you're hovering over, e.g. a submenu
+			// (that use case doesn't actually work because the menu pops up before the hover_candidate exists)
+			// (TODO: disable hovering to open submenus in eye gaze mode)
+			// or an element occludes the center of an element you're hovering over, in which case it
+			// could be confusing if it showed a dwell click indicator over a different element than it would click
+			// (but TODO: just move the indicator off center in that case)
 			if (hover_candidate && !gaze_dragging) {
 				const apparent_hover_candidate = get_hover_candidate(hover_candidate.x, hover_candidate.y);
+				const show_occluder_indicator = (occluder)=> {
+					const occluder_indicator = document.createElement("div");
+					const occluder_rect = occluder.getBoundingClientRect();
+					const outline_width = 4;
+					occluder_indicator.style.pointerEvents = "none";
+					occluder_indicator.style.zIndex = 1000001;
+					occluder_indicator.style.display = "block";
+					occluder_indicator.style.position = "fixed";
+					occluder_indicator.style.left = `${occluder_rect.left + outline_width}px`;
+					occluder_indicator.style.top = `${occluder_rect.top + outline_width}px`;
+					occluder_indicator.style.width = `${occluder_rect.width - outline_width * 2}px`;
+					occluder_indicator.style.height = `${occluder_rect.height - outline_width * 2}px`;
+					occluder_indicator.style.outline = `${outline_width}px dashed red`;
+					occluder_indicator.style.boxShadow = `0 0 ${outline_width}px ${outline_width}px maroon`;
+					document.body.appendChild(occluder_indicator);
+					setTimeout(() => {
+						occluder_indicator.remove();
+					}, inactive_after_invalid_timespan * 0.5);
+				};
 				if (apparent_hover_candidate) {
 					if (
 						apparent_hover_candidate.target !== hover_candidate.target &&
-						apparent_hover_candidate.target.closest("label") !== hover_candidate.target
+						// !retargeted &&
+						!eye_gaze_mode_config.isEquivalentTarget(
+							apparent_hover_candidate.target, hover_candidate.target
+						)
 					) {
 						hover_candidate = null;
 						deactivate_for_at_least(inactive_after_invalid_timespan);
+						show_occluder_indicator(apparent_hover_candidate.target);
 					}
 				} else {
+					let occluder = document.elementFromPoint(hover_candidate.x, hover_candidate.y);
 					hover_candidate = null;
 					deactivate_for_at_least(inactive_after_invalid_timespan);
+					show_occluder_indicator(occluder || document.body);
 				}
 			}
 			
@@ -1137,50 +1859,36 @@ function init_eye_gaze_mode() {
 					* circle_radius_max;
 				if (time > hover_candidate.time + hover_timespan) {
 					if (pointer_active || gaze_dragging) {
-						$(hover_candidate.target).trigger($.Event("pointerup", Object.assign(get_event_options(hover_candidate), {
-							button: 0,
-							buttons: 0,
-						})));
-					} else {
-						pointers = []; // prevent multi-touch panning
-						$(hover_candidate.target).trigger($.Event("pointerdown", Object.assign(get_event_options(hover_candidate), {
-							button: 0,
-							buttons: 1,
-						})));
-						const is_drag =
-							hover_candidate.target.matches(".window-titlebar, .window-titlebar *:not(button)") ||
-							hover_candidate.target.matches(".selection, .selection *, .handle") ||
-							(
-								hover_candidate.target === canvas &&
-								selected_tool.id !== TOOL_PICK_COLOR &&
-								selected_tool.id !== TOOL_FILL &&
-								selected_tool.id !== TOOL_MAGNIFIER &&
-								selected_tool.id !== TOOL_POLYGON &&
-								selected_tool.id !== TOOL_CURVE
-							);
-						if (is_drag) {
-							gaze_dragging = hover_candidate.target;
-						} else {
-							$(hover_candidate.target).trigger($.Event("pointerup", Object.assign(get_event_options(hover_candidate), {
+						window.untrusted_gesture = true;
+						hover_candidate.target.dispatchEvent(new PointerEvent("pointerup",
+							Object.assign(get_event_options(hover_candidate), {
 								button: 0,
 								buttons: 0,
-							})));
-							if (hover_candidate.target.matches("button:not(.toggle)")) {
-								((button)=> {
-									button.style.borderImage = "var(--inset-deep-border-image)";
-									setTimeout(()=> {
-										button.style.borderImage = "";
-										// delay the button click to here so the pressed state is
-										// visible even when the button closes a dialog
-										button.click();
-									}, 100);
-								})(hover_candidate.target);
-							} else {
-								hover_candidate.target.click();
-								if (hover_candidate.target.matches("input, textarea")) {
-									hover_candidate.target.focus();
-								}
-							}
+							})
+						));
+						window.untrusted_gesture = false;
+					} else {
+						pointers = []; // prevent multi-touch panning
+						window.untrusted_gesture = true;
+						hover_candidate.target.dispatchEvent(new PointerEvent("pointerdown",
+							Object.assign(get_event_options(hover_candidate), {
+								button: 0,
+								buttons: 1,
+							})
+						));
+						window.untrusted_gesture = false;
+						if (eye_gaze_mode_config.shouldDrag(hover_candidate.target)) {
+							gaze_dragging = hover_candidate.target;
+						} else {
+							window.untrusted_gesture = true;
+							hover_candidate.target.dispatchEvent(new PointerEvent("pointerup",
+								Object.assign(get_event_options(hover_candidate), {
+									button: 0,
+									buttons: 0,
+								})
+							));
+							eye_gaze_mode_config.click(hover_candidate);
+							window.untrusted_gesture = false;
 						}
 					}
 					hover_candidate = null;
@@ -1189,59 +1897,63 @@ function init_eye_gaze_mode() {
 			}
 
 			if (gaze_dragging) {
-				$dwell_indicator.addClass("for-release");
+				dwell_indicator.classList.add("for-release");
 			} else {
-				$dwell_indicator.removeClass("for-release");
+				dwell_indicator.classList.remove("for-release");
 			}
-			$dwell_indicator.show().css({
-				opacity: circle_opacity,
-				transform: `scale(${circle_radius / circle_radius_max})`,
-				left: circle_position.x - circle_radius_max/2,
-				top: circle_position.y - circle_radius_max/2,
-			});
+			dwell_indicator.style.display = "";
+			dwell_indicator.style.opacity = circle_opacity;
+			dwell_indicator.style.transform = `scale(${circle_radius / circle_radius_max})`;
+			dwell_indicator.style.left = `${circle_position.x - circle_radius_max/2}px`;
+			dwell_indicator.style.top = `${circle_position.y - circle_radius_max/2}px`;
 
 			let halo_target =
 				gaze_dragging ||
 				(hover_candidate || get_hover_candidate(latest_point.x, latest_point.y) || {}).target;
 			
-			if (halo_target && (!paused || $pause_button.is(halo_target))) {
+			if (halo_target && (!paused || eye_gaze_mode_config.dwellClickEvenIfPaused(halo_target))) {
 				let rect = halo_target.getBoundingClientRect();
-				// Clamp to visible region if in scrollable area
-				// (could generalize to look for overflow: auto parents in the future)
-				if (halo_target.closest(".canvas-area")) {
-					const scroll_area_rect = $canvas_area[0].getBoundingClientRect();
-					rect = {
-						left: Math.max(rect.left, scroll_area_rect.left),
-						top: Math.max(rect.top, scroll_area_rect.top),
-						right: Math.min(rect.right, scroll_area_rect.right),
-						bottom: Math.min(rect.bottom, scroll_area_rect.bottom),
-					};
-					rect.width = rect.right - rect.left;
-					rect.height = rect.bottom - rect.top;
-				}
-				// this is so overkill just for border radius mimicry
 				const computed_style = getComputedStyle(halo_target);
-				const border_radius_scale = parseInt(
-					(
-						$(halo_target).closest(".component").css("transform") || ""
-					).match(/\d+/) || 1
-				);
-				$halo.css({
-					display: "block",
-					position: "fixed",
-					left: rect.left,
-					top: rect.top,
-					width: rect.width,
-					height: rect.height,
-					// shorthand properties might not work in all browsers (not tested)
-					// this is so overkill...
-					borderTopRightRadius: parseFloat(computed_style.borderTopRightRadius) * border_radius_scale,
-					borderTopLeftRadius: parseFloat(computed_style.borderTopLeftRadius) * border_radius_scale,
-					borderBottomRightRadius: parseFloat(computed_style.borderBottomRightRadius) * border_radius_scale,
-					borderBottomLeftRadius: parseFloat(computed_style.borderBottomLeftRadius) * border_radius_scale,
-				});
+				let ancestor = halo_target;
+				let border_radius_scale = 1; // for border radius mimicry, given parents with transform: scale()
+				while (ancestor instanceof HTMLElement) {
+					const ancestor_computed_style = getComputedStyle(ancestor);
+					if (ancestor_computed_style.transform) {
+						// Collect scale transforms
+						const match = ancestor_computed_style.transform.match(/(?:scale|matrix)\((\d+(?:\.\d+)?)/);
+						if (match) {
+							border_radius_scale *= Number(match[1]);
+						}
+					}
+					if (ancestor_computed_style.overflow !== "visible") {
+						// Clamp to visible region if in scrollable area
+						// This lets you see the hover halo when scrolled to the middle of a large canvas
+						const scroll_area_rect = ancestor.getBoundingClientRect();
+						rect = {
+							left: Math.max(rect.left, scroll_area_rect.left),
+							top: Math.max(rect.top, scroll_area_rect.top),
+							right: Math.min(rect.right, scroll_area_rect.right),
+							bottom: Math.min(rect.bottom, scroll_area_rect.bottom),
+						};
+						rect.width = rect.right - rect.left;
+						rect.height = rect.bottom - rect.top;
+					}
+					ancestor = ancestor.parentNode;
+				}
+				halo.style.display = "block";
+				halo.style.position = "fixed";
+				halo.style.left = `${rect.left}px`;
+				halo.style.top = `${rect.top}px`;
+				halo.style.width = `${rect.width}px`;
+				halo.style.height = `${rect.height}px`;
+				// shorthand properties might not work in all browsers (not tested)
+				// this is so overkill...
+				halo.style.borderTopRightRadius = `${parseFloat(computed_style.borderTopRightRadius) * border_radius_scale}px`;
+				halo.style.borderTopLeftRadius = `${parseFloat(computed_style.borderTopLeftRadius) * border_radius_scale}px`;
+				halo.style.borderBottomRightRadius = `${parseFloat(computed_style.borderBottomRightRadius) * border_radius_scale}px`;
+				halo.style.borderBottomLeftRadius = `${parseFloat(computed_style.borderBottomLeftRadius) * border_radius_scale}px`;
 			} else {
-				$halo.hide();
+				halo.style.display = "none";
 			}
 
 			if (time < inactive_until_time) {
@@ -1258,17 +1970,21 @@ function init_eye_gaze_mode() {
 					if (!gaze_dragging) {
 						hover_candidate = get_hover_candidate(hover_candidate.x, hover_candidate.y);
 					}
-					if (hover_candidate && (paused && !$pause_button.is(hover_candidate.target))) {
+					if (hover_candidate && (paused && !eye_gaze_mode_config.dwellClickEvenIfPaused(hover_candidate.target))) {
 						hover_candidate = null;
 					}
 				}
 			}
 			if (recent_movement_amount > 100) {
 				if (gaze_dragging) {
-					$G.trigger($.Event("pointerup", Object.assign(get_event_options(average_point), {
-						button: 0,
-						buttons: 0,
-					})));
+					window.untrusted_gesture = true;
+					window.dispatchEvent(new PointerEvent("pointerup",
+						Object.assign(get_event_options(average_point), {
+							button: 0,
+							buttons: 0,
+						})
+					));
+					window.untrusted_gesture = false;
 					pointers = []; // prevent multi-touch panning
 				}
 			}
@@ -1285,7 +2001,7 @@ function init_eye_gaze_mode() {
 	raf_id = requestAnimationFrame(animate);
 
 	const $floating_buttons =
-		$("<div/>")
+		$("<div class='eye-gaze-mode-floating-buttons'/>")
 		.appendTo("body")
 		.css({
 			position: "fixed",
@@ -1295,7 +2011,7 @@ function init_eye_gaze_mode() {
 			transform: "scale(3)",
 		});
 	
-	$("<button title='Undo'/>")
+	$("<button title='Undo' class='eye-gaze-mode-undo-button'/>")
 	.on("click", undo)
 	.appendTo($floating_buttons)
 	.css({
@@ -1305,32 +2021,25 @@ function init_eye_gaze_mode() {
 		position: "relative", // to make the icon's "absolute" relative to here
 	})
 	.append(
-		$("<div>")
+		$("<div class='button-icon'>")
 		.css({
 			position: "absolute",
 			left: 0,
 			top: 0,
 			width: 24,
 			height: 24,
-			backgroundImage: "url(images/classic/undo.svg)",
 		})
 	);
 
-	// These are matched on exactly for speech recognition synonymization
+	// These are matched on exactly, for code that provides speech command synonyms
 	const pause_button_text = "Pause Dwell Clicking";
 	const resume_button_text = "Resume Dwell Clicking";
 
-	$pause_button = $(`<button title="${pause_button_text}"/>`)
+	const $pause_button = $(`<button title="${pause_button_text}" class="toggle-dwell-clicking"/>`)
 	.on("click", ()=> {
 		paused = !paused;
-		$pause_button
-		.attr("title", paused ? resume_button_text : pause_button_text)
-		.find("div").css({
-			backgroundImage:
-				paused ?
-				"url(images/classic/eye-gaze-unpause.svg)" :
-				"url(images/classic/eye-gaze-pause.svg)",
-		});
+		$("body").toggleClass("eye-gaze-mode-paused", paused);
+		$pause_button.attr("title", paused ? resume_button_text : pause_button_text);
 	})
 	.appendTo($floating_buttons)
 	.css({
@@ -1340,36 +2049,38 @@ function init_eye_gaze_mode() {
 		position: "relative", // to make the icon's "absolute" relative to here
 	})
 	.append(
-		$("<div>")
+		$("<div class='button-icon'>")
 		.css({
 			position: "absolute",
 			left: 0,
 			top: 0,
 			width: 24,
 			height: 24,
-			backgroundImage: "url(images/classic/eye-gaze-pause.svg)",
 		})
 	);
 
 	clean_up_eye_gaze_mode = ()=> {
 		console.log("Cleaning up / disabling eye gaze mode");
 		cancelAnimationFrame(raf_id);
-		$halo.remove();
-		$dwell_indicator.remove();
+		halo.remove();
+		dwell_indicator.remove();
 		$floating_buttons.remove();
-		$G.off("pointermove", on_pointer_move);
-		$G.off("pointerup pointercancel", on_pointer_up_or_cancel);
-		$G.off("focus", on_focus);
-		$G.off("blur", on_blur);
-		$(document).off("mouseleave", on_mouse_leave_page);
-		$(document).off("mouseenter", on_mouse_enter_page);
+		window.removeEventListener("pointermove", on_pointer_move);
+		window.removeEventListener("pointerup", on_pointer_up_or_cancel);
+		window.removeEventListener("pointercancel", on_pointer_up_or_cancel);
+		window.removeEventListener("focus", on_focus);
+		window.removeEventListener("blur", on_blur);
+		document.removeEventListener("mouseleave", on_mouse_leave_page);
+		document.removeEventListener("mouseenter", on_mouse_enter_page);
 		clean_up_eye_gaze_mode = ()=> {};
 	};
 }
 
-let pan_start_pos;
-let pan_start_scroll_top;
-let pan_start_scroll_left;
+let last_zoom_pointer_distance;
+let pan_last_pos;
+let pan_start_magnification; // for panning and zooming in the same gesture
+let first_pointer_time;
+const discard_quick_undo_period = 500; // milliseconds in which to treat gesture as just a pan/zoom if you use two fingers, rather than treating it as a brush stroke you might care about
 function average_points(points) {
 	const average = {x: 0, y: 0};
 	for (const pointer of points) {
@@ -1403,17 +2114,23 @@ $canvas_area.on("pointerdown", (event)=> {
 			y: event.clientY,
 		});
 	}
-
+	if (pointers.length === 1) {
+		first_pointer_time = performance.now();
+	}
 	if (pointers.length == 2) {
-		pan_start_pos = average_points(pointers);
-		pan_start_scroll_top = $canvas_area.scrollTop();
-		pan_start_scroll_left = $canvas_area.scrollLeft();
+		last_zoom_pointer_distance = Math.hypot(pointers[0].x - pointers[1].x, pointers[0].y - pointers[1].y);
+		pan_last_pos = average_points(pointers);
+		pan_start_magnification = magnification;
 	}
 	// Quick Undo when there are multiple pointers (i.e. for touch)
-	// see pointermove for other pointer types
+	// See pointermove for other pointer types
+	// SEE OTHER POINTERDOWN HANDLER ALSO
 	if (pointers.length >= 2) {
-		cancel();
-		pointer_active = false; // NOTE: pointer_active used in cancel()
+		// If you press two fingers quickly, it shouldn't make a new history entry.
+		// But if you draw something and then press a second finger to clear it, it should let you redo.
+		const discard_document_state = first_pointer_time && performance.now() - first_pointer_time < discard_quick_undo_period;
+		cancel(false, discard_document_state);
+		pointer_active = false; // NOTE: pointer_active used in cancel(); must be set after cancel()
 		return;
 	}
 });
@@ -1431,10 +2148,26 @@ $G.on("pointermove", (event)=> {
 	}
 	if (pointers.length >= 2) {
 		const current_pos = average_points(pointers);
-		const difference_in_x = current_pos.x - pan_start_pos.x;
-		const difference_in_y = current_pos.y - pan_start_pos.y;
-		$canvas_area.scrollLeft(pan_start_scroll_left - difference_in_x);
-		$canvas_area.scrollTop(pan_start_scroll_top - difference_in_y);
+		const distance = Math.hypot(pointers[0].x - pointers[1].x, pointers[0].y - pointers[1].y);
+		const difference_in_distance = distance - last_zoom_pointer_distance;
+		let new_magnification = magnification;
+		if (Math.abs(difference_in_distance) > 60) {
+			last_zoom_pointer_distance = distance;
+			if (difference_in_distance > 0) {
+				new_magnification *= 1.5;
+			} else {
+				new_magnification /= 1.5;
+			}
+		}
+		new_magnification = Math.max(0.5, Math.min(new_magnification, 40));
+		if (new_magnification != magnification) {
+			set_magnification(new_magnification, to_canvas_coords({ clientX: current_pos.x, clientY: current_pos.y }));
+		}
+		const difference_in_x = current_pos.x - pan_last_pos.x;
+		const difference_in_y = current_pos.y - pan_last_pos.y;
+		$canvas_area.scrollLeft($canvas_area.scrollLeft() - difference_in_x);
+		$canvas_area.scrollTop($canvas_area.scrollTop() - difference_in_y);
+		pan_last_pos = current_pos;
 	}
 });
 
@@ -1445,11 +2178,16 @@ $canvas.on("pointerdown", e => {
 
 	// Quick Undo when there are multiple pointers (i.e. for touch)
 	// see pointermove for other pointer types
+	// SEE OTHER POINTERDOWN HANDLER ALSO
 	// NOTE: this relies on event handler order for pointerdown
 	// pointer is not added to pointers yet
 	if(pointers.length >= 1){
-		cancel();
-		pointer_active = false; // NOTE: pointer_active used in cancel()
+		// If you press two fingers quickly, it shouldn't make a new history entry.
+		// But if you draw something and then press a second finger to clear it, it should let you redo.
+		const discard_document_state = first_pointer_time && performance.now() - first_pointer_time < discard_quick_undo_period;
+		cancel(false, discard_document_state);
+		pointer_active = false; // NOTE: pointer_active used in cancel(); must be set after cancel()
+
 		// in eye gaze mode, allow drawing with mouse after canceling gaze gesture with mouse
 		pointers = pointers.filter((pointer)=>
 			pointer.pointerId !== 1234567890
@@ -1500,14 +2238,20 @@ $canvas.on("pointerdown", e => {
 
 		$G.on("pointermove", canvas_pointer_move);
 
-		$G.one("pointerup", (e, canceling) => {
+		$G.one("pointerup", (e, canceling, no_undoable) => {
 			button = undefined;
 			reverse = false;
 
-			pointer = to_canvas_coords(e);
-			selected_tools.forEach((selected_tool)=> {
-				selected_tool.pointerup && selected_tool.pointerup(ctx, pointer.x, pointer.y);
-			});
+			if (e.clientX !== undefined) { // may be synthetic event without coordinates
+				pointer = to_canvas_coords(e);
+			}
+			// don't create undoables if you're two-finger-panning
+			// @TODO: do any tools use pointerup for cleanup?
+			if (!no_undoable) {
+				selected_tools.forEach((selected_tool) => {
+					selected_tool.pointerup && selected_tool.pointerup(main_ctx, pointer.x, pointer.y);
+				});
+			}
 
 			if (selected_tools.length === 1) {
 				if (selected_tool.deselect) {
@@ -1569,7 +2313,7 @@ prevent_selection($toolbox);
 // prevent_selection($toolbox2);
 prevent_selection($colorbox);
 
-// Stop drawing (or dragging or whatver) if you Alt+Tab or whatever
+// Stop drawing (or dragging or whatever) if you Alt+Tab or whatever
 $G.on("blur", () => {
 	$G.triggerHandler("pointerup");
 });

@@ -42,8 +42,55 @@ const ChooserCanvas = (
 };
 ChooserCanvas.cache = {};
 
+// @TODO: convert all options to use this themeable version (or more options? some are dynamically rendered...)
+const ChooserDiv = (
+	class_name,
+	invert,
+	width,
+	height,
+	sourceX,
+	sourceY,
+	sourceWidth,
+	sourceHeight,
+	destX,
+	destY,
+	destWidth,
+	destHeight,
+	reuse_div,
+) => {
+	const div = reuse_div(width, height);
+	div.classList.add(class_name);
+	div.style.width = sourceWidth + "px";
+	div.style.height = sourceHeight + "px";
+	
+	// @TODO: single listener for all divs
+	const on_zoom_etc = () => {
+		const use_svg = (window.devicePixelRatio >= 3 || (window.devicePixelRatio % 1) !== 0);
+		div.classList.toggle("use-svg", use_svg);
+	};
+	if (div._on_zoom_etc) { // condition is needed, otherwise it will remove all listeners! (leading to only the last graphic being updated when zooming)
+		$G.off("theme-load resize", div._on_zoom_etc);
+	}
+	$G.on("theme-load resize", on_zoom_etc);
+	div._on_zoom_etc = on_zoom_etc;
+	on_zoom_etc();
+	
+	div.style.backgroundPosition = `${-sourceX}px ${-sourceY}px`;
+	div.style.borderColor = "transparent";
+	div.style.borderStyle = "solid";
+	div.style.borderLeftWidth = destX + "px";
+	div.style.borderTopWidth = destY + "px";
+	div.style.borderRightWidth = (width - destX - destWidth) + "px";
+	div.style.borderBottomWidth = (height - destY - destHeight) + "px";
+	div.style.backgroundClip = "content-box";
+	div.style.filter = invert ? "invert()" : "";
+	return div;
+};
+
+
+
 const $Choose = (things, display, choose, is_chosen, gray_background_for_unselected) => {
-	const $chooser = $(E("div")).addClass("chooser").attr("touch-action", "none");
+	const $chooser = $(E("div")).addClass("chooser").css("touch-action", "none");
 	const choose_thing = (thing) => {
 		if(is_chosen(thing)){
 			return;
@@ -71,13 +118,26 @@ const $Choose = (things, display, choose, is_chosen, gray_background_for_unselec
 					}
 					return option_canvas;
 				};
+				const reuse_div = (width, height) => {
+					let option_div = $option_container.find("div")[0];
+					if (option_div) {
+						if (option_div.style.width !== width + "px") { option_div.style.width = width + "px"; }
+						if (option_div.style.height !== height + "px") { option_div.style.height = height + "px"; }
+					} else {
+						option_div = E("div");
+						option_div.style.width = width + "px";
+						option_div.style.height = height + "px";
+						$option_container.append(option_div);
+					}
+					return option_div;
+				};
 				const update = () => {
 					const selected_color = getComputedStyle($chooser[0]).getPropertyValue("--Hilight");
 					const unselected_color = gray_background_for_unselected ? "rgb(192, 192, 192)" : "";
 					$option_container.css({
 						backgroundColor: is_chosen(thing) ? selected_color : unselected_color,
 					});
-					display(thing, is_chosen(thing), reuse_canvas);
+					display(thing, is_chosen(thing), reuse_canvas, reuse_div);
 				};
 				update();
 				$G.on("option-changed theme-load redraw-tool-options-because-webglcontextrestored", update);
@@ -125,32 +185,32 @@ const $ChooseShapeStyle = () => {
 			{stroke: false, fill: true}
 		],
 		({stroke, fill}, is_chosen, reuse_canvas) => {
-			const sscanvas = reuse_canvas(39, 21);
-			const ssctx = sscanvas.ctx;
+			const ss_canvas = reuse_canvas(39, 21);
+			const ss_ctx = ss_canvas.ctx;
 			
 			// border px inwards amount
 			let b = 5;
 
-			const style = getComputedStyle(sscanvas);
-			ssctx.fillStyle = is_chosen ? style.getPropertyValue("--HilightText") : style.getPropertyValue("--WindowText");
+			const style = getComputedStyle(ss_canvas);
+			ss_ctx.fillStyle = is_chosen ? style.getPropertyValue("--HilightText") : style.getPropertyValue("--WindowText");
 			
 			if(stroke){
 				// just using a solid rectangle for the stroke
 				// so as not to have to deal with the pixel grid with strokes
-				ssctx.fillRect(b, b, sscanvas.width-b*2, sscanvas.height-b*2);
+				ss_ctx.fillRect(b, b, ss_canvas.width-b*2, ss_canvas.height-b*2);
 			}
 			
 			// go inward a pixel for the fill
 			b += 1;
-			ssctx.fillStyle = style.getPropertyValue("--ButtonShadow");
+			ss_ctx.fillStyle = style.getPropertyValue("--ButtonShadow");
 			
 			if(fill){
-				ssctx.fillRect(b, b, sscanvas.width-b*2, sscanvas.height-b*2);
+				ss_ctx.fillRect(b, b, ss_canvas.width-b*2, ss_canvas.height-b*2);
 			}else{
-				ssctx.clearRect(b, b, sscanvas.width-b*2, sscanvas.height-b*2);
+				ss_ctx.clearRect(b, b, ss_canvas.width-b*2, ss_canvas.height-b*2);
 			}
 			
-			return sscanvas;
+			return ss_canvas;
 		},
 		({stroke, fill}) => {
 			$chooser.stroke = stroke;
@@ -183,17 +243,17 @@ const $choose_brush = $Choose(
 		return things;
 	})(),
 	(o, is_chosen, reuse_canvas) => {
-		const cbcanvas = reuse_canvas(10, 10);
-		const style = getComputedStyle(cbcanvas);
+		const cb_canvas = reuse_canvas(10, 10);
+		const style = getComputedStyle(cb_canvas);
 		
 		const shape = o.shape;
 		const size = o.size;
 		const color = is_chosen ? style.getPropertyValue("--HilightText") : style.getPropertyValue("--WindowText");
 		
-		stamp_brush_canvas(cbcanvas.ctx, 5, 5, shape, size);
-		replace_colors_with_swatch(cbcanvas.ctx, color);
+		stamp_brush_canvas(cb_canvas.ctx, 5, 5, shape, size);
+		replace_colors_with_swatch(cb_canvas.ctx, color);
 
-		return cbcanvas;
+		return cb_canvas;
 	}, ({shape, size}) => {
 		brush_shape = shape;
 		brush_size = size;
@@ -203,13 +263,13 @@ const $choose_brush = $Choose(
 const $choose_eraser_size = $Choose(
 	[4, 6, 8, 10],
 	(size, is_chosen, reuse_canvas) => {
-		const cecanvas = reuse_canvas(39, 16);
+		const ce_canvas = reuse_canvas(39, 16);
 		
-		const style = getComputedStyle(cecanvas);
-		cecanvas.ctx.fillStyle = is_chosen ? style.getPropertyValue("--HilightText") : style.getPropertyValue("--WindowText");
-		render_brush(cecanvas.ctx, "square", size);
+		const style = getComputedStyle(ce_canvas);
+		ce_canvas.ctx.fillStyle = is_chosen ? style.getPropertyValue("--HilightText") : style.getPropertyValue("--WindowText");
+		render_brush(ce_canvas.ctx, "square", size);
 		
-		return cecanvas;
+		return ce_canvas;
 	},
 	size => {
 		eraser_size = size;
@@ -221,12 +281,12 @@ const $choose_stroke_size = $Choose(
 	[1, 2, 3, 4, 5],
 	(size, is_chosen, reuse_canvas) => {
 		const w = 39, h = 12, b = 5;
-		const cscanvas = reuse_canvas(w, h);
+		const cs_canvas = reuse_canvas(w, h);
 		const center_y = (h - size) / 2;
-		const style = getComputedStyle(cscanvas);
-		cscanvas.ctx.fillStyle = is_chosen ? style.getPropertyValue("--HilightText") : style.getPropertyValue("--WindowText");
-		cscanvas.ctx.fillRect(b, ~~center_y, w - b*2, size);
-		return cscanvas;
+		const style = getComputedStyle(cs_canvas);
+		cs_canvas.ctx.fillStyle = is_chosen ? style.getPropertyValue("--HilightText") : style.getPropertyValue("--WindowText");
+		cs_canvas.ctx.fillRect(b, ~~center_y, w - b*2, size);
+		return cs_canvas;
 	},
 	size => {
 		stroke_size = size;
@@ -237,21 +297,21 @@ const $choose_stroke_size = $Choose(
 const magnifications = [1, 2, 6, 8, 10];
 const $choose_magnification = $Choose(
 	magnifications,
-	(scale, is_chosen, reuse_canvas) => {
+	(scale, is_chosen, reuse_canvas, reuse_div) => {
 		const i = magnifications.indexOf(scale);
 		const secret = scale === 10; // 10x is secret
-		const chooser_canvas = ChooserCanvas(
-			"images/options-magnification.png",
+		const chooser_el = ChooserDiv(
+			"magnification-option",
 			is_chosen, // invert if chosen
 			39, (secret ? 2 : 13), // width, height of destination canvas
 			i*23, 0, 23, 9, // x, y, width, height from source image
 			8, 2, 23, 9, // x, y, width, height on destination
-			reuse_canvas,
+			reuse_div,
 		);
 		if(secret){
-			$(chooser_canvas).addClass("secret-option");
+			$(chooser_el).addClass("secret-option");
 		}
-		return chooser_canvas;
+		return chooser_el;
 	},
 	scale => {
 		set_magnification(scale);
@@ -265,7 +325,7 @@ $choose_magnification.on("update", () => {
 	$choose_magnification
 		.find(".secret-option")
 		.parent()
-		.css({position: "absolute", bottom: "-2px", left: 0, opacity: 0});
+		.css({position: "absolute", bottom: "-2px", left: 0, opacity: 0, height: 2, overflow: "hidden" });
 });
 
 const airbrush_sizes = [9, 16, 24];
@@ -301,17 +361,17 @@ const $choose_airbrush_size = $Choose(
 
 const $choose_transparent_mode = $Choose(
 	[false, true],
-	(option, _is_chosen, reuse_canvas) => {
+	(option, _is_chosen, reuse_canvas, reuse_div) => {
 		const sw = 35, sh = 23; // width, height from source image
 		const b = 2; // margin by which the source image is inset on the destination
 		const theme_folder = `images/${get_theme().replace(/\.css/i, "")}`;
-		return ChooserCanvas(
-			`${theme_folder}/options-transparency.png`,
+		return ChooserDiv(
+			"transparent-mode-option",
 			false, // never invert it
 			b+sw+b, b+sh+b, // width, height of created destination canvas
 			0, option ? 22 : 0, sw, sh, // x, y, width, height from source image
 			b, b, sw, sh, // x, y, width, height on created destination canvas
-			reuse_canvas,
+			reuse_div,
 		);
 	},
 	option => {

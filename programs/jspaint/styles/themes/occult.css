@@ -4,3 +4,33 @@
 :root {
 	--theme-loaded: "occult.css";
 }
+
+.tool-icon,
+.tool-icon.use-svg { /* specificity needed for overriding classic theme; SVG is not supported yet for this theme */
+	background-image: url("../../images/occult/tools.png");
+	background-repeat: no-repeat;
+	background-position: calc(-16px * var(--icon-index)) 0;
+}
+/* .tool-icon.use-svg {
+	background-image: url("../../images/occult/tools.svg");
+	background-position: calc(-16px * (var(--icon-index) * 2 + 1)) -16px;
+} */
+.eye-gaze-mode .tool-icon.use-svg {
+	background-image: url("../../images/dark/tools.svg");
+	background-position: calc(-16px * (var(--icon-index) * 2 + 1)) -16px;
+}
+
+.transparent-mode-option,
+.transparent-mode-option.use-svg { /* specificity needed for overriding classic theme; SVG is not supported yet for this theme */
+	background-image: url("../../images/occult/options-transparency.png");
+}
+/* .transparent-mode-option.use-svg {
+	background-image: url("../../images/occult/options-transparency.svg");
+} */
+
+.eye-gaze-mode .toggle-dwell-clicking .button-icon {
+	background: url(../../images/dark/eye-gaze-pause.svg);
+}
+.eye-gaze-mode.eye-gaze-mode-paused .toggle-dwell-clicking .button-icon {
+	background: url(../../images/dark/eye-gaze-unpause.svg);
+}

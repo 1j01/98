@@ -27,7 +27,11 @@
   "main": "src/electron-main.js",
   "config": {
     "forge": {
-      "packagerConfig": {},
+      "packagerConfig": {
+        "icon": "./images/icons/jspaint",
+        "name": "jspaint",
+        "executableName": "jspaint"
+      },
       "makers": [
         {
           "name": "@electron-forge/maker-squirrel",
@@ -53,31 +57,27 @@
     }
   },
   "dependencies": {
-    "electron-is-dev": "^1.1.0",
     "electron-squirrel-startup": "^1.0.0",
     "glob": "^7.1.6",
-    "rtlcss": "^3.0.0",
-    "wallpaper": "4.4.1"
+    "rtlcss": "^3.1.2",
+    "wallpaper": "^4.4.2"
   },
   "devDependencies": {
-    "@electron-forge/cli": "6.0.0-beta.45",
-    "@electron-forge/maker-deb": "6.0.0-beta.45",
-    "@electron-forge/maker-rpm": "6.0.0-beta.45",
-    "@electron-forge/maker-squirrel": "6.0.0-beta.45",
-    "@electron-forge/maker-zip": "6.0.0-beta.45",
+    "@electron-forge/cli": "^6.0.0-beta.54",
+    "@electron-forge/maker-deb": "^6.0.0-beta.54",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.54",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
+    "@electron-forge/maker-zip": "^6.0.0-beta.54",
     "concat-glob-cli": "^0.1.0",
-    "cross-spawn": "^7.0.0",
     "cypress": "4.7.0",
-    "cypress-image-snapshot": "3.1.1",
-    "devtron": "^1.4.0",
-    "electron": "6.0.10",
-    "electron-debug": "^3.0.1",
-    "eslint": "6.4.0",
+    "cypress-image-snapshot": "^4.0.1",
+    "electron": "^11.2.3",
+    "electron-debug": "^3.2.0",
+    "eslint": "^7.32.0",
     "live-server": "^1.2.1",
     "npm-run-all": "^4.1.5",
     "onchange": "^7.1.0",
-    "serve": "11.2.0",
-    "start-server-and-test": "1.10.6"
+    "start-server-and-test": "^1.12.0"
   },
   "scripts": {
     "electron:start": "electron-forge start",
@@ -88,11 +88,11 @@
     "lint": "eslint src/",
     "lint-cat": "concat-glob-cli --files \"src/**/!(electron*).js\" --output concatenated-source.js && eslint --rule \"no-undef: error\" --rule \"no-unused-vars: error\" concatenated-source.js",
     "lint-cat:NOTE": "Disable the eslint comment that disables ThisExpression to use this.",
-    "build-css": "rtlcss styles/layout.css styles/layout.rtl.css && rtlcss lib/os-gui/layout.css lib/os-gui/layout.rtl.css",
-    "watch-css": "onchange --initial --poll 100 'styles/layout.css' 'lib/os-gui/layout.css' -- npm run build-css",
+    "build-css": "rtlcss styles/layout.css styles/layout.rtl.css && rtlcss lib/os-gui/layout.css lib/os-gui/layout.rtl.css && rtlcss lib/98.css/98.custom-build.css lib/98.css/98.custom-build.rtl.css",
+    "watch-css": "onchange --initial --poll 100 'styles/layout.css' 'lib/os-gui/layout.css' 'lib/98.css/98.custom-build.css' -- npm run build-css",
     "update-localization": "node ./localization/preprocess.js",
     "dev": "run-p watch-css dev:start-server",
-    "dev:start-server": "live-server --ignorePattern=\"(node_modules|cypress|out)[/\\\\\\\\]|package\\.json|cypress\\.json\"",
+    "dev:start-server": "live-server --port=1999 --ignorePattern=\"(node_modules|cypress|out)[/\\\\\\\\]|package\\.json|cypress\\.json\"",
     "dev:start-server:NOTE": "@XXX: the octuple backlash ends up meaning a single backslash on Linux, two backslashes on Windows. In this case it's fine because it's in a regexp character class so the extra is redundant and doesn't cause an error.",
     "test:start-server": "live-server --port=11822 --no-browser --ignorePattern=\"(node_modules|cypress|out)[/\\\\\\\\]|package\\.json|cypress\\.json\"",
     "test:start-server:NOTE": "@XXX: the octuple backlash ends up meaning a single backslash on Linux, two backslashes on Windows. In this case it's fine because it's in a regexp character class so the extra is redundant and doesn't cause an error.",

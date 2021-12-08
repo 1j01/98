@@ -91,8 +91,7 @@ html, body, .jspaint {
 .window:not(.squish) {
 	white-space: nowrap;
 }
-.component-area,
-.tool-window .window-titlebar {
+.component-area {
 	-webkit-user-select: none;
 	-moz-user-select: none;
 	-ms-user-select: none;
@@ -106,6 +105,7 @@ html, body, .jspaint {
 .component-area {
 	display: flex;
 	flex: 0 0 auto;
+	user-select: none;
 }
 
 .selection,
@@ -126,12 +126,22 @@ html, body, .jspaint {
 .selection > canvas {
 	/* @TODO: maybe don't include the canvas in the DOM (is it helpful to inspect it tho? it's not critical...) */
 	opacity: 0;
+	/* Fix draggable part of selection going outside the selection selection is vertically thin */
+	position: absolute;
+	right: 0;
+	top: 0;
 }
 .selection > img,
 .selection > canvas,
 .helper-layer > canvas {
 	width: 100%;
 	height: 100%;
+}
+.helper-layer > canvas {
+	/* Fix helper layer canvas going off the main canvas when main canvas is vertically thin */
+	position: absolute;
+	right: 0;
+	top: 0;
 }
 .resize-ghost,
 .component-ghost {
@@ -155,44 +165,11 @@ html, body, .jspaint {
 	color: rgba(255, 0, 255, 0.5) !important;
 }*/
 
-.menu-container {
-	position: relative;
-}
-.menu-popup {
-	position: absolute;
-	top: 100%;
-	right: 0;
-	z-index: 5002; /* 50-5000 reserved for subwindows, which dynamically increase z-index */
-	box-sizing: border-box;
-}
-.menu-popup-table {
-	border-collapse: collapse;
-}
-.menu-item {
-	white-space: nowrap;
-}
-.menu-hr {
-	display: block !important;
-	height: 0;
-	width: auto;
-}
-.menu-hotkey {
-	display: inline !important;
-}
-.menu-item-checkbox-area,
-.menu-item-submenu-area {
-	min-width: 16px;
-}
-.menu-item-checkbox-area,
-.menu-item-submenu-area {
-	text-align: center;
-}
-
 .status-area {
+	display: flex;
 	overflow: hidden;
 	white-space: nowrap;
 	cursor: default;
-	height: 1.25em;
 }
 .status-text {
 	flex-basis: auto;
@@ -205,7 +182,6 @@ html, body, .jspaint {
 	flex: 0 0 114px;
 	min-width: 0px;
 	padding-right: 3px;
-	border-right: 1px solid #7b7b7b;
 }
 
 .hover-halo {
@@ -262,18 +238,15 @@ html, body, .jspaint {
 	left: 12px;
 }
 
-.eye-gaze-mode .os-window .window-titlebar,
-.eye-gaze-mode .tool-window .window-titlebar {
+.eye-gaze-mode .os-window .window-titlebar {
 	font-size: 2rem;
 	line-height: 1.2;
 	height: 2.8rem;
 }
-.eye-gaze-mode .os-window .window-title-area,
-.eye-gaze-mode .tool-window .window-title-area {
+.eye-gaze-mode .os-window .window-title-area {
 	height: 100%;
 }
-.eye-gaze-mode .os-window .window-titlebar button,
-.eye-gaze-mode .tool-window .window-titlebar button {
+.eye-gaze-mode .os-window .window-titlebar button {
 	transform: scale(3);
 	margin-left: 32px;
 }
@@ -297,9 +270,24 @@ html, body, .jspaint {
 	font-size: 2rem;
 	line-height: 1.5;
 }
+.eye-gaze-mode .menu-item-checkbox-area::after,
+.eye-gaze-mode .menu-item-submenu-area::after {
+	width: 1.2em;
+	height: 1.2em;
+	mask-size: 1.2em 1.2em;
+}
 
 .eye-gaze-mode .status-area {
 	padding-right: 170px;
+}
+
+.menu-button {
+	/* @TODO: make this part of os-gui */
+	white-space: nowrap;
+}
+.menus {
+	/* @TODO: make this part of os-gui; note that Explorer does overflow differently though */
+	flex-wrap: wrap;
 }
 
 .component-area {
@@ -568,15 +556,23 @@ html, body, .jspaint {
 	margin: 5px;
     box-sizing: border-box;
 }
-.save-as .window-content > form > div > label:last-of-type {
+.save-as .window-content > form > div > label:not(:first-of-type) {
 	margin-top: 8px;
 }
 .save-as .window-content {
-	margin-top: 10px;
-	margin-bottom: 10px;
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 .save-as .button-group button {
 	margin: 5px;
+}
+
+.font-box {
+	display: flex;
+	flex-flow: row;
+	align-items: center;
+	margin: 4px 7px; /* not measured, just guessed */
+	gap: 10px;
 }
 
 .canvas-area {
@@ -591,27 +587,21 @@ html, body, .jspaint {
 	position: absolute;
 	z-index: 2;
 }
-.handle {
+.canvas-area .handle {
 	position: absolute;
 	width: 3px;
 	height: 3px;
 	z-index: 1;
+	pointer-events: none; /* important for eye gaze mode */
 }
-.handle::after {
-	/* make handles way easier to grab */
-	content: "";
-	pointer-events: all; /* @TODO: maybe don't have a blanket pointer-events: none; on pseudo elements */
-	display: block;
+.grab-region {
+	/* the grab-region make handles way easier to grab by extending outside the visual representation of the handle */
 	position: absolute;
-	right: 50%;
-	top: 50%;
-	transform: translate(50%, -50%);
-	width: 32px;
-	height: 32px;
-	max-width: inherit;
-	max-height: inherit;
-	/*background: rgba(255, 255, 0, 0.5);*/ /* debug */
+	/*background: rgba(255, 0, 0, 0.5);*/ /* debug */
 }
+/* .grab-region.is-middle { */
+	/*background: rgba(255, 255, 0, 0.5);*/ /* debug */
+/* } */
 .textbox::before {
 	/* allow dragging textbox */
 	/* In mspaint the border drawn around selections and textboxes extends out from them,
@@ -629,18 +619,6 @@ html, body, .jspaint {
 	/*background: orange;*/ /* debug */
 }
 
-
-.tool-window .window-title {
-	display: inline-block !important;
-	margin: 0;
-	padding: 0;
-	cursor: default;
-}
-.tool-window .window-close-button {
-	display: block !important;
-	float: left;
-}
-
 .window-content .button-group {
 	display: flex;
 	flex: 0 0 auto;
@@ -655,32 +633,62 @@ html, body, .jspaint {
 	display: flex;
 	flex-flow: row;
 }
-.dialogue-window .window-content > form {
+.window:not(.edit-colors-window) .window-content > form {
+	direction: rtl;
+}
+.horizontal-buttons .window-content > form {
 	flex-flow: column;
 }
-.dialogue-window .window-content > form > .button-group {
+.horizontal-buttons .window-content > form > .button-group {
 	display: flex;
 	flex-flow: row;
 	justify-content: flex-end;
+	gap: 5px;
+	margin: 5px;
+	margin-bottom: 10px;
 }
-.dialogue-window .window-content > form > div:first-child {
+.horizontal-buttons .window-content > form > div:first-child {
 	padding: 5px;
 }
 
 .stretch-and-skew .window-content,
 .flip-and-rotate .window-content,
-.convert-to-black-and-white .window-content {
+.convert-to-black-and-white .window-content,
+.component-window .window-content {
 	direction: rtl;
 }
+
+.dialog-window:not(.horizontal-buttons):not(.edit-colors-window) .window-content {
+	padding: 10px;
+}
+.dialog-window:not(.horizontal-buttons):not(.edit-colors-window) .window-content .button-group {
+	padding-right: 10px;
+	display: flex;
+    flex-direction: column;
+	gap: 5px;
+}
+
 .flip-and-rotate fieldset {
 	width: 200px;
+}
+.flip-and-rotate fieldset > label {
+	display: flex !important; /* overriding `.window:not(.edit-colors-window) .window-content label` */
+}
+.flip-and-rotate input:disabled {
+	/* pointer events already can't get received on disabled input elements,
+	but this lets them be received on a parent,
+	in order to enable the element */
+	pointer-events: none;
 }
 .flip-and-rotate .sub-options {
 	padding-right: 30px;
 }
+.flip-and-rotate .radio-wrapper {
+	width: fit-content;
+}
 
 /* Fix label ordering for RTL layout (display inline labels can get super out of order with the checkboxes/inputs - very confusing!) */
-.window-content label {
+.window:not(.edit-colors-window):not(.tracky-mouse-window) .window-content label {
 	display: inline-flex;
 	flex-direction: row;
 	direction: rtl;
@@ -689,9 +697,46 @@ html, body, .jspaint {
 .attributes-window .window-content {
 	direction: rtl;
 }
+.attributes-window table {
+	margin-bottom: 5px;
+}
+.attributes-window input[type="number"] {
+	margin-right: 5px; /* separate label from input for Width and Height fields */
+}
+.attributes-window table ~ label ~ label {
+	margin-right: 10px; /* separate Width and Height fields */
+}
 .attributes-window fieldset {
+	margin-top: 5px;
+}
+.attributes-window fieldset .fieldset-body {
+	display: grid;
+	grid-template-columns: calc(80px * 2) 80px;
+}
+.attributes-window fieldset:first-of-type .fieldset-body {
+	grid-template-columns: 80px 80px 80px;
+}
+
+.custom-zoom-window .current-zoom {
+	margin: 10px 15px;
+}
+.custom-zoom-window fieldset {
+	margin: 8px;
+	padding: 0;
+}
+.custom-zoom-window .fieldset-body {
 	display: flex;
-	justify-content: space-around; /* this isn't really what the layout is like in mspaint, but it spaces things out at least */
+    flex-flow: column wrap;
+    width: 240px;
+	height: 70px;
+    padding: 12px 5px;
+    row-gap: 10px;
+}
+.custom-zoom-window bdi {
+	margin: 0 10px;
+}
+.custom-zoom-window input[name='really-custom-zoom-input'] {
+	width: 50px;
 }
 
 /* @TODO: part of os-gui */
@@ -712,13 +757,23 @@ html, body, .jspaint {
 	flex: 1;
 	display: flex;
 	flex-flow: row;
+	height: 0; /* fixes an overflow issue with small window height, where the iframe and contents tree would be sized based on the intrinsic height of the contents tree */
 }
 .help-window .toolbar button {
 	width: 55px;
 	height: 40px;
 	padding: 0;
+}
+.help-window .toolbar button span {
+	display: inline-flex;
+	position: absolute;
+	bottom: 0;
+	right: 0;
+	left: 0;
+	/* flex centering + preventing overflow wrap means the font can be too big and it'll still stay centered */
 	font-size: 12px;
-	line-height: 60px;
+	white-space: pre;
+	justify-content: center;
 }
 .help-window .toolbar button {
 	position: relative;
@@ -817,6 +872,9 @@ html, body, .jspaint {
 	margin-right: 15px;
 }
 
+.history-window .window-content {
+	direction: rtl;
+}
 .history-view {
 	width: 500px;
 	height: 500px;
@@ -824,6 +882,7 @@ html, body, .jspaint {
 	max-height: calc(100vh - 100px);
 	overflow: auto;
 	position: relative; /* needed for offsetTop to work relative to the top of the list (rather than the window) */
+	direction: rtl;
 }
 .history-entry {
 	cursor: pointer;
@@ -875,16 +934,23 @@ html, body, .jspaint {
 	font-style: italic;
 	height: 2em;
 }
-#view-project-news {
-	margin: auto;
-	margin-left: 40px;
-	width: 150px;
+#view-project-news,
+#close-about-paint {
+	margin: auto; /* for right-alignment AND avoiding stretching to height of the container */
+	margin-left: 0;
+	width: 100px;
 	min-height: 2.2em;
+}
+#close-about-paint {
+	float: left;
+	margin-bottom: 10px;
 }
 
 #news {
 	max-height: 500px;
 	overflow: auto;
+	user-select: text;
+	cursor: auto;
 }
 @media (max-height: 550px) {
 	#news {
@@ -957,6 +1023,21 @@ select.inset-deep {
 	padding-left: 16px;
 }
 
-[touch-action="none"] {
-	touch-action: none;
+progress {
+	width: 291px;
+	height: 20px;
+	box-sizing: border-box;
+}
+
+details pre {
+	margin: 0;
+	margin-top: 5px;
+}
+
+details {
+	margin-top: 8px;
+}
+summary {
+	user-select: none;
+	cursor: pointer;
 }

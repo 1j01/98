@@ -5,7 +5,7 @@ if (require('electron-squirrel-startup')) { // eslint-disable-line global-requir
 	app.quit();
 }
 
-if (require('electron-is-dev')){
+if (process.env.ELECTRON_DEBUG === "1" || !app.isPackaged){
 	require('electron-debug')({ showDevTools: false });
 }
 
@@ -25,14 +25,16 @@ const createWindow = () => {
 		minHeight: 360,
 		icon: require("path").join(__dirname, "../images/icons",
 			process.platform === "win32" ?
-				"windows.ico" :
+				"jspaint.ico" :
 				process.platform === "darwin" ?
-					"mac.icns" :
-					"48.png"
+					"jspaint.icns" :
+					"48x48.png"
 		),
 		title: "JS Paint",
 		webPreferences: {
 			preload: require("path").join(__dirname, "/electron-injected.js"),
+			enableRemoteModule: true,
+			contextIsolation: false,
 		},
 	});
 
