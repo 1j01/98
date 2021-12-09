@@ -1,6 +1,7 @@
 
 // Prefer a function injected from outside an iframe,
 // which will make dialogs that can go outside the iframe.
+// Note that this API must be kept in sync with the version in jspaint.
 
 // Note `defaultMessageBoxTitle` handling in make_iframe_window
 // Any other default parameters need to be handled there (as it works now)
@@ -10,32 +11,45 @@ var chord_audio = new Audio("/audio/CHORD.WAV");
 window.showMessageBox = window.showMessageBox || (({
 	title = window.defaultMessageBoxTitle ?? "Alert",
 	message,
-	buttons = [{label: "OK", value: "ok", default: true}],
-	iconID = "warning" // "error", "warning", or "info"
+	messageHTML,
+	buttons = [{ label: "OK", value: "ok", default: true }],
+	iconID = "warning", // "error", "warning", "info", or "nuke" for deleting files/folders
+	windowOptions = {}, // for controlling width, etc.
 }) => {
-	let $window;
+	let $window, $message;
 	const promise = new Promise((resolve, reject) => {
-		$window = new $Window({
+		$window = new $Window(Object.assign({
 			title,
 			resizable: false,
 			innerWidth: 400,
 			maximizeButton: false,
 			minimizeButton: false,
-		});
-		
-		$("<div>").append(
-			$("<img width='32' height='32'>").attr("src", `../../images/icons/${iconID}-32x32-8bpp.png`).css({
-				margin: "16px",
-				display: "block",
-			}),
-			$("<p>").text(message).css({
-				whiteSpace: "pre-wrap",
+		}, windowOptions));
+		// $window.addClass("dialog-window horizontal-buttons");
+		$message =
+			$("<div>").css({
 				textAlign: "left",
 				fontFamily: "MS Sans Serif, Arial, sans-serif",
 				fontSize: "14px",
 				marginTop: "22px",
 				flex: 1,
-			})
+				minWidth: 0, // Fixes hidden overflow, see https://css-tricks.com/flexbox-truncated-text/
+				whiteSpace: "normal", // overriding .window:not(.squish)
+			});
+		if (messageHTML) {
+			$message.html(messageHTML);
+		} else if (message) { // both are optional because you may populate later with dynamic content
+			$message.text(message).css({
+				whiteSpace: "pre-wrap",
+				wordWrap: "break-word",
+			});
+		}
+		$("<div>").append(
+			$("<img width='32' height='32'>").attr("src", `../../images/icons/${iconID}-32x32-8bpp.png`).css({
+				margin: "16px",
+				display: "block",
+			}),
+			$message
 		).css({
 			display: "flex",
 			flexDirection: "row",
@@ -67,9 +81,13 @@ window.showMessageBox = window.showMessageBox || (({
 		$window.on("focusout", "button", (event) => {
 			$(event.currentTarget).removeClass("default");
 		});
+		$window.on("closed", () => {
+			resolve("closed"); // or "cancel"? do you need to distinguish?
+		});
 		$window.center();
 	});
 	promise.$window = $window;
+	promise.$message = $message;
 	promise.promise = promise; // for easy destructuring
 	try {
 		chord_audio.play();
