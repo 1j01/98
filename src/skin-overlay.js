@@ -87,10 +87,6 @@ class SkinOverlay {
 						editor._focus();
 						const onPointerMove = e => {
 							editor._trigger_canvas_event("pointermove", e, getCanvasPos(e));
-							requestAnimationFrame(() => {
-								// copy the preview of the brush stroke to the skin canvas
-								editor._render_preview(this.skinImageCanvases[sprite.name]);
-							});
 						};
 						const onPointerUpCancel = e => {
 							editor._trigger_canvas_event("pointerup", e, getCanvasPos(e));
@@ -181,10 +177,31 @@ class SkinOverlay {
 								return;
 							}
 							const { x, y, width, height, name } = sprite;
-							if (this.skinImageCanvases[name]) {
+							let previewCanvas = this.skinImageCanvases[name];
+							if (this.skinPaintEditors[name]) {
+								const editor = this.skinPaintEditors[name];
+								if (!this.skinImageCanvases[name]) {
+									const editorCanvas = editor._contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
+									if (editorCanvas) {
+										previewCanvas = document.createElement("canvas");
+										previewCanvas.width = editorCanvas.width;
+										previewCanvas.height = editorCanvas.height;
+										previewCanvas.ctx = previewCanvas.getContext("2d"); // expected by render_canvas_view
+										this.skinImageCanvases[name] = previewCanvas;
+									}
+								}
+								if (previewCanvas) {
+									// @TODO: render only when needed (but still live preview during brush strokes etc.)
+									// could add some hooks in jspaint to maintain a viewport, use it for the thumbnail too,
+									// and possibly split-pane features etc.
+									// (the key benefit being that it wouldn't rerender all viewports if one zooms/pans)
+									editor._contentWindow.render_canvas_view(previewCanvas, 1, 0, 0, false);
+								}
+							}
+							if (previewCanvas) {
 								canvasPattern = this.skinCanvasPatterns[`${name} ${repeat}`];
 								if (!canvasPattern) {
-									canvasPattern = makeCanvasPattern(this.skinImageCanvases[name], repeat, ctx);
+									canvasPattern = makeCanvasPattern(previewCanvas, repeat, ctx);
 									// this.skinCanvasPatterns[`${name} ${repeat}`] = canvasPattern; // can't actually cache this, if we want to live-update
 								}
 							} else {

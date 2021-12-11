@@ -374,17 +374,21 @@ function Paint(file_path) {
 		};
 	});
 	const task = new Task($win);
-	task._on_image_change = (callback) => {
+	// task._on_image_change = (callback) => {
+	// 	waitUntil(() => contentWindow.jQuery, 500, () => {
+	// 		contentWindow.jQuery(contentWindow).on("session-update", () => {
+	// 			const canvas = contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
+	// 			callback(canvas);
+	// 		});
+	// 	});
+	// };
+	task._fix_blur_interruption = (callback) => {
 		waitUntil(() => contentWindow.jQuery, 500, () => {
-			contentWindow.jQuery(contentWindow).on("session-update", () => {
-				const canvas = contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
-				callback(canvas);
-			});
 			// prevent this handler:
-			// // Stop drawing (or dragging or whatever) if you Alt+Tab or whatever
-			// $G.on("blur", () => {
-			// 	$G.triggerHandler("pointerup");
-			// });
+			//     // Stop drawing (or dragging or whatever) if you Alt+Tab or whatever
+			//     $G.on("blur", () => {
+			//         $G.triggerHandler("pointerup");
+			//     });
 			contentWindow.jQuery(contentWindow).off("blur"); 
 			// otherwise we can only draw dots not lines, because it gets a blur as you press the mouse button.
 			// I would change this in the Paint code, but I don't want to deal with merge conflicts,
@@ -437,9 +441,7 @@ function Paint(file_path) {
 		// canvas.dispatchEvent(event);
 		contentWindow.jQuery(canvas).trigger(event);
 	};
-	task._render_preview = (canvas) => {
-		contentWindow.render_canvas_view(canvas, 1, 0, 0, false);
-	};
+	task._contentWindow = contentWindow;
 	task._get_cursor = () => {
 		const canvas = contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
 		if (!canvas) {
@@ -1037,12 +1039,15 @@ function openWinamp(file_path) {
 			if (skinOverlayEnabled) {
 				const skinPath = "programs/winamp/skins/base/MAIN.BMP";
 				const paint = new Paint(skinPath);
-				paint._on_image_change((canvas) => {
-					skinOverlay.setSkinImage("MAIN_WINDOW_BACKGROUND", canvas);
-				});
+				// paint._on_image_change((canvas) => {
+				// 	skinOverlay.setSkinImage("MAIN_WINDOW_BACKGROUND", canvas);
+				// });
+				paint._fix_blur_interruption();
 				skinOverlay.skinPaintEditors["MAIN_WINDOW_BACKGROUND"] = paint;
 				skinOverlay.setEditMode(true);
-				paint._$window.css("left", innerWidth*2/3);
+				paint._$window.css("left", innerWidth * 2 / 3);
+				// Handle events for both when Paint or Webamp is focused.
+				// This can't be just a global event handler because Paint uses an iframe.
 				paint._on_keydown(handle_keydown);
 				$webamp.on("keydown", handle_keydown);
 				function handle_keydown(event) {
