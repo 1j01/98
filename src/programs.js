@@ -398,7 +398,8 @@ function Paint(file_path) {
 		const canvas_rect = canvas.getBoundingClientRect();
 		const client_x = canvas_position.x + canvas_rect.left;
 		const client_y = canvas_position.y + canvas_rect.top;
-		const event = new MouseEvent(event_name, {
+		// const event = new MouseEvent(event_name, {
+		const event = new contentWindow.jQuery.Event(event_name, {
 			clientX: client_x,
 			clientY: client_y,
 			screenX: client_x,
@@ -430,7 +431,11 @@ function Paint(file_path) {
 			cancelable: true,
 			view: canvas.ownerDocument.defaultView,
 		});
-		canvas.dispatchEvent(event);
+		// jQuery doesn't let you handle natively dispatched pointerenter
+		// See: https://jsfiddle.net/1j01/ndvwts9y/1/
+		// How's the saying go? When firing events, you've gotta fight jQuery with jQuery.
+		// canvas.dispatchEvent(event);
+		contentWindow.jQuery(canvas).trigger(event);
 	};
 
 	task._$window = $win;
