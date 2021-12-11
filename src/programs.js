@@ -437,6 +437,9 @@ function Paint(file_path) {
 		// canvas.dispatchEvent(event);
 		contentWindow.jQuery(canvas).trigger(event);
 	};
+	task._render_preview = (canvas) => {
+		contentWindow.render_canvas_view(canvas, 1, 0, 0, false);
+	};
 
 	task._$window = $win;
 	return task;
