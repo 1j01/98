@@ -455,6 +455,9 @@ function Paint(file_path) {
 	task._focus = () => {
 		contentWindow.focus();
 	};
+	task._on_keydown = (handler) => {
+		contentWindow.addEventListener("keydown", handler);
+	};
 
 	task._$window = $win;
 	return task;
@@ -1040,6 +1043,18 @@ function openWinamp(file_path) {
 				skinOverlay.skinPaintEditors["MAIN_WINDOW_BACKGROUND"] = paint;
 				skinOverlay.setEditMode(true);
 				paint._$window.css("left", innerWidth*2/3);
+				paint._on_keydown(handle_keydown);
+				$webamp.on("keydown", handle_keydown);
+				function handle_keydown(event) {
+					if (event.key === " ") {
+						skinOverlay.setEditMode(!skinOverlay.editMode);
+						if (skinOverlay.editMode) {
+							paint._focus();
+						} else {
+							winamp_interface.focus();
+						}
+					}
+				}
 			}
 			
 			// TODO: replace with setInterval.. uh.. not if we're using this for the animation for skinOverlay though
