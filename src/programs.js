@@ -452,6 +452,9 @@ function Paint(file_path) {
 		// console.log("_get_cursor source:", canvas.style.cursor, "normalized:", cursor);
 		return cursor;
 	};
+	task._focus = () => {
+		contentWindow.focus();
+	};
 
 	task._$window = $win;
 	return task;

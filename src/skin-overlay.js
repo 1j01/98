@@ -46,6 +46,10 @@ class SkinOverlay {
 			e.preventDefault(); // prevent system context menu (given that we're preventing webamp's handler)
 		});
 		canvas.addEventListener("pointerdown", e => {
+			e.preventDefault(); // so JS Paint can keep focus for keyboard shortcuts
+			// actually, better to focus it explicitly, so it can work if it wasn't focused before
+			// will do that below
+
 			// proxy the event to the JS Paint editor, so you can draw on the Webamp instance directly to edit the skin
 			for (const el of document.elementsFromPoint(e.clientX, e.clientY)) {
 				if (el.classList.contains("overlay-canvas")) {
@@ -80,6 +84,7 @@ class SkinOverlay {
 						};
 						editor._trigger_canvas_event("pointerenter", e, getCanvasPos(e));
 						editor._trigger_canvas_event("pointerdown", e, getCanvasPos(e));
+						editor._focus();
 						const onPointerMove = e => {
 							editor._trigger_canvas_event("pointermove", e, getCanvasPos(e));
 							requestAnimationFrame(() => {
