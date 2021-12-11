@@ -19,6 +19,15 @@ class SkinOverlay {
 		this.animateFns = [];
 		this.skinImageCanvases = {};
 		this.skinCanvasPatterns = {};
+		this.skinPaintEditors = {};
+		this.editMode = false;
+	}
+
+	setEditMode(drawDirectly) {
+		for (const canvas of this.overlayCanvases) {
+			canvas.style.pointerEvents = drawDirectly ? "auto" : "none";
+		}
+		this.editMode = drawDirectly;
 	}
 
 	makeOverlayCanvas(windowEl) {
@@ -27,11 +36,68 @@ class SkinOverlay {
 		canvas.style.position = "absolute";
 		canvas.style.left = "0";
 		canvas.style.top = "0";
-		canvas.style.pointerEvents = "none";
+		canvas.style.pointerEvents = this.editMode ? "auto" : "none";
 		canvas.style.willChange = "opacity"; // hint fixes flickering in chrome
 		canvas.className = "skin-overlay-canvas overlay-canvas";
 		windowEl.appendChild(canvas);
 		this.overlayCanvases.push(canvas);
+		canvas.addEventListener("contextmenu", e => {
+			e.stopImmediatePropagation(); // prevent webamp's context menu
+			e.preventDefault(); // prevent system context menu (given that we're preventing webamp's handler)
+		});
+		canvas.addEventListener("pointerdown", e => {
+			// proxy the event to the JS Paint editor, so you can draw on the Webamp instance directly to edit the skin
+			for (const el of document.elementsFromPoint(e.clientX, e.clientY)) {
+				if (el.classList.contains("overlay-canvas")) {
+					continue; // looking under the overlay canvas
+				}
+				const computedStyle = getComputedStyle(el);
+				if (computedStyle.backgroundImage && computedStyle.backgroundImage !== "none" && computedStyle.getPropertyValue("--sprite-info")) {
+					// this is a element has a sprite
+					let sprite;
+					try {
+						sprite = JSON.parse(computedStyle.getPropertyValue("--sprite-info").trim().slice(1, -1).replace(/\\"/g, "\""));
+					} catch (error) {
+						if (!window.showed_sprite_error) {
+							console.error("Could not parse sprite info", computedStyle.getPropertyValue("--sprite-info"), error);
+							window.showed_sprite_error = true;
+						}
+						return;
+					}
+					// practically, this will probably have to be a single editor later (for perf and reasonable UI)
+					// but jspaint only supports a single image document at the moment
+					const editor = this.skinPaintEditors[sprite.name];
+					if (editor) {
+						const getCanvasPos = (event) => {
+							const elRect = el.getBoundingClientRect();
+							let x = event.clientX - elRect.left;
+							let y = event.clientY - elRect.top;
+							// @TODO: background-position-x and background-position-y
+							// see code below for parsing
+							// x += sprite.x;
+							// y += sprite.y;
+							return { x, y };
+						};
+						editor._trigger_canvas_event("pointerenter", e, getCanvasPos(e));
+						editor._trigger_canvas_event("pointerdown", e, getCanvasPos(e));
+						const onPointerMove = e => {
+							editor._trigger_canvas_event("pointermove", e, getCanvasPos(e));
+						};
+						const onPointerUpCancel = e => {
+							editor._trigger_canvas_event("pointerup", e, getCanvasPos(e));
+							document.removeEventListener("pointermove", onPointerMove);
+							document.removeEventListener("pointerup", onPointerUpCancel);
+							document.removeEventListener("pointercancel", onPointerUpCancel);
+						};
+						document.addEventListener("pointermove", onPointerMove);
+						document.addEventListener("pointerup", onPointerUpCancel);
+						document.addEventListener("pointercancel", onPointerUpCancel);
+					}
+				}
+
+			}
+		});
+
 		this.animateFns.push(() => {
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			ctx.resetTransform();

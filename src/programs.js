@@ -380,8 +380,59 @@ function Paint(file_path) {
 				const canvas = contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
 				callback(canvas);
 			});
+			// prevent this handler:
+			// // Stop drawing (or dragging or whatever) if you Alt+Tab or whatever
+			// $G.on("blur", () => {
+			// 	$G.triggerHandler("pointerup");
+			// });
+			contentWindow.jQuery(contentWindow).off("blur"); 
+			// otherwise we can only draw dots not lines, because it gets a blur as you press the mouse button.
+			// I would change this in the Paint code, but I don't want to deal with merge conflicts,
+			// or losing patches when force updating.
+			// Hope this doesn't break anything.
 		});
 	};
+	task._trigger_canvas_event = (event_name, original_event, canvas_position) => {
+		// const canvas = contentWindow.main_canvas; // doesn't work because it's declared with let or const
+		const canvas = contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
+		const canvas_rect = canvas.getBoundingClientRect();
+		const client_x = canvas_position.x + canvas_rect.left;
+		const client_y = canvas_position.y + canvas_rect.top;
+		const event = new MouseEvent(event_name, {
+			clientX: client_x,
+			clientY: client_y,
+			screenX: client_x,
+			screenY: client_y,
+			pageX: client_x,
+			pageY: client_y,
+			x: client_x,
+			y: client_y,
+			offsetX: canvas_position.x,
+			offsetY: canvas_position.y,
+			altKey: original_event.altKey,
+			ctrlKey: original_event.ctrlKey,
+			metaKey: original_event.metaKey,
+			shiftKey: original_event.shiftKey,
+			button: original_event.button,
+			buttons: original_event.buttons,
+			which: original_event.which,
+			pointerType: original_event.pointerType,
+			pointerId: 1234567890, //original_event.pointerId,
+			pressure: original_event.pressure,
+			tiltX: original_event.tiltX,
+			tiltY: original_event.tiltY,
+			twist: original_event.twist,
+			width: original_event.width,
+			height: original_event.height,
+			tangentialPressure: original_event.tangentialPressure,
+			target: canvas,
+			bubbles: true,
+			cancelable: true,
+			view: canvas.ownerDocument.defaultView,
+		});
+		canvas.dispatchEvent(event);
+	};
+
 	task._$window = $win;
 	return task;
 }
@@ -963,6 +1014,8 @@ function openWinamp(file_path) {
 				paint._on_image_change((canvas) => {
 					skinOverlay.setSkinImage("MAIN_WINDOW_BACKGROUND", canvas);
 				});
+				skinOverlay.skinPaintEditors["MAIN_WINDOW_BACKGROUND"] = paint;
+				skinOverlay.setEditMode(true);
 				paint._$window.css("left", innerWidth*2/3);
 			}
 			
