@@ -103,6 +103,12 @@ class SkinOverlay {
 		});
 
 		this.animateFns.push(() => {
+			// (not actually supporting multiple editors)
+			const editor = this.skinPaintEditors[Object.keys(this.skinPaintEditors)[0]];
+			if (editor) {
+				canvas.style.cursor = editor._get_cursor();
+			}
+
 			ctx.clearRect(0, 0, canvas.width, canvas.height);
 			ctx.resetTransform();
 			ctx.fillStyle = "red";

@@ -440,6 +440,18 @@ function Paint(file_path) {
 	task._render_preview = (canvas) => {
 		contentWindow.render_canvas_view(canvas, 1, 0, 0, false);
 	};
+	task._get_cursor = () => {
+		const canvas = contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
+		if (!canvas) {
+			return "";
+		}
+		let cursor = canvas.style.cursor;
+		cursor = cursor.replace(/^url\(['"]?([^)'"]*)['"]?\)/, (match, url) =>
+			`url("${new URL(url, contentWindow.location.href).href}")`
+		);
+		// console.log("_get_cursor source:", canvas.style.cursor, "normalized:", cursor);
+		return cursor;
+	};
 
 	task._$window = $win;
 	return task;
