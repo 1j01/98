@@ -387,6 +387,10 @@ function Paint(file_path) {
 
 	// this is a little overkill, trying to anticipate the future
 	task._find_canvas = () => contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
+	// this is stupid, but magnification is declared with let, so it's not part of the global object
+	// task._get_magnification = () => contentWindow.eval("magnification");
+	// actually nah, I'll just use the ratio of width to CSS width, don't need no stinking eval
+
 	task._fix_blur_interruption = (callback) => {
 		waitUntil(() => contentWindow.jQuery, 500, () => {
 			// prevent this handler:
@@ -406,8 +410,10 @@ function Paint(file_path) {
 		// const canvas = contentWindow.main_canvas; // doesn't work because it's declared with let or const
 		const canvas = task._find_canvas();
 		const canvas_rect = canvas.getBoundingClientRect();
-		const client_x = canvas_position.x + canvas_rect.left;
-		const client_y = canvas_position.y + canvas_rect.top;
+		const offset_x = canvas_position.x * canvas_rect.width / canvas.width;
+		const offset_y = canvas_position.y * canvas_rect.height / canvas.height;
+		const client_x = offset_x + canvas_rect.left;
+		const client_y = offset_y + canvas_rect.top;
 		// const event = new MouseEvent(event_name, {
 		const event = new contentWindow.jQuery.Event(event_name, {
 			clientX: client_x,
@@ -418,8 +424,8 @@ function Paint(file_path) {
 			pageY: client_y,
 			x: client_x,
 			y: client_y,
-			offsetX: canvas_position.x,
-			offsetY: canvas_position.y,
+			offsetX: offset_x,
+			offsetY: offset_y,
 			altKey: original_event.altKey,
 			ctrlKey: original_event.ctrlKey,
 			metaKey: original_event.metaKey,
