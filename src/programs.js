@@ -454,11 +454,16 @@ function Paint(file_path) {
 			return "";
 		}
 		let cursor = canvas.style.cursor;
-		cursor = cursor.replace(/^url\(['"]?([^)'"]*)['"]?\)/, (match, url) =>
-			`url("${new URL(url, contentWindow.location.href).href}")`
-		);
-		// console.log("_get_cursor source:", canvas.style.cursor, "normalized:", cursor);
-		return cursor;
+		try {
+			return cursor.replace(/^url\(['"]?([^)'"]*)['"]?\)/, (match, url) =>
+				`url("${new URL(url, contentWindow.location.href).href}")`
+			);
+			// console.log("_get_cursor source:", canvas.style.cursor, "normalized:", cursor);
+		} catch (error) {
+			// console.warn("_get_cursor error:", error, "source:", canvas.style.cursor);
+			// return cursor;
+			return "not-allowed";
+		}
 	};
 
 	task._$window = $win;
@@ -1060,6 +1065,10 @@ function openWinamp(file_path) {
 						}
 					}
 				}
+				paint.$window.onClosed(() => {
+					skinOverlay.setEditMode(false);
+					$webamp.off("keydown", handle_keydown);
+				});
 			}
 			
 			// TODO: replace with setInterval.. uh.. not if we're using this for the animation for skinOverlay though
