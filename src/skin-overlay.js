@@ -307,17 +307,6 @@ class SkinOverlay {
 				});
 		});
 	}
-	setSkinImage(name, image) {
-		// The preview is rendered onto the skinImageCanvas, so it can't be the document canvas, else it'll be cleared for drawing
-		// this.skinImageCanvases[name] = image;
-		const canvas = document.createElement("canvas");
-		canvas.width = image.width;
-		canvas.height = image.height;
-		const ctx = canvas.getContext("2d");
-		ctx.drawImage(image, 0, 0);
-		canvas.ctx = ctx; // expected by jspaint's render_canvas_view
-		this.skinImageCanvases[name] = canvas;
-	}
 
 	render() {
 		this.animateFns.forEach(fn => fn());

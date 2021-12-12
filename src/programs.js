@@ -377,9 +377,9 @@ function Paint(file_path) {
 
 	// Add some secret methods just for the Winamp Skin Editor...
 
-	// task._on_image_change = (callback) => {
+	// task._wait_for_image_loaded = (callback) => {
 	// 	waitUntil(() => contentWindow.jQuery, 500, () => {
-	// 		contentWindow.jQuery(contentWindow).on("session-update", () => {
+	// 		contentWindow.jQuery(contentWindow).one("session-update", () => {
 	// 			callback();
 	// 		});
 	// 	});
@@ -1050,9 +1050,6 @@ function openWinamp(file_path) {
 			if (skinOverlayEnabled) {
 				const skinPath = "programs/winamp/skins/base/MAIN.BMP";
 				const paint = new Paint(skinPath);
-				// paint._on_image_change((canvas) => {
-				// 	skinOverlay.setSkinImage("MAIN_WINDOW_BACKGROUND", canvas);
-				// });
 				paint._fix_blur_interruption();
 				skinOverlay.skinPaintEditors["MAIN_WINDOW_BACKGROUND"] = paint;
 				skinOverlay.setEditMode(true);
