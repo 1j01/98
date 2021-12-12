@@ -384,6 +384,20 @@ function Paint(file_path) {
 	// 		});
 	// 	});
 	// };
+	// @TODO: replace with a formal API in jspaint for maintaining a viewport.
+	// could use it for the Thumbnail too, possibly future split-pane features etc.
+	// could use it for the View Bitmap feature, and then you could use it for projecting a collaborative session canvas
+	// (the key benefit being that it wouldn't rerender all viewports if one zooms/pans)
+	// task._on_view_update = (callback) => {
+	waitUntil(() => contentWindow.update_helper_layer_immediately, 500, () => {
+		const old_fn = contentWindow.update_helper_layer_immediately;
+		contentWindow.update_helper_layer_immediately = (...args) => {
+			old_fn(...args);
+			// callback();
+			task._preview_needs_update = true;
+		};
+	});
+	// };
 
 	// this is a little overkill, trying to anticipate the future
 	task._find_canvas = () => contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");

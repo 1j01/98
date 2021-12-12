@@ -192,20 +192,15 @@ class SkinOverlay {
 										this.skinImageCanvases[name] = previewCanvas;
 									}
 								}
-								if (previewCanvas) {
-									// @TODO: render only when needed (but still live preview during brush strokes etc.)
-									// could add some hooks in jspaint to maintain a viewport, use it for the thumbnail too,
-									// and possibly split-pane features etc.
-									// (the key benefit being that it wouldn't rerender all viewports if one zooms/pans)
+								if (previewCanvas && editor._preview_needs_update) {
 									editor._contentWindow.render_canvas_view(previewCanvas, 1, 0, 0, false);
+									editor._preview_needs_update = false;
+									canvasPattern = makeCanvasPattern(previewCanvas, repeat, ctx);
+									this.skinCanvasPatterns[`${name} ${repeat}`] = canvasPattern;
 								}
 							}
 							if (previewCanvas) {
 								canvasPattern = this.skinCanvasPatterns[`${name} ${repeat}`];
-								if (!canvasPattern) {
-									canvasPattern = makeCanvasPattern(previewCanvas, repeat, ctx);
-									// this.skinCanvasPatterns[`${name} ${repeat}`] = canvasPattern; // can't actually cache this, if we want to live-update
-								}
 							} else {
 								const imageURL = webampState.display.skinImages[name];
 								canvasPattern = getCanvasPattern(imageURL, repeat, ctx);
