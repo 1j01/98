@@ -377,11 +377,11 @@ function Paint(file_path) {
 	// task._on_image_change = (callback) => {
 	// 	waitUntil(() => contentWindow.jQuery, 500, () => {
 	// 		contentWindow.jQuery(contentWindow).on("session-update", () => {
-	// 			const canvas = contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
-	// 			callback(canvas);
+	// 			callback();
 	// 		});
 	// 	});
 	// };
+	task._find_canvas = () => contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
 	task._fix_blur_interruption = (callback) => {
 		waitUntil(() => contentWindow.jQuery, 500, () => {
 			// prevent this handler:
@@ -398,7 +398,7 @@ function Paint(file_path) {
 	};
 	task._trigger_canvas_event = (event_name, original_event, canvas_position) => {
 		// const canvas = contentWindow.main_canvas; // doesn't work because it's declared with let or const
-		const canvas = contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
+		const canvas = task._find_canvas();
 		const canvas_rect = canvas.getBoundingClientRect();
 		const client_x = canvas_position.x + canvas_rect.left;
 		const client_y = canvas_position.y + canvas_rect.top;
@@ -443,7 +443,7 @@ function Paint(file_path) {
 	};
 	task._contentWindow = contentWindow;
 	task._get_cursor = () => {
-		const canvas = contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
+		const canvas = task._find_canvas();
 		if (!canvas) {
 			return "";
 		}

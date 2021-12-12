@@ -181,7 +181,7 @@ class SkinOverlay {
 							if (this.skinPaintEditors[name]) {
 								const editor = this.skinPaintEditors[name];
 								if (!this.skinImageCanvases[name]) {
-									const editorCanvas = editor._contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
+									const editorCanvas = editor._find_canvas();
 									if (editorCanvas) {
 										previewCanvas = document.createElement("canvas");
 										previewCanvas.width = editorCanvas.width;
