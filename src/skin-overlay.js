@@ -60,7 +60,7 @@ class SkinOverlay {
 					// this is a element has a sprite
 					let sprite;
 					try {
-						sprite = JSON.parse(computedStyle.getPropertyValue("--sprite-info").trim().slice(1, -1).replace(/\\"/g, "\""));
+						sprite = parseJSON(computedStyle.getPropertyValue("--sprite-info").trim().slice(1, -1).replace(/\\"/g, "\""));
 					} catch (error) {
 						if (!window.showed_sprite_error) {
 							console.error("Could not parse sprite info", computedStyle.getPropertyValue("--sprite-info"), error);
@@ -356,6 +356,17 @@ function memoizeAsyncFunction(asyncFunc) {
 		return cache[args];
 	};
 }
+
+function memoizeFunction(func) {
+	let cache = {};
+	return function () {
+		let args = JSON.stringify(arguments);
+		cache[args] = cache[args] || func.apply(this, arguments);
+		return cache[args];
+	};
+}
+
+parseJSON = memoizeFunction(JSON.parse);
 
 loadImage = memoizeAsyncFunction(function loadImage(url) {
 	return new Promise((resolve, reject) => {
