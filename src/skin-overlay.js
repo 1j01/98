@@ -57,16 +57,18 @@ class SkinOverlay {
 				}
 				const computedStyle = getComputedStyle(el);
 				if (computedStyle.backgroundImage && computedStyle.backgroundImage !== "none" && computedStyle.getPropertyValue("--sprite-info")) {
-					// this is a element has a sprite
-					let sprite;
-					try {
-						sprite = parseJSON(computedStyle.getPropertyValue("--sprite-info").trim().slice(1, -1).replace(/\\"/g, "\""));
-					} catch (error) {
-						if (!window.showed_sprite_error) {
-							console.error("Could not parse sprite info", computedStyle.getPropertyValue("--sprite-info"), error);
-							window.showed_sprite_error = true;
+					let sprite = el._sprite;
+					if (!sprite) {
+						try {
+							sprite = JSON.parse(computedStyle.getPropertyValue("--sprite-info").trim().slice(1, -1).replace(/\\"/g, "\""));
+							el._sprite = sprite;
+						} catch (error) {
+							if (!window.showed_sprite_error) {
+								console.error("Could not parse sprite info", computedStyle.getPropertyValue("--sprite-info"), error);
+								window.showed_sprite_error = true;
+							}
+							return;
 						}
-						return;
 					}
 					// practically, this will probably have to be a single editor later (for perf and reasonable UI)
 					// but jspaint only supports a single image document at the moment
@@ -345,17 +347,6 @@ function memoizeAsyncFunction(asyncFunc) {
 		return cache[args];
 	};
 }
-
-function memoizeFunction(func) {
-	let cache = {};
-	return function () {
-		let args = JSON.stringify(arguments);
-		cache[args] = cache[args] || func.apply(this, arguments);
-		return cache[args];
-	};
-}
-
-parseJSON = memoizeFunction(JSON.parse);
 
 loadImage = memoizeAsyncFunction(function loadImage(url) {
 	return new Promise((resolve, reject) => {
