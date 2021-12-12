@@ -374,6 +374,9 @@ function Paint(file_path) {
 		};
 	});
 	const task = new Task($win);
+
+	// Add some secret methods just for the Winamp Skin Editor...
+
 	// task._on_image_change = (callback) => {
 	// 	waitUntil(() => contentWindow.jQuery, 500, () => {
 	// 		contentWindow.jQuery(contentWindow).on("session-update", () => {
@@ -381,6 +384,8 @@ function Paint(file_path) {
 	// 		});
 	// 	});
 	// };
+
+	// this is a little overkill, trying to anticipate the future
 	task._find_canvas = () => contentWindow.document.querySelector("#main-canvas, .main-canvas, #canvas-area canvas, .canvas-area canvas");
 	task._fix_blur_interruption = (callback) => {
 		waitUntil(() => contentWindow.jQuery, 500, () => {
@@ -390,10 +395,11 @@ function Paint(file_path) {
 			//         $G.triggerHandler("pointerup");
 			//     });
 			contentWindow.jQuery(contentWindow).off("blur"); 
-			// otherwise we can only draw dots not lines, because it gets a blur as you press the mouse button.
+			// otherwise we can only draw dots not lines*, because it gets a blur as you press the mouse button.
 			// I would change this in the Paint code, but I don't want to deal with merge conflicts,
 			// or losing patches when force updating.
 			// Hope this doesn't break anything.
+			// *in the webamp skin editor!
 		});
 	};
 	task._trigger_canvas_event = (event_name, original_event, canvas_position) => {
