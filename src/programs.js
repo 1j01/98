@@ -454,12 +454,6 @@ function Paint(file_path) {
 		// console.log("_get_cursor source:", canvas.style.cursor, "normalized:", cursor);
 		return cursor;
 	};
-	task._focus = () => {
-		contentWindow.focus();
-	};
-	task._on_keydown = (handler) => {
-		contentWindow.addEventListener("keydown", handler);
-	};
 
 	task._$window = $win;
 	return task;
@@ -1048,13 +1042,13 @@ function openWinamp(file_path) {
 				paint._$window.css("left", innerWidth * 2 / 3);
 				// Handle events for both when Paint or Webamp is focused.
 				// This can't be just a global event handler because Paint uses an iframe.
-				paint._on_keydown(handle_keydown);
+				paint._contentWindow.addEventListener("keydown", handle_keydown);
 				$webamp.on("keydown", handle_keydown);
 				function handle_keydown(event) {
 					if (event.key === " ") {
 						skinOverlay.setEditMode(!skinOverlay.editMode);
 						if (skinOverlay.editMode) {
-							paint._focus();
+							paint._contentWindow.focus();
 						} else {
 							winamp_interface.focus();
 						}

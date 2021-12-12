@@ -84,7 +84,7 @@ class SkinOverlay {
 						};
 						editor._trigger_canvas_event("pointerenter", e, getCanvasPos(e));
 						editor._trigger_canvas_event("pointerdown", e, getCanvasPos(e));
-						editor._focus();
+						editor._contentWindow.focus();
 						const onPointerMove = e => {
 							editor._trigger_canvas_event("pointermove", e, getCanvasPos(e));
 						};
