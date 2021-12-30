@@ -422,16 +422,16 @@ function Solitaire() {
 function showScreensaver(iframeSrc) {
 	const mouseDistanceToExit = 15;
 	const $iframe = $("<iframe>").attr("src", iframeSrc);
-	const $backing = $("<div>");
-	$backing.css({
+	const $surface = $("<div>"); // interact to close
+	$surface.css({
 		position: "fixed",
 		left: 0,
 		top: 0,
 		width: "100%",
 		height: "100%",
-		zIndex: $Window.Z_INDEX + 9998,
+		zIndex: $Window.Z_INDEX + 10000,
 		cursor: "none",
-		backgroundColor: "black",
+		touchAction: "none",
 	});
 	$iframe.css({
 		position: "fixed",
@@ -442,11 +442,12 @@ function showScreensaver(iframeSrc) {
 		zIndex: $Window.Z_INDEX + 9999,
 		border: 0,
 		pointerEvents: "none",
+		backgroundColor: "black",
 	});
-	$backing.appendTo("body");
+	$surface.appendTo("body");
 	$iframe.appendTo("body");
 	const cleanUp = () => {
-		$backing.remove();
+		$surface.remove();
 		$iframe.remove();
 		const prevent = (event) => {
 			event.preventDefault();
@@ -467,7 +468,7 @@ function showScreensaver(iframeSrc) {
 		}
 	};
 	let startMouseX, startMouseY;
-	$backing.on("mousemove pointermove", (event) => {
+	$surface.on("mousemove pointermove", (event) => {
 		if (startMouseX === undefined) {
 			startMouseX = event.pageX;
 			startMouseY = event.pageY;
@@ -476,7 +477,7 @@ function showScreensaver(iframeSrc) {
 			cleanUp();
 		}
 	});
-	$backing.on("mousedown pointerdown touchstart", (event) => {
+	$surface.on("mousedown pointerdown touchstart", (event) => {
 		event.preventDefault();
 		cleanUp();
 	});
