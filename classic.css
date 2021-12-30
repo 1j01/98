@@ -57,6 +57,7 @@
 .desktop-icon {
 	position: absolute;
 	outline: none;
+	-webkit-tap-highlight-color: rgba(0,0,0,0);
 }
 .folder-view:focus {
 	outline: none;

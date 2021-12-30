@@ -1,4 +1,12 @@
 
+let pointers_down = 0;
+$(window).on("pointerup", (event) => {
+	pointers_down--;
+});
+$(window).on("pointerdown", (event) => {
+	pointers_down++;
+});
+
 function FolderViewItem(options) {
 	// TODO: rename options to be consistent,
 	// like is_folder, is_shortcut, etc.
@@ -15,14 +23,53 @@ function FolderViewItem(options) {
 	// TODO: or if set to "web" mode, single click
 	// also Enter is currently implemented by triggering dblclick which is awkward
 	let single_click_timeout;
-	$container.on("dblclick", (event) => {
+	// $container.on("dblclick", (event) => {
+	// 	if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
+	// 		return; // Not true to Windows 98. But in Windows 98 it doesn't do two things, it just does the double click action.
+	// 		// At any rate, it feels nice to make Ctrl+click do only one thing (toggling the selection state).
+	// 	}
+	// 	options.open();
+	// 	clearTimeout(single_click_timeout);
+	// });
+	// dblclick doesn't work on iPad at least, using pointerdown instead
+	let last_pointerdown_time = -Infinity;
+	const double_click_ms = 500;
+	$container.css({
+		"touch-action": "none",
+	});
+	$container.on("touchstart", (event) => {
+		event.preventDefault(); // needed to get quick double-tap to work (at least on iPad)
+	});
+	$container.on("pointerdown", (event) => {
 		if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) {
 			return; // Not true to Windows 98. But in Windows 98 it doesn't do two things, it just does the double click action.
 			// At any rate, it feels nice to make Ctrl+click do only one thing (toggling the selection state).
 		}
-		options.open();
-		clearTimeout(single_click_timeout);
+		// // showMessageBox({
+		// // 	title: "Double click debug",
+		// // 	message: `
+		// $(".taskbar").text(`
+		// 		event.timeStamp: ${event.timeStamp}
+		// 		last_pointerdown_time: ${last_pointerdown_time}
+		// 		event.timeStamp - last_pointerdown_time: ${event.timeStamp - last_pointerdown_time}
+		// 		pointers_down: ${pointers_down}
+		// `).css({ fontFamily: "monospace", whiteSpace: "pre", height: "auto", backgroundColor: `hsl(${Math.random() * 360}, 100%, 50%)` });
+		// // 	`,
+		// // 	iconID: "info",
+		// // });
+		if (pointers_down > 1) {
+			last_pointerdown_time = -Infinity; // multi-touch not part of double-click
+			return;
+		}
+		if ((event.timeStamp - last_pointerdown_time) < double_click_ms) {
+			options.open();
+			clearTimeout(single_click_timeout);
+			last_pointerdown_time = -Infinity; // don't open again on third click
+			return;
+		}
+		last_pointerdown_time = event.timeStamp;
 	});
+
 	// TODO: allow dragging files out from this folder view to the system file browser, with dataTransfer.setData("DownloadURL", ...)
 	// sadly will only work for a single file (unless it secretly supports text/uri-list (either as a separate type or for DownloadURL))
 	// also it won't work if I want to do custom drag-and-drop (e.g. repositioning icons)
