@@ -23,6 +23,18 @@
 		<meta name="viewport" content="width=device-width, user-scalable=no">
 	</head>
 	<body>
+		<script>
+			window.onerror = function (msg, url, lineNo, columnNo, error) {
+				var string = msg.toLowerCase();
+				var substring = "script error";
+				if (string.indexOf(substring) > -1) {
+					alert('Script Error: See Browser Console for Detail');
+				} else {
+					alert('Internal application error: ' + msg + '\n\n' + 'URL: ' + url + '\n' + 'Line: ' + lineNo + '\n' + 'Column: ' + columnNo);
+				}
+				return false;
+			};
+		</script>
 		<script src="lib/jquery.min.js"></script>
 		<script src="lib/jquery-ui.js"></script>
 		<script src="lib/recorder.js"></script>
