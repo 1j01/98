@@ -250,8 +250,8 @@ function resetGame() {
             const { facingUp, el } = state.cards[i];
             state.deal.pile.cards.push(i);
 
-            el.onmousedown = captureMove(i);
-            el.onmouseup = releaseMove;
+            el.onpointerdown = captureMove(i);
+            el.onpointerup = releaseMove;
             el.onclick = handleClick(i);
 
             if (facingUp) {
@@ -334,7 +334,7 @@ function restartDeal() {
     }
 }
 
-function getMousePosition(event) {
+function getPointerPosition(event) {
     return {
         x: event.pageX,
         y: event.pageY
@@ -344,7 +344,7 @@ function getMousePosition(event) {
 const handleMove = event => {
     if (state.moving.capture) {
         const el = state.moving.element;
-        const { x, y } = getMousePosition(event);
+        const { x, y } = getPointerPosition(event);
 
         el.style.left = `${x - state.moving.offset.x}px`;
         el.style.top = `${y - state.moving.offset.y}px`;
@@ -353,7 +353,7 @@ const handleMove = event => {
 
 const startMovingPosition = event => {
     const el = state.moving.element;
-    const { x, y } = getMousePosition(event);
+    const { x, y } = getPointerPosition(event);
     const { top, left } = el.getBoundingClientRect();
     el.classList.add('card--moving');
 
@@ -445,7 +445,7 @@ const releaseMove = event => {
     clearTimeout(release);
     if (state.moving.capture) {
         release = setTimeout(() => {
-            const { x, y } = getMousePosition(event);
+            const { x, y } = getPointerPosition(event);
             requestAnimationFrame(() => {
                 dropCard(x, y);
 
@@ -720,8 +720,8 @@ function initSolitaire() {
     }
 
     dealPileEl.onclick = restartDeal;
-    window.onmousemove = handleMove;
-    window.onmouseup = releaseMove;
+    window.onpointermove = handleMove;
+    window.onpointerup = releaseMove;
 
     resetGame();
 }

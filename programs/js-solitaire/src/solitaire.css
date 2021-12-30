@@ -23,6 +23,10 @@ body,
     background-color: green;
     position: relative;
     overflow: hidden; /* important for win effect */
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 
     --card-width: 71px;
     --card-height: 96px;
