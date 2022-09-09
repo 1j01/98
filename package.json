@@ -32,7 +32,7 @@
 		"javascript"
 	],
 	"devDependencies": {
-		"browserfs": "^1.4.3",
+		"browserfs": "^2.0.0",
 		"butterchurn": "2.6.7",
 		"butterchurn-presets": "2.4.7",
 		"fs-extra": "8.1.0",
