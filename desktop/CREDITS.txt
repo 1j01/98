@@ -1,6 +1,19 @@
-Hello! Welcome to 98.js.org
+  ___   ___             Hello!  Welcome to                       
+ /   \ /   \       o    ____     __.  .___    ___.
+ `---| >---<       \   (       .'   \ /   \ .'   `
+     | '   `       |   `--.    |    | |   ' |    |
+ `---' `---' o /`  |  \___.' o  `._.' /      `---|
+               \___/`                        \___/                                         
 
-https://github.com/1j01/98
+98.js is a simulator (not an emulator) of Windows 98.
+It includes projects from several different people!
+This project exists to bring these fantastic clones
+together under one roof.
+
+You can find more information about the project here:
+	https://github.com/1j01/98#readme
+
+This file lists the included projects.
 
 --------------------------------------
 Apps
