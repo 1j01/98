@@ -68,9 +68,6 @@ BrowserFS
 jQuery
 	https://github.com/jquery/jquery
 
-Pointer Events Polyfill
-	https://github.com/jquery/PEP
-
 FileSaver.js
 	https://github.com/eligrey/FileSaver.js/
 
