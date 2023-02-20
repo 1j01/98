@@ -23,7 +23,7 @@
 			activate_window(tasks[0].$window);
 			if (!used_window_switcher) {
 				agent?.stopCurrent(); // needed to continue on from the message with `hold` set (speak(message, true))
-				agent?.speak("If there's only one window, Alt+` will switch to it right away.");
+				agent?.speak("If there's only one window, Alt+1 will switch to it right away.");
 				// used_window_switcher = true; // allow the switching message to be spoken later
 			}
 			return;
@@ -58,8 +58,8 @@
 		// console.log("Showing window switcher", $window_switcher[0]);
 		if (!used_window_switcher) {
 			agent?.stopCurrent(); // needed to continue on from the message with `hold` set (speak(message, true))
-			// Um, if you know about Alt+Tab, you can guess about how Alt+` works. But Clippy is supposed to be annoying, right?
-			agent?.speak("There you go! Press grave accent until you get to the window you want.");
+			// Um, if you know about Alt+Tab, you can guess about how Alt+1 works. But Clippy is supposed to be annoying, right?
+			agent?.speak("There you go! Press 1 until you get to the window you want.");
 			used_window_switcher = true;
 		}
 	}
@@ -98,14 +98,19 @@
 	var alt_held = false; // for detecting likely Alt+Tab
 	var notice_shown = false;
 	function handle_keydown(e) {
-		if (e.altKey && (e.key === "4" || e.key === "F4")) { // we can't actually intercept Alt+F4, but might as well try, right?
+		// We can't actually intercept Alt+F4, but might as well try, right?
+		// Alt+4 is a made-up alternative.
+		if (e.altKey && (e.key === "4" || e.key === "F4")) {
 			e.preventDefault();
 			const $window = e.target.closest(".os-window")?.$window;
 			console.log("Alt+4 detected, closing window", $window, e.target);
 			$window?.close();
 		}
 		// console.log(e.key, e.code);
-		if (e.altKey && (e.code === "Backquote" || e.code === "Tab")) {
+		// I picked Alt+` originally as an alternative to Alt+Tab, but on Ubuntu it switches between windows of the same app.
+		// Alt+1 is a more universal alternative, but it's not as obvious.
+		if (e.altKey && (e.key === "1" || e.code === "Backquote" || e.code === "Tab")) {
+			e.preventDefault();
 			show_window_switcher(e.shiftKey);
 		} else {
 			window_switcher_cancel();
@@ -173,7 +178,7 @@
 				clippy.load("Clippy", function (loaded_agent) {
 					agent = loaded_agent;
 					agent.show();
-					const message = "It looks like you're trying to switch windows.\n\nUse Alt+` (grave accent) instead of Alt+Tab within the 98.js desktop.\n\nAlso, use Alt+4 instead of Alt+F4 to close windows.";
+					const message = "It looks like you're trying to switch windows.\n\nUse Alt+1 instead of Alt+Tab within the 98.js desktop.\n\nAlso, use Alt+4 instead of Alt+F4 to close windows.";
 					agent.speak(message, true);
 					// held message causes double click to not animate Clippy, for some reason (even after message is cleared)
 					$(agent._el).one("dblclick", function () {
