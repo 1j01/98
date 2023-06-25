@@ -203,6 +203,9 @@ const placeCardTo = (dest, index, card) => {
 };
 
 function dealCards() {
+    // trigger removeAnimation after win
+    document.querySelector('canvas')?.click();
+
     let card = 0;
     for (let i = 0; i < 7; i++) {
         for (let j = i; j < 7; j++) {
