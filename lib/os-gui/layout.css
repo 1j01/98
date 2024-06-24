@@ -6,7 +6,6 @@
 	cursor: default;
 	-webkit-user-select: none;
 	   -moz-user-select: none;
-	    -ms-user-select: none;
 	        user-select: none;
 }
 
@@ -25,7 +24,6 @@
 	overflow: hidden; would make it harder to enable scrollbars (overflow: auto !important)
 	We want to allow scrollbars to be enabled easily (but not enable them),
 	and we want to clip to the border of the window, without contents overlapping the border at all. */
-	/* @FIXME: this breaks menu bar popup menus! (they get cut off, except for second level ones which are not descendents of the window; another reason to reimplement the menus!) */
     contain: layout paint;
 }
 
@@ -52,6 +50,11 @@ body > .window-titlebar {
 	display: none; /* prevent resizing when window is minimized */
 }
 
+.os-window.minimized-without-taskbar .menus {
+	display: none; /* hide menubar when window is minimized */
+}
+
+
 /* Fix dragging things (like windows) over iframes */
 .dragging iframe {
 	pointer-events: none;
@@ -60,6 +63,7 @@ body > .window-titlebar {
 .menus {
 	display: flex;
 	flex: 0 0 auto;
+	flex-wrap: wrap;
 }
 .menu-popup {
 	position: absolute;
@@ -68,14 +72,20 @@ body > .window-titlebar {
 .menu-popup-table {
 	border-collapse: collapse;
 }
+.menu-button,
 .menu-item {
 	white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+    /* text-overflow: ellipsis; might imply a dialog */
 }
 .menu-hr {
 	display: block !important;
 	height: 0;
 	width: auto;
 }
+/* @TODO: rename .access-key */
+/* @TODO: what are these !important flags about? */
 .menu-hotkey {
 	display: inline !important;
 }
