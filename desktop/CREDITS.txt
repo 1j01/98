@@ -13,6 +13,9 @@ together under one roof.
 You can find more information about the project here:
 	https://github.com/1j01/98#readme
 
+Join the Discord chat server:
+	https://discord.com/invite/SyFweYjTKx
+
 This file lists the included projects.
 
 --------------------------------------

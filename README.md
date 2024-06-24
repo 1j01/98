@@ -1,6 +1,9 @@
 
 # ![](images/icons/windows-update-32x32.png) [98.js](https://98.js.org)
 
+[![Discord](https://img.shields.io/discord/1141194608525713478)](https://discord.com/invite/SyFweYjTKx)
+[![GitHub Repo stars](https://img.shields.io/github/stars/1j01/98)](https://github.com/1j01/98/stargazers)
+
 A web based Windows 98 desktop remake.
 
 Includes:
