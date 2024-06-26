@@ -92,6 +92,7 @@ See [CONTRIBUTING](CONTRIBUTING.md)
 - Install [Node.js](https://nodejs.org/) if you don't already have it.
 - [Clone the repository.](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository)
 - Open up a terminal / command prompt in the project directory, and run `npm install` to install dependencies.
+- Install one global dependency: `npm i -g browserfs@2.0.0` (this will be simplified in the future; I'm using two different versions of BrowserFS for some reason)
 - Run `npm start` to start up a live-reloading development web server.
 
 When pulling changes from git, run `npm install` again in case there are any new or updated dependencies.
