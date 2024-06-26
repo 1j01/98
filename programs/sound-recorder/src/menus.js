@@ -2,44 +2,44 @@
 var menus = {
 	"&File": [
 		{
-			item: "&New",
+			label: "&New",
 			shortcut: "Ctrl+N",
 			action: file_new,
 			description: "Creates a new sound.",
 		},
 		{
-			item: "&Open",
+			label: "&Open",
 			shortcut: "Ctrl+O",
 			action: file_open,
 			description: "Opens an existing sound.",
 		},
 		{
-			item: "&Save",
+			label: "&Save",
 			shortcut: "Ctrl+S",
 			action: file_save,
 			description: "Saves the active sound.",
 		},
 		{
-			item: "Save &As",
+			label: "Save &As",
 			shortcut: "Ctrl+Shift+S",
 			action: file_save_as,
 			description: "Saves the active sound with a new name.",
 		},
 		{
-			item: "&Revert...",
+			label: "&Revert...",
 			enabled: can_revert_file,
 			action: file_revert,
 			description: "Reverts changes to the file.",
 		},
 		{
-			item: "&Properties",
+			label: "&Properties",
 			enabled: function () { },
 			action: function () { },
 			description: "Shows properties for this sound file.",
 		},
 		MENU_DIVIDER,
 		{
-			item: "E&xit",
+			label: "E&xit",
 			shortcut: "Alt+F4",
 			action: function () {
 				close();
@@ -50,7 +50,7 @@ var menus = {
 	"&Edit": [
 		/*
 		{
-			item: "&Undo",
+			label: "&Undo",
 			shortcut: "Ctrl+Z",
 			enabled: function(){
 				return undos.length >= 1;
@@ -59,7 +59,7 @@ var menus = {
 			description: "Undoes the last action.",
 		},
 		{
-			item: "&Repeat",
+			label: "&Repeat",
 			shortcut: "F4",
 			enabled: function(){
 				return redos.length >= 1;
@@ -69,7 +69,7 @@ var menus = {
 		},
 		MENU_DIVIDER,*/
 		{
-			item: "&Copy",
+			label: "&Copy",
 			shortcut: "Ctrl+C",
 			enabled: function () {
 				return (typeof chrome !== "undefined") && chrome.permissions;
@@ -80,7 +80,7 @@ var menus = {
 			description: "Copies something to the Clipboard",
 		},
 		{
-			item: "&Paste Insert",
+			label: "&Paste Insert",
 			shortcut: "Ctrl+V",
 			enabled: function () {
 				return (typeof chrome !== "undefined") && chrome.permissions;
@@ -91,7 +91,7 @@ var menus = {
 			description: "Inserts the contents of the Clipboard into the sound.",
 		},
 		{
-			item: "Paste Mi&x",
+			label: "Paste Mi&x",
 			enabled: function () {
 				return (typeof chrome !== "undefined") && chrome.permissions;
 			},
@@ -102,72 +102,72 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "&Insert File...",
+			label: "&Insert File...",
 			action: function () { },
 			description: "Inserts a file into the sound.",
 		},
 		{
-			item: "&Mix with File",
+			label: "&Mix with File",
 			action: function () { },
 			description: "Mixes a file into the sound.",
 		},
 		MENU_DIVIDER,
 		{
-			item: "Delete &Before Current Position",
+			label: "Delete &Before Current Position",
 			enabled: can_delete_before_current_position,
 			action: delete_before_current_position,
 			description: "Deletes all audio before the current position.",
 		},
 		{
-			item: "Delete &After Current Position",
+			label: "Delete &After Current Position",
 			enabled: can_delete_after_current_position,
 			action: delete_after_current_position,
 			description: "Deletes all audio after the current position.",
 		},
 		MENU_DIVIDER,
 		{
-			item: "A&udio Properties",
+			label: "A&udio Properties",
 			action: function () { },
 			description: "Changes microphone and speaker settings.",
 		},
 	],
 	"Effect&s": [
 		{
-			item: "&Increase Volume (by 25%)",
+			label: "&Increase Volume (by 25%)",
 			action: effects_increase_volume,
 			description: "Increases the volume of the sound by 25%.",
 		},
 		{
-			item: "&Decrease Volume",
+			label: "&Decrease Volume",
 			action: effects_decrease_volume,
 			description: "Decreases the volume of the sound (by 25%?)",
 		},
 		MENU_DIVIDER,
 		{
-			item: "I&ncrease Speed (by 100%)",
+			label: "I&ncrease Speed (by 100%)",
 			action: effects_increase_speed,
 			description: "Makes the sound all squeaky and fast.",
 		},
 		{
-			item: "D&ecrease Speed",
+			label: "D&ecrease Speed",
 			action: effects_decrease_speed,
 			description: "Makes your voice sound really deep and slow.",
 		},
 		MENU_DIVIDER,
 		{
-			item: "&Add echo",
+			label: "&Add echo",
 			action: effects_add_echo,
 			description: "Adds an echo to the sound.",
 		},
 		{
-			item: "&Reverse",
+			label: "&Reverse",
 			action: effects_reverse,
 			description: "Reverses the sound.",
 		},
 	],
 	"&Help": [
 		{
-			item: "&Help Topics",
+			label: "&Help Topics",
 			action: function () {
 				var show_help = window.show_help;
 				try {
@@ -186,7 +186,7 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "&About Sound Recorder",
+			label: "&About Sound Recorder",
 			action: function () {
 				window.open("https://github.com/1j01/98/tree/master/programs/sound-recorder");
 			},

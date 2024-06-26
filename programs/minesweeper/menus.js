@@ -39,7 +39,7 @@ var checkbox_for_difficulty = function(index){
 var menus = {
 	"&Game": [
 		{
-			item: "&New",
+			label: "&New",
 			// shortcut: "F2", // TODO
 			action: function(){
 				minesweeper_.restart();
@@ -47,19 +47,19 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "&Beginner",
+			label: "&Beginner",
 			checkbox: checkbox_for_difficulty(0),
 		},
 		{
-			item: "&Intermediate",
+			label: "&Intermediate",
 			checkbox: checkbox_for_difficulty(1),
 		},
 		{
-			item: "&Expert",
+			label: "&Expert",
 			checkbox: checkbox_for_difficulty(2),
 		},
 		{
-			item: "&Custom...",
+			label: "&Custom...",
 			enabled: false,
 			checkbox: {
 				check: function(){
@@ -75,7 +75,7 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "&Marks (?)",
+			label: "&Marks (?)",
 			enabled: false,
 			checkbox: {
 				check: function(){
@@ -88,7 +88,7 @@ var menus = {
 			}
 		},
 		{
-			item: "Co&lor",
+			label: "Co&lor",
 			enabled: false,
 			checkbox: {
 				check: function(){
@@ -102,7 +102,7 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "Best &Times...",
+			label: "Best &Times...",
 			enabled: false,
 			action: function(){
 				// TODO
@@ -110,7 +110,7 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "E&xit",
+			label: "E&xit",
 			action: function(){
 				close();
 			},
@@ -118,7 +118,7 @@ var menus = {
 	],
 	"&Help": [
 		{
-			item: "&Help Topics",
+			label: "&Help Topics",
 			action: function(){
 				var show_help = window.show_help;
 				try {
@@ -136,7 +136,7 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "&About Minesweeper",
+			label: "&About Minesweeper",
 			action: function(){
 				// TODO: about dialog
 				window.open("https://github.com/ziebelje/minesweeper");

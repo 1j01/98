@@ -16,7 +16,7 @@ var checkbox_for_view_mode = function (view_mode) {
 var menus = {
 	"&Edit": [
 		{
-			item: "&Copy",
+			label: "&Copy",
 			shortcut: "Ctrl+C",
 			enabled: () => {
 				return !!navigator.clipboard.writeText;
@@ -27,7 +27,7 @@ var menus = {
 			},
 		},
 		{
-			item: "&Paste",
+			label: "&Paste",
 			shortcut: "Ctrl+V",
 			enabled: () => {
 				return !!navigator.clipboard.readText;
@@ -40,19 +40,19 @@ var menus = {
 	],
 	"&View": [
 		{
-			item: "S&tandard",
+			label: "S&tandard",
 			checkbox: checkbox_for_view_mode("standard"),
 			enabled: false,
 		},
 		{
-			item: "&Scientific",
+			label: "&Scientific",
 			checkbox: checkbox_for_view_mode("scientific"),
 			enabled: false,
 		},
 	],
 	"&Help": [
 		{
-			item: "&Help Topics",
+			label: "&Help Topics",
 			action: function () {
 				var show_help = window.show_help;
 				try {
@@ -70,7 +70,7 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "&About Calculator",
+			label: "&About Calculator",
 			action: function () {
 				// TODO: about dialog
 				window.open("https://github.com/muzam1l/mcalculator");

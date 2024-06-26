@@ -4,32 +4,32 @@ var menus = {
 		// NOTE: Notepad in Windows 98 doesn't actually have shortcuts for anything in the File menu
 		// also, it leaves off periods from the end of the descriptions
 		{
-			item: "&New",
+			label: "&New",
 			shortcut: "Ctrl+N",
 			action: file_new,
 			description: "Creates a new document.",
 		},
 		{
-			item: "&Open...",
+			label: "&Open...",
 			shortcut: "Ctrl+O",
 			action: file_open,
 			description: "Opens an existing document.",
 		},
 		{
-			item: "&Save",
+			label: "&Save",
 			shortcut: "Ctrl+S",
 			action: file_save,
 			description: "Saves the active document.",
 		},
 		{
-			item: "Save &As...",
+			label: "Save &As...",
 			shortcut: "Ctrl+Shift+S",
 			action: file_save_as,
 			description: "Saves the active document with a new name.",
 		},
 		MENU_DIVIDER,
 		// {
-		// 	item: "Print Pre&view",
+		// 	label: "Print Pre&view",
 		// 	action: function(){
 		// 		print();
 		// 	},
@@ -37,7 +37,7 @@ var menus = {
 		// 	//description: "Displays full pages.",
 		// },
 		{
-			item: "Page Se&tup...",
+			label: "Page Se&tup...",
 			action: function () {
 				print();
 			},
@@ -45,7 +45,7 @@ var menus = {
 			//description: "Changes the page layout.",
 		},
 		{
-			item: "&Print...",
+			label: "&Print...",
 			shortcut: "Ctrl+P",
 			action: function () {
 				print();
@@ -54,13 +54,13 @@ var menus = {
 		},
 		// MENU_DIVIDER,
 		// {
-		// 	item: "Recent File",
+		// 	label: "Recent File",
 		// 	enabled: false,
 		// 	description: "Opens this document.",
 		// },
 		MENU_DIVIDER,
 		{
-			item: "E&xit",
+			label: "E&xit",
 			// shortcut: "Alt+F4",
 			action: function () {
 				close();
@@ -70,7 +70,7 @@ var menus = {
 	],
 	"&Edit": [
 		{
-			item: "&Undo",
+			label: "&Undo",
 			shortcut: "Ctrl+Z",
 			enabled: function () {
 				return document.queryCommandEnabled("undo");
@@ -82,7 +82,7 @@ var menus = {
 		},
 		// NOTE: Notepad in Windows 98 doesn't actually have a separate Repeat/Redo
 		{
-			item: "&Repeat",
+			label: "&Repeat",
 			shortcut: "Ctrl+Shift+Z", //"F4",
 			enabled: function () {
 				return document.queryCommandEnabled("redo");
@@ -97,7 +97,7 @@ var menus = {
 		// I probably need to change how menu item enabledness querying works,
 		// make it so it queries the enabled status of all items before switching focus to the menus.
 		{
-			item: "Cu&t",
+			label: "Cu&t",
 			shortcut: "Ctrl+X",
 			enabled: function () {
 				return document.queryCommandEnabled("cut");
@@ -109,7 +109,7 @@ var menus = {
 			description: "Cuts the selection and puts it on the Clipboard.",
 		},
 		{
-			item: "&Copy",
+			label: "&Copy",
 			shortcut: "Ctrl+C",
 			enabled: function () {
 				return document.queryCommandEnabled("copy");
@@ -121,7 +121,7 @@ var menus = {
 			description: "Copies the selected text to the Clipboard.",
 		},
 		{
-			item: "&Paste",
+			label: "&Paste",
 			shortcut: "Ctrl+V",
 			enabled: function () {
 				return document.queryCommandEnabled("paste");
@@ -133,7 +133,7 @@ var menus = {
 			description: "Inserts the contents of the Clipboard.",
 		},
 		{
-			item: "De&lete",
+			label: "De&lete",
 			shortcut: "Del",
 			enabled: function () {
 				var textarea = $textarea.get(0);
@@ -161,14 +161,14 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "Select &All",
+			label: "Select &All",
 			// NOTE: Notepad in Windows 98 doesn't actually have Ctrl+A as a shortcut
 			shortcut: "Ctrl+A",
 			action: select_all,
 			description: "Selects the entire document.",
 		},
 		{
-			item: "Time/&Date",
+			label: "Time/&Date",
 			shortcut: "F5",
 			enabled: function () {
 				return document.queryCommandEnabled("insertText");
@@ -178,7 +178,7 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "&Word Wrap",
+			label: "&Word Wrap",
 			checkbox: {
 				toggle: toggle_word_wrap,
 				check: is_word_wrap_enabled,
@@ -186,7 +186,7 @@ var menus = {
 			description: "Makes overflowing lines either wrap or scroll.", // NOTE: made up text
 		},
 		{
-			item: "Set &Font...",
+			label: "Set &Font...",
 			action: function () { }, // TODO: font options dialog
 			enabled: false,
 			description: "Sets the font and text size.", // NOTE: made up text
@@ -194,7 +194,7 @@ var menus = {
 	],
 	"&Search": [
 		{
-			item: "&Find...",
+			label: "&Find...",
 			// NOTE: Notepad in Windows 98 doesn't actually have Ctrl+F as a shortcut (although WordPad does)
 			shortcut: "Ctrl+F",
 			action: function () { }, // TODO
@@ -202,7 +202,7 @@ var menus = {
 			description: "Finds the specified text.",
 		},
 		{
-			item: "Find &Next",
+			label: "Find &Next",
 			shortcut: "F3",
 			action: function () { }, // TODO
 			enabled: false,
@@ -210,14 +210,14 @@ var menus = {
 		},
 		// NOTE: Notepad in Windows 98 doesn't have Replace or Go to... options
 		// {
-		// 	item: "&Replace",
+		// 	label: "&Replace",
 		// 	shortcut: "Ctrl+H",
 		// 	action: function(){},
 		// 	enabled: false,
 		// 	description: "Replaces specific text with different text.",
 		// },
 		// {
-		// 	item: "&Go to",
+		// 	label: "&Go to",
 		// 	shortcut: "Ctrl+G",
 		// 	action: function(){},
 		// 	enabled: false,
@@ -226,7 +226,7 @@ var menus = {
 	],
 	"&Help": [
 		{
-			item: "&Help Topics",
+			label: "&Help Topics",
 			action: function () {
 				var show_help = window.show_help;
 				try {
@@ -248,7 +248,7 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "&About Notepad",
+			label: "&About Notepad",
 			action: function () {
 				// TODO: dialog
 				window.open("https://github.com/1j01/98/tree/master/programs/notepad");

@@ -23,7 +23,7 @@ var checkbox_for_sort_mode = function (menu_item_sort_mode) {
 var views_dropdown_menu_items = [
 	// @TODO: make this option unavailable for the Desktop folder
 	{
-		item: "as &Web Page",
+		label: "as &Web Page",
 		checkbox: {
 			check: ()=> folder_view ? folder_view.config.view_as_web_page : true,
 			toggle: () => {
@@ -35,37 +35,37 @@ var views_dropdown_menu_items = [
 	},
 	MENU_DIVIDER,
 	// {
-	// 	item: "As Desktop (Debug)",
+	// 	label: "As Desktop (Debug)",
 	// 	checkbox: checkbox_for_view_mode("DESKTOP"),
 	// 	enabled: ()=> !!folder_view,
 	// },
 	// Thumbnails option can be enabled in folder Properties window.
 	// {
-	// 	item: "T&humbnails",
+	// 	label: "T&humbnails",
 	// 	checkbox: checkbox_for_view_mode("THUMBNAIL"),
 	// 	enabled: () => !!folder_view,
 	// 	description: "Displays items using thumbnail view.",
 	// },
 	{
-		item: "Lar&ge Icons",
+		label: "Lar&ge Icons",
 		checkbox: checkbox_for_view_mode("LARGE_ICONS"),
 		enabled: () => !!folder_view,
 		description: "Displays items by using large icons.",
 	},
 	{
-		item: "S&mall Icons",
+		label: "S&mall Icons",
 		checkbox: checkbox_for_view_mode("SMALL_ICONS"),
 		enabled: () => !!folder_view,
 		description: "Displays items by using small icons.",
 	},
 	{
-		item: "&List",
+		label: "&List",
 		checkbox: checkbox_for_view_mode("LIST"),
 		enabled: () => !!folder_view,
 		description: "Displays items in a list.",
 	},
 	{
-		item: "&Details",
+		label: "&Details",
 		checkbox: checkbox_for_view_mode("DETAILS"),
 		// enabled: ()=> !!folder_view,
 		enabled: false, // @TODO
@@ -79,73 +79,73 @@ var menus = {
 		// and in general treat them more like menus and submenus
 		// description: "Contains commands for working with the selected items.",
 		{
-			item: "&New",
+			label: "&New",
 			submenu: [
 				// @TODO: icons for these items
 				{
-					item: "&Folder",
+					label: "&Folder",
 					enabled: false, // @TODO
 				},
 				{
-					item: "&Shortcut",
+					label: "&Shortcut",
 					enabled: false, // @TODO
 				},
 				MENU_DIVIDER,
 				{
-					item: "Text Document",
+					label: "Text Document",
 					enabled: false, // @TODO
 				},
 				{
-					item: "WordPad Document",
+					label: "WordPad Document",
 					enabled: false, // @TODO
 				},
 				{
-					item: "Bitmap Image",
+					label: "Bitmap Image",
 					enabled: false, // @TODO
 				},
 				{
-					item: "Wave Sound",
+					label: "Wave Sound",
 					enabled: false, // @TODO
 				},
 				{
-					item: "Microsoft Data Link",
+					label: "Microsoft Data Link",
 					enabled: false, // @TODO
 				},
 			],
 		},
 		MENU_DIVIDER,
 		{
-			item: "Create &Shortcut",
+			label: "Create &Shortcut",
 			enabled: false, // @TODO
 			description: "Creates shortcuts to the selected items.",
 		},
 		{
-			item: "&Delete",
+			label: "&Delete",
 			action: () => {
 				folder_view.delete_selected();
 			},
 			description: "Deletes the selected items.",
 		},
 		{
-			item: "Rena&me",
+			label: "Rena&me",
 			action: () => {
 				folder_view.start_rename();
 			},
 			description: "Renames the selected item.",
 		},
 		{
-			item: "P&roperties",
+			label: "P&roperties",
 			enabled: false, // @TODO
 			description: "Displays the properties of the selected items.",
 		},
 		// @TODO: show history entries, oldest first
 		// MENU_DIVIDER,
 		// {
-		// 	item: "(name of location)",
+		// 	label: "(name of location)",
 		// },
 		MENU_DIVIDER,
 		{
-			item: "&Work Offline",
+			label: "&Work Offline",
 			checkbox: {
 				check: () => offline_mode,
 				toggle: () => {
@@ -155,7 +155,7 @@ var menus = {
 			description: "Shows Web pages without downloading them.",
 		},
 		{
-			item: "&Close",
+			label: "&Close",
 			action: function () {
 				close();
 			},
@@ -165,37 +165,37 @@ var menus = {
 	"&Edit": [
 		// description: "Contains edit commands.",
 		{
-			item: "&Undo", // @TODO: specific name per action too
+			label: "&Undo", // @TODO: specific name per action too
 			enabled: false, // @TODO
 			// description: e.g. "Undo Rename of 'whatever.gif' to 'whatever.txt'",
 		},
 		MENU_DIVIDER,
 		{
-			item: "Cu&t",
+			label: "Cu&t",
 			shortcut: "Ctrl+X",
 			enabled: false, // @TODO
 			description: "Removes the selected items and copies them onto the Clipboard.",
 		},
 		{
-			item: "&Copy",
+			label: "&Copy",
 			shortcut: "Ctrl+C",
 			enabled: false, // @TODO
 			description: "Copies the selected items to the Clipboard. To put them in the new location, use the Paste command.",
 		},
 		{
-			item: "&Paste",
+			label: "&Paste",
 			shortcut: "Ctrl+V",
 			enabled: false, // @TODO
 			description: "Inserts the items you have copied or cut into the selected location.",
 		},
 		{
-			item: "Paste &Shortcut",
+			label: "Paste &Shortcut",
 			enabled: false, // @TODO
 			description: "Creates shortcuts to the items you have copied or cut into the selected location.",
 		},
 		MENU_DIVIDER,
 		{
-			item: "Select &All",
+			label: "Select &All",
 			shortcut: "Ctrl+A",
 			action: function () {
 				folder_view.select_all();
@@ -204,7 +204,7 @@ var menus = {
 			description: "Selects all items in window.",
 		},
 		{
-			item: "&Invert Selection",
+			label: "&Invert Selection",
 			action: function () {
 				folder_view.select_inverse();
 				folder_view.focus();
@@ -215,10 +215,10 @@ var menus = {
 	"&View": [
 		// description: "Contains commands for manipulating the view.",
 		{
-			item: "&Toolbars",
+			label: "&Toolbars",
 			submenu: [
 				{
-					item: "&Standard Buttons",
+					label: "&Standard Buttons",
 					checkbox: {
 						check: ()=> $("#standard-buttons-toolbar").is(":visible"),
 						toggle: ()=> $("#standard-buttons-toolbar").toggle(),
@@ -226,7 +226,7 @@ var menus = {
 					description: "Displays the Standard Buttons toolbar.",
 				},
 				{
-					item: "&Address Bar",
+					label: "&Address Bar",
 					checkbox: {
 						check: ()=> $("#address-bar-toolbar").is(":visible"),
 						toggle: ()=> $("#address-bar-toolbar").toggle(),
@@ -234,7 +234,7 @@ var menus = {
 					description: "Displays the Address bar.",
 				},
 				{
-					item: "&Links",
+					label: "&Links",
 					checkbox: {
 						check: ()=> false,
 						toggle: ()=> {}, // @TODO
@@ -243,7 +243,7 @@ var menus = {
 					description: "Displays the Quick Links bar.",
 				},
 				{
-					item: "&Radio",
+					label: "&Radio",
 					checkbox: {
 						check: ()=> false,
 						toggle: ()=> {}, // @TODO
@@ -252,7 +252,7 @@ var menus = {
 				},
 				MENU_DIVIDER,
 				{
-					item: "&Text Labels",
+					label: "&Text Labels",
 					checkbox: {
 						check: ()=> !$("body").hasClass("hiding-label-text"),
 						toggle: () => {
@@ -265,7 +265,7 @@ var menus = {
 			description: "Shows or hides toolbars.",
 		},
 		{
-			item: "Status &Bar",
+			label: "Status &Bar",
 			checkbox: {
 				check: ()=> $("#status-bar").is(":visible"),
 				toggle: () => {
@@ -275,10 +275,10 @@ var menus = {
 			description: "Shows or hides the status bar.",
 		},
 		{
-			item: "&Explorer Bar",
+			label: "&Explorer Bar",
 			submenu: [
 				{
-					item: "&Search",
+					label: "&Search",
 					shortcut: "Ctrl+E",
 					checkbox: {
 						check: ()=> false,
@@ -288,7 +288,7 @@ var menus = {
 					description: "Shows the Search bar.",
 				},
 				{
-					item: "&Favorites",
+					label: "&Favorites",
 					shortcut: "Ctrl+I",
 					checkbox: {
 						check: ()=> false,
@@ -298,7 +298,7 @@ var menus = {
 					description: "Shows the Favorites bar.",
 				},
 				{
-					item: "&History",
+					label: "&History",
 					shortcut: "Ctrl+H",
 					checkbox: {
 						check: ()=> false,
@@ -308,7 +308,7 @@ var menus = {
 					description: "Shows the History bar.",
 				},
 				{
-					item: "F&olders",
+					label: "F&olders",
 					checkbox: {
 						check: ()=> false,
 						toggle: ()=> {}, // @TODO
@@ -318,7 +318,7 @@ var menus = {
 				},
 				MENU_DIVIDER,
 				{
-					item: "&Tip of the Day",
+					label: "&Tip of the Day",
 					checkbox: {
 						check: ()=> false,
 						toggle: ()=> {}, // @TODO
@@ -332,13 +332,13 @@ var menus = {
 		...views_dropdown_menu_items,
 		// MENU_DIVIDER,
 		// {
-		// 	item: "&Customize this Folder...",
+		// 	label: "&Customize this Folder...",
 		// 	enabled: ()=> folder_view &&...?
 		// 	description: "Customizes the view of this folder.",
 		// },
 		MENU_DIVIDER,
 		{
-			item: "Arrange &Icons",
+			label: "Arrange &Icons",
 			submenu: [
 				// @TODO: dynamic based on attributes available for the type of item
 				// Name & Description for Control Panel items
@@ -346,28 +346,28 @@ var menus = {
 				// etc.
 				// These apparently are not checkboxes, by the way.
 				{
-					item: "by &Name",
+					label: "by &Name",
 					checkbox: checkbox_for_sort_mode("NAME"),
 					description: "Sorts items alphabetically by name.",
 				},
 				{
-					item: "by &Type",
+					label: "by &Type",
 					checkbox: checkbox_for_sort_mode("TYPE"),
 					description: "Sorts items by type.",
 				},
 				{
-					item: "by &Size",
+					label: "by &Size",
 					checkbox: checkbox_for_sort_mode("SIZE"),
 					description: "Sorts items by size, from smallest to largest.",
 				},
 				{
-					item: "by &Date",
+					label: "by &Date",
 					checkbox: checkbox_for_sort_mode("DATE"),
 					description: "Sorts items by date, from oldest to most recent.",
 				},
 				MENU_DIVIDER,
 				{
-					item: "&Auto Arrange",
+					label: "&Auto Arrange",
 					checkbox: {
 						check: ()=> true,
 						toggle: ()=> {}, // @TODO
@@ -379,13 +379,13 @@ var menus = {
 			description: "Contains commands for arranging items in the window.",
 		},
 		{
-			item: "Line &Up Icons",
+			label: "Line &Up Icons",
 			enabled: false, // @TODO
 			description: "Arranges icons in a grid.",
 		},
 		MENU_DIVIDER,
 		{
-			item: "&Refresh",
+			label: "&Refresh",
 			shortcut: "F5",
 			action: () => {
 				refresh();
@@ -393,7 +393,7 @@ var menus = {
 			description: "Refreshes the contents of the current pane.",
 		},
 		{
-			item: "Folder &Options...",
+			label: "Folder &Options...",
 			enabled: false, // @TODO
 			description: "Enables you to change settings.",
 		},
@@ -401,7 +401,7 @@ var menus = {
 	"&Go": [
 		// description: "Contains commands for browsing to various pages.",
 		{
-			item: "&Back",
+			label: "&Back",
 			shortcut: "Alt+Left Arrow",
 			action: () => {
 				go_back();
@@ -410,7 +410,7 @@ var menus = {
 			description: "Goes to the previous page.",
 		},
 		{
-			item: "&Forward",
+			label: "&Forward",
 			shortcut: "Alt+Right Arrow",
 			action: () => {
 				go_forward();
@@ -419,7 +419,7 @@ var menus = {
 			description: "Goes to the next page.",
 		},
 		{
-			item: "&Up One Level",
+			label: "&Up One Level",
 			// shortcut: "Alt+Up Arrow",
 			action: () => {
 				go_up();
@@ -429,7 +429,7 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "&Home Page",
+			label: "&Home Page",
 			shortcut: "Alt+Home",
 			action: () => {
 				go_home();
@@ -437,7 +437,7 @@ var menus = {
 			description: "Goes to your home page.",
 		},
 		{
-			item: "Channel &Guide",
+			label: "Channel &Guide",
 			action: () => {
 				// http://interdimensionalcable.io/ doesn't work because of HTTP vs HTTPS (Mixed Content)
 				go_to("https://topotech.github.io/interdimensionalcable/");
@@ -445,7 +445,7 @@ var menus = {
 			description: "Opens the Channel Guide Web page.",
 		},
 		{
-			item: "&Search the Web",
+			label: "&Search the Web",
 			action: () => {
 				// Can you find a search engine that supports iframes?
 				// This is a fun alternative, although it'd be nicer if it was thematic (i.e. retro)
@@ -454,7 +454,7 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "My &Computer",
+			label: "My &Computer",
 			action: () => {
 				// @TODO: a real My Computer location
 				go_to("/");
@@ -462,7 +462,7 @@ var menus = {
 			description: "Opens My Computer.",
 		},
 		{
-			item: "&Internet Call",
+			label: "&Internet Call",
 			action: () => {
 				// @TODO: host a configured version in order to theme it,
 				// maybe allow sharing individual windows on the 98.js desktop?
@@ -475,12 +475,12 @@ var menus = {
 	"F&avorites": [
 		// description: "Displays the contents of your Favorites folder.",
 		{
-			item: "&Add to Favorites...",
+			label: "&Add to Favorites...",
 			enabled: false, // @TODO
 			description: "Adds the current page to your Favorites list.",
 		},
 		{
-			item: "&Organize Favorites...",
+			label: "&Organize Favorites...",
 			enabled: false, // @TODO
 			description: "Opens the Favorites folder.",
 		},
@@ -488,7 +488,7 @@ var menus = {
 		// @TODO: populate with favorites
 		// description and tooltip should be the URL of the item
 		{
-			item: "(Empty)",
+			label: "(Empty)",
 			enabled: false,
 		},
 	],
@@ -499,35 +499,35 @@ var menus = {
 		// This is currently the Exploring version.
 		// description: "Contains tools commands.",
 		{
-			item: "&Find",
+			label: "&Find",
 			submenu: [
 				{
-					item: "&Files or Folders...",
+					label: "&Files or Folders...",
 					enabled: false, // @TODO
 				},
 				{
-					item: "&Computer...",
+					label: "&Computer...",
 					enabled: false, // @TODO
 				},
 				{
-					item: "On the &Internet...",
+					label: "On the &Internet...",
 					enabled: false, // @TODO
 				},
 			],
 		},
 		MENU_DIVIDER,
 		{
-			item: "Map &Network Drive...",
+			label: "Map &Network Drive...",
 			enabled: false, // @TODO: could use BrowserFS Dropbox adapter
 			description: "Connects to a network drive.",
 		},
 		{
-			item: "&Disconnect Network Drive...",
+			label: "&Disconnect Network Drive...",
 			enabled: false, // @TODO
 			description: "Disconnects from a network drive.",
 		},
 		{
-			item: "&Synchronize...",
+			label: "&Synchronize...",
 			enabled: false, // @TODO
 			description: "Updates all offline content.",
 		},
@@ -535,14 +535,14 @@ var menus = {
 	"&Help": [
 		// description: "Contains commands for displaying Help.",
 		{
-			item: "&Help Topics",
+			label: "&Help Topics",
 			enabled: false, // @TODO
 			description: "Opens Help.",
 		},
 		MENU_DIVIDER,
 		{
-			// item: "&About Windows 98",
-			item: "&About 98.js.org",
+			// label: "&About Windows 98",
+			label: "&About 98.js.org",
 			action: function () {
 				// TODO: about dialog
 				window.open("https://github.com/1j01/98#readme");

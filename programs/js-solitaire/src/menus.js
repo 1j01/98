@@ -1,28 +1,28 @@
 var menus = {
 	"&Game": [
 		{
-			item: "&Deal",
+			label: "&Deal",
 			shortcut: "F2",
 			action: ()=> { resetGame(); },
 			description: "Deal a new game",
 		},
 		// Don't want to imply you can undo by showing this option
 		// {
-		// 	item: "&Undo",
+		// 	label: "&Undo",
 		// 	shortcut: "",
 		// 	enabled: false,
 		// 	action: ()=> { undo(); },
 		// 	description: "Undo last action",
 		// },
 		{
-			item: "De&ck...",
+			label: "De&ck...",
 			shortcut: "",
 			enabled: false,
 			action: ()=> {},
 			description: "Choose new deck back",
 		},
 		{
-			item: "&Options...",
+			label: "&Options...",
 			shortcut: "",
 			enabled: false,
 			action: ()=> {},
@@ -30,7 +30,7 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "E&xit",
+			label: "E&xit",
 			shortcut: "",
 			action: ()=> {
 				close();
@@ -40,7 +40,7 @@ var menus = {
 	],
 	"&Help": [
 		// {
-		// 	item: "&Help Topics",
+		// 	label: "&Help Topics",
 		// 	action: ()=> {
 		// 		var show_help = window.show_help;
 		// 		try {
@@ -59,26 +59,26 @@ var menus = {
 		// },
 		// or more detailedly:
 		// {
-		// 	item: "&Contents",
+		// 	label: "&Contents",
 		// 	enabled: false,
 		// 	action: ()=> {},
 		// 	description: "Index of Solitaire help topics"
 		// },
 		// {
-		// 	item: "&Search for Help on...",
+		// 	label: "&Search for Help on...",
 		// 	enabled: false,
 		// 	action: ()=> {},
 		// 	description: "Search the Help Engine for a specific topic"
 		// },
 		// {
-		// 	item: "&How to Use Help",
+		// 	label: "&How to Use Help",
 		// 	enabled: false,
 		// 	action: ()=> {},
 		// 	description: "Help using help"
 		// },
 		// MENU_DIVIDER,
 		{
-			item: "&About Solitaire...",
+			label: "&About Solitaire...",
 			action: ()=> {
 				window.open("https://github.com/1j01/98/tree/master/programs/js-solitaire");
 			},

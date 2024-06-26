@@ -234,14 +234,14 @@ async function handle_menu_item(top_level_menu_index, item_index, submenu_item_i
 var menus = {
 	"&Game": [
 		{
-			item: "&New Game",
+			label: "&New Game",
 			shortcut: "F2",
 			action: function () {
 				handle_menu_item(0, 0);
 			},
 		},
 		{
-			item: "&Launch Ball",
+			label: "&Launch Ball",
 			action: function () {
 				handle_menu_item(0, 1);
 				// @FIXME: this menu item can be disabled if the game is not started yet
@@ -252,7 +252,7 @@ var menus = {
 			},
 		},
 		{
-			item: "&Pause/Resume Game",
+			label: "&Pause/Resume Game",
 			shortcut: "F3",
 			action: function () {
 				handle_menu_item(0, 2);
@@ -260,7 +260,7 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "&High Scores...",
+			label: "&High Scores...",
 			action: function () {
 				// handle_menu_item(0, 3);
 				// @TODO: custom window
@@ -268,13 +268,13 @@ var menus = {
 			enabled: false,
 		},
 		{
-			item: "&Demo",
+			label: "&Demo",
 			action: function () {
 				handle_menu_item(0, 4);
 			},
 		},
 		{
-			item: "E&xit",
+			label: "E&xit",
 			action: function () {
 				window.close();
 			},
@@ -282,17 +282,17 @@ var menus = {
 	],
 	"&Options": [
 		{
-			item: "&Full Screen",
+			label: "&Full Screen",
 			shortcut: "F4",
 			action: function () {
 				toggle_fullscreen();
 			},
 		},
 		{
-			item: "Select &Players",
+			label: "Select &Players",
 			submenu: player_counts.map(function (count) {
 				return {
-					item: `&${count} Player${count > 1 ? "s" : ""}`,
+					label: `&${count} Player${count > 1 ? "s" : ""}`,
 					checkbox: {
 						check: function () {
 							return current_player_count == count;
@@ -310,7 +310,7 @@ var menus = {
 		MENU_DIVIDER,
 		/*
 		{
-			item: "&Sounds",
+			label: "&Sounds",
 			checkbox: {
 				check: () => sounds_enabled,
 				toggle: () => {
@@ -323,7 +323,7 @@ var menus = {
 			enabled: false,
 		},
 		{
-			item: "&Music",
+			label: "&Music",
 			checkbox: {
 				check: () => music_enabled,
 				toggle: () => {
@@ -337,7 +337,7 @@ var menus = {
 		},
 		*/
 		{
-			item: "&Audio",
+			label: "&Audio",
 			checkbox: {
 				check: () => audio_enabled,
 				toggle: () => {
@@ -352,7 +352,7 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "P&layer Controls",
+			label: "P&layer Controls",
 			shortcut: "F8",
 			action: function () {
 				// @TODO
@@ -363,7 +363,7 @@ var menus = {
 	],
 	"&Help": [
 		{
-			item: "&Help Topics",
+			label: "&Help Topics",
 			shortcut: "F1", // @TODO
 			action: function () {
 				/* @TODO
@@ -385,7 +385,7 @@ var menus = {
 		},
 		MENU_DIVIDER,
 		{
-			item: "&About Pinball",
+			label: "&About Pinball",
 			action: function () {
 				// @TODO: about dialog
 				window.open("https://github.com/alula/SpaceCadetPinball");

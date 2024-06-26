@@ -1041,7 +1041,7 @@ $(function () {
 		const menu_items = history_stack.map((path, index) => {
 			return {
 				// @TODO: name of folder/file/page
-				item: path.replace(/&/g, "&&"), // escaping menu hotkey indicator
+				label: path.replace(/&/g, "&&"), // escaping menu hotkey indicator
 				action: () => {
 					// @TODO: instead of creating a new history entry, manage the stacks.
 					go_to(path);//, "go-to-history-item");
@@ -1216,7 +1216,7 @@ $(function () {
 							// which we could use here. (or perhaps overflow menus should be part of the library)
 							const menu_items = Object.entries(overflow_menus).map(([menu_key, menu]) => {
 								return {
-									item: menu_key,
+									label: menu_key,
 									submenu: menu,
 								};
 							});
