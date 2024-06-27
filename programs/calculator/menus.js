@@ -1,18 +1,3 @@
-
-// TODO: bullet point style radio button menu items (instead of check marks)
-var checkbox_for_view_mode = function (view_mode) {
-	return {
-		check: function () {
-			// TODO
-			return view_mode === "standard";
-		},
-		toggle: function () {
-			// TODO
-			current_view_mode = view_mode;
-		},
-	};
-};
-
 var menus = {
 	"&Edit": [
 		{
@@ -40,14 +25,23 @@ var menus = {
 	],
 	"&View": [
 		{
-			label: "S&tandard",
-			checkbox: checkbox_for_view_mode("standard"),
-			enabled: false,
-		},
-		{
-			label: "&Scientific",
-			checkbox: checkbox_for_view_mode("scientific"),
-			enabled: false,
+			ariaLabel: "Layout",
+			getValue: () => "standard", // TODO
+			setValue: (layout_mode) => {
+				// TODO
+			},
+			radioItems: [
+				{
+					label: "S&tandard",
+					value: "standard",
+					enabled: false,
+				},
+				{
+					label: "&Scientific",
+					value: "scientific",
+					enabled: false,
+				},
+			],
 		},
 	],
 	"&Help": [
