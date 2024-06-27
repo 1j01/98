@@ -100,10 +100,17 @@ When pulling changes from git, run `npm install` again in case there are any new
 
 Some dependencies are versioned with npm, but pulled into the repo with `npm run pull-libs`
 
+### Managing Subrepos
+
 To update subrepos, or push changes to them, install [git-subrepo](https://github.com/ingydotnet/git-subrepo). You don't need this tool to clone the project and get up and running, as subrepos are just normal subdirectories with a `.gitrepo` metadata file.
-Note that the metadata file references specific commit hashes, including between repositories, so it's best to avoid rebasing when subrepo updates are involved, i.e. once you do a subrepo command, it makes a commit, and should leave it (and earlier commits) alone, and you should leave commits in the subrepo alone, before and up to any commits referenced by the containing project.
-I'd recommend phrasing commit messages to apply to the subrepo, primarily, rather than the containing project.
-If you so much as edit the commit message for a `git subrepo push`ed commit, you'd have to update the `.gitrepo` metadata file manually,
+
+Note that the metadata file references specific commit hashes, including between repositories, so it's best to avoid rebasing when subrepo updates are involved, i.e. once you do a subrepo command, it makes a commit, and you should leave it (and earlier commits) alone, and you should leave commits in the subrepo alone, before and up to any commits referenced by the containing project.
+
+When making changes to a subrepo within the containing project:
+I'd recommend phrasing commit messages to apply to the subrepo, primarily, rather than the containing project,
+so that when you push the changes to the subrepo, the commit message will be appropriate.
+
+If you so much as edit the commit message for a `git subrepo push`ed commit, you'd have to update the `.gitrepo` metadata file manually in the containing project,
 OR you could drop the commit you pushed and the `git subrepo push` commit (which updates the metadata) and do `git subrepo pull` instead (which btw gives you an option to rename the commit; and I think renaming that commit would be safe after the fact anyways as long as it's the last commit and not pushed).
 
 ## TODO
