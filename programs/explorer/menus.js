@@ -1,24 +1,4 @@
 
-// TODO: bullet point style radio button menu items (instead of check marks)
-var checkbox_for_view_mode = function (menu_item_view_mode) {
-	return {
-		check: ()=> folder_view ? folder_view.config.view_mode === menu_item_view_mode : false,
-		toggle: ()=> {
-			folder_view?.configure({ view_mode: menu_item_view_mode });
-		},
-		enabled: ()=> !!folder_view, // @TODO: hide the option entirely, don't just disable it
-	};
-};
-var checkbox_for_sort_mode = function (menu_item_sort_mode) {
-	return {
-		check: ()=> folder_view ? folder_view.config.sort_mode === menu_item_sort_mode : false,
-		toggle: ()=> {
-			folder_view?.configure({ sort_mode: menu_item_sort_mode });
-		},
-		enabled: ()=> !!folder_view, // @TODO: hide the option entirely, don't just disable it
-	};
-};
-
 // This menu is shared between the View menu and the Views toolbar button dropdown
 var views_dropdown_menu_items = [
 	// @TODO: make this option unavailable for the Desktop folder
@@ -34,42 +14,53 @@ var views_dropdown_menu_items = [
 		description: "Displays items in Web View",
 	},
 	MENU_DIVIDER,
-	// {
-	// 	label: "As Desktop (Debug)",
-	// 	checkbox: checkbox_for_view_mode("DESKTOP"),
-	// 	enabled: ()=> !!folder_view,
-	// },
-	// Thumbnails option can be enabled in folder Properties window.
-	// {
-	// 	label: "T&humbnails",
-	// 	checkbox: checkbox_for_view_mode("THUMBNAIL"),
-	// 	enabled: () => !!folder_view,
-	// 	description: "Displays items using thumbnail view.",
-	// },
 	{
-		label: "Lar&ge Icons",
-		checkbox: checkbox_for_view_mode("LARGE_ICONS"),
-		enabled: () => !!folder_view,
-		description: "Displays items by using large icons.",
-	},
-	{
-		label: "S&mall Icons",
-		checkbox: checkbox_for_view_mode("SMALL_ICONS"),
-		enabled: () => !!folder_view,
-		description: "Displays items by using small icons.",
-	},
-	{
-		label: "&List",
-		checkbox: checkbox_for_view_mode("LIST"),
-		enabled: () => !!folder_view,
-		description: "Displays items in a list.",
-	},
-	{
-		label: "&Details",
-		checkbox: checkbox_for_view_mode("DETAILS"),
-		// enabled: ()=> !!folder_view,
-		enabled: false, // @TODO
-		description: "Displays information about each item in the window.",
+		ariaLabel: "View Mode",
+		getValue: () => folder_view ? folder_view.config.view_mode : "LARGE_ICONS",
+		setValue: (view_mode) => {
+			folder_view?.configure({
+				view_mode
+			});
+		},
+		radioItems: [
+			// {
+			// 	label: "As Desktop (Debug)",
+			// 	value: "DESKTOP",
+			// 	enabled: ()=> !!folder_view,
+			// },
+			// Thumbnails option can be enabled in folder Properties window.
+			// {
+			// 	label: "T&humbnails",
+			// 	value: "THUMBNAIL",
+			// 	enabled: () => !!folder_view,
+			// 	description: "Displays items using thumbnail view.",
+			// },
+			{
+				label: "Lar&ge Icons",
+				value: "LARGE_ICONS",
+				enabled: () => !!folder_view,
+				description: "Displays items by using large icons.",
+			},
+			{
+				label: "S&mall Icons",
+				value: "SMALL_ICONS",
+				enabled: () => !!folder_view,
+				description: "Displays items by using small icons.",
+			},
+			{
+				label: "&List",
+				value: "LIST",
+				enabled: () => !!folder_view,
+				description: "Displays items in a list.",
+			},
+			{
+				label: "&Details",
+				value: "DETAILS",
+				// enabled: ()=> !!folder_view,
+				enabled: false, // @TODO
+				description: "Displays information about each item in the window.",
+			},
+		],
 	},
 ];
 
@@ -340,30 +331,44 @@ var menus = {
 		{
 			label: "Arrange &Icons",
 			submenu: [
-				// @TODO: dynamic based on attributes available for the type of item
-				// Name & Description for Control Panel items
-				// Name, Type, Size, Date for files
-				// etc.
-				// These apparently are not checkboxes, by the way.
 				{
-					label: "by &Name",
-					checkbox: checkbox_for_sort_mode("NAME"),
-					description: "Sorts items alphabetically by name.",
-				},
-				{
-					label: "by &Type",
-					checkbox: checkbox_for_sort_mode("TYPE"),
-					description: "Sorts items by type.",
-				},
-				{
-					label: "by &Size",
-					checkbox: checkbox_for_sort_mode("SIZE"),
-					description: "Sorts items by size, from smallest to largest.",
-				},
-				{
-					label: "by &Date",
-					checkbox: checkbox_for_sort_mode("DATE"),
-					description: "Sorts items by date, from oldest to most recent.",
+					ariaLabel: "Sort By",
+					getValue: () => folder_view ? folder_view.config.sort_mode : "NAME",
+					setValue: (sort_mode) => {
+						folder_view?.configure({
+							sort_mode
+						});
+					},
+					radioItems: [
+						// @TODO: dynamic based on attributes available for the type of item
+						// Name & Description for Control Panel items
+						// Name, Type, Size, Date for files
+						// etc.
+						{
+							label: "by &Name",
+							value: "NAME",
+							description: "Sorts items alphabetically by name.",
+							// enabled: ()=> !!folder_view,
+						},
+						{
+							label: "by &Type",
+							value: "TYPE",
+							description: "Sorts items by type.",
+							// enabled: ()=> !!folder_view,
+						},
+						{
+							label: "by &Size",
+							value: "SIZE",
+							description: "Sorts items by size, from smallest to largest.",
+							// enabled: ()=> !!folder_view,
+						},
+						{
+							label: "by &Date",
+							value: "DATE",
+							description: "Sorts items by date, from oldest to most recent.",
+							// enabled: ()=> !!folder_view,
+						},
+					],
 				},
 				MENU_DIVIDER,
 				{
