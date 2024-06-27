@@ -5,25 +5,29 @@ var menus = {
 		// also, it leaves off periods from the end of the descriptions
 		{
 			label: "&New",
-			shortcut: "Ctrl+N",
+			shortcutLabel: "Ctrl+N",
+			ariaKeyShortcuts: "Control+N",
 			action: file_new,
 			description: "Creates a new document.",
 		},
 		{
 			label: "&Open...",
-			shortcut: "Ctrl+O",
+			shortcutLabel: "Ctrl+O",
+			ariaKeyShortcuts: "Control+O",
 			action: file_open,
 			description: "Opens an existing document.",
 		},
 		{
 			label: "&Save",
-			shortcut: "Ctrl+S",
+			shortcutLabel: "Ctrl+S",
+			ariaKeyShortcuts: "Control+S",
 			action: file_save,
 			description: "Saves the active document.",
 		},
 		{
 			label: "Save &As...",
-			shortcut: "Ctrl+Shift+S",
+			shortcutLabel: "Ctrl+Shift+S",
+			ariaKeyShortcuts: "Control+Shift+S",
 			action: file_save_as,
 			description: "Saves the active document with a new name.",
 		},
@@ -46,7 +50,8 @@ var menus = {
 		},
 		{
 			label: "&Print...",
-			shortcut: "Ctrl+P",
+			shortcutLabel: "Ctrl+P",
+			ariaKeyShortcuts: "Control+P",
 			action: function () {
 				print();
 			},
@@ -61,7 +66,8 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			label: "E&xit",
-			// shortcut: "Alt+F4",
+			// shortcutLabel: "Alt+F4",
+			// ariaKeyShortcuts: "Alt+F4",
 			action: function () {
 				close();
 			},
@@ -71,7 +77,8 @@ var menus = {
 	"&Edit": [
 		{
 			label: "&Undo",
-			shortcut: "Ctrl+Z",
+			shortcutLabel: "Ctrl+Z",
+			ariaKeyShortcuts: "Control+Z",
 			enabled: function () {
 				return document.queryCommandEnabled("undo");
 			},
@@ -83,7 +90,8 @@ var menus = {
 		// NOTE: Notepad in Windows 98 doesn't actually have a separate Repeat/Redo
 		{
 			label: "&Repeat",
-			shortcut: "Ctrl+Shift+Z", //"F4",
+			shortcutLabel: "Ctrl+Shift+Z", //"F4",
+			ariaKeyShortcuts: "Control+Shift+Z", //"F4",
 			enabled: function () {
 				return document.queryCommandEnabled("redo");
 			},
@@ -98,7 +106,8 @@ var menus = {
 		// make it so it queries the enabled status of all items before switching focus to the menus.
 		{
 			label: "Cu&t",
-			shortcut: "Ctrl+X",
+			shortcutLabel: "Ctrl+X",
+			ariaKeyShortcuts: "Control+X",
 			enabled: function () {
 				return document.queryCommandEnabled("cut");
 			},
@@ -110,7 +119,8 @@ var menus = {
 		},
 		{
 			label: "&Copy",
-			shortcut: "Ctrl+C",
+			shortcutLabel: "Ctrl+C",
+			ariaKeyShortcuts: "Control+C",
 			enabled: function () {
 				return document.queryCommandEnabled("copy");
 			},
@@ -122,7 +132,8 @@ var menus = {
 		},
 		{
 			label: "&Paste",
-			shortcut: "Ctrl+V",
+			shortcutLabel: "Ctrl+V",
+			ariaKeyShortcuts: "Control+V",
 			enabled: function () {
 				return document.queryCommandEnabled("paste");
 			},
@@ -134,7 +145,8 @@ var menus = {
 		},
 		{
 			label: "De&lete",
-			shortcut: "Del",
+			shortcutLabel: "Del",
+			ariaKeyShortcuts: "Delete",
 			enabled: function () {
 				var textarea = $textarea.get(0);
 				var startPos = textarea.selectionStart;
@@ -163,13 +175,15 @@ var menus = {
 		{
 			label: "Select &All",
 			// NOTE: Notepad in Windows 98 doesn't actually have Ctrl+A as a shortcut
-			shortcut: "Ctrl+A",
+			shortcutLabel: "Ctrl+A",
+			ariaKeyShortcuts: "Control+A",
 			action: select_all,
 			description: "Selects the entire document.",
 		},
 		{
 			label: "Time/&Date",
-			shortcut: "F5",
+			shortcutLabel: "F5",
+			ariaKeyShortcuts: "F5",
 			enabled: function () {
 				return document.queryCommandEnabled("insertText");
 			},
@@ -196,14 +210,16 @@ var menus = {
 		{
 			label: "&Find...",
 			// NOTE: Notepad in Windows 98 doesn't actually have Ctrl+F as a shortcut (although WordPad does)
-			shortcut: "Ctrl+F",
+			shortcutLabel: "Ctrl+F",
+			ariaKeyShortcuts: "Control+F",
 			action: function () { }, // TODO
 			enabled: false,
 			description: "Finds the specified text.",
 		},
 		{
 			label: "Find &Next",
-			shortcut: "F3",
+			shortcutLabel: "F3",
+			ariaKeyShortcuts: "F3",
 			action: function () { }, // TODO
 			enabled: false,
 			description: "Repeats the last find.",
@@ -211,14 +227,16 @@ var menus = {
 		// NOTE: Notepad in Windows 98 doesn't have Replace or Go to... options
 		// {
 		// 	label: "&Replace",
-		// 	shortcut: "Ctrl+H",
+		// 	shortcutLabel: "Ctrl+H",
+		// 	ariaKeyShortcuts: "Control+H",
 		// 	action: function(){},
 		// 	enabled: false,
 		// 	description: "Replaces specific text with different text.",
 		// },
 		// {
 		// 	label: "&Go to",
-		// 	shortcut: "Ctrl+G",
+		// 	shortcutLabel: "Ctrl+G",
+		// 	ariaKeyShortcuts: "Control+G",
 		// 	action: function(){},
 		// 	enabled: false,
 		// 	description: "Goes to a specified line number.", // NOTE: made up text

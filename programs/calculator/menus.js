@@ -3,7 +3,8 @@ var menus = {
 	"&Edit": [
 		{
 			label: "&Copy",
-			shortcut: "Ctrl+C",
+			shortcutLabel: "Ctrl+C",
+			ariaKeyShortcuts: "Control+C",
 			enabled: () => {
 				return !!navigator.clipboard.writeText;
 			},
@@ -14,7 +15,8 @@ var menus = {
 		},
 		{
 			label: "&Paste",
-			shortcut: "Ctrl+V",
+			shortcutLabel: "Ctrl+V",
+			ariaKeyShortcuts: "Control+V",
 			enabled: () => {
 				return !!navigator.clipboard.readText;
 			},

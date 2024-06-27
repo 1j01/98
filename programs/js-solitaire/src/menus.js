@@ -3,28 +3,32 @@ var menus = {
 	"&Game": [
 		{
 			label: "&Deal",
-			shortcut: "F2",
+			shortcutLabel: "F2",
+			ariaKeyShortcuts: "F2",
 			action: ()=> { resetGame(); },
 			description: "Deal a new game",
 		},
 		// Don't want to imply you can undo by showing this option
 		// {
 		// 	label: "&Undo",
-		// 	shortcut: "",
+		// 	shortcutLabel: "",
+		// 	ariaKeyShortcuts: "",
 		// 	enabled: false,
 		// 	action: ()=> { undo(); },
 		// 	description: "Undo last action",
 		// },
 		{
 			label: "De&ck...",
-			shortcut: "",
+			shortcutLabel: "",
+			ariaKeyShortcuts: "",
 			enabled: false,
 			action: ()=> {},
 			description: "Choose new deck back",
 		},
 		{
 			label: "&Options...",
-			shortcut: "",
+			shortcutLabel: "",
+			ariaKeyShortcuts: "",
 			enabled: false,
 			action: ()=> {},
 			description: "Change Solitaire options",
@@ -32,7 +36,8 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			label: "E&xit",
-			shortcut: "",
+			shortcutLabel: "",
+			ariaKeyShortcuts: "",
 			action: ()=> {
 				close();
 			},

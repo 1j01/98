@@ -42,7 +42,8 @@ var menus = {
 	"&Game": [
 		{
 			label: "&New",
-			// shortcut: "F2", // TODO
+			// shortcutLabel: "F2",
+			// ariaKeyShortcuts: "F2", // TODO
 			action: function(){
 				minesweeper_.restart();
 			},

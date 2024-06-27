@@ -236,7 +236,8 @@ var menus = {
 	"&Game": [
 		{
 			label: "&New Game",
-			shortcut: "F2",
+			shortcutLabel: "F2",
+			ariaKeyShortcuts: "F2",
 			action: function () {
 				handle_menu_item(0, 0);
 			},
@@ -254,7 +255,8 @@ var menus = {
 		},
 		{
 			label: "&Pause/Resume Game",
-			shortcut: "F3",
+			shortcutLabel: "F3",
+			ariaKeyShortcuts: "F3",
 			action: function () {
 				handle_menu_item(0, 2);
 			},
@@ -284,7 +286,8 @@ var menus = {
 	"&Options": [
 		{
 			label: "&Full Screen",
-			shortcut: "F4",
+			shortcutLabel: "F4",
+			ariaKeyShortcuts: "F4",
 			action: function () {
 				toggle_fullscreen();
 			},
@@ -354,7 +357,8 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			label: "P&layer Controls",
-			shortcut: "F8",
+			shortcutLabel: "F8",
+			ariaKeyShortcuts: "F8",
 			action: function () {
 				// @TODO
 				// handle_menu_item(1, 3.2);
@@ -365,7 +369,8 @@ var menus = {
 	"&Help": [
 		{
 			label: "&Help Topics",
-			shortcut: "F1", // @TODO
+			shortcutLabel: "F1",
+			ariaKeyShortcuts: "F1", // @TODO
 			action: function () {
 				/* @TODO
 				var show_help = window.show_help;

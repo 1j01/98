@@ -165,19 +165,22 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			label: "Cu&t",
-			shortcut: "Ctrl+X",
+			shortcutLabel: "Ctrl+X",
+			ariaKeyShortcuts: "Control+X",
 			enabled: false, // @TODO
 			description: "Removes the selected items and copies them onto the Clipboard.",
 		},
 		{
 			label: "&Copy",
-			shortcut: "Ctrl+C",
+			shortcutLabel: "Ctrl+C",
+			ariaKeyShortcuts: "Control+C",
 			enabled: false, // @TODO
 			description: "Copies the selected items to the Clipboard. To put them in the new location, use the Paste command.",
 		},
 		{
 			label: "&Paste",
-			shortcut: "Ctrl+V",
+			shortcutLabel: "Ctrl+V",
+			ariaKeyShortcuts: "Control+V",
 			enabled: false, // @TODO
 			description: "Inserts the items you have copied or cut into the selected location.",
 		},
@@ -189,7 +192,8 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			label: "Select &All",
-			shortcut: "Ctrl+A",
+			shortcutLabel: "Ctrl+A",
+			ariaKeyShortcuts: "Control+A",
 			action: function () {
 				folder_view.select_all();
 				folder_view.focus();
@@ -272,7 +276,8 @@ var menus = {
 			submenu: [
 				{
 					label: "&Search",
-					shortcut: "Ctrl+E",
+					shortcutLabel: "Ctrl+E",
+					ariaKeyShortcuts: "Control+E",
 					checkbox: {
 						check: ()=> false,
 						toggle: ()=> {}, // @TODO
@@ -282,7 +287,8 @@ var menus = {
 				},
 				{
 					label: "&Favorites",
-					shortcut: "Ctrl+I",
+					shortcutLabel: "Ctrl+I",
+					ariaKeyShortcuts: "Control+I",
 					checkbox: {
 						check: ()=> false,
 						toggle: ()=> {}, // @TODO
@@ -292,7 +298,8 @@ var menus = {
 				},
 				{
 					label: "&History",
-					shortcut: "Ctrl+H",
+					shortcutLabel: "Ctrl+H",
+					ariaKeyShortcuts: "Control+H",
 					checkbox: {
 						check: ()=> false,
 						toggle: ()=> {}, // @TODO
@@ -393,7 +400,8 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			label: "&Refresh",
-			shortcut: "F5",
+			shortcutLabel: "F5",
+			ariaKeyShortcuts: "F5",
 			action: () => {
 				refresh();
 			},
@@ -409,7 +417,8 @@ var menus = {
 		// description: "Contains commands for browsing to various pages.",
 		{
 			label: "&Back",
-			shortcut: "Alt+Left Arrow",
+			shortcutLabel: "Alt+Left Arrow",
+			ariaKeyShortcuts: "Alt+ArrowLeft",
 			action: () => {
 				go_back();
 			},
@@ -418,7 +427,8 @@ var menus = {
 		},
 		{
 			label: "&Forward",
-			shortcut: "Alt+Right Arrow",
+			shortcutLabel: "Alt+Right Arrow",
+			ariaKeyShortcuts: "Alt+ArrowRight",
 			action: () => {
 				go_forward();
 			},
@@ -427,7 +437,8 @@ var menus = {
 		},
 		{
 			label: "&Up One Level",
-			// shortcut: "Alt+Up Arrow",
+			// shortcutLabel: "Alt+Up Arrow",
+			// ariaKeyShortcuts: "Alt+ArrowUp",
 			action: () => {
 				go_up();
 			},
@@ -437,7 +448,8 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			label: "&Home Page",
-			shortcut: "Alt+Home",
+			shortcutLabel: "Alt+Home",
+			ariaKeyShortcuts: "Alt+Home",
 			action: () => {
 				go_home();
 			},

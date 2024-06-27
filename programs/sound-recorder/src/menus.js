@@ -3,25 +3,29 @@ var menus = {
 	"&File": [
 		{
 			label: "&New",
-			shortcut: "Ctrl+N",
+			shortcutLabel: "Ctrl+N",
+			ariaKeyShortcuts: "Control+N",
 			action: file_new,
 			description: "Creates a new sound.",
 		},
 		{
 			label: "&Open",
-			shortcut: "Ctrl+O",
+			shortcutLabel: "Ctrl+O",
+			ariaKeyShortcuts: "Control+O",
 			action: file_open,
 			description: "Opens an existing sound.",
 		},
 		{
 			label: "&Save",
-			shortcut: "Ctrl+S",
+			shortcutLabel: "Ctrl+S",
+			ariaKeyShortcuts: "Control+S",
 			action: file_save,
 			description: "Saves the active sound.",
 		},
 		{
 			label: "Save &As",
-			shortcut: "Ctrl+Shift+S",
+			shortcutLabel: "Ctrl+Shift+S",
+			ariaKeyShortcuts: "Control+Shift+S",
 			action: file_save_as,
 			description: "Saves the active sound with a new name.",
 		},
@@ -40,7 +44,8 @@ var menus = {
 		MENU_DIVIDER,
 		{
 			label: "E&xit",
-			shortcut: "Alt+F4",
+			shortcutLabel: "Alt+F4",
+			ariaKeyShortcuts: "Alt+F4",
 			action: function () {
 				close();
 			},
@@ -51,7 +56,8 @@ var menus = {
 		/*
 		{
 			label: "&Undo",
-			shortcut: "Ctrl+Z",
+			shortcutLabel: "Ctrl+Z",
+			ariaKeyShortcuts: "Control+Z",
 			enabled: function(){
 				return undos.length >= 1;
 			},
@@ -60,7 +66,8 @@ var menus = {
 		},
 		{
 			label: "&Repeat",
-			shortcut: "F4",
+			shortcutLabel: "F4",
+			ariaKeyShortcuts: "F4",
 			enabled: function(){
 				return redos.length >= 1;
 			},
@@ -70,7 +77,8 @@ var menus = {
 		MENU_DIVIDER,*/
 		{
 			label: "&Copy",
-			shortcut: "Ctrl+C",
+			shortcutLabel: "Ctrl+C",
+			ariaKeyShortcuts: "Control+C",
 			enabled: function () {
 				return (typeof chrome !== "undefined") && chrome.permissions;
 			},
@@ -81,7 +89,8 @@ var menus = {
 		},
 		{
 			label: "&Paste Insert",
-			shortcut: "Ctrl+V",
+			shortcutLabel: "Ctrl+V",
+			ariaKeyShortcuts: "Control+V",
 			enabled: function () {
 				return (typeof chrome !== "undefined") && chrome.permissions;
 			},
