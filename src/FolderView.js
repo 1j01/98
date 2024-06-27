@@ -714,6 +714,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 			// Windows 98 does this for clicks.
 			// I'm not sure if it's to make it less jarring (I feel like there's a case for that),
 			// or if it's to avoid some problems with drag and drop perhaps.
+			// Oh, it's probably for double-clicking, so it doesn't shift between the two clicks. Right?
 			setTimeout(() => {
 				item_el_to_select.scrollIntoView({ block: "nearest" });
 			}, 500);
