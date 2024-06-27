@@ -1,5 +1,6 @@
 
 // This menu is shared between the View menu and the Views toolbar button dropdown
+/** @type {OSGUIMenuFragment[]} */
 var views_dropdown_menu_items = [
 	// @TODO: make this option unavailable for the Desktop folder
 	{
@@ -64,6 +65,7 @@ var views_dropdown_menu_items = [
 	},
 ];
 
+/** @type {OSGUITopLevelMenus} */
 var menus = {
 	"&File": [
 		// @TODO: os-gui should support descriptions for top level menus,

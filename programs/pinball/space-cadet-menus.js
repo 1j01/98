@@ -231,6 +231,7 @@ async function handle_menu_item(top_level_menu_index, item_index, submenu_item_i
 	triggering_menus = false;
 }
 
+/** @type {OSGUITopLevelMenus} */
 var menus = {
 	"&Game": [
 		{

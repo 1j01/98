@@ -1,3 +1,4 @@
+/** @type {OSGUITopLevelMenus} */
 var menus = {
 	"&Edit": [
 		{

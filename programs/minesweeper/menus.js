@@ -25,6 +25,7 @@ var is_at_difficulty = function(difficulty){
 		minesweeper_.number_mines === difficulty[2]
 	);
 };
+/** @type {OSGUICheckbox} */
 var checkbox_for_difficulty = function(index){
 	return {
 		check: function(){
@@ -36,6 +37,7 @@ var checkbox_for_difficulty = function(index){
 	};
 };
 
+/** @type {OSGUITopLevelMenus} */
 var menus = {
 	"&Game": [
 		{

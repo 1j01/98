@@ -1,4 +1,4 @@
-
+/** @type {OSGUITopLevelMenus} */
 var menus = {
 	"&File": [
 		{

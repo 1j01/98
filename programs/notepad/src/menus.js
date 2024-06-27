@@ -1,4 +1,4 @@
-
+/** @type {OSGUITopLevelMenus} */
 var menus = {
 	"&File": [
 		// NOTE: Notepad in Windows 98 doesn't actually have shortcuts for anything in the File menu
