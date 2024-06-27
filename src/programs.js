@@ -73,7 +73,7 @@ function show_help(options) {
 		forward_length -= 1;
 		back_length += 1;
 	}, () => forward_length > 0);
-	add_toolbar_button("Options", 3, () => { }, () => false); // TODO: hotkey and underline on O
+	add_toolbar_button("Options", 3, () => { }, () => false); // TODO: access key &O
 	add_toolbar_button("Web Help", 4, () => {
 		iframe.src = "help/online_support.htm";
 	});

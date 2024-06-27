@@ -1041,7 +1041,7 @@ $(function () {
 		const menu_items = history_stack.map((path, index) => {
 			return {
 				// @TODO: name of folder/file/page
-				label: path.replace(/&/g, "&&"), // escaping menu hotkey indicator
+				label: AccessKeys.escape(path),
 				action: () => {
 					// @TODO: instead of creating a new history entry, manage the stacks.
 					go_to(path);//, "go-to-history-item");
@@ -1205,7 +1205,7 @@ $(function () {
 							// display menu bar overflow items like a normal menu
 							const overflow_menus = {};
 							for (const [menu_key, menu] of Object.entries(menus)) {
-								if (overflowed_items.some((item) => item.textContent === remove_hotkey(menu_key))) {
+								if (overflowed_items.some((item) => item.textContent === AccessKeys.remove(menu_key))) {
 									overflow_menus[menu_key] = menu;
 								}
 							}
@@ -1274,9 +1274,4 @@ $(function () {
 			event.preventDefault();
 		}
 	});
-
-	// @TODO: expose this in OS-GUI library
-	function remove_hotkey(text) {
-		return text.replace(/\s?\(&.\)/, "").replace(/([^&]|^)&([^&\s])/, "$1$2");
-	}
 });
