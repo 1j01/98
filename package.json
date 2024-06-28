@@ -51,6 +51,9 @@
 	},
 	"scripts": {
 		"test": "playwright test --reporter=list",
+		"test-codegen": "run-p test-codegen:server test-codegen:codegen",
+		"test-codegen:server": "npm run start-server -- --no-browser",
+		"test-codegen:codegen": "npx playwright codegen http://localhost:1998",
 		"lint": "cspell-cli lint .",
 		"start": "run-p watch-fs-index start-server",
 		"start-server": "live-server --port=1998 --ignore=node_modules/,.git/,.history/,.idea/,.vscode/,test/,coverage/,test-results/,playwright-report/,blob-report/,playwright/.cache/,package.json,package-lock.json,README.md,LICENSE,CNAME,cspell.json,.gitignore,.gitattributes .",

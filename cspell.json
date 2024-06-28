@@ -96,6 +96,7 @@
 		"CLSID",
 		"cmake",
 		"cmdver",
+		"codegen",
 		"colorbar",
 		"Colorstr",
 		"colspan",
