@@ -102,10 +102,11 @@ Some dependencies are versioned with npm, but pulled into the repo with `npm run
 
 ### Quality Assurance
 
-Tests are written with Playwright.
+Tests are written with Playwright. Spell checking is done with Cspell.
 
 ```
 npm test
+npm run lint
 ```
 
 ### Managing Subrepos
