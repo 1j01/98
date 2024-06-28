@@ -109,6 +109,24 @@ npm test
 npm run lint
 ```
 
+Debug tests or run them when code changes using the Playwright UI:
+
+```
+npx playwright test --ui
+```
+
+Quickly add tests using the code generator:
+
+```
+# Note: this runs the server, and currently leaves it running when closing the browser.
+# Could use `start-server-and-test` to fix this, or see if there's an option in `npm-run-all`'s `run-p` command.
+# (There's no option in `playwright codegen --help` to run the server, even though it's configured in `playwright.config.js`)
+npm run test-codegen
+```
+
+There are also VS Code extensions for Playwright and Cspell (Code Spell Checker).
+
+
 ### Managing Subrepos
 
 To update subrepos, or push changes to them, install [git-subrepo](https://github.com/ingydotnet/git-subrepo). You don't need this tool to clone the project and get up and running, as subrepos are just normal subdirectories with a `.gitrepo` metadata file.
