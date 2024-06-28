@@ -22,8 +22,7 @@
 
 ### Visual
 
-* Fill bucket and airbrush cursors are supposed to invert the background in parts
-* Custom cursors in Edge; apparently they require `.cur` files? ugh
+* Fill bucket and airbrush cursors are supposed to invert the background in parts. This is not possible with `.png` files. Microsoft Edge also apparently requires `.cur` files for custom cursors. I already have `.cur` files in the repo for the modern theme (unused), and extracted (outside the repo) for the classic theme. I just need to copy them, rename them semantically, use them, and do some testing to see if format fallbacks work as expected.
 
 ### Extended editing
 
@@ -39,18 +38,18 @@
 
 * Documents with multiple sub-images
 	* Component to switch between sub-images
-	* Deal with undo/redo for sub-images
+	* Handle undo/redo for sub-images
 	* Animated GIFs
 		* Transparency ([jnordberg/gif.js issue #5](https://github.com/jnordberg/gif.js/issues/5))
 	* Animated Transparent APNGs
-		* APNG Library: [UPNG.js](https://github.com/photopea/UPNG.js/)
+		* APNG Library: [UPNG.js](https://github.com/photopea/UPNG.js/) (already used for loading/saving PNGs)
 	* Multi-size Icons
 		* Windows ICO ([jBinary can read](https://jdataview.github.io/jBinary.Repo/demo/#ico) and presumably write ICO files)
 		* Mac ICNS
-	* Layered images?
-		* Photoshop PSD ([via psd.js](https://github.com/trevorlinton/psd.js))
-		* OpenRaster ORA ([via ora.js](https://github.com/zsgalusz/ora.js/tree/master))
-	* Paged Images?
+	* Layered images
+		* Photoshop PSD ([via psd.js](https://github.com/samccone/psd.js)
+		* OpenRaster ORA ([via ora.js](https://github.com/zsgalusz/ora.js))
+	* Paged Images
 		* PDF (via [pdf.js](https://github.com/mozilla/pdf.js)) (single page already supported)
 		* DjVu (via [djvu.js](https://djvu.js.org/))
 		* TIFF (via [utif.js](https://github.com/photopea/UTIF.js/)) (single page/frame already supported)
@@ -93,15 +92,13 @@ SVG (or HTML?) with invisible selectable transformed text elements?
 * Alternative way to access "Color Eraser" feature without a secondary mouse button?
 * Alternative access to functionality that would normally require a keyboard (with a numpad!)
 	* Numpad +/-: Increase/Decrease brush size, Double/Halve selection size, ...
-	* Shift (toggles; rename contextually?):
+	* Shift toggles a handful of things (could have one toggle button renamed contextually?):
 		* Proportional Resize
 		* Smear / Trail Selection
 		* Snap to 8 directions
 			* An isometric mode would also be good
-	* Ctrl+Select: Crop tool or "Crop to selection" option
-* Don't drag toolbars out into windows with touch
-	* Unless with two fingers perhaps
-		* I might want to use multitouch on the tool buttons for MultiTools tho...
+	* Ctrl+Select: "Crop To Selection" menu option
+* Don't drag toolbars out into windows with touch, it's too easy to do accidentally
 
 ### Tools
 
@@ -141,23 +138,25 @@ SVG (or HTML?) with invisible selectable transformed text elements?
 
 Electron boilerplate stuff:
 
-* [Set up Content-Security-Policy](https://electronjs.org/docs/tutorial/security)
 * Remember window position/state
 * Set up autoupdating
 * Keep window hidden until loaded (`show: false`, [`ready-to-show`](https://electronjs.org/docs/api/browser-window#event-ready-to-show))
 
+Security:
+
+* Context isolation
+* Disable multiplayer?? should be fine
+
 Functionality:
 
-* A dialog when closing
 * Subwindows as separate windows
 * Document recovery without having to know about File > Manage Storage - pop up contextually with a dialog when you need it
 * Show link URLs when you hover over them, in the status bar (because we have a status bar! haha) (there's this API: [event: update-target-url](https://github.com/electron/electron/blob/master/docs/api/web-contents.md#event-update-target-url), which gave me the idea, or it could be implemented with mouse events)
 * Recent files (could also be implemented for 98.js.org in the future)
-* Create a landing page / home page for the desktop app (similar to https://desktop.webamp.org/ or https://desktop.github.com/) - (perhaps https://desktop.jspaint.app/) - and/or for JS Paint in general (perhaps https://jspaint.app/about/)
-* macOS: `open-file` event, `setRepresentedFilename`, `setDocumentEdited` etc.
+* macOS:
+	* `win.setSheetOffset` with the menu bar height
 * Windows: maybe handle `session-end` event and ask to save?
 * Detect if file changes on disk, ask if you want to reload it?
-
 
 ### Also
 

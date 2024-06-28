@@ -1,0 +1,207 @@
+@import url("modern.css");
+
+:root {
+	--theme-loaded: "bubblegum.css";
+
+	--window-frame-active-color: transparent;
+	--window-frame-inactive-color: transparent;
+	--menu-text-disabled-color: #5c71a0;
+	--menu-text-color: #330050;
+	--window-text-color: #330050;
+	--window-titlebar-text-color: #330050;
+	--WindowText: #330050;
+}
+
+* {
+	text-shadow: 1px 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+.menu-button,
+button,
+.window-titlebar {
+	font-weight: bold;
+}
+
+.component-area:not(:empty),
+.status-field  {
+	border-image-source: url("../../images/bubblegum/bubblegum-border-with-recess.png") !important;
+	border-image-slice: 82 95 77 92 fill !important;
+	border-image-width: 20px 20px 20px 20px !important;
+	border-image-outset: 0px 0px 0px 0px !important;
+	border-image-repeat: stretch stretch !important;
+	border-style: solid !important;
+	padding: 7px !important;
+	background-color: transparent !important;
+	/* for box-shadow */
+	border-radius: 10px !important;
+}
+
+.os-window .window-titlebar {
+	background: transparent !important;
+}
+
+.os-window .window-content {
+	background: transparent !important;
+}
+
+.menu-button,
+button,
+.tools-component .tool {
+	padding: 7px !important;
+}
+
+.os-window,
+button:not(.lightweight):not(:active),
+button.lightweight:hover:not(:active),
+.tools-component .tool,
+.menus,
+.menu-popup,
+.menu-button.highlight:not(.active),
+.status-area {
+	border-image-source: url("../../images/bubblegum/bubblegum-border.png") !important;
+	border-image-slice: 82 95 77 92 fill !important;
+	border-image-width: 20px 20px 20px 20px !important;
+	border-image-outset: 0px 0px 0px 0px !important;
+	border-image-repeat: stretch stretch !important;
+	border-style: solid !important;
+	background-color: transparent !important;
+	border-radius: 10px !important;
+}
+
+.window-content,
+hr,
+.inset-deep,
+.swatch,
+.tool-options,
+.status-field,
+.menu-button.active,
+button:active,
+.tools-component .tool.selected {
+	border-image-source: url("../../images/bubblegum/bubblegum-recess.png") !important;
+	border-image-slice: 82 95 77 92 fill !important;
+	border-image-width: 20px 20px 20px 20px !important;
+	border-image-outset: 0px 0px 0px 0px !important;
+	border-image-repeat: stretch stretch !important;
+	border-style: solid !important;
+	padding: 7px !important;
+	background-color: transparent !important;
+	/* border-radius affects hover outline in Eye Gaze Mode, as well as any clipping (with overflow: hidden), and box-shadows */
+	border-radius: 10px !important;
+	/* box-shadow can't be applied directly here, because of the border-image fill (as far as I know; might want to test that assumption) */
+}
+
+.tools-component .tool,
+.tools-component .tool.selected {
+	border-image-width: 5px !important;
+	border-radius: 4px !important;
+}
+.tools-component .tool.selected {
+	border-image-outset: 2px !important;
+}
+
+/* The shadows that are part of the border-image don't go on top of the
+contents of the element, but I can somewhat mimic the shadows,
+using box-shadow on a pseudo element.
+
+This better integrates the contents in the (virtual, imagined) physical scene,
+but it does increase the visual weight of the shadows,
+where it overlaps the shadows baked into the border-image. */
+.tool-options {
+	position: relative;
+}
+.tool-options::before {
+	content: "";
+	display: block;
+	box-shadow: inset 5px 5px 8px rgba(32, 49, 60, 0.36), inset -4px 4px 6px rgba(32, 49, 60, 0.26), inset 0px -4px 2px rgba(255, 224, 255, 0.96);
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+}
+
+.window-content,
+.canvas-area.inset-deep,
+.status-field {
+	border-image-outset: 5px !important;
+}
+.swatch {
+	padding: 0px !important;
+	border-image-outset: 14px !important;
+	transform: scale(0.6);
+	border-radius: 5px !important;
+	overflow: hidden;
+}
+.swatch::after {
+	/* hide box-shadow based border */
+	display: none;
+}
+
+hr {
+	transform: scaleY(0.5);
+}
+
+.tool-options {
+	padding: 0px !important;
+	border-image-outset: 10px !important;
+	overflow: hidden;
+	margin-top: 10px;
+}
+.tools-component {
+	padding-top: 5px;
+}
+.menu-button.active,
+.menu-button.active,
+button:active {
+	border-image-outset: 7px !important;
+}
+
+.menu-item.highlight {
+	background: rgba(255, 255, 255, 0.2);
+}
+
+/* About window */
+#about-paint-icon {
+	/* Replace icon */
+	display: block;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
+	background: url("../../images/bubblegum/bubblegum-paint-128x128.png") no-repeat;
+	background-size: 100% 100%;
+	padding-left: 128px;
+}
+
+/* Need multiple specificity levels to override Modern theme. */
+.tool-icon,
+.tool-icon.use-svg,
+.eye-gaze-mode .tool-icon.use-svg {
+	background-image: url("../../images/bubblegum/bubblegum-tools.svg");
+	background-position: calc(-16px * (var(--icon-index) * 2 + 1)) -16px;
+	filter: drop-shadow(2px 3px 1px rgba(53, 54, 134, 0.5));
+}
+
+.eye-gaze-mode .toggle-dwell-clicking .button-icon {
+	background: url(../../images/bubblegum/eye-gaze-pause-128x128.png);
+	background-size: 100% 100%;
+}
+.eye-gaze-mode.eye-gaze-mode-paused .toggle-dwell-clicking .button-icon {
+	background: url(../../images/bubblegum/eye-gaze-unpause-128x128.png);
+	background-size: 100% 100%;
+}
+
+/* Need multiple specificity levels to override Modern theme. */
+.transparent-mode-option,
+.transparent-mode-option.use-svg {
+	background-image: url("../../images/bubblegum/options-transparency.svg");
+}
+
+/* Pressed effect: move icons down so they feel like they're recessed into the button */
+.tool.selected .tool-icon {
+	transform: translateY(1px);
+	filter: drop-shadow(1px 2px 0.5px rgba(53, 54, 134, 0.5));
+}
+
+/* Avoid light part of feathered recess texture appearing as a glow over top of the button above */
+.tool.selected:not(:nth-child(1)):not(:nth-child(2)) {
+	clip-path: inset(0 0 0 0);
+}

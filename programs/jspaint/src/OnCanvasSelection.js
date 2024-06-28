@@ -1,6 +1,21 @@
+// @ts-check
+/* global $canvas_area, $status_position, $status_size, main_canvas, main_ctx, selected_colors, tool_transparent_mode, transparency */
+import { Handles } from "./Handles.js";
+import { OnCanvasObject } from "./OnCanvasObject.js";
+import { get_tool_by_id, make_or_update_undoable, undoable, update_helper_layer } from "./functions.js";
+import { $G, get_icon_for_tool, get_rgba_from_color, make_canvas, make_css_cursor, to_canvas_coords } from "./helpers.js";
+import { replace_colors_with_swatch } from "./image-manipulation.js";
+import { TOOL_SELECT } from "./tools.js";
 
 class OnCanvasSelection extends OnCanvasObject {
-	constructor(x, y, width, height, img_or_canvas) {
+	/**
+	 * @param {number} x
+	 * @param {number} y
+	 * @param {number} width
+	 * @param {number} height
+	 * @param {HTMLImageElement | HTMLCanvasElement | ImageData=} image_source
+	 */
+	constructor(x, y, width, height, image_source) {
 		super(x, y, width, height, true);
 
 		this.$el.addClass("selection");
@@ -19,26 +34,29 @@ class OnCanvasSelection extends OnCanvasObject {
 		};
 		$G.on("option-changed", this._on_option_changed);
 
-		this.instantiate(img_or_canvas);
+		this.instantiate(image_source);
 	}
 	position() {
 		super.position(true);
 		update_helper_layer(); // @TODO: under-grid specific helper layer?
 	}
-	instantiate(img_or_canvas) {
+	/**
+	 * @param {HTMLImageElement | HTMLCanvasElement | ImageData=} image_source
+	 */
+	instantiate(image_source) {
 		this.$el.css({
 			cursor: make_css_cursor("move", [8, 8], "move"),
 			touchAction: "none",
 		});
 		this.position();
 
-		const instantiate = ()=> {
-			if (img_or_canvas) {
+		const instantiate = () => {
+			if (image_source) {
 				// (this applies when pasting a selection)
 				// NOTE: need to create a Canvas because something about imgs makes dragging not work with magnification
 				// (width vs naturalWidth?)
 				// and at least apply_image_transformation needs it to be a canvas now (and the property name says canvas anyways)
-				this.source_canvas = make_canvas(img_or_canvas);
+				this.source_canvas = make_canvas(image_source);
 				// @TODO: is this width/height code needed? probably not! wouldn't it clear the canvas anyways?
 				// but maybe we should assert in some way that the widths are the same, or resize the selection?
 				if (this.source_canvas.width !== this.width) {
@@ -48,8 +66,7 @@ class OnCanvasSelection extends OnCanvasObject {
 					this.source_canvas.height = this.height;
 				}
 				this.canvas = make_canvas(this.source_canvas);
-			}
-			else {
+			} else {
 				this.source_canvas = make_canvas(this.width, this.height);
 				this.source_canvas.ctx.drawImage(main_canvas, this.x, this.y, this.width, this.height, 0, 0, this.width, this.height);
 				this.canvas = make_canvas(this.source_canvas);
@@ -60,13 +77,13 @@ class OnCanvasSelection extends OnCanvasObject {
 				$handles_container: this.$el,
 				$object_container: $canvas_area,
 				outset: 2,
-				get_rect: ()=> ({x: this.x, y: this.y, width: this.width, height: this.height}),
-				set_rect: ({x, y, width, height}) => {
+				get_rect: () => ({ x: this.x, y: this.y, width: this.width, height: this.height }),
+				set_rect: ({ x, y, width, height }) => {
 					undoable({
 						name: "Resize Selection",
 						icon: get_icon_for_tool(get_tool_by_id(TOOL_SELECT)),
 						soft: true,
-					}, ()=> {
+					}, () => {
 						this.x = x;
 						this.y = y;
 						this.width = width;
@@ -75,20 +92,21 @@ class OnCanvasSelection extends OnCanvasObject {
 						this.resize();
 					});
 				},
-				get_ghost_offset_left: ()=> parseFloat($canvas_area.css("padding-left")) + 1,
-				get_ghost_offset_top: ()=> parseFloat($canvas_area.css("padding-top")) + 1,
+				get_ghost_offset_left: () => parseFloat($canvas_area.css("padding-left")) + 1,
+				get_ghost_offset_top: () => parseFloat($canvas_area.css("padding-top")) + 1,
 			});
 			let mox, moy;
-			const pointermove = e => {
+			const pointermove = (e) => {
 				make_or_update_undoable({
-					match: (history_node)=>
-						(e.shiftKey && history_node.name.match(/^(Smear|Stamp|Move) Selection$/)) ||
-						(!e.shiftKey && history_node.name.match(/^Move Selection$/)),
+					// XXX: Localization hazard: logic based on English action names
+					match: (history_node) =>
+						(e.shiftKey && /^(Smear|Stamp|Move) Selection$/.test(history_node.name)) ||
+						(!e.shiftKey && /^Move Selection$/.test(history_node.name)),
 					name: e.shiftKey ? "Smear Selection" : "Move Selection",
 					update_name: true,
 					icon: get_icon_for_tool(get_tool_by_id(TOOL_SELECT)),
 					soft: true,
-				}, ()=> {
+				}, () => {
 					const m = to_canvas_coords(e);
 					this.x = Math.max(Math.min(m.x - mox, main_canvas.width), -this.width);
 					this.y = Math.max(Math.min(m.y - moy, main_canvas.height), -this.height);
@@ -99,7 +117,7 @@ class OnCanvasSelection extends OnCanvasObject {
 					}
 				});
 			};
-			this.canvas_pointerdown = e => {
+			this.canvas_pointerdown = (e) => {
 				e.preventDefault();
 				const rect = this.canvas.getBoundingClientRect();
 				const cx = e.clientX - rect.left;
@@ -120,28 +138,26 @@ class OnCanvasSelection extends OnCanvasObject {
 						name: "Stamp Selection",
 						icon: get_icon_for_tool(get_tool_by_id(TOOL_SELECT)),
 						soft: true,
-					}, ()=> {
+					}, () => {
 						this.draw();
 					});
-				}
-				// @TODO: how should this work for macOS? where ctrl+click = secondary click?
-				else if (e.ctrlKey) {
+				} else if (e.ctrlKey) { // @TODO: how should this work for macOS? where ctrl+click = secondary click?
 					// Stamp selection
 					undoable({
 						name: "Stamp Selection",
 						icon: get_icon_for_tool(get_tool_by_id(TOOL_SELECT)),
 						soft: true,
-					}, ()=> {
+					}, () => {
 						this.draw();
 					});
 				}
 			};
 			$(this.canvas).on("pointerdown", this.canvas_pointerdown);
-			$canvas_area.trigger("resize");
+			$canvas_area.trigger("resize"); // could use "update" event instead if this is just to hide the main canvas handles
 			$status_position.text("");
 			$status_size.text("");
 		};
-		
+
 		instantiate();
 	}
 	cut_out_background() {
@@ -153,9 +169,9 @@ class OnCanvasSelection extends OnCanvasObject {
 		// and should end up as the cut out image data for the selection
 		// canvasImageData is initially the portion of image data on the canvas,
 		// and should end up as... the portion of image data on the canvas that it should end up as.
-		// @TODO: could simplify by making the later (shared) condition just if(colored_cutout){}
+		// @TODO: could simplify by making the later (shared) condition just if (colored_cutout)
 		// but might change how it works anyways so whatever
-		// if(!transparency){ // now if !transparency or if tool_transparent_mode
+		// if (!transparency) { // now if !transparency or if tool_transparent_mode
 		// this is mainly in order to support patterns as the background color
 		// NOTE: must come before cutout canvas is modified
 		const colored_cutout = make_canvas(cutout);
@@ -173,8 +189,7 @@ class OnCanvasSelection extends OnCanvasObject {
 				canvasImageData.data[i + 1] = 0;
 				canvasImageData.data[i + 2] = 0;
 				canvasImageData.data[i + 3] = 0;
-			}
-			else {
+			} else {
 				cutoutImageData.data[i + 0] = 0;
 				cutoutImageData.data[i + 1] = 0;
 				cutoutImageData.data[i + 2] = 0;
@@ -216,10 +231,10 @@ class OnCanvasSelection extends OnCanvasObject {
 				// @FIXME: work with transparent selected background color
 				// (support treating partially transparent background colors as transparency)
 				if (
-					Math.abs(sourceImageData.data[i+0] - background_color_rgba[0]) <= match_threshold &&
-					Math.abs(sourceImageData.data[i+1] - background_color_rgba[1]) <= match_threshold &&
-					Math.abs(sourceImageData.data[i+2] - background_color_rgba[2]) <= match_threshold &&
-					Math.abs(sourceImageData.data[i+3] - background_color_rgba[3]) <= match_threshold
+					Math.abs(sourceImageData.data[i + 0] - background_color_rgba[0]) <= match_threshold &&
+					Math.abs(sourceImageData.data[i + 1] - background_color_rgba[1]) <= match_threshold &&
+					Math.abs(sourceImageData.data[i + 2] - background_color_rgba[2]) <= match_threshold &&
+					Math.abs(sourceImageData.data[i + 3] - background_color_rgba[3]) <= match_threshold
 				) {
 					in_cutout = false;
 				}
@@ -229,8 +244,7 @@ class OnCanvasSelection extends OnCanvasObject {
 				cutoutImageData.data[i + 1] = sourceImageData.data[i + 1];
 				cutoutImageData.data[i + 2] = sourceImageData.data[i + 2];
 				cutoutImageData.data[i + 3] = sourceImageData.data[i + 3];
-			}
-			else {
+			} else {
 				// cutoutImageData.data[i+0] = 0;
 				// cutoutImageData.data[i+1] = 0;
 				// cutoutImageData.data[i+2] = 0;
@@ -242,6 +256,9 @@ class OnCanvasSelection extends OnCanvasObject {
 		update_helper_layer();
 	}
 	// @TODO: should Image > Invert apply to this.source_canvas or to this.canvas (replacing this.source_canvas with the result)?
+	/**
+	 * @param {PixelCanvas} new_source_canvas
+	 */
 	replace_source_canvas(new_source_canvas) {
 		this.source_canvas = new_source_canvas;
 		const new_canvas = make_canvas(new_source_canvas);
@@ -273,16 +290,18 @@ class OnCanvasSelection extends OnCanvasObject {
 		this.replace_source_canvas(new_source_canvas);
 	}
 	scale(factor) {
-		const new_source_canvas = make_canvas(this.width * factor, this.height * factor);
+		const new_width = Math.max(1, this.width * factor);
+		const new_height = Math.max(1, this.height * factor);
+		const new_source_canvas = make_canvas(new_width, new_height);
 		new_source_canvas.ctx.drawImage(this.source_canvas, 0, 0, new_source_canvas.width, new_source_canvas.height);
 		this.replace_source_canvas(new_source_canvas);
 	}
 	draw() {
 		try {
 			main_ctx.drawImage(this.canvas, this.x, this.y);
+		} catch (_error) {
+			// ignore
 		}
-		// eslint-disable-next-line no-empty
-		catch (e) { }
 	}
 	destroy() {
 		super.destroy();
@@ -290,3 +309,6 @@ class OnCanvasSelection extends OnCanvasObject {
 		update_helper_layer(); // @TODO: under-grid specific helper layer?
 	}
 }
+
+export { OnCanvasSelection };
+

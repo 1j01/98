@@ -1,3 +1,27 @@
+// @ts-check
+// eslint-disable-next-line no-unused-vars
+/* global $thumbnail_window:writable, canvas_bounding_client_rect:writable, current_history_node:writable, file_format:writable, file_name:writable, helper_layer:writable, history_node_to_cancel_to:writable, magnification:writable, monochrome:writable, palette:writable, pointer:writable, return_to_magnification:writable, return_to_tools:writable, root_history_node:writable, saved:writable, selected_colors:writable, selected_tool:writable, selected_tools:writable, selection:writable, show_grid:writable, show_thumbnail:writable, system_file_handle:writable, textbox:writable, thumbnail_canvas:writable, tool_transparent_mode:writable, transparency:writable, undos:writable */
+/* global $canvas, $canvas_area, $colorbox, $status_text, $toolbox, $Window, AccessKeys, applyCSSProperties, decodeBMP, default_canvas_height, default_canvas_width, default_magnification, default_tool, enable_palette_loading_from_indexed_images, encodeBMP, localize, main_canvas, main_ctx, monochrome_palette, my_canvas_height, my_canvas_width, new_local_session, parseThemeFileString, pointer_active, pointers, polychrome_palette, redos, systemHooks, text_tool_font, update_fill_and_stroke_colors_and_lineWidth, UPNG, UTIF */
+
+import { $DialogWindow } from "./$ToolWindow.js";
+import { OnCanvasHelperLayer } from "./OnCanvasHelperLayer.js";
+import { OnCanvasSelection } from "./OnCanvasSelection.js";
+import { OnCanvasTextBox } from "./OnCanvasTextBox.js";
+// import { localize } from "./app-localization.js";
+import { default_palette } from "./color-data.js";
+import { image_formats } from "./file-format-data.js";
+import { $G, E, TAU, debounce, from_canvas_coords, get_help_folder_icon, get_icon_for_tool, get_rgba_from_color, is_discord_embed, is_pride_month, make_canvas, render_access_key, to_canvas_coords } from "./helpers.js";
+import { apply_image_transformation, draw_grid, draw_selection_box, flip_horizontal, flip_vertical, invert_monochrome, invert_rgb, rotate, stretch_and_skew, threshold_black_and_white } from "./image-manipulation.js";
+import { show_imgur_uploader } from "./imgur.js";
+import { showMessageBox } from "./msgbox.js";
+import { localStore } from "./storage.js";
+import { TOOL_CURVE, TOOL_FREE_FORM_SELECT, TOOL_POLYGON, TOOL_SELECT, TOOL_TEXT, tools } from "./tools.js";
+// `sessions.js` must be loaded after `app.js`
+// This would cause it to be loaded earlier, and error trying to access `undos`
+// I'm surprised I haven't been bitten by this sort of bug, and I've
+// mostly converted the whole app to ES Modules!
+// TODO: make sessions.js export function to initialize it
+// import { new_local_session } from "./sessions.js";
 
 // expresses order in the URL as well as type
 const param_types = {
@@ -18,8 +42,9 @@ const exclusive_params = [
 ];
 
 function get_all_url_params() {
+	/** @type {Record<string, string | boolean>} */
 	const params = {};
-	location.hash.replace(/^#/, "").split(/,/).forEach((param_decl)=> {
+	location.hash.replace(/^#/, "").split(/,/).forEach((param_decl) => {
 		// colon is used in param value for URLs so split(":") isn't good enough
 		const colon_index = param_decl.indexOf(":");
 		if (colon_index === -1) {
@@ -44,24 +69,40 @@ function get_url_param(param_name) {
 	return get_all_url_params()[param_name];
 }
 
-function change_url_param(param_name, value, {replace_history_state=false}={}) {
-	change_some_url_params({[param_name]: value}, {replace_history_state});
+/**
+ * @param {string} param_name
+ * @param {string | boolean} value
+ * @param {object} [options]
+ * @param {boolean} [options.replace_history_state=false]
+ */
+function change_url_param(param_name, value, { replace_history_state = false } = {}) {
+	change_some_url_params({ [param_name]: value }, { replace_history_state });
 }
 
-function change_some_url_params(updates, {replace_history_state=false}={}) {
+/**
+ * @param {Record<string, string | boolean>} updates
+ * @param {object} [options]
+ * @param {boolean} [options.replace_history_state=false]
+ */
+function change_some_url_params(updates, { replace_history_state = false } = {}) {
 	for (const exclusive_param of exclusive_params) {
 		if (updates[exclusive_param]) {
-			exclusive_params.forEach((param)=> {
+			exclusive_params.forEach((param) => {
 				if (param !== exclusive_param) {
 					updates[param] = null; // must be enumerated (for Object.assign) but falsy, to get removed from the URL
 				}
 			});
 		}
 	}
-	set_all_url_params(Object.assign({}, get_all_url_params(), updates), {replace_history_state});
+	set_all_url_params(Object.assign({}, get_all_url_params(), updates), { replace_history_state });
 }
 
-function set_all_url_params(params, {replace_history_state=false}={}) {
+/**
+ * @param {Record<string, string | boolean>} params
+ * @param {object} [options]
+ * @param {boolean} [options.replace_history_state=false]
+ */
+function set_all_url_params(params, { replace_history_state = false } = {}) {
 
 	let new_hash = "";
 	for (const [param_name, param_type] of Object.entries(param_types)) {
@@ -75,10 +116,14 @@ function set_all_url_params(params, {replace_history_state=false}={}) {
 			}
 		}
 	}
-	// Note: gets rid of query string (?) portion of the URL
-	// This is desired for upgrading backwards compatibility URLs;
-	// may not be desired for future cases.
-	const new_url = `${location.origin}${location.pathname}#${new_hash}`;
+	let query_string = location.search;
+	// The Discord Activity needs to preserve the query string, so it's exempt from this.
+	if (!query_string.includes("frame_id")) {
+		// Omit query string for theoretical backwards compatibility with old URLs.
+		// TODO: what were these URLs? do they really still work? are they still relevant? probably not...
+		query_string = "";
+	}
+	const new_url = `${location.origin}${location.pathname}${query_string}#${new_hash}`;
 	try {
 		// can fail when running from file: protocol
 		if (replace_history_state) {
@@ -86,14 +131,14 @@ function set_all_url_params(params, {replace_history_state=false}={}) {
 		} else {
 			history.pushState(null, document.title, new_url);
 		}
-	} catch(error) {
+	} catch (_error) {
 		location.hash = new_hash;
 	}
 
 	$G.triggerHandler("change-url-params");
 }
 
-function update_magnified_canvas_size(){
+function update_magnified_canvas_size() {
 	$canvas.css("width", main_canvas.width * magnification);
 	$canvas.css("height", main_canvas.height * magnification);
 
@@ -101,32 +146,40 @@ function update_magnified_canvas_size(){
 }
 
 function update_canvas_rect() {
-	canvas_bounding_client_rect = main_canvas.getBoundingClientRect();
+	window.canvas_bounding_client_rect = main_canvas.getBoundingClientRect();
 
 	update_helper_layer();
 }
 
-let helper_layer_update_queued;
-let info_for_updating_pointer; // for updating on scroll or resize, where the mouse stays in the same place but its coordinates in the document change
-function update_helper_layer(e){
-	// e may be a number from requestAnimationFrame callback; ignore that
+let helper_layer_update_queued = false;
+/**
+ * for updating the brush preview when the mouse stays in the same place,
+ * but its coordinates in the document change due to scrolling or browser zooming (handled with scroll and resize events)
+ * @type {{ clientX: number, clientY: number, devicePixelRatio: number }}
+ */
+let info_for_updating_pointer;
+/** @param {{ clientX: number, clientY: number }} [e] */
+function update_helper_layer(e) {
+	// e should be passed for pointer events, but not scroll or resize events
+	// e may be a synthetic event without clientX/Y, so ignore that (using isFinite)
+	// e may also be a timestamp from requestAnimationFrame callback; ignore that
 	if (e && isFinite(e.clientX)) {
-		info_for_updating_pointer = {clientX: e.clientX, clientY: e.clientY, devicePixelRatio};
+		info_for_updating_pointer = { clientX: e.clientX, clientY: e.clientY, devicePixelRatio };
 	}
 	if (helper_layer_update_queued) {
-		// window.console && console.log("update_helper_layer - nah, already queued");
+		// window.console?.log("update_helper_layer - nah, already queued");
 		return;
 	} else {
-		// window.console && console.log("update_helper_layer");
+		// window.console?.log("update_helper_layer");
 	}
 	helper_layer_update_queued = true;
-	requestAnimationFrame(()=> {
+	requestAnimationFrame(() => {
 		helper_layer_update_queued = false;
 		update_helper_layer_immediately();
 	});
 }
 function update_helper_layer_immediately() {
-	// window.console && console.log("Update helper layer NOW");
+	// window.console?.log("Update helper layer NOW");
 	if (info_for_updating_pointer) {
 		const rescale = info_for_updating_pointer.devicePixelRatio / devicePixelRatio;
 		info_for_updating_pointer.clientX *= rescale;
@@ -150,8 +203,8 @@ function update_helper_layer_immediately() {
 	// 		Math.floor(Math.max(($canvas_area.scrollLeft() - $canvas_area.innerWidth()) / magnification + canvas.width - margin, 0)) :
 	// 		Math.floor(Math.max($canvas_area.scrollLeft() / magnification - margin, 0));
 	const viewport_y = Math.floor(Math.max($canvas_area.scrollTop() / magnification - margin, 0));
-	const viewport_x2 = Math.floor(Math.min(viewport_x + $canvas_area.width() / magnification + margin*2, main_canvas.width));
-	const viewport_y2 = Math.floor(Math.min(viewport_y + $canvas_area.height() / magnification + margin*2, main_canvas.height));
+	const viewport_x2 = Math.floor(Math.min(viewport_x + $canvas_area.width() / magnification + margin * 2, main_canvas.width));
+	const viewport_y2 = Math.floor(Math.min(viewport_y + $canvas_area.height() / magnification + margin * 2, main_canvas.height));
 	const viewport_width = viewport_x2 - viewport_x;
 	const viewport_height = viewport_y2 - viewport_y;
 	const resolution_width = viewport_width * scale;
@@ -207,9 +260,16 @@ function update_helper_layer_immediately() {
 	}
 }
 
+/**
+ * @param {PixelCanvas} hcanvas
+ * @param {number} scale
+ * @param {number} viewport_x
+ * @param {number} viewport_y
+ * @param {boolean} is_helper_layer
+ */
 function render_canvas_view(hcanvas, scale, viewport_x, viewport_y, is_helper_layer) {
 	update_fill_and_stroke_colors_and_lineWidth(selected_tool);
-	
+
 	const grid_visible = show_grid && magnification >= 4 && (window.devicePixelRatio * magnification) >= 4 && is_helper_layer;
 
 	const hctx = hcanvas.ctx;
@@ -221,7 +281,7 @@ function render_canvas_view(hcanvas, scale, viewport_x, viewport_y, is_helper_la
 		// (For the main canvas view, the helper layer is separate from (and overlaid on top of) the document canvas)
 		hctx.drawImage(main_canvas, viewport_x, viewport_y, hcanvas.width, hcanvas.height, 0, 0, hcanvas.width, hcanvas.height);
 	}
-	
+
 	var tools_to_preview = [...selected_tools];
 
 	// Don't preview tools while dragging components/component windows
@@ -232,7 +292,7 @@ function render_canvas_view(hcanvas, scale, viewport_x, viewport_y, is_helper_la
 		// which is, as of writing, part of the "tool preview"; it's ugly,
 		// but at least they don't have ALSO a brush like preview, right?
 		// so we can just allow those thru
-		tools_to_preview = tools_to_preview.filter((tool)=>
+		tools_to_preview = tools_to_preview.filter((tool) =>
 			tool.id === TOOL_CURVE ||
 			tool.id === TOOL_POLYGON
 		);
@@ -243,7 +303,7 @@ function render_canvas_view(hcanvas, scale, viewport_x, viewport_y, is_helper_la
 	// but this means they block out anything earlier
 	// NOTE: sort Select after Free-Form Select,
 	// Brush after Eraser, as they are from the toolbar ordering
-	tools_to_preview.sort((a, b)=> {
+	tools_to_preview.sort((a, b) => {
 		if (a.selectBox && !b.selectBox) {
 			return -1;
 		}
@@ -254,13 +314,13 @@ function render_canvas_view(hcanvas, scale, viewport_x, viewport_y, is_helper_la
 	});
 	// two select box previews would just invert and cancel each other out
 	// so only render one if there's one or more
-	var select_box_index = tools_to_preview.findIndex((tool)=> tool.selectBox);
+	var select_box_index = tools_to_preview.findIndex((tool) => tool.selectBox);
 	if (select_box_index >= 0) {
-		tools_to_preview = tools_to_preview.filter((tool, index)=> !tool.selectBox || index == select_box_index);
+		tools_to_preview = tools_to_preview.filter((tool, index) => !tool.selectBox || index == select_box_index);
 	}
 
-	tools_to_preview.forEach((tool)=> {
-		if(tool.drawPreviewUnderGrid && pointer && pointers.length < 2){
+	tools_to_preview.forEach((tool) => {
+		if (tool.drawPreviewUnderGrid && pointer && pointers.length < 2) {
 			hctx.save();
 			tool.drawPreviewUnderGrid(hctx, pointer.x, pointer.y, grid_visible, scale, -viewport_x, -viewport_y);
 			hctx.restore();
@@ -269,12 +329,12 @@ function render_canvas_view(hcanvas, scale, viewport_x, viewport_y, is_helper_la
 
 	if (selection) {
 		hctx.save();
-		
+
 		hctx.scale(scale, scale);
 		hctx.translate(-viewport_x, -viewport_y);
 
 		hctx.drawImage(selection.canvas, selection.x, selection.y);
-		
+
 		hctx.restore();
 
 		if (!is_helper_layer && !selection.dragging) {
@@ -286,12 +346,12 @@ function render_canvas_view(hcanvas, scale, viewport_x, viewport_y, is_helper_la
 
 	if (textbox) {
 		hctx.save();
-		
+
 		hctx.scale(scale, scale);
 		hctx.translate(-viewport_x, -viewport_y);
 
 		hctx.drawImage(textbox.canvas, textbox.x, textbox.y);
-		
+
 		hctx.restore();
 
 		if (!is_helper_layer && !textbox.dragging) {
@@ -305,8 +365,8 @@ function render_canvas_view(hcanvas, scale, viewport_x, viewport_y, is_helper_la
 		draw_grid(hctx, scale);
 	}
 
-	tools_to_preview.forEach((tool)=> {
-		if(tool.drawPreviewAboveGrid && pointer && pointers.length < 2){
+	tools_to_preview.forEach((tool) => {
+		if (tool.drawPreviewAboveGrid && pointer && pointers.length < 2) {
 			hctx.save();
 			tool.drawPreviewAboveGrid(hctx, pointer.x, pointer.y, grid_visible, scale, -viewport_x, -viewport_y);
 			hctx.restore();
@@ -319,10 +379,11 @@ function update_disable_aa() {
 	$canvas_area.toggleClass("disable-aa-for-things-at-main-canvas-scale", dots_per_canvas_px >= 3 || round);
 }
 
+/**
+ * @param {number} new_scale
+ * @param {{x: number, y: number}} [anchor_point] - uses canvas coordinates; default is the top-left of the $canvas_area viewport
+ */
 function set_magnification(new_scale, anchor_point) {
-	// anchor_point is optional, and uses canvas coordinates;
-	// the default is the top-left of the $canvas_area viewport
-
 	// How this works is, you imagine "what if it was zoomed, where would the anchor point be?"
 	// Then to make it end up where it started, you simply shift the viewport by the difference.
 	// And actually you don't have to "imagine" zooming, you can just do the zoom.
@@ -338,7 +399,7 @@ function set_magnification(new_scale, anchor_point) {
 		return_to_magnification = new_scale;
 	}
 	update_magnified_canvas_size(); // also updates canvas_bounding_client_rect used by from_canvas_coords()
-	
+
 	const anchor_after_zoom = from_canvas_coords(anchor_point);
 	// Note: scrollBy() not scrollTo()
 	$canvas_area[0].scrollBy({
@@ -349,17 +410,18 @@ function set_magnification(new_scale, anchor_point) {
 
 	$G.triggerHandler("resize"); // updates handles & grid
 	$G.trigger("option-changed"); // updates options area
+	$G.trigger("magnification-changed"); // updates custom zoom window
 }
 
+/** @type {OSGUI$Window} */
 let $custom_zoom_window;
 
 let dev_custom_zoom = false;
 try {
 	dev_custom_zoom = localStorage.dev_custom_zoom === "true";
-	// eslint-disable-next-line no-empty
-} catch (error) { }
+} catch (_error) { /* ignore */ }
 if (dev_custom_zoom) {
-	$(()=> {
+	$(() => {
 		show_custom_zoom_window();
 		$custom_zoom_window.css({
 			left: 80,
@@ -373,74 +435,114 @@ function show_custom_zoom_window() {
 	if ($custom_zoom_window) {
 		$custom_zoom_window.close();
 	}
-	const $w = new $DialogWindow(localize("Custom Zoom"));
+	const $w = $DialogWindow(localize("Custom Zoom"));
 	$custom_zoom_window = $w;
 	$w.addClass("custom-zoom-window");
 
-	// @TODO: update when zoom changes
 	$w.$main.append(`<div class='current-zoom'>${localize("Current zoom:")} <bdi>${magnification * 100}%</bdi></div>`);
+	// update when zoom changes
+	$G.on("magnification-changed", () => {
+		$w.$main.find(".current-zoom bdi").text(`${magnification * 100}%`);
+	});
 
 	const $fieldset = $(E("fieldset")).appendTo($w.$main);
 	$fieldset.append(`
 		<legend>${localize("Zoom to")}</legend>
 		<div class="fieldset-body">
-			<input type="radio" name="custom-zoom-radio" id="zoom-option-1" value="1"/><label for="zoom-option-1">100%</label>
-			<input type="radio" name="custom-zoom-radio" id="zoom-option-2" value="2"/><label for="zoom-option-2">200%</label>
-			<input type="radio" name="custom-zoom-radio" id="zoom-option-4" value="4"/><label for="zoom-option-4">400%</label>
-			<input type="radio" name="custom-zoom-radio" id="zoom-option-6" value="6"/><label for="zoom-option-6">600%</label>
-			<input type="radio" name="custom-zoom-radio" id="zoom-option-8" value="8"/><label for="zoom-option-8">800%</label>
-			<input type="radio" name="custom-zoom-radio" id="zoom-option-really-custom" value="really-custom"/><label for="zoom-option-really-custom"><input type="number" min="10" max="1000" name="really-custom-zoom-input" class="inset-deep no-spinner" value=""/>%</label>
+			<div class="radio-field"><input type="radio" name="custom-zoom-radio" id="zoom-option-1" aria-keyshortcuts="Alt+1 1" value="1"/><label for="zoom-option-1">${render_access_key("&100%")}</label></div>
+			<div class="radio-field"><input type="radio" name="custom-zoom-radio" id="zoom-option-2" aria-keyshortcuts="Alt+2 2" value="2"/><label for="zoom-option-2">${render_access_key("&200%")}</label></div>
+			<div class="radio-field"><input type="radio" name="custom-zoom-radio" id="zoom-option-4" aria-keyshortcuts="Alt+4 4" value="4"/><label for="zoom-option-4">${render_access_key("&400%")}</label></div>
+			<div class="radio-field"><input type="radio" name="custom-zoom-radio" id="zoom-option-6" aria-keyshortcuts="Alt+6 6" value="6"/><label for="zoom-option-6">${render_access_key("&600%")}</label></div>
+			<div class="radio-field"><input type="radio" name="custom-zoom-radio" id="zoom-option-8" aria-keyshortcuts="Alt+8 8" value="8"/><label for="zoom-option-8">${render_access_key("&800%")}</label></div>
+			<div class="radio-field"><input type="radio" name="custom-zoom-radio" id="zoom-option-really-custom" value="really-custom"/><label for="zoom-option-really-custom"><input type="number" min="10" max="1000" name="really-custom-zoom-input" class="inset-deep no-spinner" value=""/>%</label></div>
 		</div>
 	`);
 	let is_custom = true;
-	$fieldset.find("input[type=radio]").get().forEach((el)=> {
+	$fieldset.find("input[type=radio]").get().forEach((/** @type {HTMLInputElement} */ el) => {
 		if (parseFloat(el.value) === magnification) {
 			el.checked = true;
+			el.focus();
 			is_custom = false;
 		}
 	});
 	const $really_custom_radio_option = $fieldset.find("input[value='really-custom']");
-	const $really_custom_input = $fieldset.find("input[name='really-custom-zoom-input']");
+	const $really_custom_input = /** @type {JQuery<HTMLInputElement>}*/($fieldset.find("input[name='really-custom-zoom-input']"));
 
-	$really_custom_input.closest("label").on("click", ()=> {
+	$really_custom_input.closest("label").on("click", (event) => {
 		$really_custom_radio_option.prop("checked", true);
-		$really_custom_input[0].focus();
+		// If the user clicks on the input, let it get focus naturally, placing the caret where you click.
+		// If the user clicks outside it on the label, focus the input and select the text.
+		if ($(event.target).closest("input").length === 0) {
+			// Why does focusing this input programmatically not lead to the input
+			// being focused ultimately after the click?
+			// I'm working around this by using requestAnimationFrame (setTimeout would lead to a flicker).
+			// What am I working around, though? Is it my os-gui.js library? It has code to focus the
+			// last focused control in a window. I didn't see that code in the debugger, but I could've missed it.
+			// Debugging without time travel is hard. Maybe I should attack this problem with time travel, using replay.io.
+			requestAnimationFrame(() => {
+				$really_custom_input[0].focus();
+				$really_custom_input[0].select();
+			});
+			// Maybe this would all be a little simpler if I made the label point to the input.
+			// I want the label to have a larger click target, but maybe I can do that with CSS.
+		}
 	});
 
 	if (is_custom) {
 		$really_custom_input.val(magnification * 100);
 		$really_custom_radio_option.prop("checked", true);
+		$really_custom_input.select();
 	}
 
-	$fieldset.find("label").css({display: "block"});
+	$really_custom_radio_option.on("keydown", (event) => {
+		if (event.key.match(/^[0-9.]$/)) {
+			// Can't set number input to invalid number "." or even "0.",
+			// but if we don't prevent the default keydown behavior of typing the letter,
+			// we can actually change the focus before the letter is typed!
+			// $really_custom_input.val(event.key === "." ? "0." : event.key);
+			// $really_custom_input.focus(); // should move caret to end
+			// event.preventDefault();
+			$really_custom_input.val("").focus();
+		}
+	});
+
+	// If you tab to the number input and type, it should select the radio button
+	// so that your input is actually used.
+	$really_custom_input.on("input", () => {
+		$really_custom_radio_option.prop("checked", true);
+	});
+
+	$fieldset.find("label").css({ display: "block" });
 
 	$w.$Button(localize("OK"), () => {
-		let option_val = $fieldset.find("input[name='custom-zoom-radio']:checked").val();
+		let option_val = String($fieldset.find("input[name='custom-zoom-radio']:checked").val());
 		let mag;
-		if(option_val === "really-custom"){
+		if (option_val === "really-custom") {
 			option_val = $really_custom_input.val();
-			if(`${option_val}`.match(/\dx$/)) { // ...you can't actually type an x; oh well...
+			if (`${option_val}`.match(/\dx$/)) { // ...you can't actually type an x; oh well...
 				mag = parseFloat(option_val);
-			}else if(`${option_val}`.match(/\d%?$/)) {
+			} else if (`${option_val}`.match(/\d%?$/)) {
 				mag = parseFloat(option_val) / 100;
 			}
-			if(isNaN(mag)){
+			if (isNaN(mag)) {
 				please_enter_a_number();
 				return;
 			}
-		}else{
+		} else {
 			mag = parseFloat(option_val);
 		}
 
 		set_magnification(mag);
 
 		$w.close();
-	})[0].focus();
+	}, { type: "submit" });
 	$w.$Button(localize("Cancel"), () => {
 		$w.close();
 	});
 
 	$w.center();
+
+	handle_keyshortcuts($w);
 }
 
 
@@ -461,7 +563,7 @@ function toggle_thumbnail() {
 			thumbnail_canvas.style.height = "100%";
 		}
 		if (!$thumbnail_window) {
-			$thumbnail_window = new $Window({
+			$thumbnail_window = $Window({
 				title: localize("Thumbnail"),
 				toolWindow: true,
 				resizable: true,
@@ -477,32 +579,53 @@ function toggle_thumbnail() {
 			$thumbnail_window.$content.addClass("inset-deep");
 			$thumbnail_window.$content.css({ marginTop: "1px" }); // @TODO: should this (or equivalent on titlebar) be for all windows?
 			$thumbnail_window.maximize = () => { }; // @TODO: disable maximize with an option
+			// NOTE: I'm not sure some of these fallbacks are relevant anymore,
+			// or if they even work since changing `box` from an array to a string.
+			// Presumably the spec changed, but I don't feel like trying to dig up the history.
 			new ResizeObserver((entries) => {
 				const entry = entries[0];
+				let width, height;
 				if ("devicePixelContentBoxSize" in entry) {
 					// console.log("devicePixelContentBoxSize", entry.devicePixelContentBoxSize);
 					// Firefox seems to support this, although I can't find any documentation that says it should
 					// I can't find an implementation bug or anything.
 					// So I had to disable this case to test the fallback case (in Firefox 94.0)
-					thumbnail_canvas.width = entry.devicePixelContentBoxSize[0].inlineSize;
-					thumbnail_canvas.height = entry.devicePixelContentBoxSize[0].blockSize;
-				} else {
+					width = entry.devicePixelContentBoxSize[0].inlineSize;
+					height = entry.devicePixelContentBoxSize[0].blockSize;
+				} else if ("contentBoxSize" in entry) {
 					// console.log("contentBoxSize", entry.contentBoxSize);
 					// round() seems to line up with what Firefox does for device pixel alignment, which is great.
 					// In Chrome it's blurry at some zoom levels with round(), ceil(), or floor(), but it (documentedly) supports devicePixelContentBoxSize.
-					thumbnail_canvas.width = Math.round(entry.contentBoxSize[0].inlineSize * devicePixelRatio);
-					thumbnail_canvas.height = Math.round(entry.contentBoxSize[0].blockSize * devicePixelRatio);
+					// @ts-ignore
+					width = Math.round(entry.contentBoxSize[0].inlineSize * devicePixelRatio);
+					// @ts-ignore
+					height = Math.round(entry.contentBoxSize[0].blockSize * devicePixelRatio);
+				} else {
+					// Safari on iPad doesn't support either of the above as of iOS 15.0.2
+					// @ts-ignore
+					width = Math.round(entry.contentRect.width * devicePixelRatio);
+					// @ts-ignore
+					height = Math.round(entry.contentRect.height * devicePixelRatio);
+				}
+				if (width && height) { // If it's hidden, and then shown, it gets a width and height of 0 briefly on iOS. (This would give IndexSizeError in drawImage.)
+					thumbnail_canvas.width = width;
+					thumbnail_canvas.height = height;
 				}
 				update_helper_layer_immediately(); // updates thumbnail (but also unnecessarily the helper layer)
-			}).observe(thumbnail_canvas, { box: ['device-pixel-content-box'] }); // @TODO: does the box make it worse browser support?
+			}).observe(thumbnail_canvas, { box: "device-pixel-content-box" });
 		}
 		$thumbnail_window.show();
+		$thumbnail_window.on("close", (e) => {
+			e.preventDefault();
+			$thumbnail_window.hide();
+			show_thumbnail = false;
+		});
 	}
 	// Currently the thumbnail updates with the helper layer. But it's not part of the helper layer, so this is a bit of a misnomer for now.
 	update_helper_layer();
 }
 
-function reset_selected_colors(){
+function reset_selected_colors() {
 	selected_colors = {
 		foreground: "#000000",
 		background: "#ffffff",
@@ -519,7 +642,7 @@ function reset_file() {
 	update_title();
 }
 
-function reset_canvas_and_history(){
+function reset_canvas_and_history() {
 	undos.length = 0;
 	redos.length = 0;
 	current_history_node = root_history_node = make_history_node({
@@ -540,27 +663,52 @@ function reset_canvas_and_history(){
 	$G.triggerHandler("history-update"); // update history view
 }
 
+// TODO: fix inconsistent use of ancestry metaphor (parent vs futures); could use the term "basis" for the parent, or "children" for the futures
+/**
+ * @param {object} options
+ * @param {HistoryNode | null=} options.parent - the state before this state (its basis), or null if this is the first state
+ * @param {HistoryNode[]=} options.futures - the states branching off from this state (its children)
+ * @param {number=} options.timestamp - when this state was created
+ * @param {boolean=} options.soft - indicates that undo should skip this state; it can still be accessed with the History window
+ * @param {ImageData | null=} options.image_data - the image data for the canvas (TODO: region updates)
+ * @param {ImageData | null=} options.selection_image_data - the image data for the selection, if any
+ * @param {number=} options.selection_x - the x position of the selection, if any
+ * @param {number=} options.selection_y - the y position of the selection, if any
+ * @param {string=} options.textbox_text - the text in the textbox, if any
+ * @param {number=} options.textbox_x - the x position of the textbox, if any
+ * @param {number=} options.textbox_y - the y position of the textbox, if any
+ * @param {number=} options.textbox_width - the width of the textbox, if any
+ * @param {number=} options.textbox_height - the height of the textbox, if any
+ * @param {TextToolFontOptions | null=} options.text_tool_font - the font of the Text tool (important to restore a textbox-containing state, but persists without a textbox)
+ * @param {boolean=} options.tool_transparent_mode - whether transparent mode is on for Select/Free-Form Select/Text tools; otherwise box is opaque
+ * @param {string | CanvasPattern=} options.foreground_color - selected foreground color (left click)
+ * @param {string | CanvasPattern=} options.background_color - selected background color (right click)
+ * @param {string | CanvasPattern=} options.ternary_color - selected ternary color (ctrl+click)
+ * @param {string=} options.name - the name of the operation, shown in the history window, e.g. localize("Resize Canvas")
+ * @param {HTMLImageElement |HTMLCanvasElement | null=} options.icon - a visual representation of the operation type, shown in the history window, e.g. get_help_folder_icon("p_blank.png")
+ * @returns {HistoryNode}
+ */
 function make_history_node({
-	parent = null,
-	futures = [],
-	timestamp = Date.now(),
-	soft = false,
-	image_data = null,
-	selection_image_data = null,
-	selection_x,
-	selection_y,
-	textbox_text,
-	textbox_x,
-	textbox_y,
-	textbox_width,
-	textbox_height,
-	text_tool_font = null,
-	tool_transparent_mode,
-	foreground_color,
-	background_color,
-	ternary_color,
-	name,
-	icon = null,
+	parent = null, // the state before this state (its basis), or null if this is the first state
+	futures = [], // the states branching off from this state (its children)
+	timestamp = Date.now(), // when this state was created
+	soft = false, // indicates that undo should skip this state; it can still be accessed with the History window
+	image_data = null, // the image data for the canvas (TODO: region updates)
+	selection_image_data = null, // the image data for the selection, if any
+	selection_x, // the x position of the selection, if any
+	selection_y, // the y position of the selection, if any
+	textbox_text, // the text in the textbox, if any
+	textbox_x, // the x position of the textbox, if any
+	textbox_y, // the y position of the textbox, if any
+	textbox_width, // the width of the textbox, if any
+	textbox_height, // the height of the textbox, if any
+	text_tool_font = null, // the font of the Text tool (important to restore a textbox-containing state, but persists without a textbox)
+	tool_transparent_mode = false, // whether transparent mode is on for Select/Free-Form Select/Text tools; otherwise box is opaque
+	foreground_color, // selected foreground color (left click)
+	background_color, // selected background color (right click)
+	ternary_color, // selected ternary color (ctrl+click)
+	name, // the name of the operation, shown in the history window, e.g. localize("Resize Canvas")
+	icon = null, // an Image representation of the operation type, shown in the history window, e.g. get_help_folder_icon("p_blank.png")
 }) {
 	return {
 		parent,
@@ -586,7 +734,7 @@ function make_history_node({
 	};
 }
 
-function update_title(){
+function update_title() {
 	document.title = `${file_name} - ${is_pride_month ? "June Solidarity " : ""}${localize("Paint")}`;
 
 	if (is_pride_month) {
@@ -601,26 +749,36 @@ function update_title(){
 	}
 }
 
+/**
+ * Parse text/uri-list format
+ * @param {string} text
+ * @returns {string[]} URLs
+ */
 function get_uris(text) {
-	// parse text/uri-list
 	// get lines, discarding comments
-	const lines = text.split(/[\n\r]+/).filter(line => line[0] !== "#" && line);
+	const lines = text.split(/[\n\r]+/).filter((line) => line[0] !== "#" && line);
 	// discard text with too many lines (likely pasted HTML or something) - may want to revisit this
 	if (lines.length > 15) {
 		return [];
 	}
 	// parse URLs, discarding anything that parses as a relative URL
 	const uris = [];
-	for (let i=0; i<lines.length; i++) {
+	for (let i = 0; i < lines.length; i++) {
 		// Relative URLs will throw when no base URL is passed to the URL constructor.
 		try {
 			const url = new URL(lines[i]);
 			uris.push(url.href);
-		// eslint-disable-next-line no-empty
-		} catch(e) {}
+		} catch (_error) { /* ignore */ }
 	}
 	return uris;
 }
+/**
+ * Load an image file from a URL by any means necessary.
+ * For basic image loading, see `load_image_simple` instead.
+ * @param {string} uri
+ * @returns {Promise<ImageInfo>}
+ * @throws {Error & { code?: string }}
+ */
 async function load_image_from_uri(uri) {
 
 	// Cases to consider:
@@ -637,6 +795,11 @@ async function load_image_from_uri(uri) {
 	//   - The user may be just trying to paste text, not an image.
 	// - non-CORS-enabled URI
 	//   --> Use a CORS proxy! :)
+	//   - In electron, using a CORS proxy 1. is silly, 2. maybe isn't working.
+	//     --> Either proxy requests to the main process,
+	//         or configure headers in the main process to make requests work.
+	//         Probably the latter. @TODO
+	//         https://stackoverflow.com/questions/51254618/how-do-you-handle-cors-in-an-electron-app
 	// - invalid image / unsupported image format
 	// - image is no longer available on the live web
 	//   --> try loading from WayBack Machine :)
@@ -658,6 +821,7 @@ async function load_image_from_uri(uri) {
 
 	if (is_blob_uri && uri.indexOf(`blob:${location.origin}`) === -1) {
 		const error = new Error("can't load blob: URI from another domain");
+		// @ts-ignore
 		error.code = "cross-origin-blob-uri";
 		throw error;
 	}
@@ -679,20 +843,20 @@ async function load_image_from_uri(uri) {
 				$status_text.text("Downloading picture...");
 			}
 
-			const show_progress = ({loaded, total})=> {
+			const show_progress = ({ loaded, total }) => {
 				if (is_download) {
-					$status_text.text(`Downloading picture... (${Math.round(loaded/total*100)}%)`);
+					$status_text.text(`Downloading picture... (${Math.round(loaded / total * 100)}%)`);
 				}
 			};
 
 			if (is_download) {
-				console.log(`Try loading image from URI (${index_to_try+1}/${uris_to_try.length}): "${uri_to_try}"`);
+				console.log(`Try loading image from URI (${index_to_try + 1}/${uris_to_try.length}): "${uri_to_try}"`);
 			}
 
 			const original_response = await fetch(uri_to_try);
 			let response_to_read = original_response;
 			if (!original_response.ok) {
-				fails.push({status: original_response.status, statusText: original_response.statusText, url: uri_to_try});
+				fails.push({ status: original_response.status, statusText: original_response.statusText, url: uri_to_try });
 				continue;
 			}
 			if (!original_response.body) {
@@ -715,29 +879,29 @@ async function load_image_from_uri(uri) {
 						new ReadableStream({
 							start(controller) {
 								const reader = original_response.body.getReader();
-			
+
 								read();
 								function read() {
-									reader.read().then(({done, value}) => {
+									reader.read().then(({ done, value }) => {
 										if (done) {
 											controller.close();
-											return; 
+											return;
 										}
 										loaded += value.byteLength;
-										show_progress({loaded, total})
+										show_progress({ loaded, total });
 										controller.enqueue(value);
 										read();
-									}).catch(error => {
+									}).catch((error) => {
 										console.error(error);
-										controller.error(error)									
-									})
+										controller.error(error);
+									});
 								}
-							}
+							},
 						})
 					);
 				}
 			}
-	
+
 			const blob = await response_to_read.blob();
 			if (is_download) {
 				console.log("Download complete.");
@@ -748,8 +912,8 @@ async function load_image_from_uri(uri) {
 			// since a website might start redirecting swathes of URLs regardless of what they originally pointed to,
 			// at which point they would likely point to a web page instead of an image.
 			// (But still show an error about it not being an image, if WayBack also fails.)
-			const info = await new Promise((resolve, reject)=> {
-				read_image_file(blob, (error, info)=> {
+			const info = await new Promise((resolve, reject) => {
+				read_image_file(blob, (error, info) => {
 					if (error) {
 						reject(error);
 					} else {
@@ -759,21 +923,30 @@ async function load_image_from_uri(uri) {
 			});
 			return info;
 		} catch (error) {
-			fails.push({url: uri_to_try, error});
+			fails.push({ url: uri_to_try, error });
 		}
 	}
 	if (is_download) {
 		$status_text.text("Failed to download picture.");
 	}
-	const error = new Error(`failed to fetch image from any of ${uris_to_try.length} URI(s):\n  ${fails.map((fail)=>
+	const error = new Error(`failed to fetch image from any of ${uris_to_try.length} URI(s):\n  ${fails.map((fail) =>
 		(fail.statusText ? `${fail.status} ${fail.statusText} ` : "") + fail.url + (fail.error ? `\n    ${fail.error}` : "")
 	).join("\n  ")}`);
+	// @ts-ignore
 	error.code = "access-failure";
+	// @ts-ignore
 	error.fails = fails;
 	throw error;
 }
 
-function open_from_image_info(info, callback, canceled, into_existing_session, from_session_load){
+/**
+ * @param {ImageInfo} info
+ * @param {() => void} [callback]
+ * @param {() => void} [canceled]
+ * @param {boolean} [into_existing_session]
+ * @param {boolean} [from_session_load]
+ */
+function open_from_image_info(info, callback, canceled, into_existing_session, from_session_load) {
 	are_you_sure(({ canvas_modified_while_loading } = {}) => {
 		deselect();
 		cancel();
@@ -810,6 +983,7 @@ function open_from_image_info(info, callback, canceled, into_existing_session, f
 		if (info.source_blob instanceof File) {
 			file_name = info.source_blob.name;
 			// file.path is available in Electron (see https://www.electronjs.org/docs/api/file-object#file-object)
+			// @ts-ignore
 			system_file_handle = info.source_blob.path;
 		}
 		if (info.source_file_handle) {
@@ -818,10 +992,15 @@ function open_from_image_info(info, callback, canceled, into_existing_session, f
 		saved = true;
 		update_title();
 
-		callback && callback();
+		callback?.();
 	}, canceled, from_session_load);
 }
 
+// Note: This function is part of the API.
+/**
+ * @param {Blob} file
+ * @param {UserFileHandle} source_file_handle
+ */
 function open_from_file(file, source_file_handle) {
 	// The browser isn't very smart about MIME types.
 	// It seems to look at the file extension, but not the actual file contents.
@@ -831,31 +1010,34 @@ function open_from_file(file, source_file_handle) {
 	// It's better to look at the file content to determine file type.
 	// We do this for image files in read_image_file, and palette files in AnyPalette.js.
 
-	if (file.name.match(/\.theme(pack)?$/i)) {
-		file.text().then(load_theme_from_text, (error)=> {
+	if (file instanceof File && file.name.match(/\.theme(pack)?$/i)) {
+		file.text().then(load_theme_from_text, (error) => {
 			show_error_message(localize("Paint cannot open this file."), error);
 		});
-		return
+		return;
 	}
 	// Try loading as an image file first, then as a palette file, but show a combined error message if both fail.
-	read_image_file(file, (as_image_error, image_info)=> {
+	read_image_file(file, (as_image_error, image_info) => {
 		if (as_image_error) {
-			AnyPalette.loadPalette(file, (as_palette_error, new_palette)=> {
+			AnyPalette.loadPalette(file, (as_palette_error, new_palette) => {
 				if (as_palette_error) {
-					show_file_format_errors({as_image_error, as_palette_error});
+					show_file_format_errors({ as_image_error, as_palette_error });
 					return;
 				}
-				palette = new_palette.map((color)=> color.toString());
+				palette = new_palette.map((color) => color.toString());
 				$colorbox.rebuild_palette();
-				window.console && console.log(`Loaded palette: ${palette.map(()=> `%c█`).join("")}`, ...palette.map((color)=> `color: ${color};`));
+				window.console?.log(`Loaded palette: ${palette.map(() => "%c█").join("")}`, ...palette.map((color) => `color: ${color};`));
 			});
 			return;
 		}
-		image_info.source_file_handle = source_file_handle
+		image_info.source_file_handle = source_file_handle;
 		open_from_image_info(image_info);
 	});
 }
 
+/**
+ * @param {ImageInfo} info
+ */
 function apply_file_format_and_palette_info(info) {
 	file_format = info.file_format;
 
@@ -864,7 +1046,7 @@ function apply_file_format_and_palette_info(info) {
 	}
 
 	if (info.palette) {
-		window.console && console.log(`Loaded palette from image file: ${info.palette.map(()=> `%c█`).join("")}`, ...info.palette.map((color)=> `color: ${color};`));
+		window.console?.log(`Loaded palette from image file: ${info.palette.map(() => "%c█").join("")}`, ...info.palette.map((color) => `color: ${color};`));
 		palette = info.palette;
 		selected_colors.foreground = palette[0];
 		selected_colors.background = palette.length === 14 * 2 ? palette[14] : palette[1]; // first in second row for default sized palette, else second color (debatable behavior; should it find a dark and a light color?)
@@ -878,6 +1060,9 @@ function apply_file_format_and_palette_info(info) {
 	monochrome = info.monochrome;
 }
 
+/**
+ * @param {string} fileText
+ */
 function load_theme_from_text(fileText) {
 	var cssProperties = parseThemeFileString(fileText);
 	if (!cssProperties) {
@@ -887,11 +1072,11 @@ function load_theme_from_text(fileText) {
 	applyCSSProperties(cssProperties, { recurseIntoIframes: true });
 
 	window.themeCSSProperties = cssProperties;
-	
+
 	$G.triggerHandler("theme-load");
 }
 
-function file_new(){
+function file_new() {
 	are_you_sure(() => {
 		deselect();
 		cancel();
@@ -908,22 +1093,23 @@ function file_new(){
 	});
 }
 
-async function file_open(){
-	const {file, fileHandle} = await systemHooks.showOpenFileDialog({formats: image_formats})
+async function file_open() {
+	const { file, fileHandle } = await systemHooks.showOpenFileDialog({ formats: image_formats });
 	open_from_file(file, fileHandle);
 }
 
+/** @type {OSGUI$Window} */
 let $file_load_from_url_window;
-function file_load_from_url(){
-	if($file_load_from_url_window){
+function file_load_from_url() {
+	if ($file_load_from_url_window) {
 		$file_load_from_url_window.close();
 	}
-	const $w = new $DialogWindow().addClass("horizontal-buttons");
+	const $w = $DialogWindow().addClass("horizontal-buttons");
 	$file_load_from_url_window = $w;
 	$w.title("Load from URL");
 	// @TODO: URL validation (input has to be in a form (and we don't want the form to submit))
 	$w.$main.html(`
-		<div style='padding: 10px;'>
+		<div style="padding: 10px;">
 			<label style="display: block; margin-bottom: 5px;" for="url-input">Paste or type the web address of an image:</label>
 			<input type="url" required value="" id="url-input" class="inset-deep" style="width: 300px;"/></label>
 		</div>
@@ -931,7 +1117,7 @@ function file_load_from_url(){
 	const $input = $w.$main.find("#url-input");
 	// $w.$Button("Load", () => {
 	$w.$Button(localize("Open"), () => {
-		const uris = get_uris($input.val());
+		const uris = get_uris(String($input.val()));
 		if (uris.length > 0) {
 			// @TODO: retry loading if same URL entered
 			// actually, make it change the hash only after loading successfully
@@ -942,7 +1128,7 @@ function file_load_from_url(){
 		} else {
 			show_error_message("Invalid URL. It must include a protocol (https:// or http://)");
 		}
-	});
+	}, { type: "submit" });
 	$w.$Button(localize("Cancel"), () => {
 		$w.close();
 	});
@@ -952,26 +1138,27 @@ function file_load_from_url(){
 
 // Native FS API / File Access API allows you to overwrite files, but people are not used to it.
 // So we ask them to confirm it the first time.
-let confirmed_overwrite = false;
+let acknowledged_overwrite_capability = false;
 const confirmed_overwrite_key = "jspaint confirmed overwrite capable";
 try {
-	confirmed_overwrite = localStorage[confirmed_overwrite_key] === "true";
-} catch (error) {
+	acknowledged_overwrite_capability = localStorage[confirmed_overwrite_key] === "true";
+} catch (_error) {
 	// no localStorage
 	// In the year 2033, people will be more used to it, right?
 	// This will be known as the "Y2T bug"
-	confirmed_overwrite = Date.now() >= 2000000000000;
+	acknowledged_overwrite_capability = Date.now() >= 2000000000000;
 }
-async function confirm_overwrite() {
-	if (confirmed_overwrite) {
-		return;
+async function confirm_overwrite_capability() {
+	if (acknowledged_overwrite_capability) {
+		return true;
 	}
 	const { $window, promise } = showMessageBox({
 		messageHTML: `
 			<p>JS Paint can now save over existing files.</p>
 			<p>Do you want to overwrite the file?</p>
 			<p>
-				<label><input type='checkbox'/> Don't ask me again</label>
+				<input type="checkbox" id="do-not-ask-me-again-checkbox"/>
+				<label for="do-not-ask-me-again-checkbox">Don't ask me again</label>
 			</p>
 		`,
 		buttons: [
@@ -981,34 +1168,49 @@ async function confirm_overwrite() {
 	});
 	const result = await promise;
 	if (result === "overwrite") {
-		confirmed_overwrite = $window.$content.find("input[type='checkbox']").prop("checked");
+		acknowledged_overwrite_capability = $window.$content.find("#do-not-ask-me-again-checkbox").prop("checked");
 		try {
-			localStorage[confirmed_overwrite_key] = confirmed_overwrite;
-		} catch (error) {
+			localStorage[confirmed_overwrite_key] = acknowledged_overwrite_capability;
+		} catch (_error) {
 			// no localStorage... @TODO: don't show the checkbox in this case
 		}
+		return true;
 	}
+	return false;
 }
 
 
-function file_save(maybe_saved_callback=()=>{}, update_from_saved=true){
+function file_save(maybe_saved_callback = () => { }, update_from_saved = true) {
 	deselect();
 	// store and use file handle at this point in time, to avoid race conditions
 	const save_file_handle = system_file_handle;
-	if (!save_file_handle || file_name.match(/\.(svg|pdf)$/i)){
+	if (!save_file_handle || file_name.match(/\.(svg|pdf)$/i)) {
 		return file_save_as(maybe_saved_callback, update_from_saved);
 	}
 	write_image_file(main_canvas, file_format, async (blob) => {
-		await systemHooks.writeBlobToHandle(save_file_handle, blob);
-
-		if (update_from_saved) {
-			update_from_saved_file(blob);
+		// An error may be shown by `systemHooks.writeBlobToHandle`,
+		// or it may be unknown whether the save will succeed,
+		// so for now: true means definite success, false means failure or cancelation, and undefined means it's unknown.
+		const success = await systemHooks.writeBlobToHandle(save_file_handle, blob);
+		// When using a file download, where it's unknown whether the save will succeed,
+		// we don't want to mark the file as saved, as it would prevent the user from retrying the save.
+		// So only mark the file as saved if it's definite.
+		if (success === true) {
+			saved = true;
+			update_title();
 		}
-		maybe_saved_callback();
+		// However, we can still apply format-specific color reduction to the canvas,
+		// and call the "maybe saved" callback, which, as the name implies, is intended to handle the uncertainty.
+		if (success !== false) {
+			if (update_from_saved) {
+				update_from_saved_file(blob);
+			}
+			maybe_saved_callback();
+		}
 	});
 }
 
-function file_save_as(maybe_saved_callback=()=>{}, update_from_saved=true){
+function file_save_as(maybe_saved_callback = () => { }, update_from_saved = true) {
 	deselect();
 	systemHooks.showSaveFileDialog({
 		dialogTitle: localize("Save As"),
@@ -1016,14 +1218,14 @@ function file_save_as(maybe_saved_callback=()=>{}, update_from_saved=true){
 		defaultFileName: file_name,
 		defaultPath: typeof system_file_handle === "string" ? system_file_handle : null,
 		defaultFileFormatID: file_format,
-		getBlob: (new_file_type)=> {
-			return new Promise((resolve)=> {
-				write_image_file(main_canvas, new_file_type, (blob)=> {
+		getBlob: (new_file_type) => {
+			return new Promise((resolve) => {
+				write_image_file(main_canvas, new_file_type, (blob) => {
 					resolve(blob);
 				});
 			});
 		},
-		savedCallbackUnreliable: ({newFileName, newFileFormatID, newFileHandle, newBlob})=> {
+		savedCallbackUnreliable: ({ newFileName, newFileFormatID, newFileHandle, newBlob }) => {
 			saved = true;
 			system_file_handle = newFileHandle;
 			file_name = newFileName;
@@ -1033,15 +1235,36 @@ function file_save_as(maybe_saved_callback=()=>{}, update_from_saved=true){
 			if (update_from_saved) {
 				update_from_saved_file(newBlob);
 			}
-		}
+		},
 	});
 }
 
+function file_print() {
+	if (is_discord_embed) {
+		// closest localized string: "Could not start print job."
+		show_error_message(localize("Printing is not supported in the Discord Activity."));
+		return;
+	}
+	print();
+}
 
+/**
+ * Prompts the user to save changes to the document.
+ * @param {(info?: { canvas_modified_while_loading?: boolean }) => void} action
+ * @param {() => void} [canceled]
+ * @param {boolean} [from_session_load]
+ */
 function are_you_sure(action, canceled, from_session_load) {
 	if (saved) {
 		action();
 	} else if (from_session_load) {
+		// @FIXME: this dialog is confusingly worded in the best case.
+		// It's intended for when the user edits the document while the initial document is loading,
+		// which is hard to do, at least for local sessions on my fast new computer.
+		// However it's also shown inappropriately if you edit the document and then either:
+		// - type a #load: URL into the address bar such as
+		//   http://127.0.0.1:1999/#load:https://i.imgur.com/M5zcPuk.jpeg
+		// - click an Open link in the Manage Storage dialog in the Electron app
 		showMessageBox({
 			message: localize("You've modified the document while an existing document was loading.\nSave the new document?", file_name),
 			buttons: [
@@ -1115,7 +1338,18 @@ function please_enter_a_number() {
 	});
 }
 
+// Note: This function is part of the API.
+/**
+ * @param {string} message
+ * @param {Error | string} [error]
+ */
 function show_error_message(message, error) {
+	// Test global error handling resiliency by enabling one or both of these:
+	// Promise.reject(new Error("EMIT EMIT EMIT"));
+	// throw new Error("EMIT EMIT EMIT");
+	// It should fall back to an alert.
+	// EMIT stands for "Error Message Itself Test".
+
 	const { $message } = showMessageBox({
 		iconID: "error",
 		message,
@@ -1124,36 +1358,45 @@ function show_error_message(message, error) {
 		// },
 	});
 	// $message.css("max-width", "600px");
-	if(error){
+	if (error) {
 		const $details = $("<details><summary><span>Details</span></summary></details>")
-		.appendTo($message);
+			.appendTo($message);
 
 		// Chrome includes the error message in the error.stack string, whereas Firefox doesn't.
 		// Also note that there can be Exception objects that don't have a message (empty string) but a name,
 		// for instance Exception { message: "", name: "NS_ERROR_FAILURE", ... } for out of memory when resizing the canvas too large in Firefox.
 		// Chrome just lets you bring the system to a grating halt by trying to grab too much memory.
 		// Firefox does too sometimes.
-		let error_string = error.stack;
+		const e = /** @type {Error} */(error);
+		let error_string = e.stack;
 		if (!error_string) {
 			error_string = error.toString();
-		} else if (error.message && error_string.indexOf(error.message) === -1) {
+			// Discord API throws plain objects.
+			if (error_string === "[object Object]") {
+				try {
+					error_string = JSON.stringify(error, null, 2);
+				} catch (e) {
+					error_string = "Error details could not be stringified: " + e;
+				}
+			}
+		} else if (e.message && error_string.indexOf(e.message) === -1) {
 			error_string = `${error.toString()}\n\n${error_string}`;
-		} else if (error.name && error_string.indexOf(error.name) === -1) {
-			error_string = `${error.name}\n\n${error_string}`;
+		} else if (e.name && error_string.indexOf(e.name) === -1) {
+			error_string = `${e.name}\n\n${error_string}`;
 		}
 		$(E("pre"))
-		.text(error_string)
-		.appendTo($details)
-		.css({
-			background: "white",
-			color: "#333",
-			// background: "#A00",
-			// color: "white",
-			fontFamily: "monospace",
-			width: "500px",
-			maxWidth: "100%",
-			overflow: "auto",
-		});
+			.text(error_string)
+			.appendTo($details)
+			.css({
+				background: "white",
+				color: "#333",
+				// background: "#A00",
+				// color: "white",
+				fontFamily: "monospace",
+				width: "500px",
+				maxWidth: "100%",
+				overflow: "auto",
+			});
 	}
 	if (error) {
 		window.console?.error?.(message, error);
@@ -1164,17 +1407,17 @@ function show_error_message(message, error) {
 
 // @TODO: close are_you_sure windows and these Error windows when switching sessions
 // because it can get pretty confusing
-function show_resource_load_error_message(error){
+/** @param {Error & {code: string, fails?: {status: number, statusText: string, url: string}[]}} error */
+function show_resource_load_error_message(error) {
 	const { $window, $message } = showMessageBox({});
 	const firefox = navigator.userAgent.toLowerCase().indexOf("firefox") > -1;
 	// @TODO: copy & paste vs download & open, more specific guidance
 	if (error.code === "cross-origin-blob-uri") {
 		$message.html(`
 			<p>Can't load image from address starting with "blob:".</p>
-			${
-				firefox ?
-					`<p>Try "Copy Image" instead of "Copy Image Location".</p>` :
-					`<p>Try "Copy image" instead of "Copy image address".</p>`
+			${firefox ?
+				`<p>Try "Copy Image" instead of "Copy Image Location".</p>` :
+				`<p>Try "Copy image" instead of "Copy image address".</p>`
 			}
 		`);
 	} else if (error.code === "html-not-image") {
@@ -1194,7 +1437,7 @@ function show_resource_load_error_message(error){
 				<p>Try copying and pasting an image instead of a URL.</p>
 			`);
 			if (error.fails) {
-				$("<ul>").append(error.fails.map(({status, statusText, url})=>
+				$("<ul>").append(error.fails.map(({ status, statusText, url }) =>
 					$("<li>").text(url).prepend($("<b>").text(`${status || ""} ${statusText || "Failed"} `))
 				)).appendTo($message);
 			}
@@ -1206,6 +1449,7 @@ function show_resource_load_error_message(error){
 			`);
 		}
 	} else {
+		// TODO: what to do in Electron? also most users don't know how to check the console
 		$message.html(`
 			<p>Failed to load image from URL.</p>
 			<p>Check your browser's devtools for details.</p>
@@ -1214,6 +1458,19 @@ function show_resource_load_error_message(error){
 	$message.css({ maxWidth: "500px" });
 	$window.center(); // after adding content
 }
+/**
+ * @typedef {object} PaletteErrorGroup
+ * @property {string} message
+ * @property {PaletteErrorObject[]} errors
+ *
+ * @typedef {object} PaletteErrorObject
+ * @property {Error} error
+ * @property {{name: string}} __PATCHED_LIB_TO_ADD_THIS__format
+ *
+ * @param {object} options
+ * @param {Error=} options.as_image_error
+ * @param {Error|PaletteErrorGroup=} options.as_palette_error
+ */
 function show_file_format_errors({ as_image_error, as_palette_error }) {
 	let html = `
 		<p>${localize("Paint cannot open this file.")}</p>
@@ -1228,14 +1485,14 @@ function show_file_format_errors({ as_image_error, as_palette_error }) {
 		`;
 	}
 	var entity_map = {
-		'&': '&amp;',
-		'<': '&lt;',
-		'>': '&gt;',
-		'"': '&quot;',
-		"'": '&#39;',
-		'/': '&#x2F;',
-		'`': '&#x60;',
-		'=': '&#x3D;',
+		"&": "&amp;",
+		"<": "&lt;",
+		">": "&gt;",
+		'"': "&quot;",
+		"'": "&#39;",
+		"/": "&#x2F;",
+		"`": "&#x60;",
+		"=": "&#x3D;",
 	};
 	const escape_html = (string) => String(string).replace(/[&<>"'`=/]/g, (s) => entity_map[s]);
 	const uppercase_first = (string) => string.charAt(0).toUpperCase() + string.slice(1);
@@ -1243,13 +1500,14 @@ function show_file_format_errors({ as_image_error, as_palette_error }) {
 	const only_palette_error = as_palette_error && !as_image_error; // update me if there are more error types
 	if (as_palette_error) {
 		let details = "";
-		if (as_palette_error.errors) {
+		if ("errors" in as_palette_error) {
 			details = `<ul dir="ltr">${as_palette_error.errors.map((error) => {
 				const format = error.__PATCHED_LIB_TO_ADD_THIS__format;
 				if (format && error.error) {
 					return `<li><b>${escape_html(`${format.name}`)}</b>: ${escape_html(uppercase_first(error.error.message))}</li>`;
 				}
 				// Fallback for unknown errors
+				// @ts-ignore
 				return `<li>${escape_html(error.message || error)}</li>`;
 			}).join("\n")}</ul>`;
 		} else {
@@ -1269,9 +1527,11 @@ function show_file_format_errors({ as_image_error, as_palette_error }) {
 	});
 }
 
+/** @type {OSGUI$Window} */
 let $about_paint_window;
 const $about_paint_content = $("#about-paint");
 
+/** @type {OSGUI$Window} */
 let $news_window;
 const $this_version_news = $("#news");
 let $latest_news = $this_version_news;
@@ -1282,12 +1542,12 @@ let $latest_news = $this_version_news;
 if (location.origin !== "https://jspaint.app") {
 	$this_version_news.prepend(
 		$("<p>For the latest news, visit <a href='https://jspaint.app'>jspaint.app</a></p>")
-		.css({padding: "8px 15px"})
+			.css({ padding: "8px 15px" })
 	);
 }
 
-function show_about_paint(){
-	if($about_paint_window){
+function show_about_paint() {
+	if ($about_paint_window) {
 		$about_paint_window.close();
 	}
 	$about_paint_window = $Window({
@@ -1298,18 +1558,15 @@ function show_about_paint(){
 	});
 	$about_paint_window.addClass("about-paint squish");
 	if (is_pride_month) {
-		$("#paint-32x32").attr("src", "./images/icons/gay-es-paint-32x32-light-outline.png");
+		$("#about-paint-icon").attr("src", "./images/icons/gay-es-paint-128x128.png");
 	}
 
-	$about_paint_window.$content.append($about_paint_content.show()).css({padding: "15px"});
+	$about_paint_window.$content.append($about_paint_content.show()).css({ padding: "15px" });
 
-	$("#maybe-outdated-view-project-news").removeAttr("hidden");
+	$("#jspaint-update-status-area").removeAttr("hidden");
 
 	$("#failed-to-check-if-outdated").attr("hidden", "hidden");
 	$("#outdated").attr("hidden", "hidden");
-
-	$about_paint_window.center();
-	$about_paint_window.center(); // @XXX - but it helps tho
 
 	$about_paint_window.$Button(localize("OK"), () => {
 		$about_paint_window.close();
@@ -1321,70 +1578,137 @@ function show_about_paint(){
 			marginBottom: "10px",
 		});
 
-	$("#refresh-to-update").on("click", (event)=> {
+	$("#refresh-to-update").on("click", (event) => {
 		event.preventDefault();
 		are_you_sure(() => {
+			exit_fullscreen_if_ios();
 			location.reload();
 		});
 	});
-	
+
 	$("#view-project-news").on("click", () => {
 		show_news();
 	});//.focus();
-	
+
+	// Hack to avoid mis-centering within small screens,
+	// due to dynamic width of window when it abuts the right side of the screen
+	// (due to line wrapping of text content at the right edge of the screen)
+	// TODO: include this in OS-GUI library's centering logic
+	$about_paint_window.css({ left: -innerWidth, top: -innerHeight });
+	$about_paint_window.center();
+
+	if (is_discord_embed) {
+		// No checking for updates in the Discord Activity for now at least.
+		// It's sandboxed, so it can't fetch the news without some extra server logic to proxy it,
+		// and since there will be one official version of the Discord Activity,
+		// the user isn't responsible for updating it.
+
+		// Might be cute to say "This product is licensed to <Discord User>",
+		// since we have the API for that.
+		return;
+	}
+
 	$("#checking-for-updates").removeAttr("hidden");
 
+	// Forward compatibility note: I could change what's served at /?news and remove the news from the HTML,
+	// but I've only added this query string on 2024-04-12, so I may not choose to take advantage of this.
+	// I wish I had used a separate URL from the beginning, maybe a proper blog with an RSS feed.
+	// It's somewhat unsustainable to add news continuously to the HTML of the app,
+	// especially when images are requested even though the container is hidden. (https://github.com/1j01/jspaint/issues/320)
+	// Also note: as long as I preserve the basic structure of the news entries at /, I should be able to
+	// have old versions of the app still say they're outdated, and I could include some short message instead of full news articles.
+	// Maybe I could even include the news in an iframe, just for old versions of the app, within the latest `.news-entry`...
+	// as long as it doesn't have the same problem as images, of loading in the background.
 	const url =
 		// ".";
 		// "test-news-newer.html";
-		"https://jspaint.app";
+		"https://jspaint.app/?news";
 	fetch(url)
-	.then((response)=> response.text())
-	.then((text)=> {
-		const parser = new DOMParser();
-		const htmlDoc = parser.parseFromString(text, "text/html");
-		$latest_news = $(htmlDoc).find("#news");
+		.then((response) => response.text())
+		.then((text) => {
+			const parser = new DOMParser();
+			const htmlDoc = parser.parseFromString(text, "text/html");
+			$latest_news = $(htmlDoc).find("#news");
 
-		const $latest_entries = $latest_news.find(".news-entry");
-		const $this_version_entries = $this_version_news.find(".news-entry");
+			const $latest_entries = $latest_news.find(".news-entry");
+			const $this_version_entries = $this_version_news.find(".news-entry");
 
-		if (!$latest_entries.length) {
-			$latest_news = $this_version_news;
-			throw new Error(`No news found at fetched site (${url})`);
-		}
+			if (!$latest_entries.length) {
+				$latest_news = $this_version_news;
+				throw new Error(`No news found at fetched site (${url})`);
+			}
 
-		function entries_contains_update($entries, id) {
-			return $entries.get().some((el_from_this_version)=> 
-				id === el_from_this_version.id
-			);
-		}
+			function entries_contains_update($entries, id) {
+				return $entries.get().some((el_from_this_version) =>
+					id === el_from_this_version.id
+				);
+			}
 
-		// @TODO: visibly mark entries that overlap
-		const entries_newer_than_this_version =
-			$latest_entries.get().filter((el_from_latest)=>
-				!entries_contains_update($this_version_entries, el_from_latest.id)
-			);
-		
-		const entries_new_in_this_version = // i.e. in development, when updating the news
-			$this_version_entries.get().filter((el_from_latest)=>
-				!entries_contains_update($latest_entries, el_from_latest.id)
-			);
+			// @TODO: visibly mark entries that overlap
+			const entries_newer_than_this_version =
+				$latest_entries.get().filter((el_from_latest) =>
+					!entries_contains_update($this_version_entries, el_from_latest.id)
+				);
 
-		if (entries_newer_than_this_version.length > 0) {
-			$("#outdated").removeAttr("hidden");
-		} else if(entries_new_in_this_version.length > 0) {
-			$latest_news = $this_version_news; // show this version's news for development
-		}
+			const entries_new_in_this_version = // i.e. in development, when updating the news
+				$this_version_entries.get().filter((el_from_latest) =>
+					!entries_contains_update($latest_entries, el_from_latest.id)
+				);
 
-		$("#checking-for-updates").attr("hidden", "hidden");
-		update_css_classes_for_conditional_messages();
-	}).catch((exception)=> {
-		$("#failed-to-check-if-outdated").removeAttr("hidden");
-		$("#checking-for-updates").attr("hidden", "hidden");
-		update_css_classes_for_conditional_messages();
-		window.console && console.log("Couldn't check for updates.", exception);
-	});
+			if (entries_newer_than_this_version.length > 0) {
+				$("#outdated").removeAttr("hidden");
+			} else if (entries_new_in_this_version.length > 0) {
+				$latest_news = $this_version_news; // show this version's news for development
+			}
+
+			$("#checking-for-updates").attr("hidden", "hidden");
+			update_css_classes_for_conditional_messages();
+		}).catch((exception) => {
+			$("#failed-to-check-if-outdated").removeAttr("hidden");
+			$("#checking-for-updates").attr("hidden", "hidden");
+			update_css_classes_for_conditional_messages();
+			window.console?.log("Couldn't check for updates.", exception);
+		});
 }
+
+function exit_fullscreen_if_ios() {
+	if ($("body").hasClass("ios")) {
+		try {
+			if (document.exitFullscreen) {
+				document.exitFullscreen();
+			} else if (document.webkitExitFullscreen) {
+				document.webkitExitFullscreen();
+			} else if (document.mozCancelFullScreen) {
+				document.mozCancelFullScreen();
+			} else if (document.msExitFullscreen) {
+				document.msExitFullscreen();
+			}
+		} catch (_error) {
+			// not important, just trying to prevent broken fullscreen after refresh
+			// (:fullscreen and document.fullscreenElement stops working because it's not "requested by the page" anymore)
+			// (the fullscreen styling is not generally obtrusive, but it is obtrusive when it DOESN'T work)
+			//
+			// alternatives:
+			// - detect reload-while-fullscreen by storing a timestamp on unload when fullscreen,
+			//   and apply the fullscreen class if timestamp is within a few seconds during load.
+			//   - This doesn't have an answer for detecting leaving fullscreen,
+			//     and if it keeps thinking it's fullscreen, it'll keep storing the timestamp, and get stuck.
+			//     Unless it only stores the timestamp if it knows it's fullscreen? (i.e. page-requested fullscreen)
+			//     Then it would only work for one reload.
+			//     So ideally it would have the below anyway, in which case this would be unnecessary.
+			// - detect fullscreen state without fullscreen API, using viewport size
+			//   - If this is possible, why don't browsers just expose this information in the fullscreen API? :(
+			//   - iPad resets the zoom level when going fullscreen, and then when reloading,
+			//     the zoom level is reset to the user-set zoom level.
+			//     Safari doesn't update devicePixelRatio based on the zoom level,
+			//     and doesn't support ResizeObserver for device pixels.
+			//     It does support https://developer.mozilla.org/en-US/docs/Web/API/Visual_Viewport_API
+			//     though, so maybe something can be done with that.
+			// - prompt to add to homescreen
+		}
+	}
+}
+
 // show_about_paint(); // for testing
 
 function update_css_classes_for_conditional_messages() {
@@ -1406,8 +1730,8 @@ function update_css_classes_for_conditional_messages() {
 	}
 }
 
-function show_news(){
-	if($news_window){
+function show_news() {
+	if ($news_window) {
 		$news_window.close();
 	}
 	$news_window = $Window({
@@ -1421,8 +1745,8 @@ function show_news(){
 
 	// const $latest_entries = $latest_news.find(".news-entry");
 	// const latest_entry = $latest_entries[$latest_entries.length - 1];
-	// window.console && console.log("LATEST MEWS:", $latest_news);
-	// window.console && console.log("LATEST ENTRY:", latest_entry);
+	// window.console?.log("LATEST MEWS:", $latest_news);
+	// window.console?.log("LATEST ENTRY:", latest_entry);
 
 	const $latest_news_style = $latest_news.find("style");
 	$this_version_news.find("style").remove();
@@ -1439,10 +1763,13 @@ function show_news(){
 
 // @TODO: DRY between these functions and open_from_* functions further?
 
-function paste_image_from_file(blob){
+/**
+ * @param {Blob} blob
+ */
+function paste_image_from_file(blob) {
 	read_image_file(blob, (error, info) => {
 		if (error) {
-			show_file_format_errors({as_image_error: error});
+			show_file_format_errors({ as_image_error: error });
 			return;
 		}
 		paste(info.image || make_canvas(info.image_data));
@@ -1451,7 +1778,7 @@ function paste_image_from_file(blob){
 
 // Edit > Paste From
 async function choose_file_to_paste() {
-	const {file} = await systemHooks.showOpenFileDialog({formats: image_formats});
+	const { file } = await systemHooks.showOpenFileDialog({ formats: image_formats });
 	if (file.type.match(/^image|application\/pdf/)) {
 		paste_image_from_file(file);
 		return;
@@ -1459,12 +1786,16 @@ async function choose_file_to_paste() {
 	show_error_message(localize("This is not a valid bitmap file, or its format is not currently supported."));
 }
 
-function paste(img_or_canvas){
+/**
+ * @param {HTMLImageElement | HTMLCanvasElement} img_or_canvas
+ */
+function paste(img_or_canvas) {
 
-	if(img_or_canvas.width > main_canvas.width || img_or_canvas.height > main_canvas.height){
+	if (img_or_canvas.width > main_canvas.width || img_or_canvas.height > main_canvas.height) {
+		const message = localize("The image in the clipboard is larger than the bitmap.") + "\n" +
+			localize("Would you like the bitmap enlarged?");
 		showMessageBox({
-			message: localize("The image in the clipboard is larger than the bitmap.") + "\n" +
-				localize("Would you like the bitmap enlarged?"),
+			message,
 			iconID: "question",
 			windowOptions: {
 				icons: {
@@ -1501,19 +1832,19 @@ function paste(img_or_canvas){
 					}
 				);
 				do_the_paste();
-				$canvas_area.trigger("resize");
+				$canvas_area.trigger("resize"); // already taken care of by resize_canvas_and_save_dimensions? or does this hide the main canvas handles?
 			} else if (result === "crop") {
 				do_the_paste();
 			}
 		});
-	}else{
+	} else {
 		do_the_paste();
 	}
 
-	function do_the_paste(){
+	function do_the_paste() {
 		deselect();
 		select_tool(get_tool_by_id(TOOL_SELECT));
-		
+
 		const x = Math.max(0, Math.ceil($canvas_area.scrollLeft() / magnification));
 		const y = Math.max(0, Math.ceil(($canvas_area.scrollTop()) / magnification));
 		// Nevermind, canvas, isn't aligned to the right in RTL layout!
@@ -1530,16 +1861,16 @@ function paste(img_or_canvas){
 			name: localize("Paste"),
 			icon: get_help_folder_icon("p_paste.png"),
 			soft: true,
-		}, ()=> {
+		}, () => {
 			selection = new OnCanvasSelection(x, y, img_or_canvas.width, img_or_canvas.height, img_or_canvas);
 		});
 	}
 }
 
-function render_history_as_gif(){
+function render_history_as_gif() {
 	const $win = $DialogWindow();
 	$win.title("Rendering GIF");
-	
+
 	const $output = $win.$main;
 	const $progress = $(E("progress")).appendTo($output).addClass("inset-deep");
 	const $progress_percent = $(E("span")).appendTo($output).css({
@@ -1547,15 +1878,15 @@ function render_history_as_gif(){
 		display: "inline-block",
 		textAlign: "center",
 	});
-	$win.$main.css({padding: 5});
+	$win.$main.css({ padding: 5 });
 
-	const $cancel = $win.$Button('Cancel', () => {
+	const $cancel = $win.$Button("Cancel", () => {
 		$win.close();
 	}).focus();
 
 	$win.center();
 
-	try{
+	try {
 		const width = main_canvas.width;
 		const height = main_canvas.height;
 		const gif = new GIF({
@@ -1565,16 +1896,16 @@ function render_history_as_gif(){
 			height,
 		});
 
-		$win.on('close', () => {
+		$win.on("close", () => {
 			gif.abort();
 		});
-	
-		gif.on("progress", p => {
+
+		gif.on("progress", (p) => {
 			$progress.val(p);
-			$progress_percent.text(`${~~(p*100)}%`);
+			$progress_percent.text(`${~~(p * 100)}%`);
 		});
 
-		gif.on("finished", blob => {
+		gif.on("finished", (blob) => {
 			$win.title("Rendered GIF");
 			const blob_url = URL.createObjectURL(blob);
 			$output.empty().append(
@@ -1592,7 +1923,7 @@ function render_history_as_gif(){
 					maxWidth: "70vw",
 				})
 			);
-			$win.on("close", ()=> {
+			$win.on("close", () => {
 				// revoking on image load(+error) breaks right click > "Save image as" and "Open image in new tab"
 				URL.revokeObjectURL(blob_url);
 			});
@@ -1608,7 +1939,7 @@ function render_history_as_gif(){
 					const suggested_file_name = `${file_name.replace(/\.(bmp|dib|a?png|gif|jpe?g|jpe|jfif|tiff?|webp|raw)$/i, "")} history.gif`;
 					systemHooks.showSaveFileDialog({
 						dialogTitle: localize("Save As"), // localize("Save Animation As"),
-						getBlob: ()=> blob,
+						getBlob: () => blob,
 						defaultFileName: suggested_file_name,
 						defaultPath: typeof system_file_handle === "string" ? `${system_file_handle.replace(/[/\\][^/\\]*/, "")}/${suggested_file_name}` : null,
 						defaultFileFormatID: "image/gif",
@@ -1628,42 +1959,46 @@ function render_history_as_gif(){
 
 		const gif_canvas = make_canvas(width, height);
 		const frame_history_nodes = [...undos, current_history_node];
-		for(const frame_history_node of frame_history_nodes){
+		for (const frame_history_node of frame_history_nodes) {
 			gif_canvas.ctx.clearRect(0, 0, gif_canvas.width, gif_canvas.height);
 			gif_canvas.ctx.putImageData(frame_history_node.image_data, 0, 0);
 			if (frame_history_node.selection_image_data) {
 				const selection_canvas = make_canvas(frame_history_node.selection_image_data);
 				gif_canvas.ctx.drawImage(selection_canvas, frame_history_node.selection_x, frame_history_node.selection_y);
 			}
-			gif.addFrame(gif_canvas, {delay: 200, copy: true});
+			gif.addFrame(gif_canvas, { delay: 200, copy: true });
 		}
 		gif.render();
 
-	}catch(err){
+	} catch (err) {
 		$win.close();
 		show_error_message("Failed to render GIF.", err);
 	}
 }
 
-function go_to_history_node(target_history_node, canceling, discard_document_state) {
+/**
+ * @param {HistoryNode} target_history_node
+ * @param {boolean=} canceling
+ */
+function go_to_history_node(target_history_node, canceling) {
 	const from_history_node = current_history_node;
 
 	if (!target_history_node.image_data) {
 		if (!canceling) {
 			show_error_message("History entry has no image data.");
-			window.console && console.log("Target history entry has no image data:", target_history_node);
+			window.console?.log("Target history entry has no image data:", target_history_node);
 		}
 		return;
 	}
 	/* For performance (especially with two finger panning), I'm disabling this safety check that preserves certain document states in the history.
 	const current_image_data = main_ctx.getImageData(0, 0, main_canvas.width, main_canvas.height);
 	if (!current_history_node.image_data || !image_data_match(current_history_node.image_data, current_image_data, 5)) {
-		window.console && console.log("Canvas image data changed outside of undoable", current_history_node, "current_history_node.image_data:", current_history_node.image_data, "document's current image data:", current_image_data);
+		window.console?.log("Canvas image data changed outside of undoable", current_history_node, "current_history_node.image_data:", current_history_node.image_data, "document's current image data:", current_image_data);
 		undoable({name: "Unknown [go_to_history_node]", use_loose_canvas_changes: true}, ()=> {});
 	}
 	*/
 	current_history_node = target_history_node;
-	
+
 	deselect(true);
 	if (!canceling) {
 		cancel(true);
@@ -1700,7 +2035,7 @@ function go_to_history_node(target_history_node, canceling, discard_document_sta
 		for (const [k, v] of Object.entries(target_history_node.text_tool_font)) {
 			text_tool_font[k] = v;
 		}
-		
+
 		selected_colors.foreground = target_history_node.foreground_color;
 		selected_colors.background = target_history_node.background_color;
 		tool_transparent_mode = target_history_node.tool_transparent_mode;
@@ -1726,19 +2061,19 @@ function go_to_history_node(target_history_node, canceling, discard_document_sta
 			[redos[0], ...get_history_ancestors(redos[0])] :
 			[from_history_node, ...get_history_ancestors(from_history_node)];
 
-	// window.console && console.log("target_history_node:", target_history_node);
-	// window.console && console.log("ancestors_of_target:", ancestors_of_target);
-	// window.console && console.log("old_history_path:", old_history_path);
+	// window.console?.log("target_history_node:", target_history_node);
+	// window.console?.log("ancestors_of_target:", ancestors_of_target);
+	// window.console?.log("old_history_path:", old_history_path);
 	redos.length = 0;
 
 	let latest_node = target_history_node;
 	while (latest_node.futures.length > 0) {
 		const futures = [...latest_node.futures];
-		futures.sort((a, b)=> {
-			if(old_history_path.indexOf(a) > -1) {
+		futures.sort((a, b) => {
+			if (old_history_path.indexOf(a) > -1) {
 				return -1;
 			}
-			if(old_history_path.indexOf(b) > -1) {
+			if (old_history_path.indexOf(b) > -1) {
 				return +1;
 			}
 			return 0;
@@ -1746,32 +2081,41 @@ function go_to_history_node(target_history_node, canceling, discard_document_sta
 		latest_node = futures[0];
 		redos.unshift(latest_node);
 	}
-	// window.console && console.log("new undos:", undos);
-	// window.console && console.log("new redos:", redos);
+	// window.console?.log("new undos:", undos);
+	// window.console?.log("new redos:", redos);
 
 	$canvas_area.trigger("resize");
 	$G.triggerHandler("session-update"); // autosave
 	$G.triggerHandler("history-update"); // update history view
 }
-function undoable({name, icon, use_loose_canvas_changes, soft}, callback){
+
+// Note: This function is part of the API.
+/**
+ * Creates an undo point.
+ * @param {ActionMetadata} options
+ * @param {function=} callback
+ */
+function undoable({ name, icon, use_loose_canvas_changes, soft, assume_saved }, callback) {
 	if (!use_loose_canvas_changes) {
 		/* For performance (especially with two finger panning), I'm disabling this safety check that preserves certain document states in the history.
 		const current_image_data = main_ctx.getImageData(0, 0, main_canvas.width, main_canvas.height);
 		if (!current_history_node.image_data || !image_data_match(current_history_node.image_data, current_image_data, 5)) {
-			window.console && console.log("Canvas image data changed outside of undoable", current_history_node, "current_history_node.image_data:", current_history_node.image_data, "document's current image data:", current_image_data);
+			window.console?.log("Canvas image data changed outside of undoable", current_history_node, "current_history_node.image_data:", current_history_node.image_data, "document's current image data:", current_image_data);
 			undoable({name: "Unknown [undoable]", use_loose_canvas_changes: true}, ()=> {});
 		}
 		*/
 	}
 
-	saved = false;
-	update_title();
+	if (!assume_saved) { // flag is used for undoable file reloading on save, for reduction in color depth
+		saved = false;
+		update_title();
+	}
 
 	const before_callback_history_node = current_history_node;
-	callback && callback();
+	callback?.();
 	if (current_history_node !== before_callback_history_node) {
 		show_error_message(`History node switched during undoable callback for ${name}. This shouldn't happen.`);
-		window.console && console.log(`History node switched during undoable callback for ${name}, from`, before_callback_history_node, "to", current_history_node);
+		window.console?.log(`History node switched during undoable callback for ${name}, from`, before_callback_history_node, "to", current_history_node);
 	}
 
 	const image_data = main_ctx.getImageData(0, 0, main_canvas.width, main_canvas.height);
@@ -1806,6 +2150,10 @@ function undoable({name, icon, use_loose_canvas_changes, soft}, callback){
 
 	$G.triggerHandler("session-update"); // autosave
 }
+/**
+ * @param {ActionMetadataUpdate} undoable_meta
+ * @param {()=> void} undoable_action
+ */
 function make_or_update_undoable(undoable_meta, undoable_action) {
 	if (current_history_node.futures.length === 0 && undoable_meta.match(current_history_node)) {
 		undoable_action();
@@ -1821,8 +2169,8 @@ function make_or_update_undoable(undoable_meta, undoable_action) {
 		undoable(undoable_meta, undoable_action);
 	}
 }
-function undo(){
-	if(undos.length<1){ return false; }
+function undo() {
+	if (undos.length < 1) { return false; }
 
 	redos.push(current_history_node);
 	let target_history_node = undos.pop();
@@ -1838,16 +2186,17 @@ function undo(){
 }
 
 // @TODO: use Clippy.js instead for potentially annoying tips
+/** @type {OSGUI$Window} */
 let $document_history_prompt_window;
-function redo(){
-	if(redos.length<1){
+function redo() {
+	if (redos.length < 1) {
 		if ($document_history_prompt_window) {
 			$document_history_prompt_window.close();
 		}
 		if (!$document_history_window || $document_history_window.closed) {
 			$document_history_prompt_window = showMessageBox({
 				title: "Redo",
-				messageHTML: `To view all branches of the history tree, click <b>Edit > History</b>.`,
+				messageHTML: "To view all branches of the history tree, click <b>Edit > History</b>.",
 				iconID: "info",
 			}).$window;
 		}
@@ -1867,6 +2216,10 @@ function redo(){
 	return true;
 }
 
+/**
+ * @param {HistoryNode} node
+ * @returns {HistoryNode[]} ancestors
+ */
 function get_history_ancestors(node) {
 	const ancestors = [];
 	for (node = node.parent; node; node = node.parent) {
@@ -1875,6 +2228,7 @@ function get_history_ancestors(node) {
 	return ancestors;
 }
 
+/** @type {OSGUI$Window} */
 let $document_history_window;
 // setTimeout(show_document_history, 100);
 function show_document_history() {
@@ -1884,7 +2238,7 @@ function show_document_history() {
 	if ($document_history_window) {
 		$document_history_window.close();
 	}
-	const $w = $document_history_window = new $Window({
+	const $w = $document_history_window = $Window({
 		title: "Document History",
 		resizable: false,
 		maximizeButton: false,
@@ -1894,8 +2248,6 @@ function show_document_history() {
 	$w.addClass("history-window squish");
 	$w.$content.html(`
 		<label>
-			<!--<input type="checkbox" id="history-show-all-branches" checked> Show all branches-->
-			<!--<input type="checkbox" id="history-view-linear" checked> Linear timeline-->
 			<select id="history-view-mode" class="inset-deep">
 				<option value="linear">Linear timeline</option>
 				<option value="tree">Tree</option>
@@ -1912,12 +2264,6 @@ function show_document_history() {
 	let rendered_$entries = [];
 	let current_$entry;
 
-	// let $linear_checkbox = $w.$content.find("#history-view-linear");
-	// let linear = $linear_checkbox.is(":checked");
-	// $linear_checkbox.on("change", () => {
-	// 	linear = $linear_checkbox.is(":checked");
-	// 	render_tree();
-	// });
 	let $mode_select = $w.$content.find("#history-view-mode");
 	$mode_select.css({
 		margin: "10px",
@@ -1928,6 +2274,9 @@ function show_document_history() {
 		render_tree();
 	});
 
+	/**
+	 * @param {HistoryNode} node
+	 */
 	function render_tree_from_node(node) {
 		const $entry = $(`
 			<div class="history-entry">
@@ -1950,7 +2299,7 @@ function show_document_history() {
 		if (node === current_history_node) {
 			$entry.addClass("current");
 			current_$entry = $entry;
-			requestAnimationFrame(()=> {
+			requestAnimationFrame(() => {
 				// scrollIntoView causes <html> to scroll when the window is partially offscreen,
 				// despite overflow: hidden on html and body, so it's not an option.
 				$history_view[0].scrollTop =
@@ -1971,13 +2320,14 @@ function show_document_history() {
 		for (const sub_node of node.futures) {
 			render_tree_from_node(sub_node);
 		}
-		$entry.on("click", ()=> {
+		$entry.on("click", () => {
 			go_to_history_node(node);
 		});
+		// @ts-ignore  (TODO: maybe don't tack properties onto objects so much!)
 		$entry.history_node = node;
 		rendered_$entries.push($entry);
 	}
-	const render_tree = ()=> {
+	const render_tree = () => {
 		previous_scroll_position = $history_view.scrollTop();
 		$history_view.empty();
 		rendered_$entries = [];
@@ -1995,7 +2345,7 @@ function show_document_history() {
 		} else {
 			rendered_$entries.reverse();
 		}
-		rendered_$entries.forEach(($entry)=> {
+		rendered_$entries.forEach(($entry) => {
 			$history_view.append($entry);
 		});
 	};
@@ -2003,14 +2353,14 @@ function show_document_history() {
 
 	// This is different from Ctrl+Z/Ctrl+Shift+Z because it goes over all branches of the history tree, chronologically,
 	// not just one branch.
-	const go_by = (index_delta)=> {
+	const go_by = (index_delta) => {
 		const from_index = rendered_$entries.indexOf(current_$entry);
 		const to_index = from_index + index_delta;
 		if (rendered_$entries[to_index]) {
 			rendered_$entries[to_index].click();
 		}
 	};
-	$history_view.on("keydown", (event)=> {
+	$history_view.on("keydown", (event) => {
 		if (!event.ctrlKey && !event.altKey && !event.shiftKey && !event.metaKey) {
 			if (event.key === "ArrowDown" || event.key === "Down") {
 				go_by(1);
@@ -2023,16 +2373,20 @@ function show_document_history() {
 	});
 
 	$G.on("history-update", render_tree);
-	$w.on("close", ()=> {
+	$w.on("close", () => {
 		$G.off("history-update", render_tree);
 	});
 
 	$w.center();
 }
 
+/**
+ * Cancel the current tool gesture, if any.
+ * Note: this function should be idempotent. `cancel(); cancel();` should do the same thing as `cancel();`
+ * @param {boolean} [going_to_history_node]
+ * @param {boolean} [discard_document_state]
+ */
 function cancel(going_to_history_node, discard_document_state) {
-	// Note: this function should be idempotent.
-	// `cancel(); cancel();` should do the same thing as `cancel();`
 	if (!history_node_to_cancel_to) {
 		return;
 	}
@@ -2056,7 +2410,7 @@ function cancel(going_to_history_node, discard_document_state) {
 	// history_node_to_cancel_to = history_node_to_cancel_to || current_history_node;
 	$G.triggerHandler("pointerup", ["canceling", discard_document_state]);
 	for (const selected_tool of selected_tools) {
-		selected_tool.cancel && selected_tool.cancel();
+		selected_tool.cancel?.();
 	}
 	if (!going_to_history_node) {
 		// Note: this will revert any changes from other users in multi-user sessions
@@ -2080,6 +2434,9 @@ function cancel(going_to_history_node, discard_document_state) {
 	history_node_to_cancel_to = null;
 	update_helper_layer();
 }
+/**
+ * @param {boolean} [going_to_history_node]
+ */
 function meld_selection_into_canvas(going_to_history_node) {
 	selection.draw();
 	selection.destroy();
@@ -2089,9 +2446,12 @@ function meld_selection_into_canvas(going_to_history_node) {
 			name: "Deselect",
 			icon: get_icon_for_tool(get_tool_by_id(TOOL_SELECT)),
 			use_loose_canvas_changes: true, // HACK; @TODO: make OnCanvasSelection not change the canvas outside undoable, same rules as tools
-		}, ()=> { });
+		}, () => { });
 	}
 }
+/**
+ * @param {boolean} [going_to_history_node]
+ */
 function meld_textbox_into_canvas(going_to_history_node) {
 	const text = textbox.$editor.val();
 	if (text && !going_to_history_node) {
@@ -2099,7 +2459,7 @@ function meld_textbox_into_canvas(going_to_history_node) {
 			name: localize("Text"),
 			icon: get_icon_for_tool(get_tool_by_id(TOOL_TEXT)),
 			soft: true,
-		}, ()=> { });
+		}, () => { });
 		undoable({
 			name: "Finish Text",
 			icon: get_icon_for_tool(get_tool_by_id(TOOL_TEXT)),
@@ -2113,30 +2473,37 @@ function meld_textbox_into_canvas(going_to_history_node) {
 		textbox = null;
 	}
 }
-function deselect(going_to_history_node){
-	if(selection){
+/**
+ * @param {boolean} [going_to_history_node]
+ */
+function deselect(going_to_history_node) {
+	if (selection) {
 		meld_selection_into_canvas(going_to_history_node);
 	}
-	if(textbox){
+	if (textbox) {
 		meld_textbox_into_canvas(going_to_history_node);
 	}
 	for (const selected_tool of selected_tools) {
-		selected_tool.end && selected_tool.end(main_ctx);
+		selected_tool.end?.(main_ctx);
 	}
 }
-function delete_selection(meta={}){
-	if(selection){
+
+/**
+ * @param {{name?: string, icon?: HTMLImageElement | HTMLCanvasElement}} [meta] - overrides certain properties of ActionMetadata
+ */
+function delete_selection(meta = {}) {
+	if (selection) {
 		undoable({
 			name: meta.name || localize("Clear Selection"), //"Delete", (I feel like "Clear Selection" is unclear, could mean "Deselect")
 			icon: meta.icon || get_help_folder_icon("p_delete.png"),
 			// soft: @TODO: conditionally soft?,
-		}, ()=> {
+		}, () => {
 			selection.destroy();
 			selection = null;
 		});
 	}
 }
-function select_all(){
+function select_all() {
 	deselect();
 	select_tool(get_tool_by_id(TOOL_SELECT));
 
@@ -2144,13 +2511,16 @@ function select_all(){
 		name: localize("Select All"),
 		icon: get_icon_for_tool(get_tool_by_id(TOOL_SELECT)),
 		soft: true,
-	}, ()=> {
+	}, () => {
 		selection = new OnCanvasSelection(0, 0, main_canvas.width, main_canvas.height);
 	});
 }
 
 const ctrlOrCmd = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform) ? "⌘" : "Ctrl";
 const recommendationForClipboardAccess = `Please use the keyboard: ${ctrlOrCmd}+C to copy, ${ctrlOrCmd}+X to cut, ${ctrlOrCmd}+V to paste. If keyboard is not an option, try using Chrome version 76 or higher.`;
+/**
+ * @param {string} commandId
+ */
 function try_exec_command(commandId) {
 	if (document.queryCommandEnabled(commandId)) { // not a reliable source for whether it'll work, if I recall
 		document.execCommand(commandId);
@@ -2163,22 +2533,30 @@ function try_exec_command(commandId) {
 }
 
 function getSelectionText() {
-	let text = "";
+	// instanceof might make this simpler, particularly with TypeScript JSDoc
 	const activeEl = document.activeElement;
 	const activeElTagName = activeEl ? activeEl.tagName.toLowerCase() : null;
 	if (
-		(activeElTagName == "textarea") || (activeElTagName == "input" &&
-		/^(?:text|search|password|tel|url)$/i.test(activeEl.type)) &&
-		(typeof activeEl.selectionStart == "number")
+		(activeElTagName == "textarea") || (
+			activeElTagName == "input" &&
+			/^(?:text|search|password|tel|url)$/i.test(/** @type {HTMLInputElement} */(activeEl).type)
+		)
 	) {
-		text = activeEl.value.slice(activeEl.selectionStart, activeEl.selectionEnd);
-	} else if (window.getSelection) {
-		text = window.getSelection().toString();
+		const textField = /** @type {HTMLInputElement | HTMLTextAreaElement} */(activeEl);
+		if (typeof textField.selectionStart == "number") {
+			return textField.value.slice(textField.selectionStart, textField.selectionEnd);
+		}
 	}
-	return text;
+	if (window.getSelection) {
+		return window.getSelection().toString();
+	}
+	return "";
 }
 
-function edit_copy(execCommandFallback){
+/**
+ * @param {boolean} [execCommandFallback]
+ */
+function edit_copy(execCommandFallback) {
 	const text = getSelectionText();
 
 	if (text.length > 0) {
@@ -2186,43 +2564,49 @@ function edit_copy(execCommandFallback){
 			if (execCommandFallback) {
 				return try_exec_command("copy");
 			} else {
-				throw new Error(`${localize("Error getting the Clipboard Data!")} ${recommendationForClipboardAccess}`);
-				// throw new Error(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
+				show_error_message(`${localize("Error getting the Clipboard Data!")} ${recommendationForClipboardAccess}`);
+				// show_error_message(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
+				return;
 			}
 		}
 		navigator.clipboard.writeText(text);
-	} else if(selection && selection.canvas) {
+	} else if (selection && selection.canvas) {
 		if (!navigator.clipboard || !navigator.clipboard.write) {
 			if (execCommandFallback) {
 				return try_exec_command("copy");
 			} else {
-				throw new Error(`${localize("Error getting the Clipboard Data!")} ${recommendationForClipboardAccess}`);
-				// throw new Error(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
+				show_error_message(`${localize("Error getting the Clipboard Data!")} ${recommendationForClipboardAccess}`);
+				// show_error_message(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
+				return;
 			}
 		}
-		selection.canvas.toBlob(blob => {
+		selection.canvas.toBlob((blob) => {
 			sanity_check_blob(blob, () => {
 				navigator.clipboard.write([
 					new ClipboardItem(Object.defineProperty({}, blob.type, {
 						value: blob,
 						enumerable: true,
-					}))
+					})),
 				]).then(() => {
-					window.console && console.log("Copied image to the clipboard.");
-				}, error => {
+					window.console?.log("Copied image to the clipboard.");
+				}, (error) => {
 					show_error_message("Failed to copy to the Clipboard.", error);
 				});
 			});
 		});
 	}
 }
-function edit_cut(execCommandFallback){
+/**
+ * @param {boolean} [execCommandFallback]
+ */
+function edit_cut(execCommandFallback) {
 	if (!navigator.clipboard || !navigator.clipboard.write) {
 		if (execCommandFallback) {
 			return try_exec_command("cut");
 		} else {
-			throw new Error(`${localize("Error getting the Clipboard Data!")} ${recommendationForClipboardAccess}`);
-			// throw new Error(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
+			show_error_message(`${localize("Error getting the Clipboard Data!")} ${recommendationForClipboardAccess}`);
+			// show_error_message(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
+			return;
 		}
 	}
 	edit_copy();
@@ -2231,17 +2615,21 @@ function edit_cut(execCommandFallback){
 		icon: get_help_folder_icon("p_cut.png"),
 	});
 }
-async function edit_paste(execCommandFallback){
-	if(
+/**
+ * @param {boolean} [execCommandFallback]
+ */
+async function edit_paste(execCommandFallback) {
+	if (
 		document.activeElement instanceof HTMLInputElement ||
 		document.activeElement instanceof HTMLTextAreaElement
-	){
+	) {
 		if (!navigator.clipboard || !navigator.clipboard.readText) {
 			if (execCommandFallback) {
 				return try_exec_command("paste");
 			} else {
-				throw new Error(`${localize("Error getting the Clipboard Data!")} ${recommendationForClipboardAccess}`);
-				// throw new Error(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
+				show_error_message(`${localize("Error getting the Clipboard Data!")} ${recommendationForClipboardAccess}`);
+				// show_error_message(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
+				return;
 			}
 		}
 		const clipboardText = await navigator.clipboard.readText();
@@ -2252,19 +2640,20 @@ async function edit_paste(execCommandFallback){
 		if (execCommandFallback) {
 			return try_exec_command("paste");
 		} else {
-			throw new Error(`${localize("Error getting the Clipboard Data!")} ${recommendationForClipboardAccess}`);
-			// throw new Error(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
+			show_error_message(`${localize("Error getting the Clipboard Data!")} ${recommendationForClipboardAccess}`);
+			// show_error_message(`The Async Clipboard API is not supported by this browser. ${browserRecommendationForClipboardAccess}`);
+			return;
 		}
 	}
 	try {
 		const clipboardItems = await navigator.clipboard.read();
 		const blob = await clipboardItems[0].getType("image/png");
 		paste_image_from_file(blob);
-	} catch(error) {
+	} catch (error) {
 		if (error.name === "NotFoundError") {
 			try {
 				const clipboardText = await navigator.clipboard.readText();
-				if(clipboardText) {
+				if (clipboardText) {
 					const uris = get_uris(clipboardText);
 					if (uris.length > 0) {
 						load_image_from_uri(uris[0]).then((info) => {
@@ -2279,7 +2668,7 @@ async function edit_paste(execCommandFallback){
 				} else {
 					show_error_message("The information on the Clipboard can't be inserted into Paint.");
 				}
-			} catch(error) {
+			} catch (error) {
 				show_error_message(localize("Error getting the Clipboard Data!"), error);
 			}
 		} else {
@@ -2288,11 +2677,11 @@ async function edit_paste(execCommandFallback){
 	}
 }
 
-function image_invert_colors(){
+function image_invert_colors() {
 	apply_image_transformation({
 		name: localize("Invert Colors"),
 		icon: get_help_folder_icon("p_invert.png"),
-	}, (original_canvas, original_ctx, new_canvas, new_ctx) => {
+	}, (_original_canvas, original_ctx, _new_canvas, new_ctx) => {
 		const monochrome_info = monochrome && detect_monochrome(original_ctx);
 		if (monochrome && monochrome_info.isMonochrome) {
 			invert_monochrome(original_ctx, new_ctx, monochrome_info);
@@ -2302,7 +2691,7 @@ function image_invert_colors(){
 	});
 }
 
-function clear(){
+function clear() {
 	deselect();
 	cancel();
 	undoable({
@@ -2312,20 +2701,20 @@ function clear(){
 		saved = false;
 		update_title();
 
-		if(transparency){
+		if (transparency) {
 			main_ctx.clearRect(0, 0, main_canvas.width, main_canvas.height);
-		}else{
+		} else {
 			main_ctx.fillStyle = selected_colors.background;
 			main_ctx.fillRect(0, 0, main_canvas.width, main_canvas.height);
 		}
 	});
 }
 
-let cleanup_bitmap_view = () => {};
+let cleanup_bitmap_view = () => { };
 function view_bitmap() {
 	cleanup_bitmap_view();
 
-	bitmap_view_div = document.createElement("div");
+	const bitmap_view_div = document.createElement("div");
 	bitmap_view_div.classList.add("bitmap-view", "inset-deep");
 	document.body.appendChild(bitmap_view_div);
 	$(bitmap_view_div).css({
@@ -2340,8 +2729,11 @@ function view_bitmap() {
 		zIndex: "9999",
 		background: "var(--Background)",
 	});
-	if (bitmap_view_div.requestFullscreen) { bitmap_view_div.requestFullscreen(); }
-	else if (bitmap_view_div.webkitRequestFullscreen) { bitmap_view_div.webkitRequestFullscreen(); }
+	if (bitmap_view_div.requestFullscreen) {
+		bitmap_view_div.requestFullscreen();
+	} else if (bitmap_view_div.webkitRequestFullscreen) {
+		bitmap_view_div.webkitRequestFullscreen();
+	}
 
 	let blob_url;
 	let got_fullscreen = false;
@@ -2349,15 +2741,15 @@ function view_bitmap() {
 		// In Chrome, if the page is already fullscreen, and you requestFullscreen,
 		// hitting Esc will change document.fullscreenElement without triggering the fullscreenchange event!
 		// It doesn't trigger a keydown either.
-		if (document.fullscreenElement === bitmap_view_div) {
+		if (document.fullscreenElement === bitmap_view_div || document.webkitFullscreenElement === bitmap_view_div) {
 			got_fullscreen = true;
 		} else if (got_fullscreen) {
 			cleanup_bitmap_view();
 		}
 	}, 100);
 	cleanup_bitmap_view = () => {
-		document.removeEventListener("fullscreenchange", onFullscreenChange, { once: true });
-		document.removeEventListener("webkitfullscreenchange", onFullscreenChange, { once: true });
+		document.removeEventListener("fullscreenchange", onFullscreenChange);
+		document.removeEventListener("webkitfullscreenchange", onFullscreenChange);
 		document.removeEventListener("keydown", onKeyDown);
 		document.removeEventListener("mousedown", onMouseDown);
 		// If you have e.g. the Help window open,
@@ -2368,7 +2760,7 @@ function view_bitmap() {
 		}, 100);
 		URL.revokeObjectURL(blob_url);
 		clearInterval(iid);
-		if (document.fullscreenElement === bitmap_view_div) {
+		if (document.fullscreenElement === bitmap_view_div || document.webkitFullscreenElement === bitmap_view_div) {
 			if (document.exitFullscreen) {
 				document.exitFullscreen(); // avoid warning in Firefox
 			} else if (document.msExitFullscreen) {
@@ -2389,7 +2781,7 @@ function view_bitmap() {
 	document.addEventListener("contextmenu", onContextMenu);
 
 	function onFullscreenChange() {
-		if (document.fullscreenElement !== bitmap_view_div) {
+		if (document.fullscreenElement !== bitmap_view_div && document.webkitFullscreenElement !== bitmap_view_div) {
 			cleanup_bitmap_view();
 		}
 	}
@@ -2411,7 +2803,7 @@ function view_bitmap() {
 		// but it also doesn't do anything else — other than changing the cursor. Stupid.
 		cleanup_bitmap_view();
 	}
-	function onMouseDown(event) {
+	function onMouseDown(_event) {
 		// Note: in mspaint, only left click exits View Bitmap mode.
 		// Right click can show a useless context menu.
 		cleanup_bitmap_view();
@@ -2426,47 +2818,57 @@ function view_bitmap() {
 	// considering that if you right click on the image in View Bitmap mode,
 	// it shows the silly "Thumbnail" context menu item.
 	// (It also shows the selection, in a meaningless place, similar to the Thumbnail's bugs)
-	main_canvas.toBlob(blob => {
+	main_canvas.toBlob((blob) => {
 		blob_url = URL.createObjectURL(blob);
 		const img = document.createElement("img");
 		img.src = blob_url;
 		bitmap_view_div.appendChild(img);
 	}, "image/png");
 }
-
-function get_tool_by_id(id){
-	for(let i=0; i<tools.length; i++){
-		if(tools[i].id == id){
+/**
+ * @param {ToolID} id
+ * @returns {Tool} tool object
+ */
+function get_tool_by_id(id) {
+	for (let i = 0; i < tools.length; i++) {
+		if (tools[i].id == id) {
 			return tools[i];
 		}
 	}
-	for(let i=0; i<extra_tools.length; i++){
-		if(extra_tools[i].id == id){
-			return extra_tools[i];
-		}
-	}
+	// for (let i = 0; i < extra_tools.length; i++) {
+	// 	if (extra_tools[i].id == id) {
+	// 		return extra_tools[i];
+	// 	}
+	// }
 }
 
 // hacky but whatever
 // this whole "multiple tools" thing is hacky for now
+/**
+ * @param {Tool[]} tools
+ */
 function select_tools(tools) {
-	for (let i=0; i<tools.length; i++) {
+	for (let i = 0; i < tools.length; i++) {
 		select_tool(tools[i], i > 0);
 	}
 	update_helper_layer();
 }
 
-function select_tool(tool, toggle){
+/**
+ * @param {Tool} tool
+ * @param {boolean} [toggle]
+ */
+function select_tool(tool, toggle) {
 	deselect();
 
-	if(!(selected_tools.length === 1 && selected_tool.deselect)){
+	if (!(selected_tools.length === 1 && selected_tool.deselect)) {
 		return_to_tools = [...selected_tools];
 	}
 	if (toggle) {
 		const index = selected_tools.indexOf(tool);
 		if (index === -1) {
 			selected_tools.push(tool);
-			selected_tools.sort((a, b)=> {
+			selected_tools.sort((a, b) => {
 				if (tools.indexOf(a) < tools.indexOf(b)) {
 					return -1;
 				}
@@ -2488,30 +2890,38 @@ function select_tool(tool, toggle){
 		selected_tool = tool;
 		selected_tools = [tool];
 	}
-	
-	if(tool.preload){
+
+	if (tool.preload) {
 		tool.preload();
 	}
-	
+
 	$toolbox.update_selected_tool();
 	// $toolbox2.update_selected_tool();
 }
 
+/**
+ * @param {CanvasRenderingContext2D} ctx
+ * @returns {boolean} whether the canvas has any translucent pixels (with a stupid margin of error)
+ */
 function has_any_transparency(ctx) {
 	// @TODO Optimization: Assume JPEGs and some other file types are opaque.
 	// Raster file formats that SUPPORT transparency include GIF, PNG, BMP and TIFF
 	// (Yes, even BMPs support transparency!)
 	const id = ctx.getImageData(0, 0, main_canvas.width, main_canvas.height);
-	for(let i=0, l=id.data.length; i<l; i+=4){
+	for (let i = 0, l = id.data.length; i < l; i += 4) {
 		// I've seen firefox give [ 254, 254, 254, 254 ] for get_rgba_from_color("#fff")
 		// or other values
-		if(id.data[i+3] < 253){
+		if (id.data[i + 3] < 253) {
 			return true;
 		}
 	}
 	return false;
 }
 
+/**
+ * @param {CanvasRenderingContext2D} ctx
+ * @returns {MonochromeInfo}
+ */
 function detect_monochrome(ctx) {
 	// Note: Brave browser, and DuckDuckGo Privacy Essentials browser extension
 	// implement a privacy technique known as "farbling", which breaks this code.
@@ -2527,18 +2937,18 @@ function detect_monochrome(ctx) {
 	const colorUint32s = [];
 	const colorRGBAs = [];
 	let anyTransparency = false;
-	for(let i=0, len=pixelArray.length; i<len; i+=1){
+	for (let i = 0, len = pixelArray.length; i < len; i += 1) {
 		// @TODO: should this threshold not mirror has_any_transparency?
 		// seems to have different notions of "any transparency"
 		// has_any_transparency is "has any pixels not fully opaque"
 		// detect_monochrome's anyTransparency means "has any pixels fully transparent"
-		if (id.data[i*4+3] > 1) {
+		if (id.data[i * 4 + 3] > 1) {
 			if (!colorUint32s.includes(pixelArray[i])) {
 				if (colorUint32s.length < 2) {
 					colorUint32s.push(pixelArray[i]);
-					colorRGBAs.push(id.data.slice(i*4, (i+1)*4));
+					colorRGBAs.push(id.data.slice(i * 4, (i + 1) * 4));
 				} else {
-					return {isMonochrome: false};
+					return { isMonochrome: false };
 				}
 			}
 		} else {
@@ -2553,9 +2963,16 @@ function detect_monochrome(ctx) {
 	};
 }
 
-function make_monochrome_pattern(lightness, rgba1=[0, 0, 0, 255], rgba2=[255, 255, 255, 255]){
+/**
+ * Creates a dithered pattern using two colors.
+ * @param {number} lightness - The approximate fraction of pixels that will use the second(?) color.
+ * @param {Uint8ClampedArray | number[]} rgba1 - RGBA color values for the first color.
+ * @param {Uint8ClampedArray | number[]} rgba2 - RGBA color values for the second color.
+ * @returns {CanvasPattern}
+ */
+function make_monochrome_pattern(lightness, rgba1 = [0, 0, 0, 255], rgba2 = [255, 255, 255, 255]) {
 
-	const dither_threshold_table = Array.from({length: 64}, (_undefined, p) => {
+	const dither_threshold_table = Array.from({ length: 64 }, (_undefined, p) => {
 		const q = p ^ (p >> 3);
 		return (
 			((p & 4) >> 2) | ((q & 4) >> 1) |
@@ -2572,8 +2989,8 @@ function make_monochrome_pattern(lightness, rgba1=[0, 0, 0, 255], rgba2=[255, 25
 
 	const pattern_image_data = main_ctx.createImageData(pattern_canvas.width, pattern_canvas.height);
 
-	for(let x = 0; x < pattern_canvas.width; x += 1){
-		for(let y = 0; y < pattern_canvas.height; y += 1){
+	for (let x = 0; x < pattern_canvas.width; x += 1) {
+		for (let y = 0; y < pattern_canvas.height; y += 1) {
 			const map_value = dither_threshold_table[(x & 7) + ((y & 7) << 3)];
 			const px_white = lightness > map_value;
 			const index = ((y * pattern_image_data.width) + x) * 4;
@@ -2589,15 +3006,20 @@ function make_monochrome_pattern(lightness, rgba1=[0, 0, 0, 255], rgba2=[255, 25
 	return main_ctx.createPattern(pattern_canvas, "repeat");
 }
 
-function make_monochrome_palette(rgba1=[0, 0, 0, 255], rgba2=[255, 255, 255, 255]){
+/**
+ * @param {Uint8ClampedArray | number[]} rgba1
+ * @param {Uint8ClampedArray | number[]} rgba2
+ * @returns {CanvasPattern[]}
+ */
+function make_monochrome_palette(rgba1 = [0, 0, 0, 255], rgba2 = [255, 255, 255, 255]) {
 	const palette = [];
 	const n_colors_per_row = 14;
 	const n_colors = n_colors_per_row * 2;
-	for(let i=0; i<n_colors_per_row; i++){
+	for (let i = 0; i < n_colors_per_row; i++) {
 		let lightness = i / n_colors;
 		palette.push(make_monochrome_pattern(lightness, rgba1, rgba2));
 	}
-	for(let i=0; i<n_colors_per_row; i++){
+	for (let i = 0; i < n_colors_per_row; i++) {
 		let lightness = 1 - i / n_colors;
 		palette.push(make_monochrome_pattern(lightness, rgba1, rgba2));
 	}
@@ -2605,7 +3027,13 @@ function make_monochrome_palette(rgba1=[0, 0, 0, 255], rgba2=[255, 255, 255, 255
 	return palette;
 }
 
-function make_stripe_pattern(reverse, colors, stripe_size=4){
+/**
+ * @param {boolean} reverse
+ * @param {string[]} colors
+ * @param {number=} stripe_size
+ * @returns {CanvasPattern}
+ */
+function make_stripe_pattern(reverse, colors, stripe_size = 4) {
 	const rgba_colors = colors.map(get_rgba_from_color);
 
 	const pattern_canvas = document.createElement("canvas");
@@ -2616,8 +3044,8 @@ function make_stripe_pattern(reverse, colors, stripe_size=4){
 
 	const pattern_image_data = main_ctx.createImageData(pattern_canvas.width, pattern_canvas.height);
 
-	for(let x = 0; x < pattern_canvas.width; x += 1){
-		for(let y = 0; y < pattern_canvas.height; y += 1){
+	for (let x = 0; x < pattern_canvas.width; x += 1) {
+		for (let y = 0; y < pattern_canvas.height; y += 1) {
 			const pixel_index = ((y * pattern_image_data.width) + x) * 4;
 			// +1000 to avoid remainder on negative numbers
 			const pos = reverse ? (x - y) : (x + y);
@@ -2635,7 +3063,7 @@ function make_stripe_pattern(reverse, colors, stripe_size=4){
 	return main_ctx.createPattern(pattern_canvas, "repeat");
 }
 
-function switch_to_polychrome_palette(){
+function switch_to_polychrome_palette() {
 
 }
 
@@ -2643,13 +3071,13 @@ function make_opaque() {
 	undoable({
 		name: "Make Opaque",
 		icon: get_help_folder_icon("p_make_opaque.png"),
-	}, ()=> {
+	}, () => {
 		main_ctx.save();
 		main_ctx.globalCompositeOperation = "destination-atop";
 
 		main_ctx.fillStyle = selected_colors.background;
 		main_ctx.fillRect(0, 0, main_canvas.width, main_canvas.height);
-		
+
 		// in case the selected background color is transparent/translucent
 		main_ctx.fillStyle = "white";
 		main_ctx.fillRect(0, 0, main_canvas.width, main_canvas.height);
@@ -2658,7 +3086,14 @@ function make_opaque() {
 	});
 }
 
-function resize_canvas_without_saving_dimensions(unclamped_width, unclamped_height, undoable_meta={}) {
+/**
+ * Resizes the canvas without saving the dimensions to local storage.
+ *
+ * @param {number} unclamped_width - The new width of the canvas. Will be clamped to a minimum of 1.
+ * @param {number} unclamped_height - The new height of the canvas. Will be clamped to a minimum of 1.
+ * @param {{name?: string, icon?: HTMLImageElement | HTMLCanvasElement}} [undoable_meta={}] - overrides certain properties of ActionMetadata
+ */
+function resize_canvas_without_saving_dimensions(unclamped_width, unclamped_height, undoable_meta = {}) {
 	const new_width = Math.max(1, unclamped_width);
 	const new_height = Math.max(1, unclamped_height);
 	if (main_canvas.width !== new_width || main_canvas.height !== new_height) {
@@ -2671,8 +3106,8 @@ function resize_canvas_without_saving_dimensions(unclamped_width, unclamped_heig
 				main_canvas.width = new_width;
 				main_canvas.height = new_height;
 				main_ctx.disable_image_smoothing();
-				
-				if(!transparency){
+
+				if (!transparency) {
 					main_ctx.fillStyle = selected_colors.background;
 					main_ctx.fillRect(0, 0, main_canvas.width, main_canvas.height);
 				}
@@ -2696,21 +3131,28 @@ function resize_canvas_without_saving_dimensions(unclamped_width, unclamped_heig
 	}
 }
 
-function resize_canvas_and_save_dimensions(unclamped_width, unclamped_height, undoable_meta={}) {
+/**
+ * Resizes the canvas and saves the dimensions to local storage as the new default.
+ *
+ * @param {number} unclamped_width - The new width of the canvas. Will be clamped to a minimum of 1.
+ * @param {number} unclamped_height - The new height of the canvas. Will be clamped to a minimum of 1.
+ * @param {{name?: string, icon?: HTMLImageElement | HTMLCanvasElement}} [undoable_meta={}] - overrides certain properties of ActionMetadata
+ */
+function resize_canvas_and_save_dimensions(unclamped_width, unclamped_height, undoable_meta = {}) {
 	resize_canvas_without_saving_dimensions(unclamped_width, unclamped_height, undoable_meta);
-	storage.set({
-		width: main_canvas.width,
-		height: main_canvas.height,
-	}, (/*error*/) => {
+	localStore.set({
+		width: main_canvas.width.toString(),
+		height: main_canvas.height.toString(),
+	}, (_error) => {
 		// oh well
-	})
+	});
 }
 
-function image_attributes(){
-	if(image_attributes.$window){
+function image_attributes() {
+	if (image_attributes.$window) {
 		image_attributes.$window.close();
 	}
-	const $w = image_attributes.$window = new $DialogWindow(localize("Attributes"));
+	const $w = image_attributes.$window = $DialogWindow(localize("Attributes"));
 	$w.addClass("attributes-window");
 
 	const $main = $w.$main;
@@ -2723,9 +3165,9 @@ function image_attributes(){
 		[localize("Resolution:")]: "72 x 72 dots per inch", // if localizing this, remove "direction" setting below
 	};
 	const $table = $(E("table")).appendTo($main);
-	for(const k in table){
+	for (const k in table) {
 		const $tr = $(E("tr")).appendTo($table);
-		const $key = $(E("td")).appendTo($tr).text(k);
+		$(E("td")).appendTo($tr).text(k);
 		const $value = $(E("td")).appendTo($tr).text(table[k]);
 		if (table[k].indexOf("72") !== -1) {
 			$value.css("direction", "ltr");
@@ -2734,21 +3176,21 @@ function image_attributes(){
 
 	// Dimensions
 
-	const unit_sizes_in_px = {px: 1, in: 72, cm: 28.3465};
+	const unit_sizes_in_px = { px: 1, in: 72, cm: 28.3465 };
 	let current_unit = image_attributes.unit = image_attributes.unit || "px";
 	let width_in_px = main_canvas.width;
 	let height_in_px = main_canvas.height;
 
-	const $width_label = $(E("label")).appendTo($main).text(localize("Width:"));
-	const $height_label = $(E("label")).appendTo($main).text(localize("Height:"));
-	const $width = $(E("input")).attr({type: "number", min: 1}).addClass("no-spinner inset-deep").appendTo($width_label);
-	const $height = $(E("input")).attr({type: "number", min: 1}).addClass("no-spinner inset-deep").appendTo($height_label);
+	const $width_label = $(E("label")).appendTo($main).html(render_access_key(localize("&Width:")));
+	const $height_label = $(E("label")).appendTo($main).html(render_access_key(localize("&Height:")));
+	const $width = $(E("input")).attr({ type: "number", min: 1, "aria-keyshortcuts": "Alt+W W W" }).addClass("no-spinner inset-deep").appendTo($width_label);
+	const $height = $(E("input")).attr({ type: "number", min: 1, "aria-keyshortcuts": "Alt+H H H" }).addClass("no-spinner inset-deep").appendTo($height_label);
 
 	$main.find("input")
-		.css({width: "40px"})
-		.on("change keyup keydown keypress pointerdown pointermove paste drop", ()=> {
-			width_in_px = $width.val() * unit_sizes_in_px[current_unit];
-			height_in_px = $height.val() * unit_sizes_in_px[current_unit];
+		.css({ width: "40px" })
+		.on("change keyup keydown keypress pointerdown pointermove paste drop", () => {
+			width_in_px = Number($width.val()) * unit_sizes_in_px[current_unit];
+			height_in_px = Number($height.val()) * unit_sizes_in_px[current_unit];
 		});
 
 	// Fieldsets
@@ -2756,14 +3198,14 @@ function image_attributes(){
 	const $units = $(E("fieldset")).appendTo($main).append(`
 		<legend>${localize("Units")}</legend>
 		<div class="fieldset-body">
-			<input type="radio" name="units" id="unit-in" value="in"><label for="unit-in">${localize("Inches")}</label>
-			<input type="radio" name="units" id="unit-cm" value="cm"><label for="unit-cm">${localize("Cm")}</label>
-			<input type="radio" name="units" id="unit-px" value="px"><label for="unit-px">${localize("Pixels")}</label>
+			<div class="radio-field"><input type="radio" name="units" id="unit-in" value="in" aria-keyshortcuts="Alt+I I"><label for="unit-in">${render_access_key(localize("&Inches"))}</label></div>
+			<div class="radio-field"><input type="radio" name="units" id="unit-cm" value="cm" aria-keyshortcuts="Alt+M M"><label for="unit-cm">${render_access_key(localize("C&m"))}</label></div>
+			<div class="radio-field"><input type="radio" name="units" id="unit-px" value="px" aria-keyshortcuts="Alt+P P"><label for="unit-px">${render_access_key(localize("&Pixels"))}</label></div>
 		</div>
 	`);
-	$units.find(`[value=${current_unit}]`).attr({checked: true});
+	$units.find(`[value=${current_unit}]`).attr({ checked: true });
 	$units.on("change", () => {
-		const new_unit = $units.find(":checked").val();
+		const new_unit = String($units.find(":checked").val());
 		$width.val(width_in_px / unit_sizes_in_px[new_unit]);
 		$height.val(height_in_px / unit_sizes_in_px[new_unit]);
 		current_unit = new_unit;
@@ -2772,27 +3214,27 @@ function image_attributes(){
 	const $colors = $(E("fieldset")).appendTo($main).append(`
 		<legend>${localize("Colors")}</legend>
 		<div class="fieldset-body">
-			<input type="radio" name="colors" id="attribute-monochrome" value="monochrome"><label for="attribute-monochrome">${localize("Black and white")}</label>
-			<input type="radio" name="colors" id="attribute-polychrome" value="polychrome"><label for="attribute-polychrome">${localize("Colors")}</label>
+			<div class="radio-field"><input type="radio" name="colors" id="attribute-monochrome" value="monochrome" aria-keyshortcuts="Alt+B B"><label for="attribute-monochrome">${render_access_key(localize("&Black and white"))}</label></div>
+			<div class="radio-field"><input type="radio" name="colors" id="attribute-polychrome" value="polychrome" aria-keyshortcuts="Alt+L L"><label for="attribute-polychrome">${render_access_key(localize("Co&lors"))}</label></div>
 		</div>
 	`);
-	$colors.find(`[value=${monochrome ? "monochrome" : "polychrome"}]`).attr({checked: true});
+	$colors.find(`[value=${monochrome ? "monochrome" : "polychrome"}]`).attr({ checked: true });
 
 	const $transparency = $(E("fieldset")).appendTo($main).append(`
 		<legend>${localize("Transparency")}</legend>
 		<div class="fieldset-body">
-			<input type="radio" name="transparency" id="attribute-transparent" value="transparent"><label for="attribute-transparent">${localize("Transparent")}</label>
-			<input type="radio" name="transparency" id="attribute-opaque" value="opaque"><label for="attribute-opaque">${localize("Opaque")}</label>
+			<div class="radio-field"><input type="radio" name="transparency" id="attribute-transparent" value="transparent"><label for="attribute-transparent">${localize("Transparent")}</label></div>
+			<div class="radio-field"><input type="radio" name="transparency" id="attribute-opaque" value="opaque"><label for="attribute-opaque">${localize("Opaque")}</label></div>
 		</div>
 	`);
-	$transparency.find(`[value=${transparency ? "transparent" : "opaque"}]`).attr({checked: true});
+	$transparency.find(`[value=${transparency ? "transparent" : "opaque"}]`).attr({ checked: true });
 
 	// Buttons on the right
 
 	$w.$Button(localize("OK"), () => {
 		const transparency_option = $transparency.find(":checked").val();
 		const colors_option = $colors.find(":checked").val();
-		const unit = $units.find(":checked").val();
+		const unit = String($units.find(":checked").val());
 
 		const was_monochrome = monochrome;
 		let monochrome_info;
@@ -2801,7 +3243,7 @@ function image_attributes(){
 		transparency = (transparency_option == "transparent");
 		monochrome = (colors_option == "monochrome");
 
-		if(monochrome != was_monochrome){
+		if (monochrome != was_monochrome) {
 			if (selection) {
 				// want to detect monochrome based on selection + canvas
 				// simplest way to do that is to meld them together
@@ -2809,13 +3251,13 @@ function image_attributes(){
 			}
 			monochrome_info = detect_monochrome(main_ctx);
 
-			if(monochrome){
-				if(monochrome_info.isMonochrome && monochrome_info.presentNonTransparentRGBAs.length === 2) {
+			if (monochrome) {
+				if (monochrome_info.isMonochrome && monochrome_info.presentNonTransparentRGBAs.length === 2) {
 					palette = make_monochrome_palette(...monochrome_info.presentNonTransparentRGBAs);
-				}else{
+				} else {
 					palette = monochrome_palette;
 				}
-			}else{
+			} else {
 				palette = polychrome_palette;
 			}
 			selected_colors.foreground = palette[0];
@@ -2826,8 +3268,8 @@ function image_attributes(){
 		}
 
 		const unit_to_px = unit_sizes_in_px[unit];
-		const width = $width.val() * unit_to_px;
-		const height = $height.val() * unit_to_px;
+		const width = Number($width.val()) * unit_to_px;
+		const height = Number($height.val()) * unit_to_px;
 		resize_canvas_and_save_dimensions(~~width, ~~height);
 
 		if (!transparency && has_any_transparency(main_ctx)) {
@@ -2840,63 +3282,83 @@ function image_attributes(){
 		//   b) Consider the case where color is introduced to the canvas while in monochrome mode.
 		//      We only want to show this dialog if it would also change the palette (above), never leave you on an outdated palette.
 		//   c) And it's nice to be able to change other options without worrying about it trying to convert the document to monochrome.
-		if(monochrome != was_monochrome){
+		if (monochrome != was_monochrome) {
 			if (monochrome && !monochrome_info.isMonochrome) {
 				show_convert_to_black_and_white();
 			}
 		}
 
 		image_attributes.$window.close();
-	})[0].focus();
+	}, { type: "submit" });
 
 	$w.$Button(localize("Cancel"), () => {
 		image_attributes.$window.close();
 	});
 
-	$w.$Button(localize("Default"), () => {
+	// Parsing HTML with jQuery; $Button takes text (not HTML) or Node/DocumentFragment
+	$w.$Button($.parseHTML(render_access_key(localize("&Default")))[0], () => {
 		width_in_px = default_canvas_width;
 		height_in_px = default_canvas_height;
 		$width.val(width_in_px / unit_sizes_in_px[current_unit]);
 		$height.val(height_in_px / unit_sizes_in_px[current_unit]);
-	});
+	}).attr("aria-keyshortcuts", "Alt+D D");
+
+	handle_keyshortcuts($w);
+
+	// Default focus
+
+	$width.select();
 
 	// Reposition the window
 
 	image_attributes.$window.center();
 }
 
+// TODO: maybe don't tack properties onto functions so much!?
+/**
+ * @memberof image_attributes
+ * @type {OSGUI$Window}
+ */
+image_attributes.$window = null;
+/**
+ * @memberof image_attributes
+ * @type {string}
+ */
+image_attributes.unit = "px";
+
 function show_convert_to_black_and_white() {
-	const $w = new $DialogWindow("Convert to Black and White");
+	const $w = $DialogWindow("Convert to Black and White");
 	$w.addClass("convert-to-black-and-white");
 	$w.$main.append("<fieldset><legend>Threshold:</legend><input type='range' min='0' max='1' step='0.01' value='0.5'></fieldset>");
 	const $slider = $w.$main.find("input[type='range']");
 	const original_canvas = make_canvas(main_canvas);
 	let threshold;
-	const update_threshold = ()=> {
+	const update_threshold = () => {
 		make_or_update_undoable({
 			name: "Make Monochrome",
-			match: (history_node)=> history_node.name === "Make Monochrome",
+			match: (history_node) => history_node.name === "Make Monochrome",
 			icon: get_help_folder_icon("p_monochrome.png"),
-		}, ()=> {
-			threshold = $slider.val();
+		}, () => {
+			threshold = Number($slider.val());
 			main_ctx.copy(original_canvas);
 			threshold_black_and_white(main_ctx, threshold);
 		});
 	};
 	update_threshold();
-	$slider.on("input", debounce(update_threshold, 100));
+	const update_threshold_soon = debounce(update_threshold, 100);
+	$slider.on("input", update_threshold_soon);
 
-	$w.$Button(localize("OK"), ()=> {
+	$w.$Button(localize("OK"), () => {
 		$w.close();
-	}).focus();
-	$w.$Button(localize("Cancel"), ()=> {
+	}, { type: "submit" }).focus();
+	$w.$Button(localize("Cancel"), () => {
 		if (current_history_node.name === "Make Monochrome") {
 			undo();
 		} else {
 			undoable({
 				name: "Cancel Make Monochrome",
 				icon: get_help_folder_icon("p_color.png"),
-			}, ()=> {
+			}, () => {
 				main_ctx.copy(original_canvas);
 			});
 		}
@@ -2905,8 +3367,8 @@ function show_convert_to_black_and_white() {
 	$w.center();
 }
 
-function image_flip_and_rotate(){
-	const $w = new $DialogWindow(localize("Flip and Rotate"));
+function image_flip_and_rotate() {
+	const $w = $DialogWindow(localize("Flip and Rotate"));
 	$w.addClass("flip-and-rotate");
 
 	const $fieldset = $(E("fieldset")).appendTo($w.$main);
@@ -2920,7 +3382,7 @@ function image_flip_and_rotate(){
 				value="flip-horizontal"
 				aria-keyshortcuts="Alt+F"
 				checked
-			/><label for="flip-horizontal">${display_hotkey(localize("&Flip horizontal"))}</label>
+			/><label for="flip-horizontal">${render_access_key(localize("&Flip horizontal"))}</label>
 		</div>
 		<div class="radio-wrapper">
 			<input
@@ -2929,7 +3391,7 @@ function image_flip_and_rotate(){
 				id="flip-vertical"
 				value="flip-vertical"
 				aria-keyshortcuts="Alt+V"
-			/><label for="flip-vertical">${display_hotkey(localize("Flip &vertical"))}</label>
+			/><label for="flip-vertical">${render_access_key(localize("Flip &vertical"))}</label>
 		</div>
 		<div class="radio-wrapper">
 			<input
@@ -2938,7 +3400,7 @@ function image_flip_and_rotate(){
 				id="rotate-by-angle"
 				value="rotate-by-angle"
 				aria-keyshortcuts="Alt+R"
-			/><label for="rotate-by-angle">${display_hotkey(localize("&Rotate by angle"))}</label>
+			/><label for="rotate-by-angle">${render_access_key(localize("&Rotate by angle"))}</label>
 		</div>
 	`);
 
@@ -2949,7 +3411,7 @@ function image_flip_and_rotate(){
 		"&180°",
 		"&270°",
 	]) {
-		const degrees = parseInt(remove_hotkey(label_with_hotkey), 10);
+		const degrees = parseInt(AccessKeys.toText(label_with_hotkey), 10);
 		$rotate_by_angle.append(`
 			<div class="radio-wrapper">
 				<input
@@ -2957,10 +3419,10 @@ function image_flip_and_rotate(){
 					name="rotate-by-angle"
 					value="${degrees}"
 					id="rotate-${degrees}"
-					aria-keyshortcuts="Alt+${get_hotkey(label_with_hotkey).toUpperCase()}"
+					aria-keyshortcuts="Alt+${AccessKeys.get(label_with_hotkey).toUpperCase()}"
 				/><label
 					for="rotate-${degrees}"
-				>${display_hotkey(label_with_hotkey)}</label>
+				>${render_access_key(label_with_hotkey)}</label>
 			</div>
 		`);
 	}
@@ -2983,17 +3445,17 @@ function image_flip_and_rotate(){
 			<label for="custom-degrees">${localize("Degrees")}</label>
 		</div>
 	`);
-	$rotate_by_angle.find("#rotate-90").attr({checked: true});
+	$rotate_by_angle.find("#rotate-90").attr({ checked: true });
 	// Disabling inputs makes them not even receive mouse events,
 	// and so pointer-events: none is needed to respond to events on the parent.
-	$rotate_by_angle.find("input").attr({disabled: true});
+	$rotate_by_angle.find("input").attr({ disabled: true });
 	$fieldset.find("input").on("change", () => {
 		const action = $fieldset.find("input[name='flip-or-rotate']:checked").val();
 		$rotate_by_angle.find("input").attr({
-			disabled: action !== "rotate-by-angle"
+			disabled: action !== "rotate-by-angle",
 		});
 	});
-	$rotate_by_angle.find(".radio-wrapper").on("click", (e)=> {
+	$rotate_by_angle.find(".radio-wrapper").on("click", (e) => {
 		// Select "Rotate by angle" and enable subfields
 		$fieldset.find("input[value='rotate-by-angle']").prop("checked", true);
 		$fieldset.find("input").triggerHandler("change");
@@ -3008,14 +3470,14 @@ function image_flip_and_rotate(){
 		$wrapper.find("input[type='radio']").prop("checked", true);
 	});
 
-	$fieldset.find("input[name='rotate-by-arbitrary-angle']").on("input", ()=> {
+	$fieldset.find("input[name='rotate-by-arbitrary-angle']").on("input", () => {
 		$fieldset.find("input[value='rotate-by-angle']").prop("checked", true);
 		$fieldset.find("input[value='arbitrary']").prop("checked", true);
 	});
 
 	$w.$Button(localize("OK"), () => {
 		const action = $fieldset.find("input[name='flip-or-rotate']:checked").val();
-		switch(action){
+		switch (action) {
 			case "flip-horizontal":
 				flip_horizontal();
 				break;
@@ -3024,13 +3486,13 @@ function image_flip_and_rotate(){
 				break;
 			case "rotate-by-angle": {
 				let angle_val = $fieldset.find("input[name='rotate-by-angle']:checked").val();
-				if(angle_val === "arbitrary"){
+				if (angle_val === "arbitrary") {
 					angle_val = $fieldset.find("input[name='rotate-by-arbitrary-angle']").val();
 				}
-				const angle_deg = parseFloat(angle_val);
+				const angle_deg = Number(angle_val);
 				const angle = angle_deg / 360 * TAU;
-		
-				if(isNaN(angle)){
+
+				if (isNaN(angle)) {
 					please_enter_a_number();
 					return;
 				}
@@ -3039,21 +3501,21 @@ function image_flip_and_rotate(){
 			}
 		}
 
-		$canvas_area.trigger("resize");
-
 		$w.close();
-	})[0].focus();
+	}, { type: "submit" });
 	$w.$Button(localize("Cancel"), () => {
 		$w.close();
 	});
 
+	$fieldset.find("input[type='radio']").first().focus();
+
 	$w.center();
 
-	handle_keyshortcuts_alt_only($w);
+	handle_keyshortcuts($w);
 }
 
-function image_stretch_and_skew(){
-	const $w = new $DialogWindow(localize("Stretch and Skew"));
+function image_stretch_and_skew() {
+	const $w = $DialogWindow(localize("Stretch and Skew"));
 	$w.addClass("stretch-and-skew");
 
 	const $fieldset_stretch = $(E("fieldset")).appendTo($w.$main);
@@ -3068,7 +3530,7 @@ function image_stretch_and_skew(){
 			width: 32,
 			height: 32,
 		}).css({
-			marginRight: "20px"
+			marginRight: "20px",
 		});
 		const input_id = ("input" + Math.random() + Math.random()).replace(/\./, "");
 		const $input = $(E("input")).attr({
@@ -3077,12 +3539,12 @@ function image_stretch_and_skew(){
 			max,
 			value: default_value,
 			id: input_id,
-			"aria-keyshortcuts": `Alt+${get_hotkey(label_with_hotkey).toUpperCase()}`,
+			"aria-keyshortcuts": `Alt+${AccessKeys.get(label_with_hotkey).toUpperCase()}`,
 		}).css({
-			width: "40px"
+			width: "40px",
 		}).addClass("no-spinner inset-deep");
 		$(E("td")).appendTo($tr).append($img);
-		$(E("td")).appendTo($tr).append($(E("label")).html(display_hotkey(label_with_hotkey)).attr("for", input_id));
+		$(E("td")).appendTo($tr).append($(E("label")).html(render_access_key(label_with_hotkey)).attr("for", input_id));
 		$(E("td")).appendTo($tr).append($input);
 		$(E("td")).appendTo($tr).text(label_unit);
 
@@ -3095,10 +3557,10 @@ function image_stretch_and_skew(){
 	const skew_y = $RowInput($fieldset_skew.find("table"), "skew-y", localize("V&ertical:"), 0, localize("Degrees"), -90, 90);
 
 	$w.$Button(localize("OK"), () => {
-		const x_scale = parseFloat(stretch_x.val())/100;
-		const y_scale = parseFloat(stretch_y.val())/100;
-		const h_skew = parseFloat(skew_x.val())/360*TAU;
-		const v_skew = parseFloat(skew_y.val())/360*TAU;
+		const x_scale = parseFloat(stretch_x.val()) / 100;
+		const y_scale = parseFloat(stretch_y.val()) / 100;
+		const h_skew = parseFloat(skew_x.val()) / 360 * TAU;
+		const v_skew = parseFloat(skew_y.val()) / 360 * TAU;
 		if (isNaN(x_scale) || isNaN(y_scale) || isNaN(h_skew) || isNaN(v_skew)) {
 			please_enter_a_number();
 			return;
@@ -3112,49 +3574,112 @@ function image_stretch_and_skew(){
 			} else {
 				show_error_message(localize("An unknown error has occurred."), exception);
 			}
-			// @TODO: undo and clean up undoable 
+			// @TODO: undo and clean up undoable
 			return;
 		}
-		$canvas_area.trigger("resize");
 		$w.close();
-	})[0].focus();
+	}, { type: "submit" });
 
 	$w.$Button(localize("Cancel"), () => {
 		$w.close();
 	});
 
+	$w.$main.find("input").first().focus().select();
+
 	$w.center();
 
-	handle_keyshortcuts_alt_only($w);
+	handle_keyshortcuts($w);
 }
 
-// could be expanded to handle all different modifiers, but for now I'm naming it so the limitation is clear
-function handle_keyshortcuts_alt_only($container) {
-	$container.on("keydown", (event)=> {
-		if (event.altKey && !event.ctrlKey && !event.metaKey && !event.shiftKey) {
-			let shortcut_target = $container.find(`[aria-keyshortcuts="Alt+${event.key.toUpperCase()}"]`)[0];
-			if (shortcut_target) {
-				event.preventDefault();
-				event.stopPropagation();
-				if (shortcut_target.disabled) {
-					shortcut_target = shortcut_target.closest(".radio-wrapper");
+/**
+ * @param {JQuery<HTMLElement>} $container
+ */
+function handle_keyshortcuts($container) {
+	// This function implements shortcuts defined with aria-keyshortcuts.
+	// It also modifies aria-keyshortcuts to remove shortcuts that don't
+	// contain a modifier (other than shift) when an input field is focused,
+	// in order to avoid conflicts with typing.
+	// It stores the original aria-keyshortcuts (indefinitely), so if aria-keyshortcuts
+	// is ever to be modified at runtime (externally), the code here may need to be changed.
+
+	$container.on("keydown", (event) => {
+		const $targets = $container.find("[aria-keyshortcuts]");
+		for (let shortcut_target of $targets) {
+			const shortcuts = $(shortcut_target).attr("aria-keyshortcuts").split(" ");
+			for (const shortcut of shortcuts) {
+				// TODO: should we use code instead of key? need examples
+				if (
+					!!shortcut.match(/Alt\+/i) === event.altKey &&
+					!!shortcut.match(/Ctrl\+/i) === event.ctrlKey &&
+					!!shortcut.match(/Meta\+/i) === event.metaKey &&
+					!!shortcut.match(/Shift\+/i) === event.shiftKey &&
+					shortcut.split("+").pop().toUpperCase() === event.key.toUpperCase()
+				) {
+					event.preventDefault();
+					event.stopPropagation();
+					// @ts-ignore
+					if (shortcut_target.disabled) {
+						shortcut_target = shortcut_target.closest(".radio-wrapper");
+					}
+					shortcut_target.click();
+					shortcut_target.focus();
+					return;
 				}
-				shortcut_target.click();
-				shortcut_target.focus();
+			}
+		}
+	});
+
+	// Prevent keyboard shortcuts from interfering with typing in text fields.
+	// Rather than conditionally handling the shortcut, I'm conditionally removing it,
+	// because _theoretically_ it's better for assistive technology to know that the shortcut isn't available.
+	// (Theoretically I should also remove aria-keyshortcuts when the window isn't focused...)
+	$container.on("focusin focusout", (event) => {
+		if ($(event.target).is('textarea, input:not([type="checkbox"]):not([type="radio"]):not([type="button"]):not([type="submit"]):not([type="reset"]):not([type="image"]):not([type="file"]):not([type="color"]):not([type="range"])')) {
+			for (const control of $container.find("[aria-keyshortcuts]")) {
+				// @ts-ignore (could use a Map but that would be a little more complicated)
+				control._original_aria_keyshortcuts = control._original_aria_keyshortcuts ?? control.getAttribute("aria-keyshortcuts");
+				// Remove shortcuts without modifiers.
+				control.setAttribute("aria-keyshortcuts",
+					control.getAttribute("aria-keyshortcuts")
+						.split(" ")
+						.filter((shortcut) => shortcut.match(/(Alt|Ctrl|Meta)\+/i))
+						.join(" ")
+				);
+			}
+		} else {
+			// Restore shortcuts.
+			for (const control of $container.find("[aria-keyshortcuts]")) {
+				// @ts-ignore
+				if (control._original_aria_keyshortcuts) {
+					// @ts-ignore
+					control.setAttribute("aria-keyshortcuts", control._original_aria_keyshortcuts);
+				}
 			}
 		}
 	});
 }
 
+/**
+ * Displays a save prompt dialog with options to specify the file name and format.
+ *
+ * @param {Object} options
+ * @param {string} [options.dialogTitle="Save As"] - The title of the dialog.
+ * @param {string} [options.defaultFileName=""] - The default file name.
+ * @param {string} [options.defaultFileFormatID] - The file format to select by default.
+ * @param {FileFormat[]} options.formats - The file formats available in the dropdown.
+ * @param {boolean} [options.promptForName=true] - Whether to prompt for the file name, or just the format.
+ *
+ * @returns {Promise<{newFileName: string, newFileFormatID: string}>} - A promise that resolves with the new file name and format ID.
+ */
 function save_as_prompt({
-	dialogTitle=localize("Save As"),
-	defaultFileName="",
+	dialogTitle = localize("Save As"),
+	defaultFileName = "",
 	defaultFileFormatID,
 	formats,
-	promptForName=true,
+	promptForName = true,
 }) {
-	return new Promise((resolve)=> {
-		const $w = new $DialogWindow(dialogTitle);
+	return new Promise((resolve) => {
+		const $w = $DialogWindow(dialogTitle);
 		$w.addClass("save-as");
 
 		// This is needed to prevent the keyboard from closing when you tap the file name input! in FF mobile
@@ -3188,7 +3713,7 @@ function save_as_prompt({
 			$file_name.val(defaultFileName);
 		}
 
-		const get_selected_format = ()=> {
+		const get_selected_format = () => {
 			const selected_format_id = $file_type.val();
 			for (const format of formats) {
 				if (format.formatID === selected_format_id) {
@@ -3198,8 +3723,8 @@ function save_as_prompt({
 		};
 
 		// Select file type when typing file name
-		const select_file_type_from_file_name = ()=> {
-			const extension_match = (promptForName ? $file_name.val() : defaultFileName).match(/\.([\w\d]+)$/);
+		const select_file_type_from_file_name = () => {
+			const extension_match = (promptForName ? String($file_name.val()) : defaultFileName).match(/\.([\w\d]+)$/);
 			if (extension_match) {
 				const selected_format = get_selected_format();
 				const matched_ext = extension_match[1].toLowerCase();
@@ -3218,7 +3743,7 @@ function save_as_prompt({
 		if (promptForName) {
 			$file_name.on("input", select_file_type_from_file_name);
 		}
-		if (defaultFileFormatID && formats.some((format)=> format.formatID === defaultFileFormatID)) {
+		if (defaultFileFormatID && formats.some((format) => format.formatID === defaultFileFormatID)) {
 			$file_type.val(defaultFileFormatID);
 		} else {
 			select_file_type_from_file_name();
@@ -3226,11 +3751,11 @@ function save_as_prompt({
 
 		// Change file extension when selecting file type
 		// allowing non-default extension like .dib vs .bmp, .jpg vs .jpeg to stay
-		const update_extension_from_file_type = (add_extension_if_absent)=> {
+		const update_extension_from_file_type = (add_extension_if_absent) => {
 			if (!promptForName) {
 				return;
 			}
-			let file_name = $file_name.val();
+			let file_name = /** @type {string} */($file_name.val());
 			const selected_format = get_selected_format();
 			if (!selected_format) {
 				return;
@@ -3249,7 +3774,7 @@ function save_as_prompt({
 				$file_name.val(file_name);
 			}
 		};
-		$file_type.on("change", ()=> {
+		$file_type.on("change", () => {
 			update_extension_from_file_type(false);
 		});
 		// and initially
@@ -3259,10 +3784,10 @@ function save_as_prompt({
 			$w.close();
 			update_extension_from_file_type(true);
 			resolve({
-				newFileName: promptForName ? $file_name.val() : defaultFileName,
-				newFileFormatID: $file_type.val(),
+				newFileName: promptForName ? String($file_name.val()) : defaultFileName,
+				newFileFormatID: String($file_type.val()),
 			});
-		});
+		}, { type: "submit" });
 		$w.$Button(localize("Cancel"), () => {
 			$w.close();
 		});
@@ -3282,10 +3807,17 @@ function save_as_prompt({
 	});
 }
 
+/**
+ * Writes an image file to a blob, in the given format.
+ * @param {HTMLCanvasElement} canvas - The canvas to export as an image file. Must have a 2d context.
+ * @param {string} mime_type - The MIME type of the image file.
+ * @param {(Blob)=> void} blob_callback - This function is called with the blob, or may never be called if there is an error.
+ */
 function write_image_file(canvas, mime_type, blob_callback) {
+	const ctx = canvas.getContext("2d");
 	const bmp_match = mime_type.match(/^image\/(?:x-)?bmp\s*(?:-(\d+)bpp)?/);
 	if (bmp_match) {
-		const file_content = encodeBMP(canvas.ctx.getImageData(0, 0, canvas.width, canvas.height), parseInt(bmp_match[1] || "24", 10));
+		const file_content = encodeBMP(ctx.getImageData(0, 0, canvas.width, canvas.height), parseInt(bmp_match[1] || "24", 10));
 		const blob = new Blob([file_content]);
 		sanity_check_blob(blob, () => {
 			blob_callback(blob);
@@ -3293,14 +3825,14 @@ function write_image_file(canvas, mime_type, blob_callback) {
 	} else if (mime_type === "image/png") {
 		// UPNG.js gives better compressed PNGs than the built-in browser PNG encoder
 		// In fact you can use it as a minifier! http://upng.photopea.com/
-		const image_data = canvas.ctx.getImageData(0, 0, canvas.width, canvas.height);
+		const image_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		const array_buffer = UPNG.encode([image_data.data.buffer], image_data.width, image_data.height);
 		const blob = new Blob([array_buffer]);
 		sanity_check_blob(blob, () => {
 			blob_callback(blob);
 		});
 	} else if (mime_type === "image/tiff") {
-		const image_data = canvas.ctx.getImageData(0, 0, canvas.width, canvas.height);
+		const image_data = ctx.getImageData(0, 0, canvas.width, canvas.height);
 		const metadata = {
 			t305: ["jspaint (UTIF.js)"],
 		};
@@ -3310,7 +3842,7 @@ function write_image_file(canvas, mime_type, blob_callback) {
 			blob_callback(blob);
 		});
 	} else {
-		canvas.toBlob(blob => {
+		canvas.toBlob((blob) => {
 			// Note: could check blob.type (mime type) instead
 			const png_magic_bytes = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
 			sanity_check_blob(blob, () => {
@@ -3320,6 +3852,10 @@ function write_image_file(canvas, mime_type, blob_callback) {
 	}
 }
 
+/**
+ * @param {Blob} blob
+ * @param {(error: Error|null, result?: ImageInfo) => void} callback
+ */
 function read_image_file(blob, callback) {
 	// @TODO: handle SVG (might need to keep track of source URL, for relative resources)
 	// @TODO: read palette from GIF files
@@ -3328,7 +3864,7 @@ function read_image_file(blob, callback) {
 	let palette;
 	let monochrome = false;
 
-	blob.arrayBuffer().then((arrayBuffer)=> {
+	blob.arrayBuffer().then((arrayBuffer) => {
 		// Helpers:
 		// "GIF".split("").map(c=>"0x"+c.charCodeAt(0).toString("16")).join(", ")
 		// [0x47, 0x49, 0x46].map(c=>String.fromCharCode(c)).join("")
@@ -3347,7 +3883,7 @@ function read_image_file(blob, callback) {
 		const file_bytes = new Uint8Array(arrayBuffer);
 		let detected_type_id;
 		for (const [type_id, magic_bytes] of Object.entries(magics)) {
-			const magic_found = magic_bytes.every((byte, index)=> byte === file_bytes[index]);
+			const magic_found = magic_bytes.every((byte, index) => byte === file_bytes[index]);
 			if (magic_found) {
 				detected_type_id = type_id;
 			}
@@ -3358,14 +3894,14 @@ function read_image_file(blob, callback) {
 			}
 		}
 		if (detected_type_id === "bmp") {
-			const {colorTable, bitsPerPixel, imageData} = decodeBMP(arrayBuffer);
+			const { colorTable, bitsPerPixel, imageData } = decodeBMP(arrayBuffer);
 			file_format = bitsPerPixel === 24 ? "image/bmp" : `image/bmp;bpp=${bitsPerPixel}`;
 			if (colorTable.length >= 2) {
 				if (colorTable.length === 2) {
-					palette = make_monochrome_palette(...colorTable.map((color)=> [color.r, color.g, color.b, 255]));
+					palette = make_monochrome_palette(...colorTable.map((color) => [color.r, color.g, color.b, 255]));
 					monochrome = true;
 				} else {
-					palette = colorTable.map((color)=> `rgb(${color.r}, ${color.g}, ${color.b})`);
+					palette = colorTable.map((color) => `rgb(${color.r}, ${color.g}, ${color.b})`);
 					monochrome = false;
 				}
 			}
@@ -3374,9 +3910,9 @@ function read_image_file(blob, callback) {
 			// 		imageData.data[i] = 255;
 			// 	}
 			// }
-			callback(null, {file_format, monochrome, palette, image_data: imageData, source_blob: blob});
+			callback(null, { file_format, monochrome, palette, image_data: imageData, source_blob: blob });
 		} else if (detected_type_id === "png") {
-			const decoded  = UPNG.decode(arrayBuffer);
+			const decoded = UPNG.decode(arrayBuffer);
 			const rgba = UPNG.toRGBA8(decoded)[0];
 			const { width, height, tabs, ctype } = decoded;
 			// If it's a palettized PNG, load the palette for the Colors box.
@@ -3410,7 +3946,7 @@ function read_image_file(blob, callback) {
 		} else if (detected_type_id === "tiff_be" || detected_type_id === "tiff_le") {
 			// IFDs = image file directories
 			// VSNs = ???
-			// This code is based on UTIF.bufferToURI	
+			// This code is based on UTIF.bufferToURI
 			var ifds = UTIF.decode(arrayBuffer);
 			//console.log(ifds);
 			var vsns = ifds, ma = 0, page = vsns[0];
@@ -3429,13 +3965,13 @@ function read_image_file(blob, callback) {
 			var image_data = new ImageData(new Uint8ClampedArray(rgba.buffer), page.width, page.height);
 
 			file_format = "image/tiff";
-			callback(null, {file_format, monochrome, palette, image_data, source_blob: blob});
+			callback(null, { file_format, monochrome, palette, image_data, source_blob: blob });
 		} else if (detected_type_id === "pdf") {
 			file_format = "application/pdf";
 
-			const pdfjs = window['pdfjs-dist/build/pdf'];
-			
-			pdfjs.GlobalWorkerOptions.workerSrc = 'lib/pdf.js/build/pdf.worker.js';
+			const pdfjs = window["pdfjs-dist/build/pdf"];
+
+			pdfjs.GlobalWorkerOptions.workerSrc = "lib/pdf.js/build/pdf.worker.js";
 
 			const file_bytes = new Uint8Array(arrayBuffer);
 
@@ -3445,14 +3981,14 @@ function read_image_file(blob, callback) {
 				cMapPacked: true,
 			});
 
-			loadingTask.promise.then((pdf)=>  {
-				console.log('PDF loaded');
+			loadingTask.promise.then((pdf) => {
+				console.log("PDF loaded");
 
 				// Fetch the first page
 				// TODO: maybe concatenate all pages into one image?
 				var pageNumber = 1;
-				pdf.getPage(pageNumber).then((page)=>  {
-					console.log('Page loaded');
+				pdf.getPage(pageNumber).then((page) => {
+					console.log("Page loaded");
 
 					var scale = 1.5;
 					var viewport = page.getViewport({ scale });
@@ -3467,9 +4003,9 @@ function read_image_file(blob, callback) {
 					};
 					var renderTask = page.render(renderContext);
 					renderTask.promise.then(() => {
-						console.log('Page rendered');
+						console.log("Page rendered");
 						const image_data = canvas.ctx.getImageData(0, 0, canvas.width, canvas.height);
-						callback(null, {file_format, monochrome, palette, image_data, source_blob: blob});
+						callback(null, { file_format, monochrome, palette, image_data, source_blob: blob });
 					});
 				});
 			}, (reason) => {
@@ -3493,61 +4029,68 @@ function read_image_file(blob, callback) {
 			const blob_uri = URL.createObjectURL(blob);
 			const img = new Image();
 			// img.crossOrigin = "Anonymous";
-			const handle_decode_fail = ()=> {
+			const handle_decode_fail = () => {
 				URL.revokeObjectURL(blob_uri);
-				blob.text().then((file_text)=> {
+				blob.text().then((file_text) => {
 					const error = new Error("failed to decode blob as an image");
+					// @ts-ignore
 					error.code = file_text.match(/^\s*<!doctype\s+html/i) ? "html-not-image" : "decoding-failure";
 					callback(error);
-				}, (err)=> {
+				}, (_err) => {
 					const error = new Error("failed to decode blob as image or text");
+					// @ts-ignore
 					error.code = "decoding-failure";
 					callback(error);
 				});
 			};
-			img.onload = ()=> {
+			img.onload = () => {
 				URL.revokeObjectURL(blob_uri);
 				if (!img.complete || typeof img.naturalWidth == "undefined" || img.naturalWidth === 0) {
 					handle_decode_fail();
 					return;
 				}
-				callback(null, {file_format, monochrome, palette, image: img, source_blob: blob});
+				callback(null, { file_format, monochrome, palette, image: img, source_blob: blob });
 			};
 			img.onerror = handle_decode_fail;
 			img.src = blob_uri;
 		}
-	}, (error)=> {
+	}, (error) => {
 		callback(error);
 	});
 }
 
+/**
+ * Updates the canvas to reflect reductions in color when saving to certain file formats.
+ * @param {Blob} blob - The saved file blob.
+ */
 function update_from_saved_file(blob) {
-	read_image_file(blob, (error, info)=> {
+	read_image_file(blob, (error, info) => {
 		if (error) {
 			show_error_message("The file has been saved, however... " + localize("Paint cannot read this file."), error);
 			return;
 		}
 		apply_file_format_and_palette_info(info);
-		const format = image_formats.find(({mimeType})=> mimeType === info.file_format);
+		const format = image_formats.find(({ mimeType }) => mimeType === info.file_format);
 		undoable({
 			name: `${localize("Save As")} ${format ? format.name : info.file_format}`,
 			icon: get_help_folder_icon("p_save.png"),
-		}, ()=> {
+			assume_saved: true, // prevent setting saved to false
+		}, () => {
 			main_ctx.copy(info.image || info.image_data);
 		});
 	});
 }
 
-function save_selection_to_file(){
-	if(selection && selection.canvas){
+function save_selection_to_file() {
+	if (selection && selection.canvas) {
 		systemHooks.showSaveFileDialog({
 			dialogTitle: localize("Save As"),
-			defaultName: "selection.png",
+			defaultFileName: "selection.png",
 			defaultFileFormatID: "image/png",
 			formats: image_formats,
-			getBlob: (new_file_type)=> {
-				return new Promise((resolve)=> {
-					write_image_file(selection.canvas, new_file_type, (blob)=> {
+			getBlob: (new_file_type) => {
+				return new Promise((resolve) => {
+					write_image_file(selection.canvas, new_file_type, (blob) => {
 						resolve(blob);
 					});
 				});
@@ -3556,12 +4099,18 @@ function save_selection_to_file(){
 	}
 }
 
-function sanity_check_blob(blob, okay_callback, magic_number_bytes, magic_wanted=true){
-	if(blob.size > 0){
+/**
+ * @param {Blob} blob
+ * @param {() => void} okay_callback
+ * @param {number[]} [magic_number_bytes]
+ * @param {boolean} [magic_wanted]
+ */
+function sanity_check_blob(blob, okay_callback, magic_number_bytes, magic_wanted = true) {
+	if (blob.size > 0) {
 		if (magic_number_bytes) {
-			blob.arrayBuffer().then((arrayBuffer)=> {
+			blob.arrayBuffer().then((arrayBuffer) => {
 				const file_bytes = new Uint8Array(arrayBuffer);
-				const magic_found = magic_number_bytes.every((byte, index)=> byte === file_bytes[index]);
+				const magic_found = magic_number_bytes.every((byte, index) => byte === file_bytes[index]);
 				// console.log(file_bytes, magic_number_bytes, magic_found, magic_wanted);
 				if (magic_found === magic_wanted) {
 					okay_callback();
@@ -3573,23 +4122,30 @@ function sanity_check_blob(blob, okay_callback, magic_number_bytes, magic_wanted
 						// 	<p>${localize("Unexpected file format.")}</p>
 						// 	<p>${localize("An unsupported operation was attempted.")}</p>
 						// `,
-						message: "Your browser does not support writing images in this file format.",
+						message:
+							window.is_electron_app ?
+								"Writing images in this file format is not supported." :
+								"Your browser does not support writing images in this file format.",
 						iconID: "error",
 					});
 				}
-			}, (error)=> {
+			}, (error) => {
 				show_error_message(localize("An unknown error has occurred."), error);
 			});
 		} else {
 			okay_callback();
 		}
-	}else{
+	} else {
 		show_error_message(localize("Failed to save document."));
 	}
 }
 
-function show_multi_user_setup_dialog(from_current_document){
-	const $w = $DialogWindow().title("Multi-User Setup").addClass("horizontal-buttons");
+/**
+ * @param {boolean} from_current_document
+ */
+function show_multi_user_setup_dialog(from_current_document) {
+	const $w = $DialogWindow();
+	$w.title("Multi-User Setup").addClass("horizontal-buttons");
 	$w.$main.html(`
 		${from_current_document ? "<p>This will make the current document public.</p>" : ""}
 		<p>
@@ -3611,19 +4167,15 @@ function show_multi_user_setup_dialog(from_current_document){
 		</p>
 	`);
 	const $session_name = $w.$main.find("#session-name");
-	$w.$main.css({maxWidth: "500px"});
+	$w.$main.css({ maxWidth: "500px" });
 	$w.$Button("Start", () => {
-		let name = $session_name.val().trim();
+		let name = String($session_name.val()).trim();
 
-		if(name == ""){
+		if (name == "") {
 			show_error_message("The session name cannot be empty.");
-		// }else if(name.match(/[./[\]#$]/)){
-		// 	show_error_message("The session name cannot contain any of ./[]#$");
-		// }else if(name.match(/\s/)){
-		// 	show_error_message("The session name cannot contain spaces.");
-		}else if($session_name.is(":invalid")){
+		} else if ($session_name.is(":invalid")) {
 			show_error_message("The session name must be made from only numbers, letters, and hyphens.");
-		}else{
+		} else {
 			if (from_current_document) {
 				change_url_param("session", name);
 			} else {
@@ -3633,10 +4185,30 @@ function show_multi_user_setup_dialog(from_current_document){
 			}
 			$w.close();
 		}
-	});
+	}, { type: "submit" });
 	$w.$Button(localize("Cancel"), () => {
 		$w.close();
 	});
 	$w.center();
 	$session_name.focus();
 }
+
+export {
+	$this_version_news,
+	apply_file_format_and_palette_info, are_you_sure, cancel, change_some_url_params, change_url_param, choose_file_to_paste, cleanup_bitmap_view, clear, confirm_overwrite_capability, delete_selection, deselect, detect_monochrome,
+	edit_copy, edit_cut, edit_paste, exit_fullscreen_if_ios, file_load_from_url, file_new, file_open, file_print, file_save,
+	file_save_as, getSelectionText, get_all_url_params, get_history_ancestors, get_tool_by_id, get_uris, get_url_param, go_to_history_node, handle_keyshortcuts, has_any_transparency, image_attributes, image_flip_and_rotate, image_invert_colors, image_stretch_and_skew, load_image_from_uri, load_theme_from_text, make_history_node, make_monochrome_palette, make_monochrome_pattern, make_opaque, make_or_update_undoable, make_stripe_pattern, meld_selection_into_canvas,
+	meld_textbox_into_canvas, open_from_file, open_from_image_info, paste, paste_image_from_file, please_enter_a_number, read_image_file, redo, render_canvas_view, render_history_as_gif, reset_canvas_and_history, reset_file, reset_selected_colors, resize_canvas_and_save_dimensions, resize_canvas_without_saving_dimensions, sanity_check_blob, save_as_prompt, save_selection_to_file, select_all, select_tool, select_tools, set_all_url_params, set_magnification, show_about_paint, show_convert_to_black_and_white, show_custom_zoom_window, show_document_history, show_error_message, show_file_format_errors, show_multi_user_setup_dialog, show_news, show_resource_load_error_message, switch_to_polychrome_palette, toggle_grid,
+	toggle_thumbnail, try_exec_command, undo, undoable, update_canvas_rect, update_css_classes_for_conditional_messages, update_disable_aa, update_from_saved_file, update_helper_layer,
+	update_helper_layer_immediately, update_magnified_canvas_size, update_title, view_bitmap, write_image_file
+};
+// Temporary globals until all dependent code is converted to ES Modules
+window.make_history_node = make_history_node; // used by app-state.js
+window.open_from_file = open_from_file; // used by electron-injected.js
+window.are_you_sure = are_you_sure; // used by app-localization.js, electron-injected.js
+window.show_error_message = show_error_message; // used by app-localization.js, electron-injected.js
+window.show_about_paint = show_about_paint; // used by electron-injected.js
+window.exit_fullscreen_if_ios = exit_fullscreen_if_ios; // used by app-localization.js
+window.get_tool_by_id = get_tool_by_id; // used by app-state.js
+window.make_monochrome_palette = make_monochrome_palette; // used by app-state.js
+window.sanity_check_blob = sanity_check_blob; // used by electron-injected.js

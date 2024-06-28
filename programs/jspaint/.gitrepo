@@ -6,7 +6,7 @@
 [subrepo]
 	remote = https://github.com/1j01/jspaint.git
 	branch = master
-	commit = 58828ca32307485ccdea318c0fe4d3a7cfa14124
-	parent = badf1d399adec6701af3fc3b98f1ef997ec6e0be
+	commit = 34e151cfaf11fdb3700348cadfa8033d25e70921
+	parent = c4fce9191f2fce7184b5811f4c9f6bc9933138c4
 	method = merge
-	cmdver = 0.4.3
+	cmdver = 0.4.6

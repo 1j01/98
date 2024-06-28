@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<title>JS Paint — MS Paint online</title>
+
+	<!-- <meta http-equiv="Content-Security-Policy" content="
+		default-src 'self';
+		img-src 'self' data: blob: http: https:;
+	"> -->
+
+	<link href="styles/normalize.css" rel="stylesheet" type="text/css">
+	<!-- `styles/layout.css` includes `overflow: hidden` on the body and html elements, designed for the app,
+		which completely prevents scrolling, at least in Internet Explorer.
+		Don't think we want `styles/layout.css`, but OS-GUI's `layout.css` is used for window elements. -->
+	<!-- <link href="styles/layout.css" class="flippable-layout-stylesheet" rel="stylesheet" type="text/css"> -->
+	<!-- <link href="styles/print.css" rel="stylesheet" type="text/css" media="print"> -->
+	<link href="lib/os-gui/build/layout.css" class="flippable-layout-stylesheet" rel="stylesheet" type="text/css">
+	<link href="lib/98.css/98.custom-build.css" class="flippable-layout-stylesheet not-for-modern" rel="stylesheet"
+		type="text/css">
+
+	<link rel="apple-touch-icon" href="images/icons/apple-icon-180x180.png">
+	<!-- Chrome will pick the largest image for some reason, instead of the most appropriate one. -->
+	<!-- <link rel="icon" type="image/png" sizes="192x192" href="images/icons/192x192.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="images/icons/32x32.png">
+		<link rel="icon" type="image/png" sizes="96x96" href="images/icons/96x96.png"> -->
+	<!-- <link rel="icon" type="image/png" sizes="16x16" href="images/icons/16x16.png"> -->
+	<link rel="shortcut icon" href="favicon.ico">
+	<link rel="mask-icon" href="images/icons/safari-pinned-tab.svg" color="red">
+	<link rel="manifest" href="manifest.webmanifest">
+	<meta name="msapplication-TileColor" content="#008080">
+	<meta name="msapplication-TileImage" content="images/icons/ms-icon-144x144.png">
+	<meta name="theme-color" content="#000080">
+
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+	<meta name="description" content="Classic MS Paint in the browser, with extra features">
+	<meta property="og:image:width" content="279">
+	<meta property="og:image:height" content="279">
+	<meta property="og:description" content="Classic MS Paint in the browser, with extra features.">
+	<meta property="og:title" content="JS Paint">
+	<meta property="og:url" content="https://jspaint.app">
+	<meta property="og:image" content="https://jspaint.app/images/icons/og-image-279x279.jpg">
+	<meta name="twitter:title" content="JS Paint">
+	<meta name="twitter:description" content="Classic MS Paint in the browser, with extra features">
+	<meta name="twitter:image" content="https://jspaint.app/images/meta/twitter-card-plz-no-crop.png">
+	<meta name="twitter:card" content="summary_large_image">
+	<meta name="twitter:site" content="@isaiahodhner">
+	<meta name="twitter:creator" content="@isaiahodhner">
+
+	<link rel="stylesheet" href="styles/themes/classic.css">
+	<link rel="stylesheet" href="styles/about.css">
+</head>
+
+<body>
+	<section id="main-section">
+		<h1 style="text-align: center;">
+			<a href="https://jspaint.app" target="_blank">
+				<img src="images/icons/jspaint.svg" width="192" height="192" alt="">
+				<br>
+				<span id="jspaint-project-name">JS Paint</span>
+			</a>
+		</h1>
+
+		<p style="text-align: center;">JS Paint is a pixel-perfect remake of Microsoft Paint that runs in the browser.
+		</p>
+
+		<p>
+			<a href="https://github.com/1j01/jspaint/blob/master/LICENSE.txt" target="_blank"><img
+					src="images/about/free.gif" width="88" height="39" alt="Free" style="vertical-align: middle"></a>
+			Open source under the permissive
+			<a href="https://github.com/1j01/jspaint/blob/master/LICENSE.txt" target="_blank">MIT License</a>.
+		</p>
+		<p>
+			<a href="https://github.com/1j01/jspaint/issues" target="_blank"><img src="images/about/foco.gif" width="40"
+					height="40" alt="Ideas" style="vertical-align: middle"></a>
+			Request features and report bugs <a href="https://github.com/1j01/jspaint/issues" target="_blank">on
+				GitHub</a>
+			or <a href="mailto:isaiahodhner@gmail.com?subject=JS%20Paint" target="_blank">by email</a>.
+		</p>
+
+		<b>THIS SITE IS...</b>
+		<img src="images/about/conpaint.gif" width="350" height="50" alt="Under Construction"
+			style="vertical-align: middle; max-width: 100%; height: auto;">
+
+		<img src=" images/about/red_paint_bucket_brush_md_clr_24887PURPLE.gif" width="87" height="100"
+			alt="Paint bucket" style="float: right">
+
+		<!-- <iframe src="index.html" title="JS Paint app" id="jspaint-iframe"></iframe> -->
+
+		<div class="window os-window focused" id="os-window-jspaint"
+			style="width: 267px; height: 392px; touch-action: none; position: relative; z-index: 9; display: flex;">
+			<div class="window-titlebar" style="touch-action: none;"><img src="images/icons/16x16.png" width="16"
+					height="16" draggable="false" style="width: 16px; height: 16px;" alt="">
+				<div class="window-title-area"><span class="window-title">untitled - Paint</span></div><button
+					class="window-minimize-button window-action-minimize window-button"
+					aria-label="Minimize window"><span class="window-button-icon"></span></button><button
+					class="window-maximize-button window-action-maximize window-button"
+					aria-label="Maximize or restore window"><span class="window-button-icon"></span></button><button
+					class="window-close-button window-action-close window-button" aria-label="Close window"><span
+						class="window-button-icon"></span></button>
+			</div>
+			<div class="window-content" tabindex="-1" style="outline: none; display: flex; flex-direction: column;">
+				<!-- <iframe id="jspaint-iframe" src="index.html" -->
+				<iframe id="jspaint-iframe" src="/"
+					style="min-width: 0px; min-height: 0px; flex: 1 1 1px; border: 0px;"></iframe>
+			</div>
+			<!-- <div class="handle"
+			style="position: absolute; top: -2px; right: -2px; width: 4px; height: 4px; touch-action: none; cursor: ne-resize;">
+		</div>
+		<div class="handle"
+			style="position: absolute; top: -2px; left: calc(2px); width: calc(100% - 8px + 4px); height: 4px; touch-action: none; cursor: n-resize;">
+		</div>
+		<div class="handle"
+			style="position: absolute; top: -2px; left: -2px; width: 4px; height: 4px; touch-action: none; cursor: nw-resize;">
+		</div>
+		<div class="handle"
+			style="position: absolute; top: calc(2px); left: -2px; width: 4px; height: calc(100% - 8px + 4px); touch-action: none; cursor: w-resize;">
+		</div>
+		<div class="handle"
+			style="position: absolute; bottom: -2px; left: -2px; width: 4px; height: 4px; touch-action: none; cursor: sw-resize;">
+		</div>
+		<div class="handle"
+			style="position: absolute; bottom: -2px; left: calc(2px); width: calc(100% - 8px + 4px); height: 4px; touch-action: none; cursor: s-resize;">
+		</div>
+		<div class="handle"
+			style="position: absolute; bottom: -2px; right: -2px; width: 4px; height: 4px; touch-action: none; cursor: se-resize;">
+		</div>
+		<div class="handle"
+			style="position: absolute; top: calc(2px); right: -2px; width: 4px; height: calc(100% - 8px + 4px); touch-action: none; cursor: e-resize;">
+		</div> -->
+		</div>
+		<div id="try-me"
+			style="position: absolute; margin-left: min(300px, 100vw - 80px); margin-top: -200px; z-index: 10; color: purple; font-weight: bold;">
+			<img src="images/about/izquierda.gif" width="49" height="23" alt="hand pointing left"
+				style="vertical-align: middle">
+			Try&nbsp;me!
+			<!-- <span style="color: red">T</span><span style="color: orange">r</span><span style="color: yellow">y</span>&nbsp;<span
+				style="color: green">m</span><span style="color: blue">e</span><span style="color: purple">!</span> -->
+		</div>
+		<p>
+			<a href="https://github.com/1j01/jspaint#readme" target="_blank"><img src="images/about/moreinfo_paint.gif"
+					width="100" height="60" alt="More info" style="vertical-align: middle"></a>
+			Read about the project and extra features on <a href="https://github.com/1j01/jspaint#readme"
+				target="_blank">the readme</a>.
+		</p>
+		<p>
+			<a href="https://www.paypal.me/IsaiahOdhner" target="_blank"><img src="images/about/money4.gif" width="32"
+					height="32" alt="$" style="vertical-align: middle"></a>
+			Support the project at <a href="https://www.paypal.me/IsaiahOdhner"
+				target="_blank">paypal.me/IsaiahOdhner</a>.
+		</p>
+	</section>
+
+	<section id="windows-98-section">
+		<h2>Windows 98 online</h2>
+		<p>
+			<a href="https://98.js.org" target="_blank">
+				<img src="images/about/windows-button.gif" width="40" height="40" alt="Windows logo button">
+				<img src="images/about/flagani.gif" style="float: right" width="138" height="251"
+					alt="Windows 98 flag pole animation">
+			</a>
+			JS&nbsp;Paint is also included in a <b>web-based version of Windows&nbsp;98</b>,
+			along with Notepad, Minesweeper, Sound Recorder, Calculator, and Winamp.
+		</p>
+		<br>
+		<!--
+		Fancy multi-layered image link with a wooden window frame that zooms in on hover.
+		-->
+		<div id="enter-98-wrapper">
+			<a href="https://98.js.org" target="_blank" id="enter-98-link">
+				<img src="images/about/98.js.org.png" width="360" height="287"
+					alt="Windows 98 desktop recreation with Minesweeper, Paint, and other programs"
+					style="position: absolute; left: 0; top: 0">
+				<img src="images/about/gatinha.gif" width="126" height="141"
+					alt="White cat putting paws up and looking around" style="position: absolute; bottom: 0">
+				<img src="images/about/WindowCLR_WRK.gif" width="360" height="287" alt="windows swung open outwards"
+					id="wooden-window-frame" style="position: absolute; left: 0; top: 0">
+				<img src="images/about/ENTERsolar.gif" width="128" height="45" alt="ENTER / 由此進入"
+					style="position: absolute; left: 50%; top: 80%; transform: translate(-50%, -50%); mix-blend-mode: lighten">
+			</a>
+		</div>
+		<br>
+		<br>
+	</section>
+
+	<section id="desktop-app-section">
+		<img src="images/about/cordborder.gif" width="620" height="23" alt=""
+			style="margin: 0 auto; display: block; width: 100%; height: 23px; position: relative; top: -20px">
+		<h2 class="bg">Desktop Version <img src="images/about/news.gif" alt="(New!)"></h2>
+		<img src="images/about/atomo010.gif" width="50" height="50" alt="built with Electron"
+			style="position: absolute; right: 5%">
+		<div style="position: absolute; left: 2%">
+			<img src="images/about/atomo010.gif" width="50" height="50" alt="" style="position: relative; top: 50px">
+		</div>
+		<div style="position: absolute; right: 10%">
+			<img src="images/about/atomo010.gif" width="50" height="50" alt=""
+				style="position: relative; top: min(390px, 60vw)">
+		</div>
+		<img src="images/meta/electron-app-screenshot-mac.png" width="592" height="548"
+			alt="screenshot of JS Paint Electron app running on macOS"
+			style="max-width: 100%; height: auto; margin: 0 auto; display: block">
+		<p class="bg">
+			For a more native experience, you can install the JS Paint desktop app.
+			It works on Windows, macOS, and Linux.
+		</p>
+		<div class="bg">
+			<p>
+				<strong>Features:</strong>
+			</p>
+			<ul>
+				<li>Runs offline</li>
+				<li>Clipboard support</li>
+				<li>Open and save files like a native app</li>
+				<!-- <li>Save directly to the open file instead of downloading a copy</li>
+				<li>File associations (on macOS and Linux)</li>
+				<li>Drag and drop to open files (drop onto desktop icon, dock icon, or window)</li> -->
+				<!-- <li>Command line interface: <code>jspaint "My Picture.bmp"</code></li> -->
+				<!-- <li>macOS titlebar integration
+					(<img src="images/about/electron-app-titlebar-icon-mac.png" width="16" height="16"
+						alt="image document">
+					icon next to file name shows saved state and
+					can be dragged into other apps to insert or open the image)</li> -->
+				<li>Set wallpaper from File menu</li>
+			</ul>
+		</div>
+		<br>
+		<h3>
+			<img src="images/about/mn_download.gif" width="168" height="28" alt="Download">
+			<!-- <img src="images/about/links.gif" width="100" height="60" alt="Links"> -->
+			<img src="images/about/here.gif" width="101" height="45" alt="Here" style="position: relative; top: 7px">
+			<img src="images/about/grey-tabby.gif" width="51" height="116" alt="Grey tabby cat"
+				style="position: relative; top: 27px">
+		</h3>
+		<div id="compound-download-button">
+			<div id="compound-download-button-main-links" style="width: fit-content">
+				<!-- Using class instead of id because element is cloned on Linux. -->
+				<a href="https://github.com/1j01/jspaint/releases/" target="_blank" class="main-download-link">
+					<img src="images/about/download5.gif" width="100" height="40" alt="Download">
+				</a>
+			</div>
+			<!-- <a href="https://github.com/1j01/jspaint/issues/2" target="_blank">
+			<img src="images/about/conpaint.gif" width="350" height="50" alt="Under Construction" style="max-width: 100%; height: auto;">
+		</a> -->
+			<details id="more-download-options-expandable">
+				<summary id="more-download-options-toggle" title="More download options"></summary>
+				<div id="more-download-options-dropdown">
+					<ul>
+						<li>
+							<a id="download-link-windows"
+								href="https://github.com/1j01/jspaint/releases/download/v1.0.0-beta.1/jspaint-1.0.0-Windows-x64-Setup.exe"><span
+									class="os-icon"><img src="images/about/windowslogo.gif" width="34" height="30"
+										alt="Windows logo"></span>Download for Windows (x64)
+							</a>
+						</li>
+						<li>
+							<a id="download-link-mac"
+								href="https://github.com/1j01/jspaint/releases/download/v1.0.0-beta.1/jspaint-1.0.0-Mac-x64.zip"><span
+									class="os-icon"><img src="images/about/maclogo.gif" width="34" height="29"
+										alt="Macintosh logo"></span>Download for Mac (x64)
+							</a>
+						</li>
+						<li>
+							<a id="download-link-linux-deb"
+								href="https://github.com/1j01/jspaint/releases/download/v1.0.0-beta.1/jspaint-1.0.0-Linux-x64.deb"><span
+									class="os-icon"><img src="images/about/linuxlogo.gif" width="30" height="35"
+										alt="Linux mascot Tux the penguin"></span>Download <span class="big">.deb</span>
+								(x64)
+								for Ubuntu, Debian, Mint, Kali, etc.
+							</a>
+						</li>
+						<li>
+							<a id="download-link-linux-rpm"
+								href="https://github.com/1j01/jspaint/releases/download/v1.0.0-beta.1/jspaint-1.0.0-Linux-x64.rpm"><span
+									class="os-icon"><img src="images/about/linuxlogo.gif" width="30" height="35"
+										alt="Linux mascot Tux the penguin"></span>Download <span class="big">.rpm</span>
+								(x64)
+								for Fedora, RHEL, CentOS, OpenSUSE, etc.
+							</a>
+						</li>
+						<li>
+							<!-- icon options: ✱, 📚, 🕓, 🔍, ↩️, github logo -->
+							<a id="download-link-view-all-releases"
+								href="https://github.com/1j01/jspaint/releases/"><span class="os-icon">🕓</span>View all
+								releases
+							</a>
+						</li>
+					</ul>
+				</div>
+			</details>
+		</div>
+		<script>
+			const downloadLinkWindows = document.querySelector("#download-link-windows");
+			const downloadLinkMac = document.querySelector("#download-link-mac");
+			const downloadLinkLinuxDeb = document.querySelector("#download-link-linux-deb");
+			const downloadLinkLinuxRpm = document.querySelector("#download-link-linux-rpm");
+			const downloadLinkViewAllReleases = document.querySelector("#download-link-view-all-releases");
+			const mainDownloadLink = document.querySelector(".main-download-link");
+
+			/**
+			 * @returns {"Windows" | "Mac" | "Linux" | "Android" | "iOS" | "Unknown"}
+			 */
+			function detectOS() {
+				const userAgent = window.navigator.userAgent,
+					platform = window.navigator?.userAgentData?.platform ?? window.navigator.platform;
+				if (/^Mac|Darwin/i.test(platform)) {
+					return "Mac";
+				} else if (/iPhone|iPod|iPad/i.test(platform)) {
+					return "iOS";
+				} else if (/^Win/i.test(platform)) {
+					return "Windows";
+				} else if (/Android/i.test(userAgent)) {
+					return "Android";
+				} else if (/Linux/i.test(platform)) {
+					return "Linux";
+				}
+				return "Unknown";
+			}
+
+			function updateDownloadLink() {
+				const os = detectOS();
+				const specificLink = {
+					"Windows": downloadLinkWindows,
+					"Mac": downloadLinkMac,
+					"iOS": downloadLinkMac,
+					"Linux": [downloadLinkLinuxDeb, downloadLinkLinuxRpm],
+				}[os] ?? downloadLinkViewAllReleases;
+				const downloadImageHTML = mainDownloadLink.innerHTML + "<br>";
+				if (specificLink instanceof Array) {
+					const mainDownloadLink2 = mainDownloadLink.cloneNode(true);
+					mainDownloadLink.parentNode.insertBefore(mainDownloadLink2, mainDownloadLink.nextSibling);
+
+					mainDownloadLink.href = specificLink[0].href;
+					mainDownloadLink.innerHTML = specificLink[0].innerHTML.replace("Download", downloadImageHTML);
+
+					mainDownloadLink2.href = specificLink[1].href;
+					mainDownloadLink2.innerHTML = specificLink[1].innerHTML.replace("Download", downloadImageHTML);
+
+					mainDownloadLink.querySelector(".big").style.fontSize = "1.5em";
+					mainDownloadLink2.querySelector(".big").style.fontSize = "1.5em";
+				} else if (specificLink) {
+					mainDownloadLink.href = specificLink.href;
+					mainDownloadLink.innerHTML = specificLink.innerHTML.replace("Download", downloadImageHTML);
+				}
+			}
+
+			updateDownloadLink();
+
+			// Close the dropdown when clicking outside of it
+			document.addEventListener("click", function (event) {
+				const details = document.querySelector("#more-download-options-expandable");
+				if (!details.contains(event.target)) {
+					details.removeAttribute("open");
+				}
+			});
+
+		</script>
+		<div style="position: absolute; right: 3%">
+			<img src="images/about/atomo010.gif" width="50" height="50" alt="" style="position: relative; bottom: 50px">
+		</div>
+		<img src="images/about/cordborder.gif" width="620" height="23" alt=""
+			style="margin: 0 auto; display: block; width: 100%; height: 23px; position: relative; top: 20px">
+	</section>
+	<section id="pwa-section">
+		<h2>Progressive Web App</h2>
+		<img src="images/meta/mobipaint.png" width="308" height="193" alt="JS Paint on a phone" style="float: right;">
+		<p>
+			Alternatively, you can install JS Paint as a PWA (Progressive Web App),
+			but this does not <b>yet</b> support offline use
+			(as it doesn't include a Service Worker).
+			It's more like a bookmark (for now), except it runs in a special window.
+		</p>
+		<p>
+			The user interface for installing PWAs differs by browser and operating system.
+		</p>
+		<p>
+			<q>On most desktop browsers, the install prompt is in the URL bar.
+				On mobile, the install prompt is generally found in the menu of browser options.</q>
+			See <a
+				href="https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/Guides/Installing#installing_pwas"
+				target="_blank">
+				Installing PWAs</a> for visual guidance.
+		</p>
+		<button id="install-pwa" hidden style="padding: 10px 30px; margin-bottom: 1em;">
+			<img src="images/about/monitor.png" width="16" height="16" alt="" style="vertical-align: middle;">
+			Install JS Paint
+		</button>
+		<!-- prevent floated image mobipaint.png overlapping next section -->
+		<div style="clear: both;"></div>
+	</section>
+	<section id="textual-paint-section">
+		<!--
+			@TODO: test screen reader accessibility
+			Notes about this heading:
+			- FIGlet font used: "small"
+			- Separate elements for each word allows word wrapping on narrow screens
+			- Not using `<pre>` element because it's not allowed in a heading, and visa versa.
+				- VS Code knows not to format `<pre>` elements but not arbitrary elements with `white-space: pre;`,
+				  so I had to define "html.format.unformattedContentDelimiter" in .vscode/settings.json
+		-->
+		<!--no_format-->
+		<h2 style="font-size: 1em">
+			<abbr title="Textual Paint" style="text-decoration: none">
+				<span style="display: inline-block; white-space: pre; margin: 0;">
+ _____        _             _ 
+|_   _|____ _| |_ _  _ __ _| |
+  | |/ -_) \ /  _| || / _` | |
+  |_|\___/_\_\\__|\_,_\__,_|_|</span><span style="display: inline-block; white-space: pre; margin: 0;">
+  ___      _     _   
+ | _ \__ _(_)_ _| |_ 
+ |  _/ _` | | ' \  _|
+ |_| \__,_|_|_||_\__|</span>
+			</abbr>
+		</h2>
+		<!--no_format-->
+		<br>
+		<p>
+			I also made a <em>separate</em> elaborate MS Paint clone that runs in the terminal,
+			and edits ANSI art in addition to bitmaps.
+		</p>
+		<p>
+			You can install it with:
+			<code>pip install textual-paint</code>
+		</p>
+		<p>
+			And then run with simply:
+			<code>textual-paint</code>
+		</p>
+		<p>
+			Requires Python 3.10 or later, and a terminal emulator with Unicode and true color support.
+		</p>
+		<ul>
+			<li>
+				<span class="os-icon"><img src="images/about/windowslogo.gif" width="34" height="30"
+						alt="Windows logo"></span>
+				Runs well in <i>Windows Terminal</i>, but not in the older <i>Windows Console</i>.
+			</li>
+			<li>
+				<span class="os-icon"><img src="images/about/maclogo.gif" width="34" height="29"
+						alt="Macintosh logo"></span>
+				Runs well in <i>iTerm2</i>, but not the built in macOS <i>Terminal.app</i>.
+			</li>
+			<li>
+				<span class="os-icon"><img src="images/about/linuxlogo.gif" width="30" height="35"
+						alt="Linux mascot Tux the penguin"></span>
+				Runs well in <i>GNOME Terminal</i>, and most Linux terminal emulators, but not the <i>Linux console</i>.
+			</li>
+		</ul>
+		<!-- <img src="images/about/dos-samp.gif" width="391" height="136" alt="MS DOS prompt"> -->
+		<!-- TODO: PNG screenshot of GNOME terminal, which has the best rendering (SVG uses browser's rendering and displays artifacts); and include it in the repo -->
+		<img src="https://raw.githubusercontent.com/1j01/textual-paint/v0.1.0/screenshot.svg" width="1238" height="1026"
+			alt="screenshot of Textual Paint showing the About Paint dialog" style="max-width: 100%; height: auto;">
+		<img src="images/about/Computer-04-june.gif" width="134" height="133" alt="Computer typing on its own keyboard"
+			style="float: left">
+		<p>
+			<a href="https://github.com/1j01/textual-paint" target="_blank">Textual Paint</a>
+			was built using the <a href="https://textual.textualize.io/" target="_blank">Textual</a>
+			framework, which was very fun to work with!
+		</p>
+		<p>
+			I may have more Paint projects planned, the mad man that I am. 🎨
+		</p>
+		<p>
+			<i style="color: gray">What's more retro than a terminal-based Paint program, I wonder?</i>
+		</p>
+	</section>
+	<section id="other-projects-section">
+		<!-- `clear: both` just in case the floated GIF intrudes too much, for instance if font sizes or margins were changed or paragraphs moved or removed. -->
+		<h2 style="clear: both">Other Projects</h2>
+		<p style="float: right;">
+			<a href="https://isaiahodhner.io/" target="_blank">
+				<img src="images/about/home.gif" width="40" height="40" alt="Home button"
+					style="vertical-align: middle">
+				Check out my home page for more projects!
+			</a>
+		</p>
+		<p>
+			<a href="https://isaiahodhner.io/" target="_blank"
+				style="color: rgb(160, 42, 52); font-weight: bold; font-style: italic;">
+				<img src="images/about/artcreated.gif" width="165" height="136" alt="Created by">
+				<br>
+				<span style="display: block; text-align: center; width: 165px;">
+					Isaiah Odhner
+				</span>
+			</a>
+		</p>
+		<div id="junkbot-area">
+			<a href="https://1j01.github.io/janitorial-android/#junkbot" target="_blank">
+				<img src="images/about/junkbot-collecting-bin.gif" width="105" height="126"
+					alt="LEGO Junkbot minifig eating a recycling bin" id="junkbot-img"></a>
+			<span id="feeding-text" hidden>Please don't feed Junkbot.</span>
+		</div>
+		<a href="https://1j01.github.io/guitar/" target="_blank">
+			<img src=" images/about/guitar.gif" width="60" height="100" alt="Guitar" style="float: right;">
+		</a>
+		<a href="https://1j01.github.io/true-random-movie/" target="_blank">
+			<img src="images/about/filmreel.gif" width="116" height="50" alt="film reel" style="float: right;">
+		</a>
+		<a href="https://1j01.github.io/dat-boi/" target="_blank">
+			<img src="images/about/dat-boi-transparent-small.gif" width="96" height="120" alt="Dat Boi"
+				style="float: right;">
+		</a>
+		<a href="https://1j01.github.io/chess-mashup/" target="_blank">
+			<img src="images/about/CHESS_CUBE.gif" width="100" height="90" alt="Dat Boi" style="float: right;">
+		</a>
+		<!-- extends background when floated elements wrap -->
+		<div style="clear: both;"></div>
+	</section>
+	<section id="buttons-section">
+
+		<h3>Here are some buttons I made</h3>
+		<p>
+			Feel free to copy these to your site!
+			Some of them are rubbish, but a few of them I'm quite happy with.
+		</p>
+		<p>
+			Right click on the image and select "Save image as..." to download it,
+			then copy and paste the HTML code below it into your site,
+			and update the <code>src</code> attribute to point to where you're hosting the image.
+		</p>
+		<a href="https://jspaint.app">
+			<img src="images/88x31/custom/jspaint-button-88x31.png" width="88" height="31" alt="JS Paint">
+		</a>
+		<a href="https://jspaint.app">
+			<img src="images/88x31/custom/jspaint-button-88x31-history.gif" width="88" height="31" alt="JS Paint">
+		</a>
+		<!-- <a href="https://jspaint.app">
+			<img src="images/88x31/custom/jspaint-button-basic-88x31-v1.png" width="88" height="31" alt="JS Paint">
+		</a> -->
+		<!-- <a href="https://jspaint.app">
+			<img src="images/88x31/custom/jspaint-button-88x31-v1.png" width="88" height="31" alt="JS Paint">
+		</a> -->
+		<a href="https://jspaint.app">
+			<img src="images/88x31/custom/jspaint-button-88x31-bubbly.png" width="88" height="31" alt="JS Paint">
+		</a>
+		<!-- <a href="https://jspaint.app">
+			<img src="images/88x31/custom/jspaint-button-88x31-bubbly-inverse.png" width="88" height="31"
+				alt="JS Paint">
+		</a> -->
+		<!-- <a href="https://jspaint.app">
+			<img src="images/88x31/custom/jspaint-button-88x31-custom-font.png" width="88" height="31" alt="JS Paint">
+		</a> -->
+		<!-- <a href="https://jspaint.app">
+			<img src="images/88x31/custom/jspaint-button-88x31-gray-border.png" width="88" height="31" alt="JS Paint">
+		</a> -->
+		<a href="https://jspaint.app">
+			<img src="images/88x31/custom/jspaint-button-88x31-v2-history.gif" width="88" height="31" alt="JS Paint">
+		</a>
+		<a href="https://jspaint.app">
+			<img src="images/88x31/custom/jspaint-button-88x31-v2.png" width="88" height="31" alt="JS Paint">
+		</a>
+		<!-- <img src="images/88x31/custom/made-with-jspaint-88x31-v1.png" width="88" height="31" alt="Made with JS Paint"> -->
+		<a href="https://jspaint.app/about">
+			<img src="images/88x31/custom/made-with-jspaint-88x31-v2.png" width="88" height="31"
+				alt="Made with JS Paint">
+		</a>
+		<!-- <a href="https://jspaint.app/about">
+			<img src="images/88x31/custom/made-with-jspaint-88x31-v3.png" width="88" height="31"
+				alt="Made with JS Paint">
+		</a> -->
+		<!-- <img src="images/88x31/custom/made-with-jspaint-88x31-v4.png" width="88" height="31" alt="Made with JS Paint"> -->
+		<!-- <img src="images/88x31/custom/made-with-jspaint-88x31-v5-history.gif" width="88" height="31" alt="Made with JS Paint"> -->
+		<a href="https://jspaint.app/about">
+			<img src="images/88x31/custom/made-with-jspaint-88x31-v5.png" width="88" height="31"
+				alt="Made with JS Paint">
+		</a>
+
+		<a href="https://98.js.org">
+			<img src="images/88x31/custom/98.js.org-88x31.png" width="88" height="31" alt="98.JS">
+		</a>
+
+		<!-- <img src="images/88x31/custom/take-this-88x31-v1.png" width="88" height="31" alt="It's dangerous to go alone. Take this, Now!"> -->
+		<!-- <img src="images/88x31/custom/take-this-88x31-v2.png" width="88" height="31" alt="It's dangerous to go alone. Take this, Now!"> -->
+		<!-- <img src="images/88x31/custom/take-this-88x31-v2-frame-2.png" width="88" height="31" alt="It's dangerous to go alone. Take this, Now!"> -->
+		<!-- <img src="images/88x31/custom/take-this-88x31-v2-history.gif" width="88" height="31" alt="It's dangerous to go alone. Take this, Now!"> -->
+		<img src="images/88x31/custom/take-this-88x31-v2.gif" width="88" height="31"
+			alt="It's dangerous to go alone. Take this, Now! (Legend of Zelda parody)">
+		<!-- <img src="images/88x31/custom/turbo-encabulator-88x31-v0.psd" width="88" height="31" alt="It's dangerous to go alone. Take this, Now!"> -->
+		<a href="https://youtu.be/lVZ8Ko-nss4">
+			<img src=" images/88x31/custom/turbo-encabulator-88x31-v1.png" width="88" height="31"
+				alt="Powered by turbo encabulator">
+		</a>
+		<!-- <img src="images/88x31/custom/vs-code-88x31-v0.1.png" width="88" height="31" alt="Built with VS Code"> -->
+		<!-- <img src="images/88x31/custom/vs-code-88x31-v0.png" width="88" height="31" alt="Built with VS Code"> -->
+		<!-- <img src="images/88x31/custom/vs-code-88x31-v1.png" width="88" height="31" alt="Built with VS Code"> -->
+		<!-- <img src="images/88x31/custom/vs-code-88x31-v1-history.gif" width="88" height="31" alt="Built with VS Code"> -->
+		<!-- <img src="images/88x31/custom/vs-code-88x31-v2-stupid-garbage.png" width="88" height="31" alt="Built with VS Code"> -->
+		<!-- <img src="images/88x31/custom/vs-code-88x31-v3-no-border.png" width="88" height="31" alt="Built with VS Code"> -->
+		<!-- <img src="images/88x31/custom/vs-code-88x31-v4-overlapping-border.png" width="88" height="31" alt="Built with VS Code"> -->
+		<!-- <img src="images/88x31/custom/vs-code-88x31-v5-history.gif" width="88" height="31" alt="Built with VS Code"> -->
+		<a href="https://code.visualstudio.com/">
+			<img src="images/88x31/custom/vs-code-88x31-v5-within-border.png" width="88" height="31"
+				alt="Built with VS Code">
+		</a>
+		<!-- <img src="images/88x31/custom/vs-code-88x31-v6-shadow.png" width="88" height="31" alt="Built with VS Code"> -->
+		<a href="https://code.visualstudio.com/">
+			<img src="images/88x31/custom/vs-code-88x31-v7-animated.gif" width="88" height="31"
+				alt="Built with VS Code">
+		</a>
+		<!-- <img src="images/88x31/custom/windows-7.png" width="88" height="31" alt="Windows 7 was Microsoft's last decent operating system"> -->
+		<!-- <img src="images/88x31/custom/windows-7-template-88x31.png" width="88" height="31" alt="Windows 7"> -->
+		<img src="images/88x31/custom/windows-7-vs-11.png" width="88" height="31"
+			alt="Windows 7 is still better than Windows 11">
+		<!-- <img src="images/88x31/custom/creative-constraints-88x31.png" width="88" height="31" alt="Creative constraints"> -->
+		<!-- <img src="images/88x31/custom/creative-constraints-88x31-v2.png" width="88" height="31"
+			alt="Creative constraints"> -->
+		<!-- <img src="images/88x31/custom/creative-constraints-88x31-v3.png" width="88" height="31"
+			alt="Creative constraints"> -->
+		<!-- <img src="images/88x31/custom/creative-constraints-88x31-v4.png" width="88" height="31"
+			alt="Creative constraints"> -->
+		<!-- <img src="images/88x31/custom/creative-constraints-88x31-v5.png" width="88" height="31"
+			alt="Creative constraints"> -->
+		<!-- <img src="images/88x31/custom/creative-constraints-88x31-v6.png" width="88" height="31"
+			alt="Creative constraints"> -->
+		<a href="https://jspaint.app/about">
+			<img src="images/88x31/custom/creative-constraints-88x31-v7-history.gif" width="88" height="31"
+				alt="Creative constraints (doodle progress animation)">
+		</a>
+		<a href="https://jspaint.app/about">
+			<img src="images/88x31/custom/creative-constraints-88x31-v7.png" width="88" height="31"
+				alt="Creative constraints">
+		</a>
+		<!-- <img src="images/88x31/custom/electron-sucks-88x31-v0.png" width="88" height="31" alt="I hate Electron!"> -->
+		<img src="images/88x31/custom/electron-sucks-88x31-v1.png" width="88" height="31" alt="I hate Electron!">
+		<!-- <img src="images/88x31/custom/how-now-brown-cow-88x31-v1.png" width="88" height="31" alt="How Now! (brown cow)"> -->
+		<img src="images/88x31/custom/how-now-brown-cow-88x31-v2.png" width="88" height="31" alt="How Now! (brown cow)">
+		<!-- <img src="images/88x31/custom/junkbot-play-88x31-frame-1.png" width="88" height="31" alt="Play LEGO Junkbot">
+		<img src="images/88x31/custom/junkbot-play-88x31-frame-2.png" width="88" height="31" alt="Play LEGO Junkbot">
+		<img src="images/88x31/custom/junkbot-play-88x31-frame-3.png" width="88" height="31" alt="Play LEGO Junkbot">
+		<img src="images/88x31/custom/junkbot-play-88x31-frame-4.png" width="88" height="31" alt="Play LEGO Junkbot"> -->
+		<!-- <img src="images/88x31/custom/junkbot-88x31-v0.png" width="88" height="31" alt="Play LEGO Junkbot"> -->
+		<a href="https://github.com/1j01/janitorial-android/?tab=readme-ov-file#readme">
+			<img src="images/88x31/custom/junkbot-88x31-v1.png" width="88" height="31" alt="Play LEGO Junkbot">
+		</a>
+		<!-- <img src="images/88x31/custom/junkbot-88x31-v2.png" width="88" height="31" alt="Play LEGO Junkbot"> -->
+		<!-- <img src="images/88x31/custom/junkbot-88x31-v3.png" width="88" height="31" alt="Play LEGO Junkbot"> -->
+		<!-- <a href="https://github.com/1j01/janitorial-android/?tab=readme-ov-file#readme">
+			<img src="images/88x31/custom/junkbot-88x31-v4.png" width="88" height="31" alt="Play LEGO Junkbot">
+		</a> -->
+		<a href="https://github.com/1j01/janitorial-android/?tab=readme-ov-file#readme">
+			<img src="images/88x31/custom/junkbot-88x31-v5.png" width="88" height="31" alt="Play LEGO Junkbot">
+		</a>
+		<!-- <img src="images/88x31/custom/junkbot-88x31-v6.png" width="88" height="31" alt="Play LEGO Junkbot"> -->
+		<a href="https://github.com/1j01/janitorial-android/?tab=readme-ov-file#readme">
+			<img src="images/88x31/custom/junkbot-88x31-v7.png" width="88" height="31" alt="Play LEGO Junkbot">
+		</a>
+		<!-- <img src="images/88x31/custom/junkbot-88x31-v8.png" width="88" height="31" alt="Play LEGO Junkbot"> -->
+		<!-- <a href="https://github.com/1j01/janitorial-android/?tab=readme-ov-file#readme">
+			<img src="images/88x31/custom/junkbot-88x31-v9-history.gif" width="88" height="31"
+				alt="LEGO Junkbot button graphic progress animation">
+		</a> -->
+		<a href="https://github.com/1j01/janitorial-android/?tab=readme-ov-file#readme">
+			<img src="images/88x31/custom/junkbot-88x31-v9.png" width="88" height="31" alt="Play LEGO Junkbot">
+		</a>
+		<!-- <img src="images/88x31/custom/pipe-strip-88x31-v0.psd" width="88" height="31" alt="The Pipe Strip">
+		<img src="images/88x31/custom/pipe-strip-88x31-v1.png" width="88" height="31" alt="The Pipe Strip">
+		<img src="images/88x31/custom/pipe-strip-88x31-v1.psd" width="88" height="31" alt="The Pipe Strip">
+		<img src="images/88x31/custom/pipe-strip-88x31-v2.png" width="88" height="31" alt="The Pipe Strip">
+		<img src="images/88x31/custom/pipe-strip-88x31-v2.psd" width="88" height="31" alt="The Pipe Strip"> -->
+		<!-- <img src="images/88x31/custom/pipe-strip-88x31-v3.png" width="88" height="31" alt="The Pipe Strip"> -->
+		<!-- <img src="images/88x31/custom/pipe-strip-88x31-v3.psd" width="88" height="31" alt="The Pipe Strip"> -->
+		<a href="https://pypi.org/project/pipe-strip/">
+			<img src="images/88x31/custom/pipe-strip-88x31-v4.png" width="88" height="31"
+				alt="Panel 1. Jon is sitting on the sofa reading the newspaper, and he searches the table beside him with his hand. Panel 2. Jon, no longer relaxing with his leg kicked up turns to face the viewer, and thinks to himself, &quot;Now where could my pipe be?&quot; Panel 3. Garfield, Jon's orange tabby cat, is smoking Jon's pipe. Jon is shocked and shouts from off-screen &quot;Garfield!!&quot;">
+		</a>
+		<!-- <img src="images/88x31/custom/pipe-strip-88x31-v4.psd" width="88" height="31" alt="The Pipe Strip"> -->
+		<a href="https://www.youtube.com/watch?v=k1BneeJTDcU">
+			<img src="images/88x31/custom/a-little-bit-of-everything.gif" width="88" height="31"
+				alt="A little bit of everything, Now!">
+		</a>
+		<a href="https://ublockorigin.com/">
+			<img src="images/88x31/custom/ublock-origin-88x31-v2.png" width="88" height="31"
+				alt="Get uBlock Origin now!">
+		</a>
+		<a href="https://ublockorigin.com/">
+			<img src="images/88x31/custom/ublock-origin-88x31.gif" width="88" height="31" alt="Get uBlock Origin now!">
+		</a>
+
+		<h3>Here are some buttons I collected</h3>
+		<p>
+			I don't know where most of these came from, and I've repurposed some of them.
+		</p>
+		<img src="images/88x31/collected/mspaint.gif" width="88" height="31" alt="Long live MS Paint!">
+		<img src="images/88x31/collected/mousemade.gif" width="88" height="31" alt="Made with Mouse">
+		<a href="https://98.js.org/">
+			<img src="images/88x31/collected/mswin98_89.gif" width="88" height="31"
+				alt="Made with Microsoft Windows 98. Get!">
+		</a>
+		<a
+			href="https://www.eff.org/deeplinks/2021/03/google-testing-its-controversial-new-ad-targeting-tech-millions-browsers-heres"><img
+				src="images/88x31/collected/abc.gif" title="Please use any browser but Chrome">
+		</a>
+		<a href="https://rainy.gay/other/buttons">
+			<img src="images/88x31/collected/antinft.gif" width="88" height="31" alt="This is an anti-NFT site.">
+		</a>
+		<img src="images/88x31/collected/nofuckingthanks.gif" width="88" height="31" alt="NFT - No Fucking Thanks">
+		<a href="https://www.getpaint.net/">
+			<img src="images/88x31/collected/paintnet.gif" width="88" height="31" alt="Get Paint.NET">
+		</a>
+		<img src="images/88x31/collected/goodieblink.png" width="88" height="31" alt="graphic design is my passion">
+		<img src="images/88x31/collected/google_stand.gif" width="88" height="31"
+			alt="Fight for open web standards. Fight for online privacy. Fight against monopolistic practices. Stand up to Google!">
+		<img src="images/88x31/collected/imissxp.gif" width="88" height="31" alt="I miss Windows XP">
+		<a href="https://archive.org/">
+			<img src="images/88x31/collected/internetarchive.gif" width="88" height="31" alt="Internet Archive">
+		</a>
+		<img src="images/88x31/collected/is_it_slow_say_so.gif" width="88" height="31" alt="Is it slow? Say so!">
+		<img src="images/88x31/collected/new-tab.gif" width="88" height="31"
+			alt="Please do not force this img to be lonely">
+		<img src="images/88x31/collected/nneighborhoodsmall.gif" width="88" height="31" alt="Network neighborhood">
+		<a href="https://code.visualstudio.com/">
+			<img src="images/88x31/collected/vscbutton.gif" width="88" height="31" alt="Visual Studio Code">
+		</a>
+		<a href="https://youtu.be/JcJSW7Rprio">
+			<img src="images/88x31/collected/webdisk.gif" width="88" height="31" alt="WebDisk, Now">
+		</a>
+		<a href="https://jspaint.app">
+			<img src="images/88x31/collected/yay_its_a_button.gif" width="88" height="31" alt="I use MS Paint">
+		</a>
+		<a href="https://98.js.org">
+			<img src="images/88x31/collected/98plusani.gif" width="88" height="31" alt="98 Plus!">
+		</a>
+		<a href="https://flashpointarchive.org/">
+			<img src="images/88x31/collected/adobe_getflashp.gif" width="88" height="31"
+				alt="Get Flashpoint web game archive">
+		</a>
+		<img src="images/88x31/collected/anibanner.gif" width="88" height="31" alt="Up all night">
+		<img src="images/88x31/collected/bookmark_this_page.gif" width="88" height="31" alt="Bookmark this page">
+		<img src="images/88x31/collected/cssdif.gif" width="88" height="31" alt="CSS is difficult">
+		<img src="images/88x31/collected/dark-mode.gif" width="88" height="31" alt="Made for dark mode">
+		<a href="https://duckduckgo.com/">
+			<img src="images/88x31/collected/ddg.gif" width="88" height="31" alt="DuckDuckGo">
+		</a>
+		<a href="https://neocities.org/">
+			<img src="images/88x31/collected/delete-twitter.gif" width="88" height="31"
+				alt="Delete Twitter. Make a Neocities.">
+		</a>
+		<img src="images/88x31/collected/desp-anim.gif" width="88" height="31" alt="Despacito, Now!">
+		<img src="images/88x31/collected/diff-now.gif" width="88" height="31"
+			alt="Something completely different, Now!">
+		<a href="https://webamp.org/">
+			<img src="images/88x31/collected/winamp.gif" width="88" height="31" alt="Winamp">
+		</a>
+		<a onclick="{
+			const bubbles = document.createElement('img');
+			bubbles.src = 'images/about/bubbles.webp';
+			bubbles.width = 732;
+			bubbles.height = 544;
+			bubbles.style.pointerEvents = 'none';
+			bubbles.style.position = 'fixed';
+			bubbles.style.left = event.clientX - bubbles.width / 2 + 'px';
+			bubbles.style.top = event.clientY - bubbles.height + 'px';
+			document.body.appendChild(bubbles);
+			setTimeout(() => bubbles.remove(), 5000);
+			bubbles.addEventListener('transitionend', () => bubbles.remove());
+			bubbles.style.transition = 'transform 5s, opacity 5s';
+			setTimeout(() => {
+				bubbles.style.transform = 'translate(-50%, -50%) scale(2)';
+				bubbles.style.opacity = 0;
+			});
+		}" style="cursor: pointer;">
+			<img src="images/88x31/collected/digby88.gif" width="88" height="31" alt="bubbles">
+		</a>
+		<a onclick="{
+			if (window.eSheep) {
+				addSheep();
+			} else {
+				const scriptURL = 'https://adrianotiger.github.io/web-esheep/dist/esheep.min.js';
+				const script = document.createElement('script');
+				script.src = scriptURL;
+				script.onload = addSheep;
+				script.onerror = () => {
+					alert('Failed to load eSheep!');
+				};
+				document.head.appendChild(script);
+				// Make eSheep land on more surfaces
+				// It only lands on div and hr elements:
+				// https://github.com/Adrianotiger/web-esheep/blob/641210d262e484cab5441c6b5c8fe2c9c28bed58/src/esheep.js#L65
+				// which have a top border:
+				// https://github.com/Adrianotiger/web-esheep/blob/641210d262e484cab5441c6b5c8fe2c9c28bed58/src/esheep.js#L601
+				// and isn't configurable, as of writing.
+				for (const section of document.querySelectorAll('section, footer')) {
+					const hr = document.createElement('hr');
+					hr.style.border = '0';
+					hr.style.borderTop = '1px solid transparent';
+					hr.style.margin = '0';
+					hr.style.marginTop = '-1px';
+					section.parentNode.insertBefore(hr, section);
+					hr.classList.add('eSheep-landing-surface');
+				}
+			}
+			function addSheep() {
+				const sheep = new eSheep();
+				sheep.Start();
+				// Not part of public API, and doesn't work, possibly because it's not loaded yet.
+				//sheep._setPosition?.(event.clientX, event.clientY);
+				// Give some visual feedback that the sheep is being added.
+				event.target.style.transform = 'scale(1.5)';
+				setTimeout(() => event.target.style.transform = '', 100);
+			}
+		}" style="cursor: pointer;">
+			<img src="images/88x31/collected/esheep.gif" width="88" height="31" alt="eSheep, Now!">
+		</a>
+		<a href="https://ezgif.com/">
+			<img src="images/88x31/collected/ezgif_now.gif" width="88" height="31" alt="EZGIF.COM, Now!">
+		</a>
+		<a href="https://imgur.com/gallery/KXr07TX">
+			<img src="images/88x31/collected/folder2.gif" width="88" height="31" alt="A folder with several tabs">
+		</a>
+		<a href="https://isaiahodhner.io/games">
+			<img src="images/88x31/collected/games.gif" width="88" height="31" alt="Games">
+		</a>
+		<a href="https://pages.github.com/">
+			<img src="images/88x31/collected/gh-pages-bo.gif" width="88" height="31"
+				alt="Powered by Microsoft GitHub Pages">
+		</a>
+		<a href="https://github.com/1j01">
+			<img src="images/88x31/collected/github-check.gif" width="88" height="31" alt="Check out my GitHub!">
+		</a>
+	</section>
+
+	<script>
+		// Ideally this would be baked into the HTML, but this is nice and automatic.
+		for (const button of document.querySelectorAll("#buttons-section img")) {
+			const subject = button.closest("a") ?? button;
+			const wrapper = document.createElement("div");
+			wrapper.style.display = "inline-block";
+			wrapper.style.margin = "0 10px 10px 0";
+			const textarea = document.createElement("textarea");
+			const html = subject.outerHTML;
+			// Normalize indentation for the snippet.
+			// The last indentation in the HTML will be for the closing tag, if applicable,
+			// which should not end up indented, and works for a search string to replace.
+			// The first indentation, by contrast, will include one more indent level,
+			// and so isn't suitable as a search string.
+			const lastIndentation = html.match(/^\s*/gm).pop() ?? "";
+			textarea.value = html
+				.replace(new RegExp("^" + lastIndentation, "gm"), "");
+			textarea.style.width = "88px";
+			textarea.style.height = "31px";
+			//textarea.style.resize = "none";
+			textarea.style.display = "block";
+			wrapper.appendChild(textarea);
+
+			// Order matters here, because `appendChild` moves the element.
+			subject.parentNode.insertBefore(wrapper, subject);
+			wrapper.insertBefore(subject, textarea);
+		}
+		// Resize textareas back to normal when clicking outside of them.
+		// This isn't necessarily great for usability (it may be surprising),
+		// but it's kind of fun and restores the even grid, which is nice for aesthetics.
+		// It shouldn't hamper usability too much, since you can still expand multiple at once if you wish.
+		function restoreTextareaSizes() {
+			for (const textarea of document.querySelectorAll("#buttons-section textarea")) {
+				if (getComputedStyle(textarea).width !== "88px" || getComputedStyle(textarea).height !== "31px") {
+					textarea.style.transition = "width 0.5s, height 0.5s";
+					textarea.style.width = "88px";
+					textarea.style.height = "31px";
+					textarea.addEventListener("transitionend", function () {
+						textarea.style.transition = "";
+					}, { once: true });
+					// In case resize handle is grabbed during transition,
+					// interrupt the resize animation, to prevent a sluggish feeling
+					// from the transition being constantly restarted.
+					// (Test this by increasing the transition duration significantly!)
+					textarea.addEventListener("transitioncancel", function () {
+						textarea.style.transition = "";
+					}, { once: true });
+				}
+			}
+		}
+		document.addEventListener("click", function (event) {
+			if (!event.target.closest("#buttons-section textarea")) {
+				restoreTextareaSizes();
+			}
+		});
+	</script>
+
+	<script>
+		var maxButton = document.querySelector(".window-maximize-button");
+		var closeButton = document.querySelector(".window-close-button");
+		var minimizeButton = document.querySelector(".window-minimize-button");
+		var windowElements = document.querySelectorAll(".window, #try-me");
+
+		maxButton.addEventListener("click", function () {
+			var iframe = document.querySelector("#jspaint-iframe");
+			// `iframe.src` doesn't contain the document ID added by the app page.
+			// Accessing the iframe's `location.href` allows a more seamless transition,
+			// although undos are lost.
+			// TODO: Save undo history as part of the session.
+			// TODO: Make sure the session is saved before navigating away.
+			// if (iframe.contentWindow.undos.length) {
+			// 	if (!confirm("Maximizing will clear your undo history. Continue?")) {
+			// 		return;
+			// 	}
+			// }
+			location.href = iframe.contentWindow.location.href;
+		});
+		function hideDemo() {
+			for (var i = 0; i < windowElements.length; i++) {
+				windowElements[i].style.display = "none";
+			}
+		}
+		closeButton.addEventListener("click", hideDemo);
+		minimizeButton.addEventListener("click", hideDemo);
+
+		// Junkbot "feeding" interaction
+		var junkbotArea = document.querySelector("#junkbot-area");
+		var junkbotImg = document.querySelector("#junkbot-img");
+		var cursorHasBin = true;
+		junkbotArea.style.cursor = "url(images/about/junkbot-bin.png) 16 16, auto";
+		junkbotImg.src = "images/about/junkbot.gif";
+		junkbotImg.addEventListener("mouseenter", function (event) {
+			// console.log("mouseenter, cursorHasBin =", cursorHasBin);
+			if (!cursorHasBin) {
+				return;
+			}
+			junkbotImg.src = "images/about/junkbot-collecting-bin.gif";
+			junkbotArea.style.cursor = "";
+			cursorHasBin = false;
+			// TODO: make non-looping version of GIF and increase timeout
+			// or do this differently, because setTimeout isn't reliable!
+			// It's not firing in Firefox sometimes (while loading the page?)
+			// and may not fire if the tab is in the background (is switched away from).
+			// console.log("setting timeout");
+			setTimeout(function () {
+				// console.log("timeout");
+				junkbotImg.src = "images/about/junkbot.gif";
+				junkbotArea.style.cursor = "url(images/about/junkbot-bin.png) 16 16, auto";
+				cursorHasBin = true;
+			}, 1000);
+		});
+		document.querySelector("#feeding-text").removeAttribute("hidden");
+	</script>
+	<!-- split script to keep above ES5-only -->
+	<script>
+		// PWA install button
+		// https://developer.mozilla.org/en-US/docs/Web/Progressive_web_apps/How_to/Trigger_install_prompt
+		const installButton = document.querySelector("#install-pwa");
+		let installPrompt = null;
+
+		window.addEventListener("beforeinstallprompt", (event) => {
+			event.preventDefault();
+			installPrompt = event;
+			installButton.removeAttribute("hidden");
+		});
+
+		installButton.addEventListener("click", async () => {
+			if (!installPrompt) {
+				return;
+			}
+			const result = await installPrompt.prompt();
+			console.log(`Install prompt was: ${result.outcome}`);
+			disableInAppInstallPrompt();
+		});
+
+		function disableInAppInstallPrompt() {
+			installPrompt = null;
+			installButton.setAttribute("hidden", "");
+		}
+
+		window.addEventListener("appinstalled", () => {
+			disableInAppInstallPrompt();
+		});
+	</script>
+</body>
+
+</html>

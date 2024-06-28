@@ -1,0 +1,301 @@
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+body {
+	font-family: sans-serif;
+	/* font-family: "Comic Sans MS", "Comic Sans", cursive; */
+	background-color: white;
+	color: black;
+}
+
+body>section {
+	--section-padding: 10px;
+	padding-left: calc(50vw - 500px);
+	padding-right: calc(50vw - 500px);
+	padding-left: max(var(--section-padding), calc(50vw - 500px));
+	padding-right: max(var(--section-padding), calc(50vw - 500px));
+	padding-top: var(--section-padding);
+	padding-bottom: var(--section-padding);
+}
+
+/* 
+Fancy multi-layered image link with a wooden window frame that zooms in on hover.
+
+Hairy problem: causes horizontal scrolling on narrow viewports.
+- Can't simply use `overflow: hidden` since it would cut off the window frame (top and bottom) when it scales up.
+- One way to avoid a horizontal scrollbar is to use `float: right`, as this makes it push the element to the left.
+	- Not centered, when it gets pushed to the left.
+	- Requires extra `clear: both` element.
+	- Requires a wrapper, or at least, that's how I did it.
+	- Also causes extra space between the window and the floated flag GIF now.
+	  (Before, the window would ignore the flag and go in front of it, which looked nice.)
+- Can't simply use `overflow-x: hidden` since browsers don't support hidden and visible in separate axes.
+  https://stackoverflow.com/questions/6421966/css-overflow-x-visible-and-overflow-y-hidden-causing-scrollbar-issue
+- `overflow-clip-margin` should be the magic sauce, the saving grace, but it's not supported in Safari,
+  and two-value syntax for specifying vertical and horizontal separately is not supported in Chrome or Firefox.
+- Adding padding on top and bottom and negative margins to compensate, in order to create a vertically extended clip:
+	- Top negative margin didn't work, so I had to use `transform: translateY()` instead.
+		- With the `transform`, if the viewport is EXTREMELY narrow, the text will go under the window frame link.
+	- Requires `pointer-events: none` on the parent to avoid breaking interactions outside of the visible area.
+		- Requires `pointer-events: all` on the link to re-enable interaction with the link.
+	- Also causes extra space between the window and the floated flag GIF now.
+	  (Before, the window would ignore the flag and go in front of it, which looked nice.)
+- Does `overflow-x: clip` work? YES!!!
+	- I guess they've designed `clip` to be more sensible, since it was a later addition to the spec.
+	- Requires a wrapper. Trying to simplify to one element with `overflow-x: clip; max-width: calc(100% + var(--section-padding) * 2);`
+	  makes it off-center, because the `transform` is relative to the computed width.
+	  Could probably do it with a complex `transform` calculation using `min` or `max`, but that's not worth it.
+	  Oh, actually, since it's a fixed width, duh, I can just halve it and use that... right?
+	  `transform: translateX(calc(360px / -2));`
+	  Well that doesn't work right.
+- `clip-path`? Does that affect page layout (overflow)?
+*/
+#enter-98-wrapper {
+	margin: 0 calc(-1 * var(--section-padding));
+	width: calc(100% + var(--section-padding) * 2);
+	overflow-x: clip;
+}
+
+#enter-98-link {
+	position: relative;
+	display: block;
+	width: 360px;
+	height: 287px;
+	left: 50%;
+	transform: translateX(-50%);
+	pointer-events: all;
+}
+
+#wooden-window-frame {
+	transition: transform 4s ease, box-shadow 5s ease;
+	/* Most images have this set to pixelated, but that looks bad for the transition. */
+	/* I have no idea why unset doesn't work here... */
+	/* Chrome shows the media query's `image-rendering` with strike-through, but maybe that's a bug and it's actually winning? */
+	image-rendering: auto;
+}
+
+a[href^="https://98.js.org"]:hover #wooden-window-frame,
+a[href^="https://98.js.org"]:focus #wooden-window-frame {
+	transform: scale(1.2);
+	box-shadow:
+		0 0 5px 2px rgba(0, 43, 78, 0.5),
+		0 0 100px 50px rgba(100, 163, 214, 0.5);
+}
+
+#main-section {
+	background-image: url("../images/cursors/precise-dotted.png");
+	background-repeat: repeat;
+	background-size: 32px 32px;
+	/* background-color: lightgray; */
+}
+
+#windows-98-section {
+	background-image: url("https://raw.githubusercontent.com/1j01/98/361bd759a6d9b71d0fad9e479840598dc0128bb6/images/clouds.jpg");
+	background-color: rgb(100, 163, 214);
+	background-size: cover;
+	background-position: center center;
+}
+
+#desktop-app-section {
+	background-image: url("../images/about/atombgwht.gif");
+	background-repeat: repeat;
+}
+
+#desktop-app-section .bg {
+	/* matching Under Construction GIF */
+	/* background-color: rgb(254, 231, 48); */
+	/* matching Electron logo as drawn in JS Paint */
+	background-color: rgb(0, 255, 128);
+	border: 1px solid black;
+	padding: 5px;
+}
+
+#desktop-app-section #compound-download-button {
+	--active-background-color: rgb(192, 192, 192);
+	--toggle-width: 40px;
+	position: relative;
+	width: fit-content;
+	max-width: calc(100vw - var(--section-padding) * 2 - var(--toggle-width));
+	/* z-index is needed so the negative z-index of the dropdown doesn't make it go beneath other things on the page, only the toggle button */
+	z-index: 1;
+}
+#desktop-app-section #more-download-options-expandable {
+	/* Resetting overly broad details { margin-top: 8px; } from layout.css */
+	margin: 0;
+}
+#desktop-app-section #more-download-options-toggle {
+	position: absolute;
+	left: 100%;
+	top: 0;
+	bottom: 0;
+	width: var(--toggle-width);
+	text-align: center;
+	box-sizing: border-box;
+	border: 4px solid black;
+	border-left: none;
+	padding: 4px;
+	background-color: rgb(149, 148, 154);
+	list-style-type: none; /* no effect, testing in Firefox */
+}
+#desktop-app-section #more-download-options-expandable[open] > #more-download-options-toggle {
+	border-bottom: none;
+	background-color: var(--active-background-color);
+}
+#desktop-app-section #more-download-options-toggle::marker {
+	display: none; /* no effect, testing in Firefox */
+	content: ""; /* still leaves a ::marker, but hides it at least */
+}
+#desktop-app-section #more-download-options-toggle::after {
+	/* spell-checker: disable */
+	content: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M12 15.5l-6-6 1.41-1.41L12 12.67l4.59-4.58L18 9.5l-6 6z'/%3E%3C/svg%3E");
+	/* spell-checker: enable */
+	width: 32px;
+	height: 32px;
+	display: block;
+	font-size: 25px;
+	position: absolute;
+	/* This shifts slightly when pressed due to the removed border, but that's fine, it's like a free pressed effect. */
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+#desktop-app-section #more-download-options-dropdown {
+	position: absolute;
+	left: 0;
+	width: 600px;
+	box-sizing: border-box;
+	max-width: calc(100vw - var(--external-margin) * 2);
+	--border-width: 4px;
+	top: calc(100% - var(--border-width));
+	/* Go underneath the toggle button so that the segment of border between the toggle and dropdown can disappear. */
+	z-index: -1;
+	margin: 0;
+	border: var(--border-width) solid black;
+	padding: 4px;
+	background-color: var(--active-background-color);
+	animation: dropdown 0.3s linear;
+}
+@media (prefers-reduced-motion) {
+	#desktop-app-section #more-download-options-dropdown {
+		animation: none;
+	}
+}
+@keyframes dropdown {
+	from {
+		/* clip-path: circle(0% at 50% 0%); */
+		clip-path: polygon(0 0, 100% 0, 100% 0, 0 0);
+	}
+	to {
+		/* clip-path: circle(100% at 50% 0%); */
+		clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+	}
+}
+#desktop-app-section .main-download-link {
+	border: 4px solid black;
+	padding: 4px;
+	background-color: rgb(149, 148, 154);
+	color: rgb(195, 195, 255);
+	text-shadow: 1px 2px 2px black, 1px 1px 2px black, 0px 0px 2px black;
+	display: block;
+	text-decoration: none;
+	width: auto;
+}
+#desktop-app-section .main-download-link ~ .main-download-link {
+	border-top: none;
+}
+#desktop-app-section .main-download-link img {
+	vertical-align: middle;
+}
+
+.os-icon {
+	display: inline-block;
+	vertical-align: middle;
+	width: 35px;
+	height: 35px;
+	position: relative;
+	border: 2px solid black;
+	border-radius: 5px;
+	margin: 2px;
+	padding: 2px;
+	/* Used for asterisk icon for "View all releases" */
+	font-size: 30px;
+}
+
+.os-icon>img {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+}
+
+@supports (display: inline-flex) {
+	.os-icon {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.os-icon>img {
+		position: unset;
+		bottom: unset;
+		left: unset;
+	}
+}
+
+#textual-paint-section {
+	font-family: monospace;
+	background-color: black;
+	color: white;
+}
+
+#textual-paint-section a:link {
+	color: #00ff00;
+}
+
+#textual-paint-section a:visited {
+	color: #00aa00;
+}
+
+#textual-paint-section code {
+	color: #ff00ff;
+}
+
+#textual-paint-section li i:first-of-type {
+	color: #00ff00;
+}
+
+#textual-paint-section li i:last-of-type {
+	color: #ff0000;
+}
+
+#other-projects-section {
+	background-image: url("../images/tracky-mouse-16x16.png");
+	background-repeat: repeat;
+	background-size: 5.1px 160px;
+	background-color: #ffeb77;
+	background-blend-mode: overlay;
+}
+
+#junkbot-area {
+	display: inline-block;
+	padding: 50px;
+	padding-bottom: 0;
+	/* border: 5px ridge #acacac; */
+	/* background-color: #ebe3ba; */
+	border: 5px ridge #ccc08b;
+	background-color: #ffe76c;
+}
+
+#feeding-text {
+	font-style: italic;
+	position: relative;
+	left: -50px;
+}
+
+#buttons-section img {
+	vertical-align: middle;
+}

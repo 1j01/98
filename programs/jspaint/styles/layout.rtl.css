@@ -18,6 +18,14 @@ html, body, .jspaint {
 }
 .jspaint {
 	direction: rtl;
+	
+	box-sizing: border-box; /* for iPad fullscreen workaround, which adds padding to .jspaint; without this it hides the status bar */
+
+	/* prevent selection, especially for Safari on iOS/iPad, which likes to select random (nearest, kind of?) elements when long-pressing */
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
 }
 .chooser-option {
 	display: flex;
@@ -105,6 +113,9 @@ html, body, .jspaint {
 .component-area {
 	display: flex;
 	flex: 0 0 auto;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 	user-select: none;
 }
 
@@ -281,6 +292,32 @@ html, body, .jspaint {
 	padding-right: 170px;
 }
 
+.eye-gaze-mode-floating-buttons {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	transform-origin: bottom right;
+	transform: scale(3);
+	/* They're not within .jspaint currently */
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+.eye-gaze-mode-floating-buttons button {
+	width: 28px;
+	height: 28px;
+	vertical-align: bottom;
+	position: relative;
+}
+.eye-gaze-mode-floating-buttons .button-icon {
+	position: absolute;
+	right: 0;
+	top: 0;
+	width: 24px;
+	height: 24px;
+}
+
 .menu-button {
 	/* @TODO: make this part of os-gui */
 	white-space: nowrap;
@@ -417,6 +454,9 @@ html, body, .jspaint {
 	display: grid;
 	grid-template-columns: repeat(8, 16px);
 	grid-gap: 5px 9px;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 	user-select: none;
 	margin-left: 8px;
 }
@@ -554,7 +594,7 @@ html, body, .jspaint {
 	max-width: 230px;
 	float: left;
 	margin: 5px;
-    box-sizing: border-box;
+	box-sizing: border-box;
 }
 .save-as .window-content > form > div > label:not(:first-of-type) {
 	margin-top: 8px;
@@ -664,7 +704,7 @@ html, body, .jspaint {
 .dialog-window:not(.horizontal-buttons):not(.edit-colors-window) .window-content .button-group {
 	padding-right: 10px;
 	display: flex;
-    flex-direction: column;
+	flex-direction: column;
 	gap: 5px;
 }
 
@@ -726,17 +766,23 @@ html, body, .jspaint {
 }
 .custom-zoom-window .fieldset-body {
 	display: flex;
-    flex-flow: column wrap;
-    width: 240px;
+	flex-flow: column wrap;
+	width: 240px;
 	height: 70px;
-    padding: 12px 5px;
-    row-gap: 10px;
+	padding: 12px 5px;
+	row-gap: 10px;
 }
 .custom-zoom-window bdi {
 	margin: 0 10px;
 }
-.custom-zoom-window input[name='really-custom-zoom-input'] {
+.custom-zoom-window input[name="really-custom-zoom-input"] {
 	width: 50px;
+}
+
+.radio-field {
+	display: flex;
+	flex-flow: row;
+	align-items: center;
 }
 
 /* @TODO: part of os-gui */
@@ -833,7 +879,7 @@ html, body, .jspaint {
 	vertical-align: middle;
 	width: 16px;
 	height: 16px;
-	background-position: 100% 0;
+	background-position: 0 0;
 	margin-left: 2px;
 }
 .help-window .folder.expanded:before {
@@ -905,8 +951,13 @@ html, body, .jspaint {
 	text-decoration: underline;
 }
 
+/* TODO: reduce scope of this rule, and remove exception(s) to it */
 ::before, ::after {
 	pointer-events: none;
+}
+/* Quick fix for clicking directly on the radio button in themes which use styles from 98.css */
+input[type="radio"] + label::before {
+	pointer-events: all;
 }
 
 .cursor-bully * {
@@ -916,30 +967,39 @@ html, body, .jspaint {
 #about-paint-header {
 	display: flex;
 	flex-direction: row;
+	flex-wrap: wrap;
 	margin: 0;
-	margin-top: 30px;
+	margin-top: 10px;
 	margin-bottom: 10px;
 }
+#about-paint-beside-icon {
+	margin: auto 10px;
+}
 #jspaint-project-name {
-	margin-right: 10px;
-	margin-left: 8px;
 	white-space: nowrap;
+	font-size: 2rem;
+	margin: 0;
 }
 #jspaint-version {
-	/* @TODO: separate into a shared.css? (not really layout!) */
-	font-size: 0.6em;
-	color: #7b7b7b;
+	/* @TODO: separate some of this into a shared.css? (not all layout!) */
+	white-space: nowrap;
+	font-size: 1.4rem;
+	font-weight: normal;
 }
 #maybe-outdated-line {
 	font-style: italic;
-	height: 2em;
+	line-height: 1;
+	/* min-height avoids a flaky test where sometimes the element blackout is visible and sometimes not depending on whether the news had been loaded when the test runs */
+	min-height: 1em;
+	/* top margin is almost just to separate blackout regions for clarity in the visual test snapshots */
+	margin-top: 3px;
 }
 #view-project-news,
 #close-about-paint {
 	margin: auto; /* for right-alignment AND avoiding stretching to height of the container */
 	margin-left: 0;
 	width: 100px;
-	min-height: 2.2em;
+	min-height: 2.2rem;
 }
 #close-about-paint {
 	float: left;
@@ -949,6 +1009,9 @@ html, body, .jspaint {
 #news {
 	max-height: 500px;
 	overflow: auto;
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
 	user-select: text;
 	cursor: auto;
 }
@@ -1018,6 +1081,52 @@ html, body, .jspaint {
 	}
 }
 
+/* For Safari on iPad, Fullscreen mode overlays the system bar, completely obscuring our menu bar. */
+/* This adds a spacer to the top of the page, styled with the title bar gradient, to prevent that. */
+/* Only show this if the device is tall enough that this won't cause any problems (fullscreen is important for fitting the color palette on the screen on some phones) */
+:root {
+	--ios-title-bar-height: 21px; /* this is what looks good to my eye, there's not a hard line in the overlay, just text/symbols, and I didn't measure the system bar in a case where it has a background */
+	/* hope it doesn't change! */
+}
+@media (min-height: 450px) {
+	.ios.fullscreen .jspaint {
+		padding-top: var(--ios-title-bar-height);
+	}
+	.ios.fullscreen .jspaint::before {
+		content: "";
+		position: absolute;
+		top: 0;
+		right: 0;
+		left: 0;
+		height: var(--ios-title-bar-height);
+	}
+	/* That works, but now the exit fullscreen button (which we also can't change) obscures the menu bar. */
+	/* So center the menu bar contents, that'll look nice. */
+	/* .ios.fullscreen .menus {
+		justify-content: center;
+	}
+	/* Ugh no, then the three dots button (multitasking menu) at the top of the system menu steals taps from the menu bar. */
+	/* Just shift it over by a fixed amount. */
+	/* This lets it sit in between the exit button and the three dots button,
+	at least on a 9th generation iPad with software version 15.0.2 (this is a very fragile workaround) */
+	.ios.fullscreen .menus {
+		padding-right: 100px;
+	}
+	/* Also nudge the tools downward to avoid the exit fullscreen button */
+	/* (not if it's in a window, only if it's docked) */
+	/* (I considered using `.ios.fullscreen .horizontal > .component-area:first-child`
+	so that it's not affected by the transform in Eye Gaze Mode,
+	but it wants tweaking in that case anyways due to the menu bar being bigger */
+	.ios.fullscreen .component-area .tools-component {
+		padding-top: 40px;
+	}
+	/* Not so much in Eye Gaze Mode, where it's scaled with transform,
+	and where the menu bar takes more of the space reserved for the exit fullscreen button */
+	.ios.fullscreen .eye-gaze-mode .component-area .tools-component {
+		padding-top: 10px;
+	}
+}
+
 select.inset-deep {
 	background-position: top 0px left 0px;
 	padding-left: 16px;
@@ -1032,12 +1141,28 @@ progress {
 details pre {
 	margin: 0;
 	margin-top: 5px;
+	-webkit-user-select: text;
+	-moz-user-select: text;
+	-ms-user-select: text;
+	user-select: text;
 }
 
 details {
 	margin-top: 8px;
 }
 summary {
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
 	user-select: none;
 	cursor: pointer;
+}
+
+.too-big-soon-gif {
+	transition: transform 0.2s;
+	transform-origin: 100% 100%;
+	image-rendering: optimizeQuality;
+}
+.menu-item:not(.highlight) .too-big-soon-gif {
+	transform: scale(0.6);
 }

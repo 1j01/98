@@ -16,15 +16,18 @@ html, body, .jspaint {
 	max-width: 100%;
 	width: auto !important;
 	height: auto !important;
+	border: 0 !important;
 }
 
 .window,
 .canvas-area .handle,
+.canvas-area .grab-region,
 .status-area,
 .menus,
 .component-area,
 .selection,
 .textbox,
+.helper-layer,
 button,
 .hover-halo,
 .dwell-indicator {

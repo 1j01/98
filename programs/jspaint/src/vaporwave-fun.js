@@ -1,20 +1,34 @@
+// @ts-check
+import { onKonamiCodeEntered } from "./konami.js";
 (() => {
-	let rAF_ID, rotologo, $window, space_phase_key_handler, player, player_placeholder;
+	/** @type {number} */
+	let rAF_ID;
+	/** @type {HTMLImageElement} */
+	let rotologo;
+	/** @type {(e: KeyboardEvent) => void} */
+	let space_phase_key_handler;
+	/** @type {YT.Player} */
+	let player;
+	/** @type {HTMLElement} */
+	let player_placeholder;
+	/** @type {boolean} */
 	let vaporwave_active = false;
 
-	if (parent && frameElement && parent.$) {
-		$window = parent.$(frameElement).closest(".window");
+	/** @type {JQuery<HTMLElement>} */
+	let $window;
+	if (parent && frameElement && parent.jQuery) {
+		$window = /** @type {JQuery<HTMLElement>} */(parent.jQuery(frameElement).closest(".window, .os-window"));
 	} else {
 		$window = $();
 	}
 
-	const wait_for_youtube_api = callback => {
+	const wait_for_youtube_api = (callback) => {
 		if (typeof YT !== "undefined") {
 			callback();
 		} else {
-			const tag = document.createElement('script');
+			const tag = document.createElement("script");
 			tag.src = "https://www.youtube.com/player_api";
-			const firstScriptTag = document.getElementsByTagName('script')[0];
+			const firstScriptTag = document.getElementsByTagName("script")[0];
 			firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 
 			// The YouTube API will call this global function when loaded and ready.
@@ -30,8 +44,8 @@
 		cancelAnimationFrame(rAF_ID);
 
 		$(rotologo).remove();
-		$window.css({transform: ""});
-		
+		$window.css({ transform: "" });
+
 		removeEventListener("keydown", space_phase_key_handler);
 		if (player) {
 			player.destroy();
@@ -69,20 +83,14 @@
 		const animate = () => {
 			rAF_ID = requestAnimationFrame(animate);
 
+			// @TODO: slow down and stop when you pause?
+			const turns = Math.sin(Date.now() / 5000);
+			const hueTurns = Math.sin(Date.now() / 4000);
 			$(rotologo).css({
-				transform:
-					`perspective(4000px) rotateY(${
-						Math.sin(Date.now() / 5000)
-					}turn) rotateX(${
-						0
-					}turn) translate(-50%, -50%) translateZ(500px)`,
-				filter:
-					`hue-rotate(${
-						Math.sin(Date.now() / 4000)
-						// @TODO: slow down and stop when you pause
-					}turn)`,
+				transform: `perspective(4000px) rotateY(${turns}turn) translate(-50%, -50%) translateZ(500px)`,
+				filter: `hue-rotate(${hueTurns}turn)`,
 			});
-			
+
 			if ($window.length) {
 				let el = $window[0];
 				let offsetLeft = 0;
@@ -90,16 +98,20 @@
 				do {
 					offsetLeft += el.offsetLeft;
 					offsetTop += el.offsetTop;
-					el = el.offsetParent;
+					// Doing this a little bit messily because I want it to be type-safe,
+					// but I'm not 100% sure this is correct and I don't want to spend too much time on it
+					// To test this, I need to run it in 98.js.org
+					if (el.offsetParent instanceof HTMLElement) {
+						el = el.offsetParent;
+					} else {
+						break;
+					}
 				} while (el);
 
+				const rotateY = -(offsetLeft + ($window.outerWidth() - parent.innerWidth) / 2) / parent.innerWidth / 3;
+				const rotateX = (offsetTop + ($window.outerHeight() - parent.innerHeight) / 2) / parent.innerHeight / 3;
 				$window.css({
-					transform:
-						`perspective(4000px) rotateY(${
-							-(offsetLeft + ($window.outerWidth() - parent.innerWidth) / 2) / parent.innerWidth / 3
-						}turn) rotateX(${
-							(offsetTop + ($window.outerHeight() - parent.innerHeight) / 2) / parent.innerHeight / 3
-						}turn)`,
+					transform: `perspective(4000px) rotateY(${rotateY}turn) rotateX(${rotateX}turn)`,
 					transformOrigin: "50% 50%",
 					transformStyle: "preserve-3d",
 					// @FIXME: interactivity problems (with order elements are considered to have), I think related to preserve-3d
@@ -146,7 +158,7 @@
 		});
 
 		// The API will call this function when the video player is ready.
-		function onPlayerReady(/*event*/) {
+		function onPlayerReady(_event) {
 			player.playVideo();
 			player.unMute();
 		}
@@ -156,7 +168,7 @@
 			if (event.data == YT.PlayerState.PLAYING) {
 				// @TODO: pause and resume this timer with the video
 				setTimeout(() => {
-					$(rotologo).css({opacity: 1});
+					$(rotologo).css({ opacity: 1 });
 				}, 14150);
 			}
 			if (event.data == YT.PlayerState.ENDED) {
@@ -167,14 +179,14 @@
 				// setTimeout/setInterval and check player.getCurrentTime() for when near the end?
 				// or we might switch to using soundcloud for the audio and so trigger it with that, with a separate video of just clouds
 				// also fade out the rotologo earlier
-				$(rotologo).css({opacity: 0});
+				$(rotologo).css({ opacity: 0 });
 				// destroy rotologo once faded out
 				setTimeout(stop_vaporwave, 1200);
 			}
 		}
 
 		let is_theoretically_playing = true;
-		space_phase_key_handler = e => {
+		space_phase_key_handler = (e) => {
 			// press space to phase in and out of space phase スペース相 - windows 98 マイクロソフト 『ＷＩＮＴＲＡＰ』 X 将来のオペレーティングシステムサウンド 1998 VAPORWAVE
 			if (e.which === 32) {
 				// @TODO: record player SFX
@@ -182,14 +194,14 @@
 					player.pauseVideo();
 					is_theoretically_playing = false;
 					$(player.getIframe())
-					.add(rotologo)
-					.css({opacity: "0"});
+						.add(rotologo)
+						.css({ opacity: "0" });
 				} else {
 					player.playVideo();
 					is_theoretically_playing = true;
 					$(player.getIframe())
-					.add(rotologo)
-					.css({opacity: ""});
+						.add(rotologo)
+						.css({ opacity: "" });
 				}
 				e.preventDefault();
 				// player.getIframe().focus();
@@ -206,8 +218,8 @@
 		}
 	};
 
-	addEventListener("keydown", Konami.code(toggle_vaporwave));
-	addEventListener("keydown", (event)=> {
+	onKonamiCodeEntered(toggle_vaporwave);
+	addEventListener("keydown", (event) => {
 		if (event.key === "Escape") {
 			stop_vaporwave();
 		}

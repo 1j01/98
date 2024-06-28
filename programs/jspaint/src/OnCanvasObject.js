@@ -1,5 +1,15 @@
+// @ts-check
+/* global $canvas_area, $status_position, $status_size, canvas_handles, magnification */
+import { $G, E } from "./helpers.js";
 
 class OnCanvasObject {
+	/**
+	 * @param {number} x
+	 * @param {number} y
+	 * @param {number} width
+	 * @param {number} height
+	 * @param {boolean} hideMainCanvasHandles
+	 */
 	constructor(x, y, width, height, hideMainCanvasHandles) {
 		this.x = x;
 		this.y = y;
@@ -10,7 +20,7 @@ class OnCanvasObject {
 		if (this.hideMainCanvasHandles) {
 			canvas_handles.hide();
 		}
-		$G.on("resize theme-load", this._global_resize_handler = ()=> {
+		$G.on("resize theme-load", this._global_resize_handler = () => {
 			this.position();
 		});
 	}
@@ -19,7 +29,7 @@ class OnCanvasObject {
 		// const direction = get_direction();
 		// const left_for_ltr = direction === "rtl" ? "right" : "left";
 		// const offset_left = parseFloat($canvas_area.css(`padding-${left_for_ltr}`));
-		const offset_left = parseFloat($canvas_area.css(`padding-left`));
+		const offset_left = parseFloat($canvas_area.css("padding-left"));
 		const offset_top = parseFloat($canvas_area.css("padding-top"));
 		this.$el.css({
 			position: "absolute",
@@ -31,7 +41,7 @@ class OnCanvasObject {
 		});
 		if (updateStatus) {
 			$status_position.text(`${this.x},${this.y}`);
-			$status_size.text(`${this.width},${this.height}`);
+			$status_size.text(`${this.width}x${this.height}`);
 		}
 	}
 	destroy() {
@@ -42,3 +52,6 @@ class OnCanvasObject {
 		$G.off("resize theme-load", this._global_resize_handler);
 	}
 }
+
+export { OnCanvasObject };
+

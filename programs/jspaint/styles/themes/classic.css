@@ -1,6 +1,6 @@
-@import "../../lib/os-gui/windows-98.css";
-/* @import "../../lib/os-gui/windows-default.css"; */
-/* @import "../../lib/os-gui/peggys-pastels.css"; */
+@import "../../lib/os-gui/build/windows-98.css";
+/* @import "../../lib/os-gui/build/windows-default.css"; */
+/* @import "../../lib/os-gui/build/peggys-pastels.css"; */
 
 :root {
 	--theme-loaded: "classic.css";
@@ -52,6 +52,8 @@ body,
 	background-size: 8px;
 }
 
+/* Show images as pixelated if at pixel-perfect scales. */
+/* WET for vendor prefixes (for Safari) */
 @media (resolution: 1x), (resolution: 2x), (min-resolution: 3x) {
 	* {
 		image-rendering: -moz-crisp-edges;
@@ -59,6 +61,14 @@ body,
 		image-rendering: pixelated;
 	}
 }
+@media (-webkit-device-pixel-ratio: 1), (-webkit-device-pixel-ratio: 2), (-webkit-device-pixel-ratio: 3) {
+	* {
+		image-rendering: -moz-crisp-edges;
+		image-rendering: crisp-edges;
+		image-rendering: pixelated;
+	}
+}
+
 .disable-aa-for-things-at-main-canvas-scale .main-canvas,
 .disable-aa-for-things-at-main-canvas-scale .selection canvas {
 	image-rendering: -moz-crisp-edges;
@@ -72,7 +82,7 @@ body,
 
 .selection:after,
 .textbox:after {
-	content: '';
+	content: "";
 	position: absolute;
 	left: 0px;
 	top: 0px;
@@ -98,7 +108,7 @@ body,
 
 .status-area {
 	gap: 2px;
-	font-family: 'Segoe UI', sans-serif;
+	font-family: "Segoe UI", sans-serif;
 	font-size: 12px;
 	color: var(--ButtonText);
 	padding-top: 2px;
@@ -206,7 +216,7 @@ body,
 	border-bottom: 1px solid var(--ButtonShadow);
 }
 .color-selection:after {
-	content: '';
+	content: "";
 	position: absolute;
 	left: 0px;
 	top: 0px;
@@ -225,7 +235,7 @@ body,
 	/*box-shadow: 1px 1px 0px var(--ButtonDkShadow) inset;*/
 }
 .swatch:before {
-	content: '';
+	content: "";
 	position: absolute;
 	left: 0;
 	top: 0;
@@ -250,7 +260,7 @@ body,
 }
 .current-colors:after,
 .color-button:after {
-	content: '';
+	content: "";
 	position: absolute;
 	left: -1px;
 	top: -1px;
@@ -270,11 +280,11 @@ body,
 	z-index: 0;
 }
 .vertical > .component-area::before {
-	content: '';
+	content: "";
 	top: -2px;
 }
 .vertical > .component-area:not(:empty)::after {
-	content: '';
+	content: "";
 	bottom: 0;
 }
 .vertical > .top.component-area::before {
@@ -300,7 +310,7 @@ body,
 /* @TODO: thicker resize ghost (4px instead of 3px) */
 .resize-ghost.thick:after,
 .resize-ghost.thick:before {
-	content: '';
+	content: "";
 	position: absolute; left: 0; right: 0; top: 0; bottom: 0;
 	outline: 1px dotted #ccc;
 }
@@ -352,7 +362,7 @@ body,
 }
 
 .help-window .item {
-	font-family: 'Segoe UI', sans-serif;
+	font-family: "Segoe UI", sans-serif;
 	font-size: 12px;
 	padding: 0 2px;
 	position: relative; /* for ::after */
@@ -477,7 +487,9 @@ select.inset-deep {
 	appearance: none;
 	-webkit-appearance: none;
 	-moz-appearance: none;
+	/* spell-checker: disable */
 	background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='16' height='17' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M15 0H0v16h1V1h14V0z' fill='%23DFDFDF'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M2 1H1v14h1V2h12V1H2z' fill='%23fff'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M16 17H0v-1h15V0h1v17z' fill='%23000'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M15 1h-1v14H1v1h14V1z' fill='gray'/%3E%3Cpath fill='silver' d='M2 2h12v13H2z'/%3E%3Cpath fill-rule='evenodd' clip-rule='evenodd' d='M11 6H4v1h1v1h1v1h1v1h1V9h1V8h1V7h1V6z' fill='%23000'/%3E%3C/svg%3E");
+	/* spell-checker: enable */
 	background-repeat: no-repeat;
 	border-radius: 0;
 	box-sizing: border-box;
@@ -536,4 +548,10 @@ details[open] > summary::marker {
 	color: var(--ButtonText);
 	content: "▼";
 	text-decoration: none;
+}
+
+/* For Safari on iPad, Fullscreen mode overlays the system bar, completely obscuring our menu bar. */
+/* Code in layout.css adds a spacer to the top of the page, and this styles it with the title bar gradient. */
+.jspaint::before {
+	background: linear-gradient(to left, var(--ActiveTitle), var(--GradientActiveTitle));
 }
