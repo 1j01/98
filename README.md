@@ -100,6 +100,14 @@ When pulling changes from git, run `npm install` again in case there are any new
 
 Some dependencies are versioned with npm, but pulled into the repo with `npm run pull-libs`
 
+### Quality Assurance
+
+Tests are written with Playwright.
+
+```
+npm test
+```
+
 ### Managing Subrepos
 
 To update subrepos, or push changes to them, install [git-subrepo](https://github.com/ingydotnet/git-subrepo). You don't need this tool to clone the project and get up and running, as subrepos are just normal subdirectories with a `.gitrepo` metadata file.

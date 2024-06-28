@@ -32,6 +32,8 @@
 		"javascript"
 	],
 	"devDependencies": {
+		"@playwright/test": "^1.45.0",
+		"@types/node": "^20.14.9",
 		"browserfs": "^1.4.3",
 		"butterchurn": "2.6.7",
 		"butterchurn-presets": "2.4.7",
@@ -47,8 +49,9 @@
 		"webamp": "1.5.0"
 	},
 	"scripts": {
+		"test": "playwright test --reporter=list",
 		"start": "run-p watch-fs-index start-server",
-		"start-server": "live-server --port=1998 --ignore=node_modules",
+		"start-server": "live-server --port=1998 --ignore=node_modules/,.git/,.history/,.idea/,.vscode/,test/,coverage/,test-results/,playwright-report/,blob-report/,playwright/.cache/,package.json,package-lock.json,README.md,LICENSE,CNAME,cspell.json,.gitignore,.gitattributes .",
 		"watch-fs-index": "onchange --initial --poll 1000 --kill -f add -f addDir -f unlink -f unlinkDir '**' --exclude 'filesystem-index.json' --exclude '**/.history/**' -- npm run make-fs-index",
 		"watch-fs-index @NOTE 1": "--kill makes it not queue up the events as tasks (as well as sending kill signal to old process)",
 		"watch-fs-index @NOTE 2": "When many files are changed, such as when doing a rebase or otherwise checking out old commits, it can take a long time to start working again. Add --verbose to view the stupid behavior. It probably makes it slower too, logging a lot.",

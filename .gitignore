@@ -1,5 +1,18 @@
 node_modules/
 
+# Reserved for future use
+dist/
+build/
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
+
+# Istanbul code coverage reports
+coverage/
+
 # Logs
 logs
 *.log
