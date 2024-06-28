@@ -665,7 +665,11 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 	var selection_anchor_item_el;
 
 	function select_item(item_or_item_el, event, delay_scroll) {
-		const item_el_to_select = item_or_item_el instanceof Element ? item_or_item_el : item_or_item_el.element;
+		// Note: can't use `item_or_item_el instanceof Element` because iframes have their own `Element` constructors
+		// and `instanceof` is actually inconsistent between browsers when an element is created in one document and
+		// appended to another. See https://github.com/1j01/98/issues/92
+		// Also see https://bugzilla.mozilla.org/show_bug.cgi?id=1470017
+		const item_el_to_select = "nodeType" in item_or_item_el ? item_or_item_el : item_or_item_el.element;
 		const extend_selection = event.shiftKey;
 		if (selection_anchor_item_el && !self.items.some(item => item.element === selection_anchor_item_el)) {
 			selection_anchor_item_el = null; // item was removed somehow
