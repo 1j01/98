@@ -1,7 +1,10 @@
 import { test, expect } from '@playwright/test';
 
-test('can open My Computer and select a file in it and start to rename it', async ({ browserName, page }) => {
+test.beforeEach(async ({ page }) => {
 	await page.goto('http://localhost:1998/');
+});
+
+test('can open My Computer and select a file in it and start to rename it', async ({ page }) => {
 	// open file explorer
 	await page.getByText('My Computer').dblclick();
 	// wait for the folder contents to load
