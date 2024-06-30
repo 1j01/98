@@ -135,7 +135,7 @@ function load_from_blob(blob) {
 function file_open() {
 	are_you_sure(function () {
 		// no accept='text/*' because it hides many many types of text files, especially source code
-		// altho Notepad in Windows 98 shows only *.txt files
+		// although Notepad in Windows 98 shows only *.txt files
 		$("<input type='file'>").click().change(function (e) {
 			if (this.files[0]) {
 				load_from_blob(this.files[0]);
@@ -219,7 +219,7 @@ if (file_path) {
 				throw error;
 			}
 			// NOTE: could be destroying changes, since this is (theoretically/potentially) async
-			// altho the user can probably undo
+			// although the user can probably undo
 			// TODO: lock the textarea as readonly until here
 			$textarea.val(content);
 			update_print_helper();

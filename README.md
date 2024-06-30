@@ -25,7 +25,7 @@ Features:
 * Drop files onto the desktop, and they'll be stored in a virtual filesystem
 * Load Windows themes! Many are included in the Themes folder on the desktop.
 * Easter eggs (try a famous cheat code 😉)
-* Meticulous detail in many areas (altho there's obviously lots "missing")
+* Meticulous detail in many areas (although there's obviously lots "missing")
 * **Help > Help Topics** in Paint, Sound Recorder, Notepad, and Minesweeper
 * You can add the site to your homescreen on mobile
 

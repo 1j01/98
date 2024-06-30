@@ -402,7 +402,7 @@ if (file_path) {
 				throw error;
 			}
 			// NOTE: could be destroying changes, since this is (potentially) async
-			// altho the user can probably undo
+			// although the user can probably undo
 			// TODO: lock editing until here
 			var __opening_file_path = file_path;
 			var blob = new File([content], file_name_from_path(file_path));
