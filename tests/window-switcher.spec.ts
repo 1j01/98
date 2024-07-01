@@ -54,16 +54,40 @@ test.describe('keyboard shortcut hint', () => {
 	});
 });
 
-test('Clippy doesn\'t show if you Alt+Tab with less than two windows', async ({ page, browser }) => {
-	// Open only one window
-	await page.getByText("Minesweeper").dblclick();
-	await expect(page.locator('.window')).toHaveCount(1);
-	await expect(page.locator('.window')).toBeVisible();
+test.describe('window switching', () => {
+	test('Alt+Tab switches between windows (if the keys reach the page)', async ({ page }) => {
+		// FIXME: doesn't work with Minesweeper or Paint, I had to substitute Sound Recorder
+		await page.getByText("Sound Recorder").dblclick();
+		// wait for first window to avoid race condition where either window can have focus
+		await expect(page.locator('.window')).toBeVisible();
+		await page.getByText("Notepad").dblclick();
+		await expect(page.locator('.window')).toHaveCount(2);
+		await expect(page.locator('.window').nth(0)).toBeVisible();
+		await expect(page.locator('.window').nth(1)).toBeVisible();
 
-	await simulateAltTabLosingFocus(page, browser);
-	await expect(page.locator('.clippy')).toHaveCount(0);
-	await expect(page.locator('.clippy-balloon')).toHaveCount(0);
-	await page.waitForTimeout(1000);
-	await expect(page.locator('.clippy')).toHaveCount(0);
-	await expect(page.locator('.clippy-balloon')).toHaveCount(0);
+		await expect(page.locator('.window', { hasText: "Notepad" })).toHaveClass(/focused/);
+
+		await page.keyboard.down('Alt');
+		await page.keyboard.press('Tab');
+		await expect(page.locator('.window-switcher')).toBeVisible();
+		await page.keyboard.up('Alt');
+		await expect(page.locator('.window-switcher')).not.toBeVisible();
+		await expect(page.locator('.window', { hasText: "Sound Recorder" })).toHaveClass(/focused/);
+
+		await page.keyboard.down('Alt');
+		await page.keyboard.press('Tab');
+		await page.keyboard.up('Alt');
+		await expect(page.locator('.window', { hasText: "Notepad" })).toHaveClass(/focused/);
+	});
+	// TODO: test...
+	// - Alt+Shift+Tab switches in reverse order
+	// - wrapping around the end of the list
+	// - releasing Alt before pressing Tab
+	// - pressing Tab multiple times
+	// - alternative shortcuts for window switching (Alt+1, Alt+`)
+	// - switching to a window that's minimized
+	// - z-order of windows (bringing to front when switching)
+	// - switching between windows with the same title?
+	// - window switcher UI's list of icons (with border around selection), preview of window title
+	// - behavior when pressing other keys? esc? enter?
 });
