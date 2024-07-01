@@ -39,7 +39,7 @@ test.describe('Minesweeper', () => {
 		await page.mouse.down();
 		// could benefit from [data-test-id]
 		// also, a screenshot test would be better, to ignore implementation details
-		const smiley = appFrame.locator('[style*="center"] [style*="26px"][style*="sprite.png"]');
+		const smiley = appFrame.locator('[style*="center"] [style*="width: 26px"][style*="sprite.png"]');
 		await expect(smiley).toHaveCSS('background-position', '-52px -55px');
 	});
 
