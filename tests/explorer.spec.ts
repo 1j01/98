@@ -9,7 +9,7 @@ test('can open My Computer and select a file in it and start to rename it', asyn
 	await page.getByText('My Computer').dblclick();
 	// wait for the folder contents to load
 	const appFrameLocator = page.frameLocator('iframe');
-	await expect(appFrameLocator.getByText(/^\d+ object\(s\)$/)).toBeVisible();
+	await expect(appFrameLocator.getByText(/^\d+ object\(s\)$/)).toBeVisible({ timeout: 15000 });
 	// try to select the file
 	const folderFrameLocator = appFrameLocator.frameLocator('iframe');
 	await folderFrameLocator.getByText('index.html').click();
@@ -17,12 +17,57 @@ test('can open My Computer and select a file in it and start to rename it', asyn
 	await expect(folderFrameLocator.getByText('index.html')).toHaveCount(2);
 	const iconLocator = folderFrameLocator.locator('.desktop-icon').filter({ hasText: 'index.html' });
 	await expect(iconLocator).toHaveClass(/(^|\s)selected(\s|$)/);
+	// the file name should not be editable yet
+	await expect(folderFrameLocator.getByRole('textbox')).not.toBeVisible();
 	// avoid double click
 	await page.waitForTimeout(1000);
 	// single click selected item to start renaming
 	await iconLocator.click();
 	await expect(folderFrameLocator.getByRole('textbox')).toBeFocused();
 	await expect(folderFrameLocator.getByRole('textbox')).toHaveValue('index.html');
+});
+
+test('can open My Computer and rename a file with F2', async ({ page }) => {
+	// open file explorer (somewhat via keyboard)
+	// FIXME: https://github.com/1j01/98/issues/96
+	// await page.getByText('My Computer').click();
+	// await page.keyboard.press('Enter');
+	await page.getByText('My Computer').dblclick();
+	// wait for the folder contents to load
+	const appFrameLocator = page.frameLocator('iframe');
+	await expect(appFrameLocator.getByText(/^\d+ object\(s\)$/)).toBeVisible({ timeout: 15000 });
+	// select a file
+	const folderFrameLocator = appFrameLocator.frameLocator('iframe');
+	await folderFrameLocator.getByText('CONTRIBUTING.md').click();
+	// "CONTRIBUTING.md" should be shown in the sidebar now
+	await expect(folderFrameLocator.getByText('CONTRIBUTING.md')).toHaveCount(2);
+	const iconLocator = folderFrameLocator.locator('.desktop-icon').filter({ hasText: 'CONTRIBUTING.md' });
+	await expect(iconLocator).toHaveClass(/(^|\s)selected(\s|$)/);
+	// rename the file
+	await page.keyboard.press('F2');
+	await expect(folderFrameLocator.getByRole('textbox')).toBeFocused();
+	await expect(folderFrameLocator.getByRole('textbox')).toHaveValue('CONTRIBUTING.md');
+	await folderFrameLocator.getByRole('textbox').fill('I_CONTRIBUTED_haha.md');
+	await page.keyboard.press('Enter');
+	// the file should be renamed now
+	await expect(folderFrameLocator.getByText('I_CONTRIBUTED_haha.md')).toBeVisible();
+	// sidebar doesn't update (this matches Windows 98 behavior so it's totally a feature not a bug)
+	// await expect(folderFrameLocator.getByText('CONTRIBUTING.md')).not.toBeVisible();
+	await expect(folderFrameLocator.getByText('CONTRIBUTING.md')).toHaveCount(1);
+	// the file should still be selected
+	await expect(folderFrameLocator.locator('.desktop-icon').filter({ hasText: 'I_CONTRIBUTED_haha.md' })).toHaveClass(/(^|\s)selected(\s|$)/);
+	// the file name should not be editable anymore
+	await expect(folderFrameLocator.getByRole('textbox')).not.toBeVisible();
+	// the rename should persist
+	await page.reload();
+	// open file explorer again
+	await page.getByText('My Computer').dblclick();
+	// wait for the folder contents to load
+	test.fixme(true, 'It gets an error "unlock of a non-locked mutex" when loading the folder contents again.');
+	await expect(appFrameLocator.getByText(/^\d+ object\(s\)$/)).toBeVisible({ timeout: 15000 });
+	// the file should still be renamed
+	await expect(folderFrameLocator.getByText('I_CONTRIBUTED_haha.md')).toBeVisible();
+	await expect(folderFrameLocator.getByText('CONTRIBUTING.md')).toHaveCount(0);
 });
 
 // TODO: test... (items marked with TODO are not yet implemented)
