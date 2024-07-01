@@ -82,3 +82,37 @@ test('can set wallpaper tiled (and use pencil, fill, and magnifier tools)', asyn
 	const expected = [255, 255, 0, 255, 0, 0, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 0, 0, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 0, 0, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 0, 0, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 0, 0, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255, 255, 255, 0, 255];
 	await expect(backgroundData).toEqual(expected);
 });
+
+test('can open a file dropped onto the desktop', async ({ page, browserName }) => {
+	test.skip(browserName === 'webkit', 'Webkit does not support DataTransferItemList fully');
+	await page.goto('http://localhost:1998/');
+	const file = require('path').resolve(__dirname, '..', 'images', 'start.png');
+
+	// Load the file into a Buffer.
+	const buffer = require('fs').readFileSync(file);
+	// Create the DataTransfer and File
+	const dataTransfer = await page.evaluateHandle((hexString) => {
+		const dt = new DataTransfer();
+		// Convert the hex string to a File
+		const array = new Uint8Array(hexString.match(/.{1,2}/g)!.map(byte => parseInt(byte, 16)));
+		const file = new File([array], 'start.png', { type: 'image/png' });
+		dt.items.add(file);
+		return dt;
+	}, buffer.toString('hex'));
+	// Now dispatch
+	// I'm not really testing the dragover unless I check that it's prevented...
+	// await page.locator('html').dispatchEvent('dragover', { dataTransfer: { types: ['Files'] } });
+	await page.locator('.desktop .folder-view').dispatchEvent('drop', { dataTransfer, clientX: 200, clientY: 200 });
+	await page.getByText('start.png').dblclick();
+	// FIXME: the window title isn't being set
+	// await expect(page.getByRole('button', { name: 'start.png - Paint' })).toBeVisible();
+	// await expect(page.locator('.window-title', { hasText: 'start.png - Paint' })).toBeVisible();
+	const appFrame = await page.frameLocator('.window iframe');
+	await expect(appFrame.locator('.main-canvas')).toHaveAttribute('width', '16');
+	await expect(appFrame.locator('.main-canvas')).toHaveAttribute('height', '14');
+	// const canvasData = await appFrame.locator('.main-canvas').evaluate((el: HTMLCanvasElement) => {
+	// 	const ctx = el.getContext('2d')!;
+	// 	const data = ctx.getImageData(0, 0, el.width, el.height).data;
+	// 	return Array.from(data);
+	// });
+});
