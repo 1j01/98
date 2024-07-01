@@ -35,11 +35,19 @@ test('closes when pressing a key', async ({ page }) => {
 test('has an animated canvas', async ({ page }) => {
 	const canvas = page.frameLocator('iframe').locator('#canvas-webgl');
 	await expect(canvas).toBeVisible();
-	const firstFrame = await canvas.screenshot();
-	await page.waitForTimeout(200);
-	const secondFrame = await canvas.screenshot();
-	await page.waitForTimeout(200);
-	const thirdFrame = await canvas.screenshot();
-	expect(secondFrame).not.toEqual(firstFrame);
-	expect(thirdFrame).not.toEqual(secondFrame);
+	expect(await canvas.evaluate((canvas: HTMLCanvasElement) => {
+		const frames = new Set();
+		return new Promise((resolve) => {
+			function animate() {
+				frames.add(canvas.toDataURL());
+				const uniqueFrames = frames.size;
+				if (uniqueFrames > 10) {
+					resolve(uniqueFrames);
+				} else {
+					requestAnimationFrame(animate);
+				}
+			}
+			animate();
+		});
+	})).toBeGreaterThan(10);
 });
