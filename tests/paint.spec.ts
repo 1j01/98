@@ -1,6 +1,12 @@
 import { test, expect } from '@playwright/test';
 
 test('can set wallpaper tiled (and use pencil, fill, and magnifier tools)', async ({ page }) => {
+	// TODO: make JS Paint work without WebGL, ideally (for tests and for users)
+	// [JavaScript Warning: "Failed to create WebGL context: WebGL creation failed:
+	// * WebglAllowWindowsNativeGl:false restricts context creation on this system. ()
+	// * Exhausted GL driver options. (FEATURE_FAILURE_WEBGL_EXHAUSTED_DRIVERS)" {file: "http://localhost:1998/programs/jspaint/src/image-manipulation.js" line: 1407}]
+	test.skip(!!process.env.CI, 'needs WebGL; could maybe run headed or enable software rendering somehow?');
+
 	await page.goto('http://localhost:1998/');
 	await page.getByText('Paint').dblclick();
 	await page.getByText('Image', { exact: true }).click();

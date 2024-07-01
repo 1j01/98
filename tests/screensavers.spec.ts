@@ -33,6 +33,15 @@ test('closes when pressing a key', async ({ page }) => {
 });
 
 test('has an animated canvas', async ({ page }) => {
+	// [JavaScript Warning: "Failed to create WebGL context: WebGL creation failed: 
+	// * WebglAllowWindowsNativeGl:false restricts context creation on this system. ()
+	// * Exhausted GL driver options. (FEATURE_FAILURE_WEBGL_EXHAUSTED_DRIVERS)" {file: "https://cdnjs.cloudflare.com/ajax/libs/three.js/98/three.min.js" line: 178}]
+	test.skip(!!process.env.CI, 'needs WebGL; could maybe run headed or enable software rendering somehow?');
+
+	// Not every frame may be different from the last (sometimes pipes are offscreen),
+	// so just check that we get enough unique frames to know it's animating.
+	// This assumes `toDataURL` is deterministic, otherwise it could pass with a static image.
+	// I tested the test by disabling animation in the screensaver and it failed correctly.
 	const canvas = page.frameLocator('iframe').locator('#canvas-webgl');
 	await expect(canvas).toBeVisible();
 	expect(await canvas.evaluate((canvas: HTMLCanvasElement) => {
