@@ -91,12 +91,17 @@ test('can open My Computer and rename a file with F2', async ({ page }) => {
 // - TODO: copy/cut/paste
 //   - TODO: handling conflicts
 // - TODO: undo/redo
-// - TODO: drag and drop (arrangement, or to move/copy)
-//   - between Explorer windows, and between Explorer and the desktop
+// - TODO: drag and drop
+//   - arrangement (persistent positioning per folder)
+//   - move/copy
+//     - between Explorer windows
+//     - between Explorer and the desktop
+//     - between Explorer and other apps
+//     - see: "integration with the real filesystem"
 //   - handle drag onto same folder it's in
 //   - handle drag folder inside itself
 // - sorting by name, date, size
-// - TODO: search (Tools > Find > ...)
+// - TODO: search (Tools > Find > Files or Folders...)
 // - view modes (list, details, large icons, small icons)
 // - TODO: viewing file properties
 // - visiting named locations, like "Recycle Bin"
@@ -109,18 +114,24 @@ test('can open My Computer and rename a file with F2', async ({ page }) => {
 //   - Invert Selection
 // - keyboard navigation (Home, End, Page Up, Page Down, arrow keys)
 // - TODO: context menus
-//   - drag and drop with right click opens a context menu with Move Here, Copy Here, Create Shortcut Here | Cancel
+//   - FIXME: clicking an icon and then immediately right clicking it should not count as a double click
+//   - NO-ONE CARES: drag and drop with right click opens a context menu with Move Here, Copy Here, Create Shortcut Here | Cancel
 // - toggling folder template (View > as Web Page)
 // - loading websites (Explorer acts as a web browser and file manager)
+// - loading HTML files from the virtual filesystem
+//   - TODO: load file content from virtual filesystem; currently it fetches from the server
+// - TODO: opening files that don't normally load in a browser (e.g. `.png`) via address bar
+//   - should open the default application for that file type, but currently it opens e.g. https://web.archive.org/web/1998/https://C:\README.md
 // - integration with the real filesystem
 //   - drag and drop from real OS to the web desktop
 //     (tested in paint.spec.ts)
 //   - TODO: drag and drop from the web desktop to the real OS
-//     (iirc there's a Chrome-only feature for this?)
+//     (There's a Chrome-only feature for this, `dataTransfer.setData("DownloadURL", url)`
+//     not supported in Firefox https://bugzilla.mozilla.org/show_bug.cgi?id=570164)
 //   - TODO: an option to mount a real folder into the virtual filesystem
-//     (something like Tools > Map Network Drive)
+//     (something like Tools > Map Network Drive...)
 // - File > Work Offline
-// - history shown back button dropdown
+// - history shown in back button dropdown
 // - TODO: show history in File menu too
 // - TODO: favorites
 // - rearranging toolbars
