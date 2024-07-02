@@ -80,8 +80,10 @@ Libraries
 OS-GUI.js
 	https://os-gui.js.org
 
-BrowserFS
-	https://github.com/jvilk/BrowserFS
+ZenFS
+	https://github.com/zen-fs/core/
+	fork of BrowserFS
+		https://github.com/jvilk/BrowserFS
 
 jQuery
 	https://github.com/jquery/jquery
