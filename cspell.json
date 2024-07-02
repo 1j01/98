@@ -21,6 +21,7 @@
 		// compiled code / generated files
 		"SpaceCadetPinball.js",
 		"filesystem-index.json",
+		"filesystem-index.min.json",
 		// Playwright
 		"test-results",
 		"playwright-report",
