@@ -34,23 +34,20 @@ ZenFS.FetchFS.prototype.ready = async function () {
 // and I could have the default desktop setup in source control there
 ZenFS.configure({
 	mounts: {
-		'/tmp': ZenFS.InMemory,
-		// TODO: OverlayFS with writable IndexedDB FS on top of readonly FetchFS
-		// "/": new OverlayFS({
-		// 	writable: new ZenFS_DOM_global_whatever.IndexedDB({ storeName: "C:" }),
-		// 	readable: new ZenFS.FetchFS({
-		// 		baseUrl: web_server_root_for_zenfs,
-		// 		index: web_server_root_for_zenfs + "filesystem-index.json",
-		// 	}),
-		// }),
-		// "/": new ZenFS.FetchFS({
-		// 	baseUrl: web_server_root_for_zenfs,
-		// 	index: web_server_root_for_zenfs + "filesystem-index.json",
-		// }),
+		// '/tmp': ZenFS.InMemory,
+		// OverlayFS with writable IndexedDB FS on top of readonly FetchFS
 		"/": {
-			backend: ZenFS.Fetch,
-			baseUrl: web_server_root_for_zenfs,
-			index: web_server_root_for_zenfs + "filesystem-index.json",
+			backend: ZenFS.Overlay,
+			writable: {
+				backend: ZenFSDOM.IndexedDB,
+				// storeName: "C:", // TODO: will this conflict with the old filesystem or allow seamless migration?
+				storeName: "98zenfs",
+			},
+			readable: {
+				backend: ZenFS.Fetch,
+				baseUrl: web_server_root_for_zenfs,
+				index: web_server_root_for_zenfs + "filesystem-index.json",
+			},
 		},
 	},
 })
