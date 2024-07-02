@@ -38,7 +38,6 @@
 		"butterchurn-presets": "2.4.7",
 		"cspell-cli": "^8.9.0",
 		"fs-extra": "8.1.0",
-		"json": "^9.0.6",
 		"live-server": "^1.2.1",
 		"npm-run-all": "^4.1.5",
 		"onchange": "^7.1.0",
@@ -59,10 +58,7 @@
 		"watch-fs-index": "onchange --initial --poll 1000 --kill -f add -f addDir -f unlink -f unlinkDir '**' --exclude 'filesystem-index.json' --exclude '**/.history/**' -- npm run make-fs-index",
 		"watch-fs-index @NOTE 1": "--kill makes it not queue up the events as tasks (as well as sending kill signal to old process)",
 		"watch-fs-index @NOTE 2": "When many files are changed, such as when doing a rebase or otherwise checking out old commits, it can take a long time to start working again. Add --verbose to view the stupid behavior. It probably makes it slower too, logging a lot.",
-		"make-fs-index": "make_http_index | json > filesystem-index.json",
-		"make-fs-index @NOTE": "browserfs@2.0.0 is currently assumed to be installed globally",
-		"make-fs-index @TODO 1": "Keep this file out of repo, and generate it on deploy.",
-		"make-fs-index @TODO 2": "Ignore gitignored files, including globally gitignored files... I'm sure there's a way to base it off of what things are checked in to git. git ls-files, or git ls-tree, ideally with the contents after staged changes would be applied (is there a 'tree-ish' for that?)",
+		"make-fs-index": "make-index --help > filesystem-index.json",
 		"pull-libs": "node pull-libs.js"
 	}
 }
