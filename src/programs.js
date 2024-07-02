@@ -285,7 +285,7 @@ function Paint(file_path) {
 		readBlobFromHandle: (file_path) => {
 			return new Promise((resolve, reject) => {
 				withFilesystem(() => {
-					var fs = BrowserFS.BFSRequire("fs");
+					var fs = ZenFS.fs;
 					fs.readFile(file_path, (err, buffer) => {
 						if (err) {
 							return reject(err);
@@ -303,7 +303,7 @@ function Paint(file_path) {
 			const arrayBuffer = await blob.arrayBuffer();
 			return new Promise((resolve, reject) => {
 				withFilesystem(()=> {
-					const fs = BrowserFS.BFSRequire("fs");
+					const fs = ZenFS.fs;
 					const { Buffer } = BrowserFS.BFSRequire("buffer");
 					const buffer = Buffer.from(arrayBuffer);
 					fs.writeFile(file_path, buffer, (err)=> {
@@ -666,7 +666,7 @@ function openWinamp(file_path) {
 	const filePathToBlob = (file_path) => {
 		return new Promise((resolve, reject) => {
 			withFilesystem(function () {
-				var fs = BrowserFS.BFSRequire("fs");
+				var fs = ZenFS.fs;
 				fs.readFile(file_path, function (err, buffer) {
 					if (err) {
 						return reject(err);
@@ -979,7 +979,7 @@ function openFileDialog(){
 
 function openURLFile(file_path) {
 	withFilesystem(function () {
-		var fs = BrowserFS.BFSRequire("fs");
+		var fs = ZenFS.fs;
 		fs.readFile(file_path, "utf8", function (err, content) {
 			if (err) {
 				return alert(err);
@@ -995,7 +995,7 @@ openURLFile.acceptsFilePaths = true;
 
 function openThemeFile(file_path) {
 	withFilesystem(function () {
-		var fs = BrowserFS.BFSRequire("fs");
+		var fs = ZenFS.fs;
 		fs.readFile(file_path, "utf8", function (err, content) {
 			if (err) {
 				return alert(err);
@@ -1140,7 +1140,7 @@ function systemExecuteFile(file_path) {
 	// like the START command in CMD.EXE
 
 	withFilesystem(function () {
-		var fs = BrowserFS.BFSRequire("fs");
+		var fs = ZenFS.fs;
 		fs.stat(file_path, function (err, stats) {
 			if (err) {
 				return alert("Failed to get info about " + file_path + "\n\n" + err);

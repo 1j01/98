@@ -361,7 +361,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 				return;
 			}
 			withFilesystem(function () {
-				const fs = BrowserFS.BFSRequire('fs');
+				const fs = ZenFS.fs;
 				let num_deleted = 0;
 				for (const file_path of selected_file_paths) {
 					let single_delete_success = false;
@@ -401,7 +401,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 
 	// Read the folder and create icon items
 	withFilesystem(function () {
-		var fs = BrowserFS.BFSRequire('fs');
+		var fs = ZenFS.fs;
 		fs.readdir(folder_path, function (error, contents) {
 			if (error) {
 				alert("Failed to read contents of the directory " + folder_path);
@@ -777,7 +777,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 	var stat = function (file_path) {
 		// fs should be guaranteed available at this point
 		// as this function is currently used
-		var fs = BrowserFS.BFSRequire('fs');
+		var fs = ZenFS.fs;
 		return new Promise(function (resolve, reject) {
 			fs.stat(file_path, function (err, stats) {
 				if (err) {
@@ -839,7 +839,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 				alert(`No handler for opening files or folders.`);
 			},
 			rename: (new_name) => {
-				var fs = BrowserFS.BFSRequire('fs');
+				var fs = ZenFS.fs;
 				return new Promise(function (resolve, reject) {
 					const new_file_path = folder_path + new_name;
 					fs.rename(item.file_path, new_file_path, function (err) {
@@ -883,7 +883,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 	var drop_file = function (file, x, y) {
 
 		var Buffer = BrowserFS.BFSRequire('buffer').Buffer;
-		var fs = BrowserFS.BFSRequire('fs');
+		var fs = ZenFS.fs;
 
 		var file_path = folder_path + file.name;
 

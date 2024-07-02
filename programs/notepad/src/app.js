@@ -152,7 +152,7 @@ function file_save(saved_callback) {
 	var content = $textarea.val();
 
 	withFilesystem(function () {
-		var fs = BrowserFS.BFSRequire('fs');
+		var fs = ZenFS.fs;
 		fs.writeFile(file_path, content, "utf8", function (error) {
 			if (error) {
 				alert("Failed to save file: " + error);
@@ -212,7 +212,7 @@ $textarea.on("input", function (e) {
 
 if (file_path) {
 	withFilesystem(function () {
-		var fs = BrowserFS.BFSRequire('fs');
+		var fs = ZenFS.fs;
 		fs.readFile(file_path, "utf8", function (error, content) {
 			if (error) {
 				alert("Failed to load file: " + error);

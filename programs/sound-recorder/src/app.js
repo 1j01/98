@@ -395,7 +395,7 @@ if (file_path) {
 	update_title();
 
 	withFilesystem(function () {
-		var fs = BrowserFS.BFSRequire('fs');
+		var fs = ZenFS.fs;
 		fs.readFile(file_path, function (error, content) {
 			if (error) {
 				alert("Failed to load file: " + error);

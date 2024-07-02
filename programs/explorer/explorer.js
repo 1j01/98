@@ -312,7 +312,7 @@ var resolve_address = async function (address) {
 		zone = "local";
 		return new Promise((resolve, reject) => {
 			withFilesystem(function () {
-				var fs = BrowserFS.BFSRequire("fs");
+				var fs = ZenFS.fs;
 				fs.stat(address, function (err, stats) {
 					if (err) {
 						if (err.code === "ENOENT") {
@@ -967,7 +967,7 @@ function go_home() {
 function executeFile(file_path) {
 	// I don't think this withFilesystem is necessary
 	withFilesystem(function () {
-		var fs = BrowserFS.BFSRequire("fs");
+		var fs = ZenFS.fs;
 		fs.stat(file_path, function (err, stats) {
 			if (err) {
 				return alert("Failed to get info about " + file_path + "\n\n" + err);
