@@ -4,6 +4,9 @@ node_modules/
 dist/
 build/
 
+# TODO: ignore filesystem-index.json
+filesystem-index.min.json
+
 # Playwright
 /test-results/
 /playwright-report/
