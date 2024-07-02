@@ -34,6 +34,7 @@
 	"devDependencies": {
 		"@playwright/test": "^1.45.0",
 		"@types/node": "^20.14.9",
+		"@zenfs/core": "^0.14.0",
 		"butterchurn": "2.6.7",
 		"butterchurn-presets": "2.4.7",
 		"cspell-cli": "^8.9.0",

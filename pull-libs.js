@@ -21,6 +21,10 @@ copy("node_modules/os-gui/parse-theme.js", "lib/os-gui/");
 copy("node_modules/os-gui/$MenuBar.js", "lib/os-gui/");
 copy("node_modules/os-gui/MenuBar.js", "lib/os-gui/");
 copy("node_modules/os-gui/$Window.js", "lib/os-gui/");
+copy("node_modules/@zenfs/core/dist/browser.min.js", "lib/zenfs/zenfs-browser.min.js");
+// I renamed the JS file, but it will still point to the original map file
+// unless I patch it like I did with Webamp
+copy("node_modules/@zenfs/core/dist/browser.min.js.map", "lib/zenfs/browser.min.js.map");
 // copy("node_modules/webamp/built/webamp.bundle.js", "programs/winamp/lib/");
 // copy("node_modules/webamp/built/webamp.bundle.min.js", "programs/winamp/lib/");
 // copy("node_modules/webamp/built/webamp.bundle.min.js.map", "programs/winamp/lib/");
