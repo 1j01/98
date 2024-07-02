@@ -13,6 +13,21 @@ const web_server_root_for_zenfs =
 		location.href.match(/.*98.js.org/)[0] + "/" :
 		"/";
 
+
+// Ugh... monkey-patching `ready` to remove pre-caching of every single file in the filesystem.
+// Without this it will take an absurd amount of time and memory, to the point that it will basically never load.
+// That, or, actually, it just stops on the first file that fails to fetch (`.gitattributes`, which isn't served by live-server)
+// I'm not sure what happens with the error handling there. To be investigated.
+ZenFS.FetchFS.prototype.ready = async function () {
+	if (this._isInitialized) {
+		return;
+	}
+	// await super.ready(); invalid syntax in this context
+	// await Object.getPrototypeOf(this).ready.call(this); refers to the patched method
+	await ZenFS.IndexFS.prototype.ready.call(this);
+	// omitting getData() loop here
+};
+
 // TODO: mount the repo contents at something like C:\98\
 // but other OS stuff from a subfolder of the repo as root (C? HD? hard-drive? disk? OS?)
 // the desktop at something like.. well I guess C:\98\desktop
@@ -28,10 +43,15 @@ ZenFS.configure({
 		// 		index: web_server_root_for_zenfs + "filesystem-index.json",
 		// 	}),
 		// }),
-		"/": new ZenFS.FetchFS({
+		// "/": new ZenFS.FetchFS({
+		// 	baseUrl: web_server_root_for_zenfs,
+		// 	index: web_server_root_for_zenfs + "filesystem-index.json",
+		// }),
+		"/": {
+			backend: ZenFS.Fetch,
 			baseUrl: web_server_root_for_zenfs,
 			index: web_server_root_for_zenfs + "filesystem-index.json",
-		}),
+		},
 	},
 })
 	.then(() => {
