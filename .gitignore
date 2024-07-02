@@ -5,6 +5,7 @@ dist/
 build/
 
 # TODO: ignore filesystem-index.json
+# It's insane including it in the repo. Need to set up `gh-pages` CLI for deployment though, and give up automatic deployment or else do even more setup for GitHub Actions.
 filesystem-index.min.json
 
 # Playwright
