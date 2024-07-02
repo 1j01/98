@@ -39,7 +39,7 @@ ZenFS.configure({
 		"/": {
 			backend: ZenFS.Overlay,
 			writable: {
-				backend: ZenFSDOM.IndexedDB,
+				backend: ZenFS_DOM.IndexedDB,
 				// storeName: "C:", // TODO: will this conflict with the old filesystem or allow seamless migration?
 				storeName: "98zenfs",
 			},
