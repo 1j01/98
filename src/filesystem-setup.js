@@ -8,34 +8,39 @@ const desktop_folder_path = "/desktop/";
 
 // For Wayback Machine, match URLs like https://web.archive.org/web/20191213113214/https://98.js.org/
 // (also match URLs like https://98.js.org/ because why not)
-const web_server_root_for_browserfs =
+const web_server_root_for_zenfs =
 	location.href.match(/98.js.org/) ?
 		location.href.match(/.*98.js.org/)[0] + "/" :
 		"/";
 
-BrowserFS.configure({
-	fs: "OverlayFS",
-	options: {
-		writable: {
-			fs: "IndexedDB",
-			options: {
-				storeName: "C:"
-			}
-		},
-		readable: {
-			fs: "XmlHttpRequest",
-			options: {
-				index: web_server_root_for_browserfs + "filesystem-index.json",
-				baseUrl: web_server_root_for_browserfs
-			}
+// TODO: mount the repo contents at something like C:\98\
+// but other OS stuff from a subfolder of the repo as root (C? HD? hard-drive? disk? OS?)
+// the desktop at something like.. well I guess C:\98\desktop
+// and I could have the default desktop setup in source control there
+ZenFS.configure({
+	mounts: {
+		'/tmp': ZenFS.InMemory,
+		// TODO: OverlayFS with writable IndexedDB FS on top of readonly FetchFS
+		// "/": new OverlayFS({
+		// 	writable: new ZenFS_DOM_global_whatever.IndexedDB({ storeName: "C:" }),
+		// 	readable: new ZenFS.FetchFS({
+		// 		baseUrl: web_server_root_for_zenfs,
+		// 		index: web_server_root_for_zenfs + "filesystem-index.json",
+		// 	}),
+		// }),
+		"/": new ZenFS.FetchFS({
+			baseUrl: web_server_root_for_zenfs,
+			index: web_server_root_for_zenfs + "filesystem-index.json",
+		}),
+	},
+})
+	.then(() => {
+		__fs_initialized = true;
+		for (var i = 0; i < __fs_waiting_callbacks.length; i++) {
+			__fs_waiting_callbacks[i]();
 		}
-	}
-	// TODO: mount the repo contents at something like C:\98\
-	// but other OS stuff from a subfolder of the repo as root (C? HD? hard-drive? disk? OS?)
-	// the desktop at something like.. well I guess C:\98\desktop
-	// and I could have the default desktop setup in source control there
-}, function (error) {
-	if (error) {
+		__fs_waiting_callbacks = [];
+	}, (error) => {
 		__fs_errored = true;
 		if (__fs_waiting_callbacks.length) {
 			// TODO: DRY (can probably simplify this logic significantly)
@@ -44,13 +49,7 @@ BrowserFS.configure({
 		__fs_waiting_callbacks = [];
 		// TODO: message box; offer to reset the filesystem
 		throw error;
-	}
-	__fs_initialized = true;
-	for (var i = 0; i < __fs_waiting_callbacks.length; i++) {
-		__fs_waiting_callbacks[i]();
-	}
-	__fs_waiting_callbacks = [];
-});
+	});
 
 setTimeout(function () {
 	__fs_timed_out = true;
