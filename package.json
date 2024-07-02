@@ -60,7 +60,7 @@
 		"watch-fs-index": "onchange --initial --poll 1000 --kill -f add -f addDir -f unlink -f unlinkDir '**' --exclude 'filesystem-index.json' --exclude '**/.history/**' -- npm run make-fs-index",
 		"watch-fs-index @NOTE 1": "--kill makes it not queue up the events as tasks (as well as sending kill signal to old process)",
 		"watch-fs-index @NOTE 2": "When many files are changed, such as when doing a rebase or otherwise checking out old commits, it can take a long time to start working again. Add --verbose to view the stupid behavior. It probably makes it slower too, logging a lot.",
-		"make-fs-index": "make-index | json > filesystem-index.json",
+		"make-fs-index": "make-index --ignore node_modules --ignore .git --ignore .history --ignore .idea --ignore .vscode --ignore tests --ignore coverage --ignore test-results --ignore playwright-report --ignore blob-report --ignore playwright/.cache --output filesystem-index.min.json && json -f filesystem-index.min.json > filesystem-index.json",
 		"pull-libs": "node pull-libs.js"
 	}
 }
