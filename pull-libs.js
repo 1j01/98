@@ -16,6 +16,7 @@ const copyFile = (fromFile, toFile) => {
 	copyFileSync(fromFile, toFile);
 }
 const reSourceMapComment = /\/\/# sourceMappingURL=(.*)/;
+const reSourceMapCommentG = /\/\/# sourceMappingURL=(.*)/g;
 const copyJS = (fromFile, toFile, monkeyPatch) => {
 	// If monkey patching, remove the source map comment and don't copy the source map file.
 	// Otherwise, copy the source map file and update the source map comment with the new file name.
@@ -34,7 +35,13 @@ const copyJS = (fromFile, toFile, monkeyPatch) => {
 		// Order matters. Must not apply monkey patch in between getting index and slicing on it.
 		if (sourceMapCommentMatch) {
 			// js = js.replace(reSourceMapComment, ""); // might match the wrong sourceMappingURL comment
-			js = js.slice(0, sourceMapCommentIndex) + js.slice(sourceMapCommentIndex + sourceMapCommentMatch[0].length);
+			// js = js.slice(0, sourceMapCommentIndex) + js.slice(sourceMapCommentIndex + sourceMapCommentMatch[0].length);
+			// Do we actually want to keep any source map comments in the middle?
+			// Seems like it might then make a source map comment that maybe shouldn't be there suddenly apply.
+			// Not sure, but it seems safer to just remove all source map comments.
+			// The [spec](https://sourcemaps.info/spec.html) says "The generated code may include a line at the end of the source",
+			// which may imply that the comment would be ignored if it's in the middle of the file, but it doesn't say that explicitly.
+			js = js.replace(reSourceMapCommentG, "");
 		}
 		js = monkeyPatch(js);
 	} else {
