@@ -882,7 +882,6 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 	};
 	var drop_file = function (file, x, y) {
 
-		var Buffer = BrowserFS.BFSRequire('buffer').Buffer;
 		var fs = ZenFS.fs;
 
 		var file_path = folder_path + file.name;
@@ -892,8 +891,7 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 			throw error;
 		};
 		reader.onload = function (e) {
-			var buffer = Buffer.from(reader.result);
-			fs.writeFile(file_path, buffer, { flag: "wx" }, function (error) {
+			fs.writeFile(file_path, reader.result, { flag: "wx" }, function (error) {
 				if (error) {
 					if (error.code === "EEXIST") {
 						// TODO: options to replace or keep both files with numbers like "file (1).txt"

@@ -304,9 +304,7 @@ function Paint(file_path) {
 			return new Promise((resolve, reject) => {
 				withFilesystem(()=> {
 					const fs = ZenFS.fs;
-					const { Buffer } = BrowserFS.BFSRequire("buffer");
-					const buffer = Buffer.from(arrayBuffer);
-					fs.writeFile(file_path, buffer, (err)=> {
+					fs.writeFile(file_path, arrayBuffer, (err)=> {
 						if (err) {
 							return reject(err);
 						}
