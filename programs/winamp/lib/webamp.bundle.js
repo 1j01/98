@@ -1020,7 +1020,7 @@ function writeIntBE(buf, value, offset, byteLength) {
     return offset + byteLength;
 }
 exports.writeIntBE = writeIntBE;
-
+//# sourceMappingURL=index.js.map
 
 /***/ }),
 /* 7 */
@@ -37078,4 +37078,3 @@ exports.Browser2NodeStream = Browser2NodeStream;
 /***/ })
 /******/ ])["default"];
 });
-//# sourceMappingURL=webamp.bundle.js.map

@@ -19,17 +19,24 @@ const reSourceMapComment = /\/\/# sourceMappingURL=(.*)/;
 const copyJS = (fromFile, toFile, monkeyPatch) => {
 	// If monkey patching, remove the source map comment and don't copy the source map file.
 	// Otherwise, copy the source map file and update the source map comment with the new file name.
+	
+	let js = readFileSync(fromFile, "utf8");
 
-	// lastIndexOf + slice would be more efficient but WHERE WE'RE GOING, WE DON'T NEED SPEED
-	const sourceMapCommentMatch = readFileSync(fromFile, "utf8").match(reSourceMapComment);
+	// const sourceMapCommentMatch = js.match(reSourceMapComment); // might match the wrong sourceMappingURL comment
+	// `lastIndexOf` + `slice` matches the correct line if there are multiple sourceMappingURL comments, and is more efficient
+	const sourceMapCommentIndex = js.lastIndexOf("//# sourceMappingURL=");
+	const sourceMapCommentMatch = sourceMapCommentIndex !== -1 ? js.slice(sourceMapCommentIndex).match(reSourceMapComment) : null;
 
 	mkdirSync(dirname(toFile), { recursive: true });
 
-	let js = readFileSync(fromFile, "utf8");
 	if (monkeyPatch) {
 		console.log(`Monkey patching and copying ${fromFile} => ${toFile}`);
+		// Order matters. Must not apply monkey patch in between getting index and slicing on it.
+		if (sourceMapCommentMatch) {
+			// js = js.replace(reSourceMapComment, ""); // might match the wrong sourceMappingURL comment
+			js = js.slice(0, sourceMapCommentIndex) + js.slice(sourceMapCommentIndex + sourceMapCommentMatch[0].length);
+		}
 		js = monkeyPatch(js);
-		js = js.replace(reSourceMapComment, "");
 	} else {
 		const originalSourceMapFileName = sourceMapCommentMatch[1];
 		const newSourceMapFileName = basename(toFile) + ".map";
@@ -55,7 +62,8 @@ const copyJS = (fromFile, toFile, monkeyPatch) => {
 			} else {
 				console.log(`Removing sourceMappingURL and copying ${fromFile} => ${toFile}`);
 			}
-			js = js.replace(reSourceMapComment, newSourceMapComment);
+			// js = js.replace(reSourceMapComment, newSourceMapComment); // might match the wrong sourceMappingURL comment
+			js = js.slice(0, sourceMapCommentIndex) + newSourceMapComment + js.slice(sourceMapCommentIndex + sourceMapCommentMatch[0].length);
 		} else {
 			console.log(`Copying ${fromFile} => ${toFile}`);
 		}
