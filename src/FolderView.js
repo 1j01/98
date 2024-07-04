@@ -294,14 +294,14 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 		});
 	}
 
-	function deleteRecursiveSync(fs, itemPath) {
-		if (fs.statSync(itemPath).isDirectory()) {
-			for (const childItemName of fs.readdirSync(itemPath)) {
-				deleteRecursiveSync(itemPath + "/" + childItemName);
+	async function deleteRecursive(fs, itemPath) {
+		if (await fs.promises.stat(itemPath).isDirectory()) {
+			for (const childItemName of await fs.promises.readdir(itemPath)) {
+				await deleteRecursive(itemPath + "/" + childItemName);
 			}
-			fs.rmdirSync(itemPath);
+			await fs.promises.rmdir(itemPath);
 		} else {
-			fs.unlinkSync(itemPath);
+			await fs.promises.unlink(itemPath);
 		}
 	}
 
@@ -360,13 +360,13 @@ function FolderView(folder_path, { asDesktop = false, onStatus, openFolder, open
 			if (result !== "yes") {
 				return;
 			}
-			withFilesystem(function () {
+			withFilesystem(async function () {
 				const fs = ZenFS.fs;
 				let num_deleted = 0;
 				for (const file_path of selected_file_paths) {
 					let single_delete_success = false;
 					try {
-						deleteRecursiveSync(fs, file_path);
+						await deleteRecursive(fs, file_path);
 						single_delete_success = true;
 						num_deleted += 1;
 					} catch (error) {
