@@ -77,7 +77,7 @@ Libraries:
 * ![](images/icons/task-16x16.png) [Packard Belle](https://github.com/padraigfl/packard-belle/),
   [React95](https://github.com/React95/React95/),
   and another one called [React95](https://github.com/arturbien/React95), with similar goals to OS-GUI
-* [![](images/icons/folder-16x16.png) BrowserFS](https://github.com/jvilk/BrowserFS), a filesystem abstraction library powering 98.js
+* [![](images/icons/folder-16x16.png) ZenFS](https://github.com/zen-fs/core), a filesystem abstraction library powering 98.js
 
 Also:
 * [Awesome Atwood's Law](https://github.com/captbaritone/awesome-attwoods-law), a curated list of JavaScript reimplementations, similar to [/r/atwoodslaw/](https://www.reddit.com/r/atwoodslaw/)
@@ -92,7 +92,6 @@ See [CONTRIBUTING](CONTRIBUTING.md)
 - Install [Node.js](https://nodejs.org/) if you don't already have it.
 - [Clone the repository.](https://docs.github.com/en/github/creating-cloning-and-archiving-repositories/cloning-a-repository)
 - Open up a terminal / command prompt in the project directory, and run `npm install` to install dependencies.
-- Install one global dependency: `npm i -g browserfs@2.0.0` (this will be simplified in the future; I'm using two different versions of BrowserFS for some reason)
 - Run `npm start` to start up a live-reloading development web server.
 
 When pulling changes from git, run `npm install` again in case there are any new or updated dependencies.

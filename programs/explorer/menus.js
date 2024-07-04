@@ -535,9 +535,10 @@ var menus = {
 			],
 		},
 		MENU_DIVIDER,
+		// @TODO: could use ZenFS WebAccess FS to map the local filesystem; maybe should be called "Map Local Folder..."
 		{
 			label: "Map &Network Drive...",
-			enabled: false, // @TODO: could use BrowserFS Dropbox adapter
+			enabled: false, // @TODO: could connect to cloud storage, or just implement the ability to map a local folder instead
 			description: "Connects to a network drive.",
 		},
 		{
