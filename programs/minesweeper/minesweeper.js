@@ -116,21 +116,23 @@ minesweeper.prototype.new_game = function(width, height, number_mines) {
 
   var face = new minesweeper.face(this, this.header_td_face);
 
+  this.face = face;
+
   this.play_table.removeEventListener("mousedown,mouseup").style({"cursor": "default", "border": "1px solid #444"});
   this.play_table
     .addEventListener("mousedown", function(e) {
       if(e.target === face.get_element()) return false;
-      if(e.which === 1) face.set_state("scared");
+      if(e.which === 1 && !self.game_over) face.set_state("scared");
     })
     .addEventListener("mouseup", function(e) {
-      face.set_state("smile");
+      if(!self.game_over) face.set_state("smile");
     });
 
   this.mine_counter = new minesweeper.ssd(this.header_td_mine_count, number_mines)
   var timer = new minesweeper.ssd(this.header_td_timer, 0);
 
   this.timer_interval = setInterval(function() { timer.increment(); }, 1000);
-
+;
 	this.grid = new minesweeper.grid(this, this.grid_area, width, height, face);
 	this.grid.generate(number_mines);
 }
@@ -141,12 +143,14 @@ minesweeper.prototype.lose = function() {
   if(!this.game_over) {
     clearInterval(this.timer_interval);
     this.game_over = true;
+    this.face.set_state("dead");
     // alert('You lose!');
   }
 }
 minesweeper.prototype.win = function() {
   if(!this.game_over) {
     clearInterval(this.timer_interval);
+    this.face.set_state("sunglasses");
     this.game_over = true;
     // alert('You win!');
   }
@@ -238,7 +242,7 @@ $.ready(function() {
           }
 
         }
-        else { // Single tile reveals are simple
+        else if(!minesweeper_.game_over) { // Single tile reveals are simple
           minesweeper_.grid.reveal_area(click_coordinates.x, click_coordinates.y);
         }
 

@@ -17,6 +17,8 @@ var set_difficulty = function(difficulty){
 			innerHeight: extra_height + tile_size * difficulty[1],
 		});
 	}
+	// got this from the $menu_bar close_menu function
+	$menu_bar.find(".menu-button").trigger("release");
 };
 var is_at_difficulty = function(difficulty){
 	return (
