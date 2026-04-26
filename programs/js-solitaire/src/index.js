@@ -324,7 +324,7 @@ const handleClick = index => event => {
 };
 
 function restartDeal() {
-    state.deal.pile.cards = state.deal.deal.cards;
+    state.deal.pile.cards = state.deal.deal.cards.reverse();
     state.deal.deal.cards = [];
 
     for (const card of state.deal.pile.cards) {
